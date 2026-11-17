@@ -5,21 +5,11 @@
 -- cartridge (LiveWater.WaterFilter, 500 L) fits in it (D17, Q02).
 
 require "LiveWater/LWT_API"
-
-local TILESET = "batman_livewater_01_"
-
--- Variant key -> first index of its four facings.
-local FIRST = { off = 24, on = 28, filter_on = 32, filter_off = 36 }
-
-local variants = {}
-for key, first in pairs(FIRST) do
-    local list = {}
-    for facing = 1, 4 do list[facing] = TILESET .. (first + facing - 1) end
-    variants[key] = list
-end
+local Tiles = require "LiveWater/LWT_Tiles"
 
 LiveWater.API.registerPart("LiveWater:PondPump", {
-    variants = variants,
+    -- variant key -> first index of its four facings
+    variants = Tiles.variants({ off = 24, on = 28, filter_on = 32, filter_off = 36 }),
     capabilities = {
         filter = { item = "LiveWater.WaterFilter", capacity = 500 },
         intake = true,

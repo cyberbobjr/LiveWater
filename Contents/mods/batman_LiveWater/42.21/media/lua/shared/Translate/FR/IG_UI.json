@@ -33,5 +33,11 @@
     "IGUI_LWT_Meter_Flow": "10 dernières minutes : %1 L",
     "IGUI_LWT_Meter_Water_clean": "Fluide : eau propre",
     "IGUI_LWT_Meter_Water_tainted": "Fluide : eau non filtrée",
-    "IGUI_LWT_Source_well": "Source : puits (eau propre)"
+    "IGUI_LWT_Source_well": "Source : puits (eau propre)",
+    "IGUI_LWT_Outlet_served": "Eau : envoyée à la maison",
+    "IGUI_LWT_Outlet_idle": "Eau : les réservoirs de la maison sont pleins",
+    "IGUI_LWT_Outlet_no_water": "Eau : aucune dans les tuyaux",
+    "IGUI_LWT_Outlet_unfiltered": "Eau : non filtrée, la maison n'en reçoit pas (montez un filtre)",
+    "IGUI_LWT_Outlet_no_pressure": "Eau : pression insuffisante",
+    "IGUI_LWT_Outlet_closed": "Eau : coupée"
 }

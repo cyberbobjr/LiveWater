@@ -23,7 +23,8 @@ Orientations dans l'ordre S, E, N, W. Axe `ew` = tuyau est-ouest, `ns` = nord-su
 | 64-67 | raccord de baril « Remplir », récipient haut (tonneau, fût) | `barrel_fill` |
 | 68-71 | raccord de baril « Remplir », récipient bas (caisse bâchée) | `barrel_fill_low` |
 | 72-75 | raccord de baril « Pomper » | `barrel_pump` |
-| 76-79 | réservés | — |
+| 76 | réservoir relais invisible des arrivées d'eau (défini sans image, posé par le serveur, E09) | — |
+| 77-79 | réservés | — |
 | 80-103 | jet d'eau d'arroseur, image f (0-5), orientation k : `80 + 4 * f + k` (calque, sans propriétés) | `sprinkler_jet` |
 
 Jet d'eau animé des arroseurs : le moteur n'anime pas le calque d'une tuile ordinaire (base de connaissances,

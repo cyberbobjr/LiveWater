@@ -57,7 +57,9 @@ LiveWater.Events = EventBus.new(EventBus.NAMES)
 -- repairTool, sound, noiseRadius, noiseVolume; hooks switchable, switch, repairable, repair, sound.
 -- Revision 5: capability "meter", conduit field `ports`, outcome.quality of `stepped` per part.
 -- Revision 6: registerSource; the intake reports the quality of the source kind it recorded.
-local API = { revision = 6 }
+-- Revision 7: the `outlet` hook also gives the outlet type; outcome.outlet of `stepped` (what the
+-- step did with an outlet); the outlet keeps it as its state, its look and its information line.
+local API = { revision = 7 }
 LiveWater.API = API
 
 local function answer(call, id, ok, reason, detail)

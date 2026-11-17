@@ -74,7 +74,7 @@ class RegisterSource(unittest.TestCase):
         self.assertEqual(lua.eval('LiveWater.Sources:quality("MyMod:Cistern")'), "clean")
         self.assertEqual(lua.eval('LiveWater.Sources:quality("well")'), "clean")
         self.assertEqual(lua.eval('LiveWater.Sources:quality("water")'), "tainted")
-        self.assertEqual(lua.eval("LiveWater.API.revision"), 6)
+        self.assertGreaterEqual(lua.eval("LiveWater.API.revision"), 6)
 
     def test_refusals(self):
         lua = self.api()

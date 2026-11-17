@@ -33,5 +33,11 @@
     "IGUI_LWT_Meter_Flow": "Last 10 minutes: %1 L",
     "IGUI_LWT_Meter_Water_clean": "Fluid: clean water",
     "IGUI_LWT_Meter_Water_tainted": "Fluid: unfiltered water",
-    "IGUI_LWT_Source_well": "Source: well (clean water)"
+    "IGUI_LWT_Source_well": "Source: well (clean water)",
+    "IGUI_LWT_Outlet_served": "Water: delivered to the house",
+    "IGUI_LWT_Outlet_idle": "Water: the house tanks are full",
+    "IGUI_LWT_Outlet_no_water": "Water: none in the pipes",
+    "IGUI_LWT_Outlet_unfiltered": "Water: unfiltered, the house gets none (fit a filter)",
+    "IGUI_LWT_Outlet_no_pressure": "Water: not enough pressure",
+    "IGUI_LWT_Outlet_closed": "Water: shut off"
 }

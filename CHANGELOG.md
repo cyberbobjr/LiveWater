@@ -17,3 +17,8 @@
 - Water meter: build it and set it inline on a pipe; its "Information" shows the litres that went through it in the
   last 10 minutes and whether the water is clean or unfiltered.
 - Wells: a pond pump set down next to a well draws clean water, which reaches the house without a filter.
+- House water inlet: build it and set it against the outside wall of a house, then run a pipe to it from the pump. The
+  sinks, showers and toilets of that house plumbed with a pipe wrench get running water, up to
+  3 floors above (range set in the sandbox options). A green light shows clean water; an amber light means the pump's
+  water is unfiltered and the house gets none. Fixtures already fed by something else (a Live Wire pump, a barrel) are
+  left alone.

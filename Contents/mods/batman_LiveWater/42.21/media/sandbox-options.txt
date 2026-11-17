@@ -17,3 +17,9 @@ option LiveWater.PumpWearMultiplier
     type = double, min = 0.0, max = 10.0, default = 1.0,
     page = LiveWater, translation = LWT_PumpWearMultiplier,
 }
+
+option LiveWater.InletRange
+{
+    type = integer, min = 1, max = 100, default = 20,
+    page = LiveWater, translation = LWT_InletRange,
+}

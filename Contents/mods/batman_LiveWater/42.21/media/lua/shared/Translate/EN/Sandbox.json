@@ -5,5 +5,7 @@
     "Sandbox_LWT_FilterCapacityMultiplier": "Filter cartridge life",
     "Sandbox_LWT_FilterCapacityMultiplier_tooltip": "Multiplies the litres a filter cartridge cleans before it is worn out (500 L at 1.0).",
     "Sandbox_LWT_PumpWearMultiplier": "Pump wear",
-    "Sandbox_LWT_PumpWearMultiplier_tooltip": "Multiplies the efficiency a pump loses while it runs (about a week of running from 100%% to 0%% at 1.0; 0 = no wear). Below 20%% it may break down."
+    "Sandbox_LWT_PumpWearMultiplier_tooltip": "Multiplies the efficiency a pump loses while it runs (about a week of running from 100%% to 0%% at 1.0; 0 = no wear). Below 20%% it may break down.",
+    "Sandbox_LWT_InletRange": "House inlet range",
+    "Sandbox_LWT_InletRange_tooltip": "How far (in squares) from a house water inlet the plumbed fixtures of its building get water, up to 3 floors above it."
 }

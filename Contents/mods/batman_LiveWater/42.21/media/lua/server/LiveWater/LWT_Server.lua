@@ -7,6 +7,7 @@ if isClient() then return end
 --   EveryTenMinutes                           -> LWT_Clock (the only clock, ADR-001 D09)
 --   OnInitWorld                               -> LWT_Power:register (Live Wire consumers, D20)
 --   LiveWater.Events partAdded / partRemoved  -> LWT_Publisher (sprite by state, mirrored state)
+--   LiveWater.Events waterDelivered / partRemoved -> LWT_Outlets (relay tanks of the house inlets)
 -- No per-frame event (D08). Events before the first OnInitGlobalModData are ignored.
 -- LiveWater.Server holds the services of the current game (nil before), for later adapters.
 
@@ -26,6 +27,9 @@ local GameSettings = require "LiveWater/LWT_GameSettings"
 local GameSounds = require "LiveWater/LWT_GameSounds"
 local Power = require "LiveWater/LWT_Power"
 local Publisher = require "LiveWater/LWT_Publisher"
+local Outlets = require "LiveWater/LWT_Outlets"
+local Relays = require "LiveWater/LWT_Relays"
+local GamePlumbing = require "LiveWater/LWT_GamePlumbing"
 
 -- Command name -> handler file under LiveWater/Commands.
 local COMMANDS = {
@@ -51,9 +55,14 @@ local function randomShare()
     return ZombRandFloat(0, 1)
 end
 
+local function gameHours()
+    return getGameTime():getWorldAgeHours()
+end
+
 local function build()
     local catalog = LiveWater.Parts
-    local registry = Registry.new(ModData.getOrCreate(MODDATA_KEY), catalog)
+    local store = ModData.getOrCreate(MODDATA_KEY)
+    local registry = Registry.new(store, catalog)
     local network = Network.new(catalog)
     local sprites = Sprites.new(network, catalog, world)
     local topology = Topology.new({ registry = registry, network = network, catalog = catalog,
@@ -64,13 +73,18 @@ local function build()
     for name, file in pairs(COMMANDS) do
         commands:register(name, require("LiveWater/Commands/" .. file))
     end
+    local relays = Relays.new({ store = store, plumbing = GamePlumbing.new(), world = world, now = gameHours,
+        setting = GameSettings.scale, catalog = catalog, registry = registry, log = log })
+    local outlets = Outlets.new(catalog)
+    outlets:register("houseInlet", relays)
     local server = {
         registry = registry, network = network, topology = topology, commands = commands,
-        publisher = publisher, power = power,
+        publisher = publisher, power = power, outlets = outlets, relays = relays,
         placement = Placement.new(topology, catalog, log, world),
         clock = Clock.new({ network = network, flow = Flow.new(catalog), catalog = catalog, world = world,
             events = LiveWater.Events, power = power, publisher = publisher, scale = GameSettings.scale,
-            random = randomShare, sources = LiveWater.Sources }),
+            random = randomShare, sources = LiveWater.Sources, chores = { relays },
+            need = function(part) return outlets:need(part) end }),
     }
     local count = topology:rebuild()
     log("LiveWater: " .. count .. " part(s) loaded")
@@ -122,7 +136,14 @@ end
 
 local function onPartRemoved(entry)
     local server = LiveWater.Server
-    if server then server.publisher:forget(entry) end
+    if not server then return end
+    server.publisher:forget(entry)
+    server.outlets:release(entry)
+end
+
+local function onWaterDelivered(part, litres, quality)
+    local server = LiveWater.Server
+    if server then server.outlets:deliver(part, litres, quality) end
 end
 
 local function onTenMinutes()
@@ -134,6 +155,7 @@ Events.OnInitWorld.Add(onInitWorld)
 Events.OnInitGlobalModData.Add(onInit)
 LiveWater.Events.on("partAdded", onPartAdded)
 LiveWater.Events.on("partRemoved", onPartRemoved)
+LiveWater.Events.on("waterDelivered", onWaterDelivered)
 Events.OnObjectAdded.Add(onObjectAdded)
 Events.OnObjectAboutToBeRemoved.Add(onObjectAboutToBeRemoved)
 Events.OnClientCommand.Add(onClientCommand)

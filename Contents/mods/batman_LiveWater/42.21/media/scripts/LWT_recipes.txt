@@ -87,4 +87,23 @@ module LiveWater
             item 1 Base.Mov_LiveWater_FlowMeter,
         }
     }
+
+    craftRecipe LWTBuildHouseInlet
+    {
+        timedAction = Making,
+        time = 200,
+        Tags = AnySurfaceCraft,
+        category = Metalworking,
+        inputs
+        {
+            item 1 tags[base:pipewrench] mode:keep flags[MayDegradeLight],
+            item 2 [LiveWater.PipeSection],
+            item 1 [Base.SmallSheetMetal],
+            item 4 [Base.Screws],
+        }
+        outputs
+        {
+            item 1 Base.Mov_LiveWater_HouseInlet,
+        }
+    }
 }

@@ -21,4 +21,13 @@ module Base
         Weight = 4.0,
         WorldObjectSprite = batman_livewater_01_20,
     }
+
+    item Mov_LiveWater_HouseInlet
+    {
+        DisplayCategory = Furniture,
+        ItemType = base:moveable,
+        Icon = default,
+        Weight = 6.0,
+        WorldObjectSprite = batman_livewater_01_40,
+    }
 }

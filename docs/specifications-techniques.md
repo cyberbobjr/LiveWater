@@ -14,7 +14,7 @@ Contrats précis du mod (objets, commandes réseau, ModData, options sandbox, tr
 | Table Lua globale | `LiveWater` |
 | Préfixes | fichiers `LWT_*.lua`, recettes `LWT`, traductions `*_LWT_*`, ids de pièces `"<Mod>:<Nom>"` |
 
-## API publique (`LiveWater.API`, révision 6)
+## API publique (`LiveWater.API`, révision 7)
 
 Inscription depuis un fichier `shared`, pendant le chargement, avant `OnInitGlobalModData` (ensuite :
 `registration_closed`). Tout refus rend `false` et une raison, et écrit un avertissement en anglais dans la console.
@@ -25,7 +25,7 @@ Inscription depuis un fichier `shared`, pendant le chargement, avant `OnInitGlob
 | `registerCapability(kind, implementation)` | nouvelle capacité ; `kind` nom simple ou `"<Mod>:<nom>"` ; `implementation.define(params)` obligatoire | `invalid_kind`, `duplicate_capability`, `invalid_implementation` |
 | `part(id)` | copie de la définition contrôlée, ou `nil` | — |
 | `registerSource(kind, definition)` | révision 6 : sorte de source d'eau `{ quality = "clean" ou "tainted", flag = drapeau IsoFlagType d'une case voisine, sprites = { sprite d'un objet voisin } }` (au moins `flag` ou `sprites`) ; `kind` nom simple ou `"<Mod>:<Nom>"` | `registration_closed`, `invalid_kind`, `duplicate_source`, `invalid_definition` |
-| `revision` | entier ; 2 : champ `variants`, crochets `look`, `attach`, `power`, `powered`, `stepped`, `output`, `lines` ; 3 : réglage `item` du filtre, crochets `cartridge`, `fit`, `unfit`, `actions` ; 4 : réglages d'entretien de la pompe, crochets `switchable`, `switch`, `repairable`, `repair`, `sound` ; 5 : capacité `meter`, réglage `ports` de `conduit`, qualité par pièce dans le bilan de `stepped` ; 6 : `registerSource`, qualité de l'eau d'une prise selon la sorte de source relevée | — |
+| `revision` | entier ; 2 : champ `variants`, crochets `look`, `attach`, `power`, `powered`, `stepped`, `output`, `lines` ; 3 : réglage `item` du filtre, crochets `cartridge`, `fit`, `unfit`, `actions` ; 4 : réglages d'entretien de la pompe, crochets `switchable`, `switch`, `repairable`, `repair`, `sound` ; 5 : capacité `meter`, réglage `ports` de `conduit`, qualité par pièce dans le bilan de `stepped` ; 6 : `registerSource`, qualité de l'eau d'une prise selon la sorte de source relevée ; 7 : type de sortie en troisième résultat du crochet `outlet`, `outcome.outlet` de `stepped` (ce que le pas a fait d'une sortie), gardé comme état de la sortie | — |
 
 Définition d'une pièce (copiée champ par champ, le reste est ignoré) : `sprites` (`{ [masque] = sprite }`, masques
 0 à 15, redessinés selon les raccords), `variants` (révision 2 : `{ [clé] = { sprite S, E, N, O } }`, sprites
@@ -42,7 +42,7 @@ de capacité, joints par `_` (filtre `filter` + pompe `on` → `filter_on`). Ref
 | `pump` | `ports` 1-4 (4), `pressure` (6), `flow` litres par pas de dix minutes à plein rendement (50, × rendement, × option `PumpFlowMultiplier`), `watts` en marche (250 ; 0 = sans courant) ; révision 4 : `wear` points de rendement perdus par minute de marche (0,01, × option `PumpWearMultiplier`), `breakdownBelow` (20), `breakdownChance` par pas de marche (0,02), `repairItem` (`Base.ScrapMetal`), `repairCount` (2), `repairTool` étiquette facultative, `sound` boucle en marche (`GeneratorLoop`), `noiseRadius` et `noiseVolume` (20, 20) |
 | `valve` | `open` à la pose (`true`) |
 | `filter` | `capacity` litres par cartouche (500, × option `FilterCapacityMultiplier`, notée à la pose de la cartouche) ; `item` (révision 3) : type complet d'une cartouche amovible, le filtre n'agit que cartouche montée |
-| `outlet` | `type` obligatoire ; `pressureCost` et `needsClean` : `houseInlet` 2 et vrai, `sprinkler` 1 et faux, autre type 1 et faux |
+| `outlet` | `type` obligatoire ; `pressureCost` et `needsClean` : `houseInlet` 2 et vrai, `sprinkler` 1 et faux, autre type 1 et faux ; état (révision 7) `{ state }` du dernier pas ; `look` `filtered` ou `unfiltered` pour une sortie qui exige de l'eau propre ; ligne `IGUI_LWT_Outlet_<état>` |
 | `controller` | `mode` : `"manual"` (défaut) ou `"timer"` |
 | `layable` | `item` obligatoire (type complet de l'objet posé, `"LiveWater.PipeSection"`) ; `tool` étiquette d'outil du démontage (`"base:pipewrench"`) |
 
@@ -72,6 +72,7 @@ sorte qui n'est plus inscrite donne le réglage `quality` de la capacité.
 |---|---|---|
 | `LiveWater:PipeGalvanized` | `batman_livewater_01_<masque>`, masques 0 à 15 | `conduit`, `layable` (`LiveWater.PipeSection`, `base:pipewrench`) |
 | `LiveWater:FlowMeter` | `sprites` : 20 (masques 2, 8, 10), 21 (masques 1, 4, 5) ; seul ou en coude, garde le sprite de sa pose | `conduit` (2 ports), `meter` |
+| `LiveWater:HouseInlet` | `variants` : `filtered` 40-43, `unfiltered` 44-47 (S, E, N, O) | `outlet` (`houseInlet`) |
 | `LiveWater:PondPump` | `variants` : `off` 24-27, `on` 28-31, `filter_on` 32-35, `filter_off` 36-39 (S, E, N, O) | `filter` (`LiveWater.WaterFilter`, 500 L), `intake`, `pump` (4 ports, pression 6, 50 L, 250 W, réparation 2 `Base.ScrapMetal` + `base:wrench`, boucle `GeneratorLoop`) |
 
 ## Objets et recettes
@@ -84,6 +85,8 @@ sorte qui n'est plus inscrite donne le réglage `quality` de la capacité.
 | `LWTMakeWaterFilter` | action `Making`, 2 `tags[base:charcoal]`, 2 `Base.RippedSheets` → 1 `LiveWater.WaterFilter` |
 | `Base.Mov_LiveWater_FlowMeter` | `base:moveable`, `WorldObjectSprite = batman_livewater_01_20` (objet `CustomItem` des tuiles 20-21) |
 | `LWTBuildFlowMeter` | action `Making` : tournevis gardé, 1 `LiveWater.PipeSection`, 1 `Base.SmallSheetMetal`, 2 `Base.Screws` → 1 `Base.Mov_LiveWater_FlowMeter` |
+| `Base.Mov_LiveWater_HouseInlet` | `base:moveable`, `WorldObjectSprite = batman_livewater_01_40` (objet `CustomItem` des tuiles 40-47) |
+| `LWTBuildHouseInlet` | action `Making` : clé à tuyau gardée, 2 `LiveWater.PipeSection`, 1 `Base.SmallSheetMetal`, 4 `Base.Screws` → 1 `Base.Mov_LiveWater_HouseInlet` |
 | `Base.Mov_LiveWater_PondPump` | `media/scripts/LWT_moveables.txt`, `base:moveable`, `WorldObjectSprite = batman_livewater_01_24` (objet `CustomItem` des tuiles 24-39) |
 | `LWTBuildPondPump` | Électricité 2, action `MakingElectrical` : tournevis et clé gardés, 1 `Base.MetalPipe`, 2 `Base.SmallSheetMetal`, 3 `Base.ElectronicsScrap`, 2 `Base.ElectricWire`, 4 `Base.Screws` → 1 `Base.Mov_LiveWater_PondPump` ; 15 XP d'Électricité |
 
@@ -94,6 +97,7 @@ sorte qui n'est plus inscrite donne le réglage `quality` de la capacité.
 | `LiveWater.PumpFlowMultiplier` | double 0,1-10, 1,0 | multiplie le débit des pompes (`flow`) |
 | `LiveWater.FilterCapacityMultiplier` | double 0,1-10, 1,0 | multiplie les litres d'une cartouche (`capacity`) |
 | `LiveWater.PumpWearMultiplier` | double 0-10, 1,0 | multiplie la perte de rendement en marche (`wear`) ; 0 = aucune usure |
+| `LiveWater.InletRange` | entier 1-100, 20 | portée (cercle, en cases) d'une arrivée d'eau dans le bâtiment qu'elle touche |
 
 Traductions `Sandbox_LWT_<Option>` et `_tooltip` dans `Sandbox.json`, onglet `Sandbox_LiveWater`.
 
@@ -143,6 +147,8 @@ partie à l'autre) ; le graphe en est reconstruit à ce moment.
 |---|---|
 | `seq` | dernier ordre de pose attribué (jamais réutilisé) |
 | `parts["x,y,z"]` | entrée d'une pièce posée |
+| `relays["x,y,z"]` | relais d'une arrivée d'eau (clé de sa case) : `{ ["x,y,z"] = { x, y, z } }` |
+| `orphans["x,y,z"]` | relais à retirer dès que sa case est chargée : `{ x, y, z, owner }` |
 
 Entrée : `v` (version du schéma, 1), `type` (id `"<Mod>:<Nom>"`), `x`, `y`, `z`, `order` (ordre de pose), `data`
 (`{ [capacité] = état }`, par exemple `valve = { open = false }`, `filter = { used = 120 }`, `intake = { source =
@@ -159,3 +165,16 @@ Masque de raccord : N = 1, E = 2, S = 4, O = 8 ; le sprite affiché est `sprites
 `invalid_handler`), émis sur l'autorité : `partAdded` (entrée), `partRemoved` (entrée), `networkChanged` (id du
 réseau ; au retrait, une fois par réseau resté raccordé), `waterDelivered` (pièce, litres, qualité ; à chaque pas de
 dix minutes, par sortie servie), `valveChanged`. La reconstruction au chargement n'émet rien.
+
+## Réservoirs relais des arrivées d'eau (`LWT_Relays`, D18, D21)
+
+- Objet : `IsoThumpable` traversable, sprite `batman_livewater_01_76` (tuile définie sans image), composant
+  `FluidContainer` de 25 L nommé `LiveWaterRelay`, ModData `LiveWaterRelay = { inlet = "x,y,z", why = raison }` ;
+  posé un niveau au-dessus d'un point d'eau (le moteur y cherche la source : case au-dessus puis les 8 autour).
+- Points d'eau servis : sprite `waterPiped`, raccordés (`getUsesExternalWaterSource`) ou raccordables (ModData
+  `canBeWaterPiped`, ou d'origine après la coupure de l'eau de la ville), dans la zone de l'arrivée d'eau
+  (`LWT_InletArea`). Un point d'eau dont la source n'est pas un relais de LiveWater est laissé tel quel ; un relais de
+  Live Wire (`LiveWireRelay`) n'est jamais posé, rempli ni retiré.
+- Besoin de l'arrivée d'eau = place libre de ses relais qui servent un point d'eau raccordé ; l'eau livrée les remplit
+  (eau propre). Points d'eau relevés à la pose puis toutes les heures de jeu ; relais retirés avec l'arrivée d'eau.
+

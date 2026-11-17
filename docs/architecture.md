@@ -25,7 +25,11 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
   `outlet`, `controller`, `layable`, `meter`), réglages et valeurs par défaut de la capacité.
 - `Parts/LWT_Part<Nom>.lua` : un fichier par pièce de LiveWater, inscrite par l'API publique comme celle d'un autre
   mod (`LWT_PartPipe.lua` : `LiveWater:PipeGalvanized` ; `LWT_PartPondPump.lua` : `LiveWater:PondPump` ; `LWT_PartFlowMeter.lua` :
-  `LiveWater:FlowMeter`).
+  `LiveWater:FlowMeter` ; `LWT_PartHouseInlet.lua` : `LiveWater:HouseInlet`). `LWT_Tiles.lua` : noms des sprites du
+  tileset et `variants` d'une pièce dessinée par état et orientation.
+- `LWT_InletArea.lua` (pur) : cases servies par une arrivée d'eau (bâtiment de la carte touché, cercle de portée,
+  jusqu'à 3 étages au-dessus), lues par une sonde injectée ; `LWT_RelayPlan.lua` (pur) : relais voulus au-dessus des
+  points d'eau (partage 3 × 3, sources d'autrui laissées).
 - `LWT_Sources.lua` (pur) : registre des sortes de source d'eau (données : qualité, drapeau d'une case voisine ou
   sprites d'un objet voisin) ; `Sources/LWT_Source<Nom>.lua` : une sorte par fichier (`water` : eau naturelle,
   croupie ; `well` : puits vanilla, propre) ; un autre mod en ajoute par `LiveWater.API.registerSource`. La capacité
@@ -68,10 +72,15 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
 - `LWT_Commands.lua` : répartiteur, table de gestionnaires par nom (un fichier par commande sous `Commands/`, plus
   `LWT_CmdChecks.lua` pour les contrôles d'arguments et de portée, `LWT_CmdCartridge.lua` pour ce que partagent les
 commandes du filtre) ; un refus est dit au joueur par clé de traduction.
-- `LWT_Clock.lua` : pas de dix minutes de chaque réseau éveillé (une pièce sous pression sur une case chargée) :
+- `LWT_Clock.lua` : tâches injectées (`chores`, travail borné du même pas), puis pas de dix minutes de chaque réseau éveillé (une pièce sous pression sur une case chargée) :
   courant de chaque pièce qui en a besoin (port `power`, crochet `powered`), distribution, crochet `stepped` de chaque
   membre (litres passés), présentation (port `publisher`), `waterDelivered` pour chaque sortie servie ; besoin des
   sorties injecté (0 par défaut), multiplicateurs sandbox par `scale`.
+- `LWT_Outlets.lua` : où va l'eau d'une sortie, par type de sortie (gestionnaire : `need`, `deliver`, `release`) ;
+  besoin injecté dans l'horloge, `waterDelivered` et `partRemoved` relayés par la racine de composition.
+- `LWT_Relays.lua` : réservoirs relais des arrivées d'eau (gestionnaire `houseInlet` et tâche de l'horloge) : pose,
+  retrait, besoin, remplissage, relais en attente d'une case chargée (`orphans`) ; `LWT_GamePlumbing.lua` : adaptateur
+  du jeu (bâtiment, points d'eau, objets relais).
 - `LWT_Power.lua` : seul adaptateur du courant. À `OnInitWorld`, si `LiveWire.API.revision >= 6`, inscrit chaque type
   qui a besoin de courant comme consommateur de Live Wire (`powerConsumption`, `display`, `summary` lus dans l'état
   recopié sur l'objet) ; `powered(part)` : `consumerPowered` de Live Wire, sinon la règle vanilla de la case.

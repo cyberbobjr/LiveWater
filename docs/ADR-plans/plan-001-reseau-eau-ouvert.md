@@ -12,7 +12,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 | E06 | Tuiles provisoires : 16 tuyaux, robinet, arroseurs, arrivée d'eau, pompe, filtre ; planche de présentation validée par l'utilisateur | Terminée (2026-11-18) | E01 | D12, D23 | L | E02-E05 |
 | E07 | Adaptateurs serveur : pose et retrait, raccord automatique des sprites, commandes, horloge `EveryTenMinutes` | Terminée (2026-11-18) | E05, E06 | D08-D12 | L | — |
 | E08 | Pompe d'étang et électricité : `registerConsumer` (`display`, `summary`), repli vanilla | Terminée (2026-11-18) | E07 | D16, D20 | M | E09 |
-| E09 | Arrivée d'eau de la maison : réservoirs invisibles `LiveWaterRelay`, cohabitation Live Wire | À faire | E07 | D18, D21 | M | E08 |
+| E09 | Arrivée d'eau de la maison : réservoirs invisibles `LiveWaterRelay`, cohabitation Live Wire | Terminée (2026-11-18) | E07 | D18, D21 | M | E08 |
 | E10 | Filtre : pièce, usure au volume, remplacement | Terminée (2026-11-18) | E08, E09, E06 | D17, D23 | S | E11 |
 | E11 | Arroseur manuel : vanne, rayon, doses de 200 ml | À faire | E07 | D19 | M | E10 |
 | E12 | Arroseur automatique : recette (niveau d'Électricité), minuterie consommatrice | À faire | E11, E08 | D19, D20 | M | — |
@@ -252,6 +252,44 @@ Non testé en jeu.
 Fichiers : `shared/LiveWater/Parts/LWT_PartHouseInlet.lua`, `server/LiveWater/LWT_Relays.lua`. Tests rouges : points
 d'eau raccordés du bâtiment touché, portée et étages ; point déjà alimenté laissé ; relais de Live Wire jamais touchés ;
 retrait propre des relais.
+
+Clôture (2026-11-18). Fichiers : `Parts/LWT_PartHouseInlet.lua` (`LiveWater:HouseInlet`, `outlet` `houseInlet` ;
+`variants` `filtered` 40-43 et `unfiltered` 44-47), `LWT_Tiles.lua` (noms des sprites et `variants` d'après le premier
+index, partagé avec la pompe d'étang), `Capabilities/LWT_CapOutlet.lua` (révision 7 : type de sortie en troisième
+résultat du crochet `outlet`, état `state` du dernier pas, `look` `filtered`/`unfiltered` pour une sortie qui exige de
+l'eau propre, ligne `IGUI_LWT_Outlet_<état>`), `LWT_InletArea.lua` (pur : bâtiment de la carte touché, cercle de
+portée, jusqu'à 3 étages au-dessus), `LWT_RelayPlan.lua` (pur : relais voulus), `LWT_API.lua` et
+`LWT_Capabilities.lua` (révision 7) ; serveur `LWT_Outlets.lua` (gestionnaire par type de sortie : besoin, livraison,
+retrait), `LWT_Relays.lua` (service des relais, tâche de l'horloge), `LWT_GamePlumbing.lua` (adaptateur : bâtiment,
+points d'eau, relais), `LWT_Clock.lua` (`chores` avant les réseaux, `outcome.outlet`), `LWT_Server.lua` (besoin des
+sorties, `waterDelivered` et `partRemoved` vers `LWT_Outlets`) ; `LWT_moveables.txt`
+(`Base.Mov_LiveWater_HouseInlet`), recette `LWTBuildHouseInlet`, option `InletRange`, traductions EN et FR ;
+tests `tests/test_inlet.py` ; `test_api.py` (révision 7), `test_well.py` (révision au moins 6).
+Choix faits sans l'utilisateur :
+- réservoir relais : tuile réservée `batman_livewater_01_76`, définie sans image dans le `.tiles` (invisible, même
+  procédé que le relais de Live Wire), `IsoThumpable` traversable avec un `FluidContainer` de 25 L nommé
+  `LiveWaterRelay`, ModData `LiveWaterRelay = { inlet = "x,y,z" }` ;
+- un relais par point d'eau, posé un niveau au-dessus, partagé par les points d'eau voisins (le moteur cherche la
+  source sur la case au-dessus puis les 8 autour, `IsoObject.FindExternalWaterSource`, Java 42.22) ; posé aussi
+  au-dessus d'un point d'eau pas encore raccordé (posé par un joueur, ou d'origine après la coupure de l'eau de la
+  ville), car le menu vanilla « Raccorder » n'apparaît qu'avec une source au-dessus ; seuls les relais qui servent un
+  point d'eau raccordé sont remplis ;
+- point d'eau déjà servi par une autre source (relais de Live Wire, baril vanilla, autre mod) : aucun relais, rien
+  touché (D21) ; un relais d'une autre arrivée d'eau de LiveWater est laissé à celle-ci ;
+- portée `LiveWater.InletRange` 20 cases par défaut (cercle autour de l'arrivée d'eau, limité au bâtiment) ; points
+  d'eau relevés à la pose de l'arrivée d'eau puis toutes les heures de jeu, à la tâche de dix minutes, seulement pour
+  les arrivées d'eau sur une case chargée ;
+- pose libre : aucune règle de pose ; une arrivée d'eau qui ne touche aucun bâtiment de la carte ne dessert rien
+  (base du joueur : E26) ;
+- retrait : les relais de l'arrivée d'eau partent avec elle ; sur une case non chargée, ils restent notés et sont
+  retirés au premier pas où la case est chargée ;
+- eau non filtrée : la sortie est « eau non filtrée » (sprite ambre, ligne d'information) et ne remplit rien (D17,
+  déjà porté par `LWT_Flow`) ; le robinet montre l'eau de son relais (25 L au plus), pas un total (L03 : réserve
+  partagée traitée à E23).
+Preuves :
+- `python -B -m unittest discover -s tests` → `Ran 163 tests` … `OK` ;
+- `python -B tools/check_mod.py` → `OK: 62 Lua file(s) checked`.
+Non testé en jeu.
 
 ### E10 — Filtre
 

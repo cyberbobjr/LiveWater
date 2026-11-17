@@ -40,6 +40,9 @@
 --                         cannot be done now ("running", "not_needed") or nil
 --   repair(p, d)          the repair is done (d created)
 --   sound(p, d)           sound loop name, noise radius and volume while it makes noise, else nil
+-- Revision 7 (house inlet): outlet(p, d) also gives the outlet type (third result); the outcome of
+--   stepped carries `outlet` = what the step did with an outlet ("served", "idle", "closed",
+--   "no_water", "unfiltered", "no_pressure"; nil for a part that is not one).
 -- ctx is the context of the step: { need, scale = function(optionName) -> multiplier,
 -- random = function() -> 0..1 (breakdowns; none without it), sources = registry of source kinds
 -- (revision 6, LWT_Sources) }.

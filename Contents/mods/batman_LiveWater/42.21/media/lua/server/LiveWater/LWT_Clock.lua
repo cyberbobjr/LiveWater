@@ -7,11 +7,13 @@ if isClient() then return end
 --   3. every member hears the outcome (`stepped` hook: litres through it), then is presented
 --      (sprite by state, mirrored state: publisher port);
 --   4. each outlet served announces waterDelivered (part, litres, quality).
+-- Before the networks, every chore (optional list of objects with tick()) does its own bounded
+-- ten-minute work on the same clock (relay tanks of the house inlets, LWT_Relays): no second clock.
 -- No game API here; dependencies are injected: { network, flow, catalog, world (port with
 -- isLoaded(x, y, z)), events, need = function(part) -> litres (default 0), power (optional
 -- port: powered(part) -> bool), publisher (optional port: present(part, stepped)), scale
 -- (optional: function(optionName) -> sandbox multiplier), random (optional: function() -> 0..1,
--- breakdowns), sources (optional: registry of source kinds, LWT_Sources) }.
+-- breakdowns), sources (optional: registry of source kinds, LWT_Sources), chores (optional list) }.
 
 local Grid = require "LiveWater/LWT_Grid"
 
@@ -25,7 +27,7 @@ end
 function Clock.new(deps)
     return setmetatable({
         network = deps.network, flow = deps.flow, catalog = deps.catalog, world = deps.world,
-        events = deps.events, power = deps.power, publisher = deps.publisher,
+        events = deps.events, power = deps.power, publisher = deps.publisher, chores = deps.chores or {},
         ctx = { need = deps.need or noNeed, scale = deps.scale, random = deps.random, sources = deps.sources },
     }, Clock)
 end
@@ -58,7 +60,9 @@ function Clock:conclude(members, result)
     for i = 1, #members do
         local part = members[i]
         local key = Grid.key(part.x, part.y, part.z)
-        local outcome = { through = result.through[key] or 0, quality = result.qualityAt[key] or result.quality }
+        local out = result.at[key]
+        local outcome = { through = result.through[key] or 0, quality = result.qualityAt[key] or result.quality,
+            outlet = out and out.state }
         self.catalog:call(part, "stepped", outcome, self.ctx)
         if self.publisher then self.publisher:present(part, true) end
     end
@@ -66,6 +70,7 @@ end
 
 -- One step of every awake network. Returns the list of the network ids stepped.
 function Clock:tick()
+    for i = 1, #self.chores do self.chores[i]:tick() end
     local stepped, ids = {}, self.network:ids()
     for i = 1, #ids do
         local id = ids[i]
