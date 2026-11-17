@@ -11,4 +11,13 @@ function Filter.define(params)
     return Check.fields(params, SPEC)
 end
 
+-- State: { used = litres filtered by the current cartridge }.
+function Filter.purifies(p, d)
+    return (d and d.used or 0) < p.capacity
+end
+
+function Filter.wear(p, d, litres)
+    d.used = math.min(p.capacity, (d.used or 0) + litres)
+end
+
 return Filter

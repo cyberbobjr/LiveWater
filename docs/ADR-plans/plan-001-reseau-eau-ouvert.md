@@ -7,7 +7,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 | E01 | Squelette du projet : dépôt, `workshop.txt`, `mod.info` (`incompatible=` de Q09), documents obligatoires, banc de tests hors jeu | Terminée (2026-11-17) | ADR accepté | D22 | S | — |
 | E02 | API publique : registres des pièces et capacités, validation, scellé, révision, événements | Terminée (2026-11-17) | E01 | D01-D07 | M | — |
 | E03 | Domaine : graphe du réseau, masques de raccord, ports, vannes, fusion de réseaux | Terminée (2026-11-17) | E02 | D10, D12-D15 | M | E04 |
-| E04 | Domaine : pas de distribution, pression, qualité, filtre, besoin des sorties | À faire | E02 | D09, D14, D16, D17 | M | E03 |
+| E04 | Domaine : pas de distribution, pression, qualité, filtre, besoin des sorties | Terminée (2026-11-17) | E02 | D09, D14, D16, D17 | M | E03 |
 | E05 | Persistance : registre global versionné, pièces de type inconnu conservées | À faire | E03 | D03, D04, D10 | M | E06 |
 | E06 | Tuiles provisoires : 16 tuyaux, robinet, arroseurs, arrivée d'eau, pompe, filtre ; planche de présentation validée par l'utilisateur | À valider (planche soumise le 2026-11-17, intégration au mod après validation) | E01 | D12, D23 | L | E02-E05 |
 | E07 | Adaptateurs serveur : pose et retrait, raccord automatique des sprites, commandes, horloge `EveryTenMinutes` | À faire | E05, E06 | D08-D12 | L | — |
@@ -92,6 +92,20 @@ Preuves :
 Fichiers : `shared/LiveWater/LWT_Flow.lua` (pur). Tests rouges : réserve de pression consommée de la plus proche à la
 plus lointaine, sorties « sans pression » ; débit par pas de dix minutes ; eau croupie refusée par l'arrivée d'eau sans
 filtre et acceptée par l'arroseur ; filtre qui purifie et s'use au volume ; aucune sortie servie sans besoin.
+
+Clôture (2026-11-17). Fichiers : `shared/LiveWater/LWT_Flow.lua` (pas pur, catalogue injecté, besoin des sorties
+fourni par `ctx.need(part)`), `LWT_Parts.lua` (`call`, qui crée l'état d'une capacité avant un crochet qui l'écrit),
+`LWT_Capabilities.lua` (crochets `supply`, `source`, `outlet`, `purifies`, `wear`), crochets dans `LWT_CapPump`,
+`LWT_CapIntake` (point d'extension `available`, D16), `LWT_CapOutlet`, `LWT_CapFilter`, `tests/test_flow.py`.
+Lectures retenues, au plus près du texte de D14 et D17 : dès qu'une sortie manque de pression, toutes les suivantes
+qui ont besoin d'eau sont « sans pression », même une moins chère (« les suivantes ») ; une sortie fermée, sans
+besoin ou « eau non filtrée » ne prend ni eau ni pression ; l'eau du réseau est croupie dès qu'une source l'est ; le
+premier filtre en état sur le chemin depuis la pompe (pompe et sortie comprises) rend propre toute l'eau qui y passe
+et s'use de ce volume, la dernière livraison d'une cartouche presque usée passant propre en entier (usure plafonnée
+à la capacité) ; le débit d'une pièce sans source (futur surpresseur) ne compte pas, sa pression oui.
+Preuves :
+- `python -B -m unittest discover -s tests` → `Ran 41 tests` … `OK` ;
+- `python -B tools/check_mod.py` → `OK: 15 Lua file(s) checked`.
 
 ### E05 — Persistance
 

@@ -135,6 +135,26 @@ function Parts:first(part, hook, ...)
     return nil
 end
 
+-- Call `hook` on every capability of the part that has it, giving each its own state table
+-- (created under part.data[kind] when absent): for hooks that change the state.
+function Parts:call(part, hook, ...)
+    local def = self.defs[part.type]
+    if not def then return end
+    for i = 1, #def.caps do
+        local c = def.caps[i]
+        local fn = c.impl[hook]
+        if fn then
+            part.data = part.data or {}
+            local state = part.data[c.kind]
+            if state == nil then
+                state = {}
+                part.data[c.kind] = state
+            end
+            fn(c.params, state, ...)
+        end
+    end
+end
+
 -- Public description of a part type (a copy), or nil.
 function Parts:describe(id)
     local def = self.defs[id]

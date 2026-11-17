@@ -9,10 +9,16 @@
 --   blocks(p, d)       the part cuts the water now, e.g. a closed valve (network)
 --   pressurizes(p, d)  the part puts its network under pressure: water starts there (network)
 --   ports(p, d)        most pipes that may leave the part (network)
+--   supply(p, d)       pressure and litres per ten-minute step the part gives (flow)
+--   source(p, d, ctx)  quality of the water the part takes ("clean", "tainted"), nil when dry (flow)
+--   outlet(p, d)       pressure cost and "needs clean water" of a part water leaves by (flow)
+--   purifies(p, d)     the part makes the water going through it clean now (flow)
+--   wear(p, d, litres) litres went through the part; d is created when absent (flow)
 
 local Check = require "LiveWater/LWT_Check"
 
-local HOOKS = { "define", "carries", "blocks", "pressurizes", "ports" }
+local HOOKS = { "define", "carries", "blocks", "pressurizes", "ports", "supply", "source", "outlet", "purifies",
+    "wear" }
 
 local Capabilities = {}
 Capabilities.__index = Capabilities

@@ -25,4 +25,8 @@ function Outlet.define(params)
     return out, field
 end
 
+function Outlet.outlet(p)
+    return p.pressureCost, p.needsClean
+end
+
 return Outlet

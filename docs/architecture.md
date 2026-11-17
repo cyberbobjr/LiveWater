@@ -31,6 +31,9 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
   ports, fusion et scission des réseaux, masque et sprite, eau partie des pièces qui mettent sous pression (distance
   en tuyau, ordre de service : distance puis ordre de pose). Le registre des pièces lui est injecté comme catalogue ;
   il interroge des crochets (`carries`, `blocks`, `pressurizes`, `ports`) et ne nomme aucune capacité.
+- `LWT_Flow.lua` (domaine pur) : un pas de dix minutes d'un réseau : pression et débit additionnés des pompes,
+  qualité, sorties servies dans l'ordre de service selon leur besoin, réserve de pression, filtre sur le chemin et
+  son usure. Crochets `supply`, `source`, `outlet`, `purifies`, `wear` ; le besoin vient des adaptateurs.
 
 À venir : `server/LiveWater/` (autorité, persistance, horloge `EveryTenMinutes`), `client/LiveWater/` (menus, vue).
 

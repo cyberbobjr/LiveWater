@@ -25,4 +25,8 @@ function Pump.ports(p)
     return p.ports
 end
 
+function Pump.supply(p)
+    return p.pressure, p.flow
+end
+
 return Pump
