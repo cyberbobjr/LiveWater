@@ -10,7 +10,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 | E04 | Domaine : pas de distribution, pression, qualité, filtre, besoin des sorties | Terminée (2026-11-17) | E02 | D09, D14, D16, D17 | M | E03 |
 | E05 | Persistance : registre global versionné, pièces de type inconnu conservées | Terminée (2026-11-17) | E03 | D03, D04, D10 | M | E06 |
 | E06 | Tuiles provisoires : 16 tuyaux, robinet, arroseurs, arrivée d'eau, pompe, filtre ; planche de présentation validée par l'utilisateur | Terminée (2026-11-18) | E01 | D12, D23 | L | E02-E05 |
-| E07 | Adaptateurs serveur : pose et retrait, raccord automatique des sprites, commandes, horloge `EveryTenMinutes` | À faire | E05, E06 | D08-D12 | L | — |
+| E07 | Adaptateurs serveur : pose et retrait, raccord automatique des sprites, commandes, horloge `EveryTenMinutes` | Terminée (2026-11-18) | E05, E06 | D08-D12 | L | — |
 | E08 | Pompe d'étang et électricité : `registerConsumer` (`display`, `summary`), repli vanilla | À faire | E07 | D16, D20 | M | E09 |
 | E09 | Arrivée d'eau de la maison : réservoirs invisibles `LiveWaterRelay`, cohabitation Live Wire | À faire | E07 | D18, D21 | M | E08 |
 | E10 | Filtre : pièce, usure au volume, remplacement | À faire | E08, E09, E06 | D17, D23 | S | E11 |
@@ -167,6 +167,42 @@ Fichiers : `server/LiveWater/LWT_Placement.lua`, `LWT_Sprites.lua`,
 `LWT_Commands.lua`, `LWT_Clock.lua`. Pose et retrait (autorité), sprite recalculé pour la pièce et ses voisins
 (`setSpriteFromName`, `transmitUpdatedSpriteToClients`), commandes contrôlées côté serveur, un seul abonné
 `EveryTenMinutes`. Contrôle : aucun `Events.OnTick`/`OnPlayerUpdate`/`OnRender*`/`OnPostRender` dans le mod (`rg`).
+
+Clôture (2026-11-18). Fichiers : `server/LiveWater/LWT_Server.lua` (racine de composition sur l'autorité : services
+construits à `OnInitGlobalModData` sur `ModData.getOrCreate("LiveWater")`, graphe reconstruit du registre ; abonnés
+`OnObjectAdded`, `OnObjectAboutToBeRemoved`, `OnClientCommand`, et le seul `EveryTenMinutes`), `LWT_Topology.lua`
+(registre et graphe changés ensemble, événements `partAdded`, `partRemoved`, `networkChanged`), `LWT_Placement.lua`
+(tuile reconnue par son sprite via le catalogue), `LWT_Sprites.lua` (pièce et quatre voisins, appliqué seulement s'il
+change), `LWT_Commands.lua` (répartiteur, table de gestionnaires, refus dits au joueur par clé de traduction),
+`Commands/LWT_CmdLay.lua`, `LWT_CmdDismantle.lua`, `LWT_CmdChecks.lua`, `LWT_Clock.lua` (réseaux dont une pièce sous
+pression est sur une case chargée, besoin des sorties injecté, 0 par défaut, `waterDelivered`), adaptateurs du jeu
+`LWT_GameWorld.lua` et `LWT_GamePlayers.lua` ; `shared/LiveWater/Parts/LWT_PartPipe.lua` (`LiveWater:PipeGalvanized`,
+sprites `batman_livewater_01_0` à `_15`), `Capabilities/LWT_CapLayable.lua`, `LWT_Protocol.lua`, `LWT_Notice.lua`,
+crochet `layable` (`LWT_Capabilities.lua`), `Parts:typeOfSprite`, `hasShape`, `ids` (`LWT_Parts.lua`),
+`Network:canAdd`, `ids` (`LWT_Network.lua`) ; menu minimal `client/LiveWater/LWT_PipeMenu.lua` et
+`LWT_NoticeClient.lua` ; `media/scripts/LWT_items.txt` (`LiveWater.PipeSection`), `LWT_recipes.txt`
+(`LWTCutPipeSections` : un `Base.MetalPipe` et un outil `tags[base:metalsaw]` gardé donnent 4 sections) ;
+traductions EN et FR `IG_UI.json`, `ContextMenu.json`, `Recipes.json`, `ItemName.json` (clé `LiveWater.PipeSection`
+seulement) ; tests `test_placement.py`, `test_sprites.py`, `test_commands.py`, `test_clock.py`, doublures
+`tests/lwt_fakes.py`.
+Lectures retenues :
+- « posé avec un objet » est une capacité `layable` (`item`, `tool` = étiquette d'outil, `base:pipewrench` par
+  défaut, Java 42.22 `ItemTag.PIPE_WRENCH`), pas une liste de tuyaux : un tuyau d'un autre matériau se pose par la
+  même commande. La pose n'exige aucun outil (Q01 ne nomme que la clé au démontage) ;
+- un type qui ne définit pas de sprite pour le masque calculé garde le sprite posé (orientation d'un meuble) : seules
+  les formes déclarées (tuyaux) sont redessinées ;
+- un meuble posé que le graphe refuse (case occupée, ports pleins) reste un décor, signalé dans la console ; le refus
+  à la pose avec message (D14) relève de l'interface (E13) ;
+- portée d'action : 3 cases (distance de Tchebychev) sur l'étage du joueur ; le menu minimal envoie la commande sans
+  marcher ni action chronométrée (E13) ; refus montrés en note au-dessus du joueur (solo : directement ;
+  serveur : commande `notice`) ;
+- la section de tuyau n'a pas encore de modèle 3D au sol (icône seulement).
+Preuves :
+- `python -B -m unittest discover -s tests` → `Ran 88 tests` … `OK` ;
+- `python -B tools/check_mod.py` → `OK: 33 Lua file(s) checked` ;
+- `rg "Events\.(OnTick|OnTickEvenPaused|OnPlayerUpdate|OnRender\w*|OnPostRender|OnPreUIDraw)"` dans `media/lua` :
+  aucune ligne ; un seul `Events.EveryTenMinutes.Add` (`LWT_Server.lua`).
+Non testé en jeu.
 
 ### E08 — Pompe d'étang et électricité
 

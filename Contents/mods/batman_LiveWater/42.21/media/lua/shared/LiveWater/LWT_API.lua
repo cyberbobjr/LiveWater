@@ -20,6 +20,7 @@ local STARTING_CAPABILITIES = {
     filter = "LWT_CapFilter",
     outlet = "LWT_CapOutlet",
     controller = "LWT_CapController",
+    layable = "LWT_CapLayable",
 }
 
 LiveWater = LiveWater or {}

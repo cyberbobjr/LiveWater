@@ -104,6 +104,26 @@ function Parts:sprite(id, mask)
     return def.sprites[mask] or def.sprites[0]
 end
 
+-- Does the type draw its own sprite for this mask (a pipe shape)? A type that does not keeps
+-- the sprite it was placed with, e.g. an orientation chosen at placement.
+function Parts:hasShape(id, mask)
+    local def = self.defs[id]
+    return def ~= nil and def.sprites[mask] ~= nil
+end
+
+-- Type id a sprite belongs to, or nil (sprites are unique among types).
+function Parts:typeOfSprite(name)
+    return self.bySprite[name]
+end
+
+-- Registered type ids, sorted.
+function Parts:ids()
+    local list = {}
+    for id in pairs(self.defs) do list[#list + 1] = id end
+    table.sort(list)
+    return list
+end
+
 local function stateOf(part, kind)
     return part.data and part.data[kind]
 end

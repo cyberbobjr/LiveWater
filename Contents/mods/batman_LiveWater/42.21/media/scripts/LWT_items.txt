@@ -1,0 +1,18 @@
+module LiveWater
+{
+    imports
+    {
+        Base,
+    }
+
+    /* Inventory items. Pipes are not moveables: one PipeSection is laid per square and given
+       back when the pipe is dismantled with a pipe wrench (ADR-001 Q01). */
+
+    item PipeSection
+    {
+        DisplayCategory = Material,
+        ItemType = base:normal,
+        Weight = 0.4,
+        Icon = LWT_PipeSection,
+    }
+}

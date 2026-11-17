@@ -1,0 +1,12 @@
+{
+    "IGUI_LWT_Invalid": "Impossible ici.",
+    "IGUI_LWT_NotLayable": "Cette pièce ne se pose pas à la main.",
+    "IGUI_LWT_TooFar": "Trop loin.",
+    "IGUI_LWT_Blocked": "Pas de place pour un tuyau ici.",
+    "IGUI_LWT_Occupied": "Quelque chose est déjà raccordé ici.",
+    "IGUI_LWT_PortsFull": "Plus aucun raccord libre sur cette pièce.",
+    "IGUI_LWT_NoItem": "Il vous faut une section de tuyau.",
+    "IGUI_LWT_NeedTool": "Il vous faut une clé à tuyau.",
+    "IGUI_LWT_NothingHere": "Rien à démonter ici.",
+    "IGUI_LWT_Refused": "Impossible."
+}

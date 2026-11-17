@@ -1,0 +1,12 @@
+{
+    "IGUI_LWT_Invalid": "That cannot be done here.",
+    "IGUI_LWT_NotLayable": "This part is not laid by hand.",
+    "IGUI_LWT_TooFar": "Too far away.",
+    "IGUI_LWT_Blocked": "No room for a pipe here.",
+    "IGUI_LWT_Occupied": "Something is already connected here.",
+    "IGUI_LWT_PortsFull": "No free connection left on that part.",
+    "IGUI_LWT_NoItem": "You need a pipe section.",
+    "IGUI_LWT_NeedTool": "You need a pipe wrench.",
+    "IGUI_LWT_NothingHere": "There is nothing to dismantle here.",
+    "IGUI_LWT_Refused": "That cannot be done."
+}

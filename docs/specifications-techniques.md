@@ -39,14 +39,47 @@ Définition d'une pièce (copiée champ par champ, le reste est ignoré) : `spri
 | `filter` | `capacity` litres par cartouche (500) |
 | `outlet` | `type` obligatoire ; `pressureCost` et `needsClean` : `houseInlet` 2 et vrai, `sprinkler` 1 et faux, autre type 1 et faux |
 | `controller` | `mode` : `"manual"` (défaut) ou `"timer"` |
+| `layable` | `item` obligatoire (type complet de l'objet posé, `"LiveWater.PipeSection"`) ; `tool` étiquette d'outil du démontage (`"base:pipewrench"`) |
 
 Crochets d'une capacité (tous facultatifs sauf `define`), appelés avec les réglages contrôlés puis l'état de la
 pièce pour cette capacité (`part.data[kind]`, éventuellement `nil`) : `carries` (l'eau traverse), `blocks` (coupe
 l'eau, vanne fermée), `pressurizes` (l'eau part de là), `ports` (nombre maximal de tuyaux raccordés), `supply`
 (pression et litres par pas), `source` (qualité `"clean"` ou `"tainted"`, `nil` à sec), `outlet` (coût de pression,
-eau propre exigée), `purifies` (le filtre agit), `wear(p, d, litres)` (seul crochet qui écrit son état).
+eau propre exigée), `purifies` (le filtre agit), `wear(p, d, litres)` (seul crochet qui écrit son état), `layable` (objet posé et outil
+du démontage).
 
-## Registre persistant (ModData globale, `LWT_Registry`)
+## Pièces de LiveWater
+
+| Id | Sprites | Capacités |
+|---|---|---|
+| `LiveWater:PipeGalvanized` | `batman_livewater_01_<masque>`, masques 0 à 15 | `conduit`, `layable` (`LiveWater.PipeSection`, `base:pipewrench`) |
+
+## Objets et recettes
+
+| Élément | Contrat |
+|---|---|
+| `LiveWater.PipeSection` | `media/scripts/LWT_items.txt`, `base:normal`, 0,4 kg, icône `Item_LWT_PipeSection` ; une par case de tuyau |
+| `LWTCutPipeSections` | `media/scripts/LWT_recipes.txt` : 1 `Base.MetalPipe` et un outil `tags[base:metalsaw]` gardé donnent 4 `LiveWater.PipeSection` (action `SawSmallItemMetal`) |
+
+## Commandes réseau (module `LiveWater`, `LWT_Protocol`)
+
+Tout argument est recontrôlé sur l'autorité. Portée : 3 cases (Tchebychev) sur l'étage du joueur.
+
+| Sens | Commande | Arguments | Contrôles, dans l'ordre (raison du refus) | Effet |
+|---|---|---|---|---|
+| client → serveur | `lay` | `x`, `y`, `z` entiers, `part` id | arguments (`invalid`), type `layable` (`not_layable`), portée (`too_far`), case chargée (`not_loaded`), case libre : sol, ni eau, ni solide, ni arbre (`blocked`), case sans pièce (`occupied`), ports (`ports_full`), objet dans l'inventaire (`no_item`) | objet retiré, tuile `sprites[0]` créée, pièce ajoutée, sprites recalculés |
+| client → serveur | `dismantle` | `x`, `y`, `z` entiers | arguments (`invalid`), pièce présente (`nothing_here`), type `layable` (`not_layable`), portée (`too_far`), outil de l'étiquette (`need_tool`) | pièce retirée, tuile retirée, objet rendu (au sol si trop lourd) |
+| serveur → client | `notice` | `key` (clé de traduction) | — | note au-dessus du joueur (en solo, affichée directement) |
+
+Clés des refus (`IG_UI.json`) : `IGUI_LWT_Invalid`, `IGUI_LWT_NotLayable`, `IGUI_LWT_TooFar` (`too_far`,
+`not_loaded`), `IGUI_LWT_Blocked`, `IGUI_LWT_Occupied`, `IGUI_LWT_PortsFull`, `IGUI_LWT_NoItem`, `IGUI_LWT_NeedTool`,
+`IGUI_LWT_NothingHere`, autre raison `IGUI_LWT_Refused`. Menu : `ContextMenu_LWT_Lay`, `ContextMenu_LWT_Dismantle`
+(`%1` = nom de l'objet posé).
+
+## Registre persistant (ModData globale `LiveWater`, `LWT_Registry`)
+
+Table `ModData.getOrCreate("LiveWater")`, lue sur l'autorité à chaque `OnInitGlobalModData` (jamais gardée d'une
+partie à l'autre) ; le graphe en est reconstruit à ce moment.
 
 | Clé | Contenu |
 |---|---|
@@ -64,5 +97,6 @@ conservé tel quel. Une pièce dont le type n'est pas inscrit reste dans le regi
 Masque de raccord : N = 1, E = 2, S = 4, O = 8 ; le sprite affiché est `sprites[masque]`, sinon `sprites[0]`.
 
 Événements `LiveWater.Events.on(nom, fn)` / `off(nom, fn)` (rendent `true`, ou `false` et `unknown_event`,
-`invalid_handler`), émis sur l'autorité : `partAdded`, `partRemoved`, `networkChanged`, `waterDelivered` (pièce,
-litres, qualité), `valveChanged`.
+`invalid_handler`), émis sur l'autorité : `partAdded` (entrée), `partRemoved` (entrée), `networkChanged` (id du
+réseau ; au retrait, une fois par réseau resté raccordé), `waterDelivered` (pièce, litres, qualité ; à chaque pas de
+dix minutes, par sortie servie), `valveChanged`. La reconstruction au chargement n'émet rien.

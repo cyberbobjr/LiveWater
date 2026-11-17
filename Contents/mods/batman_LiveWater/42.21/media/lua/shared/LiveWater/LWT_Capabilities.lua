@@ -14,11 +14,13 @@
 --   outlet(p, d)       pressure cost and "needs clean water" of a part water leaves by (flow)
 --   purifies(p, d)     the part makes the water going through it clean now (flow)
 --   wear(p, d, litres) litres went through the part; d is created when absent (flow)
+--   layable(p, d)      full type of the item the part is laid with and tag of the tool that
+--                      dismantles it (server commands)
 
 local Check = require "LiveWater/LWT_Check"
 
 local HOOKS = { "define", "carries", "blocks", "pressurizes", "ports", "supply", "source", "outlet", "purifies",
-    "wear" }
+    "wear", "layable" }
 
 local Capabilities = {}
 Capabilities.__index = Capabilities

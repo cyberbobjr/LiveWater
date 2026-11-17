@@ -82,15 +82,23 @@ local function isEmpty(set)
     return true
 end
 
+-- Could the part { type, x, y, z } be added? Returns true and its links, or false and
+-- "unknown_part", "occupied", "ports_full". Changes nothing.
+function Network:canAdd(part)
+    if not self.catalog:has(part.type) then return false, "unknown_part" end
+    if self.parts[keyOf(part)] then return false, "occupied" end
+    local links = self:linksOf(part)
+    if not self:fits(part, links) then return false, "ports_full" end
+    return true, links
+end
+
 -- Add a placed part { type, x, y, z, order?, data? }. `order` (placement order) is given
 -- when the part is reloaded, else assigned. Returns true and the network id, or false and
 -- "unknown_part", "occupied", "ports_full".
 function Network:add(part)
-    if not self.catalog:has(part.type) then return false, "unknown_part" end
+    local ok, links = self:canAdd(part)
+    if not ok then return false, links end
     local key = keyOf(part)
-    if self.parts[key] then return false, "occupied" end
-    local links = self:linksOf(part)
-    if not self:fits(part, links) then return false, "ports_full" end
     if part.order == nil then part.order = self.seq + 1 end
     if part.order > self.seq then self.seq = part.order end
     self.parts[key] = part
@@ -132,6 +140,14 @@ end
 
 function Network:networkAt(x, y, z)
     return self.netOf[Grid.key(x, y, z)]
+end
+
+-- Ids of the networks, sorted.
+function Network:ids()
+    local list = {}
+    for id in pairs(self.sets) do list[#list + 1] = id end
+    table.sort(list)
+    return list
 end
 
 local function byOrder(a, b)

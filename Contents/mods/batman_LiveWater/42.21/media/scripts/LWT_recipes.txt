@@ -1,0 +1,26 @@
+module LiveWater
+{
+    imports
+    {
+        Base,
+    }
+
+    /* Recipe names are the keys of Recipes.json. */
+
+    craftRecipe LWTCutPipeSections
+    {
+        timedAction = SawSmallItemMetal,
+        time = 160,
+        Tags = AnySurfaceCraft,
+        category = Metalworking,
+        inputs
+        {
+            item 1 [Base.MetalPipe],
+            item 1 tags[base:metalsaw] mode:keep flags[Prop1;MayDegrade],
+        }
+        outputs
+        {
+            item 4 LiveWater.PipeSection,
+        }
+    }
+}
