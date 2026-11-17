@@ -1,0 +1,8 @@
+name=LiveWater
+id=batman_LiveWater
+description=Pond pump, visible pipes, shut-off valves, running water for the house and sprinklers for the crops, on an open water network other mods can extend.
+poster=poster.png
+icon=icon.png
+incompatible=\LGExtendedPlumbing,\LGMainsWater
+versionMin=42.21
+modversion=0.1.0
