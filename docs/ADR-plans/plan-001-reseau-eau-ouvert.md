@@ -5,7 +5,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 | # | Étape | Statut | Dépend de | Décisions ADR | Taille | Parallélisable avec |
 |---|---|---|---|---|---|---|
 | E01 | Squelette du projet : dépôt, `workshop.txt`, `mod.info` (`incompatible=` de Q09), documents obligatoires, banc de tests hors jeu | Terminée (2026-11-17) | ADR accepté | D22 | S | — |
-| E02 | API publique : registres des pièces et capacités, validation, scellé, révision, événements | À faire | E01 | D01-D07 | M | — |
+| E02 | API publique : registres des pièces et capacités, validation, scellé, révision, événements | Terminée (2026-11-17) | E01 | D01-D07 | M | — |
 | E03 | Domaine : graphe du réseau, masques de raccord, ports, vannes, fusion de réseaux | À faire | E02 | D10, D12-D15 | M | E04 |
 | E04 | Domaine : pas de distribution, pression, qualité, filtre, besoin des sorties | À faire | E02 | D09, D14, D16, D17 | M | E03 |
 | E05 | Persistance : registre global versionné, pièces de type inconnu conservées | À faire | E03 | D03, D04, D10 | M | E06 |
@@ -59,6 +59,16 @@ Fichiers : `shared/LiveWater/LWT_API.lua` (façade), `LWT_Parts.lua` (registre d
 (registre des capacités), `LWT_Events.lua`. Tests rouges : définition valide acceptée ; id hors espace de noms, sprite
 en double, capacité inconnue, champ invalide refusés avec raison ; scellé après `OnInitGlobalModData` ; copie par liste
 blanche (mutation de l'appelant sans effet) ; `revision` ; abonnement et émission d'événements.
+
+Clôture (2026-11-17). Fichiers : `shared/LiveWater/LWT_API.lua` (façade, racine de composition des registres, scellé
+à `OnInitGlobalModData`), `LWT_Parts.lua`, `LWT_Capabilities.lua`, `LWT_Events.lua`, `LWT_Check.lua` (contrôles et
+copie par liste blanche), `LWT_Grid.lua` (côtés), un fichier par capacité de départ sous
+`shared/LiveWater/Capabilities/` (`LWT_CapConduit`, `Intake`, `Pump`, `Valve`, `Filter`, `Outlet`, `Controller`),
+`tests/test_api.py`. Lecture retenue : le type d'une sortie (`houseInlet`, `sprinkler`) est un nom libre ; ses valeurs
+par défaut (coût de pression 2 et 1, eau propre exigée ou non) sont des données de `LWT_CapOutlet.lua`, et un type
+inconnu prend le coût 1 sans exigence de propreté. Preuves :
+- `python -B -m unittest discover -s tests` → `Ran 18 tests` … `OK` ;
+- `python -B tools/check_mod.py` → `OK: 13 Lua file(s) checked`.
 
 ### E03 — Graphe du réseau
 
