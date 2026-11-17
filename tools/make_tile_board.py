@@ -25,16 +25,21 @@ BACKDROP = (70, 76, 64)
 GRASS = "blends_natural_01_16"
 
 VANILLA = ["street_decoration_01_12", "appliances_misc_01_4", "appliances_misc_01_8", "carpentry_02_54",
+           "carpentry_02_122",
            "camping_01_16", "fixtures_sinks_01_4"]
+#: (title, sprite name pattern, sprite drawn under each cell or None: overlays need their base)
 GROUPS = [
-    ("Pipes: 16 shapes (mask N=1 E=2 S=4 W=8)", r"pipe_m\d\d_S"),
-    ("Gate valve (open: stem up, closed: stem down)", r"valve_.*"),
-    ("Water meter", r"flowmeter_.*"),
-    ("Pond pump: off, on, with filter", r"pump_.*"),
-    ("House inlet: filtered (green), unfiltered (amber)", r"house_inlet_.*"),
-    ("Manual sprinkler: closed, open", r"sprinkler_manual_.*"),
-    ("Automatic sprinkler: idle, watering", r"sprinkler_auto_.*"),
-    ("Barrel fitting: Fill (over the rim), Pump (bottom spigot)", r"barrel_.*"),
+    ("Pipes: 16 shapes (mask N=1 E=2 S=4 W=8)", r"pipe_m\d\d_S", None),
+    ("Gate valve (open: stem up, closed: stem down)", r"valve_.*", None),
+    ("Water meter", r"flowmeter_.*", None),
+    ("Pond pump: off, on, with filter on, with filter off", r"pump_.*", None),
+    ("House inlet: filtered (green), unfiltered (amber)", r"house_inlet_.*", None),
+    ("Manual sprinkler: closed, open (no water: the jet is an animated overlay)", r"sprinkler_manual_.*", None),
+    ("Automatic sprinkler: idle, watering", r"sprinkler_auto_.*", None),
+    ("Sprinkler jet overlay, frames 0-5, facing S (cycled by the client)", r"sprinkler_jet\d_S",
+     "sprinkler_manual_on_S"),
+    ("Sprinkler jet overlay, frames 0-5, facing E", r"sprinkler_jet\d_E", "sprinkler_manual_on_E"),
+    ("Barrel fitting: Fill over a barrel, Fill over a low crate, Pump (bottom spigot)", r"barrel_.*", None),
 ]
 PER_ROW = 8
 CW, CH, TOP = 128, 256, 96  # cells are drawn without their empty top 96 px
@@ -63,18 +68,25 @@ def main(render, out):
     styled = render / "styled"
     names = sorted(p.stem for p in styled.glob("*.png"))
     rows = [("Vanilla reference (game sprites, for comparison)", [(n, vanilla.get(n)) for n in VANILLA])]
-    for title, pattern in GROUPS:
+    def cell(name, base):
+        img = Image.open(styled / f"{name}.png").convert("RGBA")
+        if base is None:
+            return img
+        under = Image.open(styled / f"{base}.png").convert("RGBA")
+        under.alpha_composite(img)
+        return under
+
+    for title, pattern, base in GROUPS:
         picked = [n for n in names if re.fullmatch(pattern, n)]
         for i in range(0, len(picked), PER_ROW):
-            rows.append((title if i == 0 else None,
-                         [(n, Image.open(styled / f"{n}.png").convert("RGBA")) for n in picked[i:i + PER_ROW]]))
+            rows.append((title if i == 0 else None, [(n, cell(n, base)) for n in picked[i:i + PER_ROW]]))
     items = sorted((render / "styled_items").glob("*.png"))
     ch, label, head, pad = CH - TOP, 22, 34, 12
     width = pad + PER_ROW * (CW + pad)
     height = 70 + sum((head if t else 0) + ch + label + pad for t, _ in rows) + head + 160 + pad
     board = Image.new("RGB", (width, height), CREAM)
     d = ImageDraw.Draw(board)
-    d.text((pad, 18), "LiveWater - provisional tiles (styled, not packed)", fill=NAVY, font=font(28))
+    d.text((pad, 18), "LiveWater - tiles (batman_livewater_01)", fill=NAVY, font=font(28))
     y = 70
     for title, group in rows:
         if title:

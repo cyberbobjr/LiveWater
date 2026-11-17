@@ -1,7 +1,8 @@
 """Provisional tiles of LiveWater, for the D23 presentation board (plan step E06).
 
-They show what each part looks like and how it connects. Nothing here is packed
-into the mod before the user's validation (ADR-001 D23): no .pack, no .tiles.
+Board validated by the user on 2026-11-17 (ADR-001 D23), packed into the mod since E06.
+The sprinkler jet is a separate 6-frame overlay (indices 80-103) that the client swaps
+itself (ADR-001 D08a): the engine never advances the frames of a tile overlay.
 
 Look: 1990s rural hardware drawn like vanilla tile art. Galvanised pipe with thin
 couplings, brass gate valve with a red handwheel, bronze water meter, electric
@@ -22,7 +23,18 @@ Needs pz-sprite-forge (MIT) and the game (PZ_MEDIA) for the style pass.
        python source/tiles/build_livewater_tiles.py style <out> [<key>...]
    -> <out>/styled/<key>_<facing>.png (128x256, the sprites shown on the board)
       <out>/styled_items/<item>.png
-3. Board and example scene: tools/make_tile_board.py, tools/make_network_scene.py.
+3. Package into the mod (tileset batman_livewater_01, tiledef 7176, indices of
+   docs/annexes/conception/tuiles-contrat.md):
+       python source/tiles/build_livewater_tiles.py package <out> .
+   -> Contents/mods/batman_LiveWater/common/media/texturepacks/batman_livewater_01.pack,
+      common/media/batman_livewater_01.tiles, common/media/tileGeometry.txt,
+      42.21/media/textures/Item_LWT_PipeSection.png, Item_LWT_WaterFilter.png
+4. Depth map (skill pz-blender-assets, scripts/build_depthmap.py):
+       blender -b --factory-startup -P <skill>/scripts/build_depthmap.py -- source/tiles/build_livewater_tiles.py <out>/depth.json
+       python <skill>/scripts/build_depthmap.py <out>/depth.json
+           Contents/mods/batman_LiveWater/common/media/texturepacks/batman_livewater_01.pack batman_livewater_01
+           Contents/mods/batman_LiveWater/common/media/depthmaps/DEPTH_batman_livewater_01.png
+5. Board and example scene: tools/make_tile_board.py, tools/make_network_scene.py.
 
 Conventions: 1 Blender metre = 1 tile, tile centre at the origin, front (S) toward
 -Y. Pipe sides are a 4-bit mask: N=1, E=2, S=4, W=8.
@@ -486,7 +498,8 @@ def build_sprinkler(k: Kit, active, automatic):
     if automatic:
         k.box("timer", (0, vy, PIPE_Z + 0.025), (0.12, 0.10, 0.11), "plastic")
         k.cyl("timer_dial", (0, vy, PIPE_Z + 0.085), 0.038, 0.014, "dial", segs=16)
-        k.box("timer_mark", (0.012, vy - 0.01, PIPE_Z + 0.093), (0.03, 0.006, 0.004), "rubber", (0, 0, 0.5))
+        k.box("timer_mark", (0.012, vy - 0.01, PIPE_Z + 0.093), (0.03, 0.006, 0.004), "rubber",
+              (0, 0, -0.9 if active else 0.5))
     else:
         k.cyl("valve_body", (0, vy, PIPE_Z), 0.045, 0.09, "brass", "y", 12)
         k.cyl("valve_stem", (0, vy, PIPE_Z + 0.05), 0.012, 0.03, "brass", segs=8)
@@ -509,32 +522,59 @@ def build_sprinkler(k: Kit, active, automatic):
     return tip, d
 
 
-def build_sprinkler_lit(automatic):
-    """Water overlay: one jet arcing out of the nozzle, breaking into a falling curtain."""
+JET_FRAMES = 6
+#: Part-circle sweep of the impact head, degrees each side of the nozzle direction.
+JET_SWEEP = 36.0
+
+
+def jet_parts(k: Kit, tip, d, frame):
+    """Water of one animation frame. The jet steps across the sweep (one tick per frame,
+    then the fast return of a part-circle impact sprinkler); on odd frames the arm's spoon
+    is in the stream: the jet is cut short and bursts into spray near the nozzle."""
+    ang = math.radians(-JET_SWEEP + 2 * JET_SWEEP * frame / (JET_FRAMES - 1))
+    d = Vector((d.x * math.cos(ang) - d.y * math.sin(ang), d.x * math.sin(ang) + d.y * math.cos(ang), 0))
+    side = Vector((-d.y, d.x, 0))
+    struck = frame % 2 == 1
+    reach = 0.26 if struck else 0.40
+
+    def arc(t):
+        return tip + d * (reach * t) + Vector((0, 0, 0.16 * t - 0.30 * t * t))
+
+    parts = [k.tube("jet", [tuple(arc(t)) for t in (0, 0.25, 0.5, 0.75, 1.0)], 0.011, "water_jet", 8, 10,
+                    r_end=0.006)]
+    if struck:
+        # Spoon strike: a short fan of spray out of the side of the nozzle.
+        for i, (u, s_, z) in enumerate(((0.10, 0.10, 0.02), (0.14, 0.05, -0.04), (0.12, -0.06, 0.0),
+                                        (0.08, 0.13, -0.08), (0.16, 0.0, -0.10))):
+            a_ = tip + d * 0.03
+            b_ = tip + d * u + side * s_ + Vector((0, 0, z))
+            parts.append(k.tube(f"burst{i}", [tuple(a_), tuple((a_ + b_) / 2 + Vector((0, 0, 0.02))), tuple(b_)],
+                                0.005, "water_mist", 6, 5, r_end=0.002))
+    end = arc(1.0)
+    strands = ((0.70, -0.03, 0.5), (0.80, 0.04, 0.8), (0.90, -0.05, 0.6), (0.98, 0.02, 1.0),
+               (1.05, -0.02, 0.9), (1.10, 0.05, 0.7))
+    for i, (t, s_, fall) in enumerate(strands):
+        a_ = arc(min(t, 1.0)) + d * (reach * max(0.0, t - 1.0)) + side * (s_ * (1 + 0.5 * (frame % 3)))
+        b_ = a_ + d * 0.05 + side * (s_ * 0.6) + Vector((0, 0, -(a_.z - 0.02) * fall))
+        parts.append(k.tube(f"strand{i}", [tuple(a_), tuple((a_ + b_) / 2 + d * 0.02), tuple(b_)],
+                            0.005, "water_mist", 6, 6, r_end=0.003))
+    # Drops at heights that change every frame, so the falling water flickers when cycled.
+    for i in range(4):
+        t = 0.75 + 0.12 * i
+        z = 0.04 + ((frame * 0.07 + i * 0.13) % 0.22)
+        p = end + d * (reach * (t - 0.9)) + side * (0.07 * (1 if i % 2 else -1))
+        p = Vector((p.x, p.y, z))
+        parts.append(k.tube(f"drop{i}", [tuple(p), tuple(p + Vector((0, 0, -0.03)))], 0.005,
+                            "water_jet", 6, 2, r_end=0.003))
+    return parts
+
+
+def build_jet(frame):
+    """Jet overlay frame: the sprinkler is a holdout (it hides the water behind it) and draws nothing."""
     def fn(k: Kit):
-        tip, d = build_sprinkler(k, True, automatic)
+        tip, d = build_sprinkler(k, True, False)
         mark_holdout(k.anchor)
-        side = Vector((-d.y, d.x, 0))
-        reach = 0.40
-        jet = [tip + d * (reach * t) + Vector((0, 0, 0.16 * t - 0.30 * t * t)) for t in (0, 0.25, 0.5, 0.75, 1.0)]
-        parts = [k.tube("jet", [tuple(p) for p in jet], 0.011, "water_jet", 8, 10, r_end=0.006)]
-        end = jet[-1]
-        # Break-up: thin translucent strands falling from the end of the arc, a few drops.
-        strands = ((0.70, -0.03, 0.5), (0.78, 0.04, 0.8), (0.86, -0.05, 0.6), (0.92, 0.02, 1.0),
-                   (0.98, -0.02, 0.9), (1.04, 0.05, 0.7), (1.08, -0.04, 1.0), (1.12, 0.01, 0.8))
-        for i, (t, s_, fall) in enumerate(strands):
-            a_ = tip + d * (reach * min(t, 1.0)) + Vector((0, 0, 0.16 * min(t, 1) - 0.30 * min(t, 1) ** 2))
-            a_ = a_ + d * (reach * max(0.0, t - 1.0)) + side * s_
-            b_ = a_ + d * 0.05 + side * (s_ * 0.6) + Vector((0, 0, -(a_.z - 0.02) * fall))
-            parts.append(k.tube(f"strand{i}", [tuple(a_), tuple((a_ + b_) / 2 + d * 0.02), tuple(b_)],
-                                0.005, "water_mist", 6, 6, r_end=0.003))
-        for i, (t, s_, z) in enumerate(((0.9, 0.08, 0.10), (1.05, -0.08, 0.05), (1.15, 0.06, 0.16),
-                                        (0.8, -0.06, 0.18))):
-            p = tip + d * (reach * t) + side * s_
-            p = Vector((p.x, p.y, z))
-            parts.append(k.tube(f"drop{i}", [tuple(p), tuple(p + Vector((0, 0, -0.03)))], 0.005,
-                                "water_jet", 6, 2, r_end=0.003))
-        return parts
+        return jet_parts(k, tip, d, frame)
     return fn
 
 
@@ -542,25 +582,33 @@ def build_sprinkler_lit(automatic):
 # Barrel fitting: brass valve, garden hose into the rain barrel on the N tile
 # --------------------------------------------------------------------------- #
 
-def build_barrel_connector(k: Kit, mode_fill):
-    """Fill: the hose hooks over the barrel rim and pours in. Pump: the hose screws onto
-    the spigot at the foot of the barrel and draws from it."""
+#: Rim of the rain collector on the N tile, measured on vanilla sprites (same cell framing):
+#: round barrels (carpentry_02_122-126, industry_01_23, location_military_generic_01_7) are about
+#: 0.82 m across with their rim near 0.78 m; the tarp crates (carpentry_02_52/54/120) are 1 m wide
+#: with their rim near 0.60 m. (front of the rim y, rim height z)
+RIM = {"tall": (0.59, 0.80), "low": (0.50, 0.62)}
+
+
+def build_barrel_connector(k: Kit, mode, rim="tall"):
+    """Fill: the hose hooks over the rim of the collector on the N tile and pours in. Pump: the
+    hose screws onto the spigot at the foot of the collector and draws from it."""
     arm(k, S, start=0.06)
     k.cyl("valve_body", (0, 0, PIPE_Z), 0.045, 0.10, "brass", "y", 12)
     k.cyl("valve_stem", (0, 0, PIPE_Z + 0.05), 0.012, 0.03, "brass", segs=8)
     k.box("valve_lever", (0, -0.05, PIPE_Z + 0.068), (0.018, 0.12, 0.012), "red")
     k.cyl("hose_barb", (0, 0.07, PIPE_Z), 0.022, 0.05, "brass", "y", 10)
     k.cyl("hose_collar", (0, 0.10, PIPE_Z), 0.03, 0.025, "galv", "y", 10)
-    if mode_fill:
-        path = [(0, 0.11, PIPE_Z), (0.02, 0.26, 0.07), (0.03, 0.46, 0.30), (0.02, 0.56, 0.62),
-                (0.0, 0.64, 0.70), (0.0, 0.72, 0.64)]
+    if mode == "fill":
+        fy, fz = RIM[rim]
+        path = [(0, 0.11, PIPE_Z), (0.02, 0.24, 0.07), (0.03, fy - 0.14, fz * 0.45), (0.02, fy - 0.04, fz - 0.02),
+                (0.0, fy + 0.02, fz + 0.07), (0.0, fy + 0.08, fz + 0.03)]
         k.tube("hose", path, 0.024, "hose", 10)
-        k.cyl("nozzle", (0, 0.72, 0.60), 0.026, 0.06, "brass", segs=10)
+        k.cyl("nozzle", (0, fy + 0.09, fz - 0.01), 0.026, 0.06, "brass", segs=10)
     else:
-        path = [(0, 0.11, PIPE_Z), (0.03, 0.30, 0.04), (0.02, 0.48, 0.06), (0.0, 0.60, 0.10)]
+        path = [(0, 0.11, PIPE_Z), (0.03, 0.30, 0.04), (0.02, 0.48, 0.06), (0.0, 0.58, 0.10)]
         k.tube("hose", path, 0.024, "hose", 10)
-        k.cyl("spigot_nut", (0, 0.63, 0.10), 0.03, 0.04, "brass", "y", 10)
-        k.cyl("spigot", (0, 0.68, 0.10), 0.02, 0.06, "brass", "y", 10)
+        k.cyl("spigot_nut", (0, 0.60, 0.10), 0.03, 0.04, "brass", "y", 10)
+        k.cyl("spigot", (0, 0.645, 0.10), 0.02, 0.05, "brass", "y", 10)
 
 
 # --------------------------------------------------------------------------- #
@@ -597,33 +645,51 @@ ITEMS = [("pipe_section", build_item_pipe, (0, 0, 0.05), 2.2),
 # --------------------------------------------------------------------------- #
 
 def tile_groups() -> list[dict]:
-    """Every render group. `lit` builds the overlay (base as holdout); `glow` is the light colour
-    the style step pushes its pixels toward (None: water, composited as rendered)."""
-    def g(key, facings, build, lit=None, glow=None):
-        return {"key": key, "facings": facings, "build": build, "lit": lit, "glow": glow}
+    """Every render group, indexed by the tile contract (docs/annexes/conception/tuiles-contrat.md).
+
+    `indices`: sprite index of each facing, in forge order S, E[, N, W]. `lit` builds a light
+    overlay (base as holdout) composited onto the styled base, its pixels pushed toward the
+    `glow` colour. `overlay` groups are sprites of their own drawn over another tile (the
+    animated sprinkler jet): not styled, kept as rendered."""
+    def g(key, first, build, lit=None, glow=None, facings=4, overlay=False):
+        return {"key": key, "indices": list(range(first, first + facings)), "build": build, "lit": lit,
+                "glow": glow, "overlay": overlay}
 
     green, amber = (70, 255, 90), (255, 170, 30)
-    groups = [g(f"pipe_m{m:02d}", "1", (lambda m: lambda k: build_pipe(k, m))(m)) for m in range(16)]
+    groups = [g(f"pipe_m{m:02d}", m, (lambda m: lambda k: build_pipe(k, m))(m), facings=1) for m in range(16)]
     groups += [
-        g("valve_open_ns", "1", lambda k: build_valve(k, False, False)),
-        g("valve_closed_ns", "1", lambda k: build_valve(k, True, False)),
-        g("valve_open_ew", "1", lambda k: build_valve(k, False, True)),
-        g("valve_closed_ew", "1", lambda k: build_valve(k, True, True)),
-        g("flowmeter_ns", "1", lambda k: build_flowmeter(k, False)),
-        g("flowmeter_ew", "1", lambda k: build_flowmeter(k, True)),
-        g("pump_off", "4", lambda k: build_pump(k)),
-        g("pump_on", "4", lambda k: build_pump(k), lambda k: build_pump_lit(k), green),
-        g("pump_filter_on", "4", lambda k: build_pump(k, True), lambda k: build_pump_lit(k, True), green),
-        g("house_inlet", "4", build_house_inlet, build_house_inlet_lit("green"), green),
-        g("house_inlet_unfiltered", "4", build_house_inlet, build_house_inlet_lit("amber"), amber),
-        g("sprinkler_manual_off", "4", lambda k: build_sprinkler(k, False, False)),
-        g("sprinkler_manual_on", "4", lambda k: build_sprinkler(k, True, False), build_sprinkler_lit(False)),
-        g("sprinkler_auto_off", "4", lambda k: build_sprinkler(k, False, True)),
-        g("sprinkler_auto_on", "4", lambda k: build_sprinkler(k, True, True), build_sprinkler_lit(True)),
-        g("barrel_fill", "4", lambda k: build_barrel_connector(k, True)),
-        g("barrel_pump", "4", lambda k: build_barrel_connector(k, False)),
+        g("valve_open_ew", 16, lambda k: build_valve(k, False, True), facings=1),
+        g("valve_open_ns", 17, lambda k: build_valve(k, False, False), facings=1),
+        g("valve_closed_ew", 18, lambda k: build_valve(k, True, True), facings=1),
+        g("valve_closed_ns", 19, lambda k: build_valve(k, True, False), facings=1),
+        g("flowmeter_ew", 20, lambda k: build_flowmeter(k, True), facings=1),
+        g("flowmeter_ns", 21, lambda k: build_flowmeter(k, False), facings=1),
+        g("pump_off", 24, lambda k: build_pump(k)),
+        g("pump_on", 28, lambda k: build_pump(k), lambda k: build_pump_lit(k), green),
+        g("pump_filter_on", 32, lambda k: build_pump(k, True), lambda k: build_pump_lit(k, True), green),
+        g("pump_filter_off", 36, lambda k: build_pump(k, True)),
+        g("house_inlet", 40, build_house_inlet, build_house_inlet_lit("green"), green),
+        g("house_inlet_unfiltered", 44, build_house_inlet, build_house_inlet_lit("amber"), amber),
+        g("sprinkler_manual_off", 48, lambda k: build_sprinkler(k, False, False)),
+        g("sprinkler_manual_on", 52, lambda k: build_sprinkler(k, True, False)),
+        g("sprinkler_auto_off", 56, lambda k: build_sprinkler(k, False, True)),
+        g("sprinkler_auto_on", 60, lambda k: build_sprinkler(k, True, True)),
+        g("barrel_fill", 64, lambda k: build_barrel_connector(k, "fill", "tall")),
+        g("barrel_fill_low", 68, lambda k: build_barrel_connector(k, "fill", "low")),
+        g("barrel_pump", 72, lambda k: build_barrel_connector(k, "pump")),
     ]
+    groups += [g(f"sprinkler_jet{f}", 80 + 4 * f, build_jet(f), overlay=True) for f in range(JET_FRAMES)]
     return groups
+
+
+def build_group(subject, mats, group) -> list:
+    """Clear the subject and build one group; returns the names of the parts the sprite draws
+    when it is an overlay (build_depthmap.py contract), else an empty list."""
+    clear_subject(subject)
+    parts = group["build"](Kit(subject, mats)) or []
+    if not group["overlay"]:
+        return []
+    return sorted(obj.name for obj in parts)
 
 
 def lit_key(key: str) -> str:
@@ -633,7 +699,7 @@ def lit_key(key: str) -> str:
 def build(subject, mats) -> None:
     """Showcase of every part in a row (editable .blend, depth tools)."""
     k = Kit(subject, mats)
-    for i, group in enumerate(tile_groups()[16:]):
+    for i, group in enumerate(g for g in tile_groups()[16:] if not g["overlay"]):
         group["build"](k.empty(f"show_{group['key']}", (i * 1.2, 0, 0)))
 
 
@@ -697,9 +763,10 @@ def main() -> None:
     for group in tile_groups():
         if only and group["key"] not in only:
             continue
-        render_group(props, subject, mats, group["key"], group["facings"], group["build"], out)
+        facings = str(len(group["indices"]))
+        render_group(props, subject, mats, group["key"], facings, group["build"], out)
         if group["lit"]:
-            render_group(props, subject, mats, lit_key(group["key"]), group["facings"], group["lit"], out)
+            render_group(props, subject, mats, lit_key(group["key"]), facings, group["lit"], out)
     if not only or "items" in only:
         render_items(scene, subject, mats, out / "items")
     clear_subject(subject)
@@ -779,7 +846,10 @@ def style(out: Path, only=()) -> None:
         if not (cells_dir / key / "manifest.json").exists():
             raise SystemExit(f"group not rendered: {key}")
         facings = [c["facing"] for c in manifest_cells(cells_dir / key)]
-        images = styled_cells(cells_dir / key, work)
+        if group["overlay"]:
+            images = overlay_cells(cells_dir / key, None)
+        else:
+            images = styled_cells(cells_dir / key, work)
         if group["lit"]:
             for img, over in zip(images, overlay_cells(cells_dir / lit_key(key), group["glow"])):
                 img.alpha_composite(over)
@@ -792,10 +862,108 @@ def style(out: Path, only=()) -> None:
     print(f"styled into {target} and {items}")
 
 
+# --------------------------------------------------------------------------- #
+# Packaging (plain Python with Pillow + pzforge): tileset of the tile contract
+# --------------------------------------------------------------------------- #
+
+SHEET = "batman_livewater_01"
+TILEDEF_ID = 7176
+MOD_ID = "batman_LiveWater"
+TOTAL = 104
+FACING_NAMES = ["S", "E", "N", "W"]
+#: Plumbing parts are taken up and set down with a pipe wrench, like vanilla sinks.
+_TOOLS = {"PickUpTool": "Wrench", "PlaceTool": "Wrench"}
+_GROUP = {"GroupName": "Live Water"}
+
+
+def _moveable(name, item, weight, **extra):
+    return {**_GROUP, "CustomName": name, "IsMoveAble": "", "Material": "MetalPlates", "PickUpWeight": str(weight),
+            "CustomItem": f"Base.Mov_LiveWater_{item}", **_TOOLS, **extra}
+
+
+#: (first index, count, faces, properties). faces 4: S E N W; 2: the ew / ns pair of an inline
+#: part (ew drawn as Facing E, ns as Facing S); 1: no rotation (pipes, laid by a build action).
+#: Overlays (80-103) and reserved indices get no properties.
+KINDS = [(m, 1, 1, {**_GROUP, "CustomName": "Water Pipe", "Material": "MetalPlates"}) for m in range(16)] + [
+    (16, 2, 2, _moveable("Shut-off Valve", "Valve", 30)),
+    (18, 2, 2, _moveable("Shut-off Valve", "Valve", 30)),
+    (20, 2, 2, _moveable("Water Meter", "FlowMeter", 40)),
+] + [(b, 4, 4, _moveable("Pond Pump", "PondPump", 150, solidtrans="", BlocksPlacement=""))
+     for b in (24, 28, 32, 36)] + [
+    (b, 4, 4, _moveable("House Water Inlet", "HouseInlet", 60, BlocksPlacement="")) for b in (40, 44)] + [
+    (b, 4, 4, _moveable("Sprinkler", "Sprinkler", 30, BlocksPlacement="")) for b in (48, 52)] + [
+    (b, 4, 4, _moveable("Automatic Sprinkler", "SprinklerAuto", 35, BlocksPlacement="")) for b in (56, 60)] + [
+    (b, 4, 4, _moveable("Barrel Fitting", "BarrelFitting", 15)) for b in (64, 68, 72)]
+
+#: Face offsets toward the sister sprites (rotation while placing: ISMoveableSpriteProps).
+_OFFSETS = {4: [{"Eoffset": 1, "Noffset": 2, "Woffset": 3}, {"Soffset": -1, "Noffset": 1, "Woffset": 2},
+                {"Soffset": -2, "Eoffset": -1, "Woffset": 1}, {"Soffset": -3, "Eoffset": -2, "Noffset": -1}],
+            2: [{"Soffset": 1}, {"Eoffset": -1}]}
+
+
+def tile_props(i: int) -> dict:
+    for first, count, faces, props in KINDS:
+        if first <= i < first + count:
+            k = i - first
+            if faces == 1:
+                return dict(props)
+            facing = FACING_NAMES[k] if faces == 4 else ("E", "S")[k]
+            return {**props, "Facing": facing, **{key: str(v) for key, v in _OFFSETS[faces][k].items()}}
+    return {}
+
+
+def check_tiledef_free(tiledef_id: int) -> None:
+    from pzforge.modgen import used_tiledef_ids
+    roots = [Path("D:/SteamLibrary/steamapps/workshop/content/108600"), Path.home() / "Zomboid" / "mods",
+             Path.home() / "Zomboid" / "Workshop"]
+    owners = [o for o in used_tiledef_ids([r for r in roots if r.exists()]).get(tiledef_id, []) if SHEET not in o]
+    if owners:
+        raise SystemExit(f"tiledef {tiledef_id} already used by {owners}")
+
+
+def package(out: Path, project: Path) -> None:
+    """Styled cells -> <mod>/common/media: .pack, .tiles, tileGeometry.txt; icons -> 42.21/media/textures."""
+    from PIL import Image
+    from pzforge.sheet import Cell, Sheet, pack_sheet
+    from pzforge.tiledef import TileDefinitions, Tile, Tileset
+
+    check_tiledef_free(TILEDEF_ID)
+    images = {}
+    for group in tile_groups():
+        for facing_index, index in enumerate(group["indices"]):
+            path = out / "styled" / f"{group['key']}_{FACING_NAMES[facing_index]}.png"
+            if not path.exists():
+                raise SystemExit(f"not styled: {path.name}")
+            images[index] = Image.open(path).convert("RGBA")
+    blank = Image.new("RGBA", (128, 256), (0, 0, 0, 0))
+    sheet = Sheet(SHEET, 128, 256, 8, [Cell(images.get(i, blank), index=i) for i in range(TOTAL)])
+    tiles = [Tile(tile_props(i)) for i in range(TOTAL)]
+    tdefs = TileDefinitions([Tileset(SHEET, f"{SHEET}.png", 8, TOTAL // 8, 1, tiles)])
+    mod = project / "Contents" / "mods" / MOD_ID
+    media = mod / "common" / "media"
+    (media / "texturepacks").mkdir(parents=True, exist_ok=True)
+    pack_sheet(sheet).write(media / "texturepacks" / f"{SHEET}.pack")
+    tdefs.write(media / f"{SHEET}.tiles")
+    (media / "tileGeometry.txt").write_text("tileGeometry\n{\n    VERSION = 2,\n}\n", encoding="ascii")
+    (out / f"{SHEET}.tiles.txt").write_text(tdefs.to_text(), encoding="ascii")
+    sheet.image().save(out / f"{SHEET}_sheet.png")
+    textures = mod / "42.21" / "media" / "textures"
+    textures.mkdir(parents=True, exist_ok=True)
+    for name, icon in (("pipe_section", "Item_LWT_PipeSection"), ("water_filter", "Item_LWT_WaterFilter")):
+        Image.open(out / "styled_items" / f"{name}.png").convert("RGBA").save(textures / f"{icon}.png")
+    print(f"packed {len(images)} sprites into {media} (tiledef {TILEDEF_ID})")
+
+
+USAGE = ("usage: python build_livewater_tiles.py style <out-dir> [<key>...]\n"
+         "       python build_livewater_tiles.py package <out-dir> <project-root>")
+
 if __name__ == "__main__":
     if bpy is None:
-        if len(sys.argv) < 3 or sys.argv[1] != "style":
-            raise SystemExit("usage: python build_livewater_tiles.py style <out-dir> [<key>...]")
-        style(Path(sys.argv[2]), set(sys.argv[3:]))
+        if len(sys.argv) >= 3 and sys.argv[1] == "style":
+            style(Path(sys.argv[2]), set(sys.argv[3:]))
+        elif len(sys.argv) == 4 and sys.argv[1] == "package":
+            package(Path(sys.argv[2]), Path(sys.argv[3]))
+        else:
+            raise SystemExit(USAGE)
     else:
         main()

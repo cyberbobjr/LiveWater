@@ -31,7 +31,7 @@ LAYOUT = [
     (2, 2, "valve_open_ew_S"),
     (3, 2, "pipe_m11_S"),              # N | E | W
     (3, 1, "barrel_fill_S"),
-    (3, 0, "vanilla:carpentry_02_54"),
+    (3, 0, "vanilla:carpentry_02_122"),
     (4, 2, "flowmeter_ew_S"),
     (5, 2, "pipe_m15_S"),              # cross
     (5, 1, "vanilla:" + WALL_N), (6, 1, "vanilla:" + WALL_N), (7, 1, "vanilla:" + WALL_N),
@@ -39,6 +39,7 @@ LAYOUT = [
     (6, 2, "pipe_m08_S"),              # W, capped
     (5, 3, "pipe_m13_S"),              # N | S | W
     (5, 4, "sprinkler_manual_on_N"),
+    (5, 4, "sprinkler_jet0_N"),        # first frame of the animated jet overlay
     (7, 3, "vanilla:appliances_misc_01_8"),
     (4, 3, "sprinkler_auto_off_E"),
 ]

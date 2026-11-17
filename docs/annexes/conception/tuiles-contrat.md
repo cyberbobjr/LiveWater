@@ -1,7 +1,7 @@
 # Contrat des tuiles de LiveWater
 
 Contrat entre la recette des tuiles (`source/tiles/`) et le code Lua (définitions des pièces). Un index publié n'est
-jamais renuméroté ni réattribué (D03). Tileset `batman_livewater_01`, 8 colonnes, sprite `batman_livewater_01_<index>`.
+jamais renuméroté ni réattribué (D03). Tileset `batman_livewater_01` (tiledef **7176**), 8 colonnes, sprite `batman_livewater_01_<index>`.
 Orientations dans l'ordre S, E, N, W. Axe `ew` = tuyau est-ouest, `ns` = nord-sud.
 
 | Index | Tuile | Clé de rendu |

@@ -9,7 +9,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 | E03 | Domaine : graphe du réseau, masques de raccord, ports, vannes, fusion de réseaux | Terminée (2026-11-17) | E02 | D10, D12-D15 | M | E04 |
 | E04 | Domaine : pas de distribution, pression, qualité, filtre, besoin des sorties | Terminée (2026-11-17) | E02 | D09, D14, D16, D17 | M | E03 |
 | E05 | Persistance : registre global versionné, pièces de type inconnu conservées | Terminée (2026-11-17) | E03 | D03, D04, D10 | M | E06 |
-| E06 | Tuiles provisoires : 16 tuyaux, robinet, arroseurs, arrivée d'eau, pompe, filtre ; planche de présentation validée par l'utilisateur | À valider (planche soumise le 2026-11-17, intégration au mod après validation) | E01 | D12, D23 | L | E02-E05 |
+| E06 | Tuiles provisoires : 16 tuyaux, robinet, arroseurs, arrivée d'eau, pompe, filtre ; planche de présentation validée par l'utilisateur | Terminée (2026-11-18) | E01 | D12, D23 | L | E02-E05 |
 | E07 | Adaptateurs serveur : pose et retrait, raccord automatique des sprites, commandes, horloge `EveryTenMinutes` | À faire | E05, E06 | D08-D12 | L | — |
 | E08 | Pompe d'étang et électricité : `registerConsumer` (`display`, `summary`), repli vanilla | À faire | E07 | D16, D20 | M | E09 |
 | E09 | Arrivée d'eau de la maison : réservoirs invisibles `LiveWaterRelay`, cohabitation Live Wire | À faire | E07 | D18, D21 | M | E08 |
@@ -136,6 +136,30 @@ maison et potager. Rendu : Blender 5.3 sans interface, `source/tiles/build_livew
 `tools/make_tile_board.py`. Planche refaite le 2026-11-17 dans le style vanilla (matériaux texturés et passe de style
 pzforge comme Live Wire, matériel rural réaliste, première ligne de sprites vanilla pour comparer) ; réseau d'exemple
 composé sur sol vanilla par `tools/make_network_scene.py`.
+
+Planche validée par l'utilisateur le 2026-11-17, avec deux remarques :
+1. certains récupérateurs d'eau de pluie sont des tonneaux, plus hauts que la caisse bâchée : le raccord « Remplir »
+   existe en deux hauteurs, `barrel_fill` (tonneau ou fût rond, rebord vers 0,80 m) et `barrel_fill_low` (caisse bâchée,
+   rebord vers 0,60 m), mesurées sur `carpentry_02_122`-`126`, `industry_01_23`, `location_military_generic_01_7` et
+   `carpentry_02_52`, `_54`, `_120`, et vérifiées en composition avec le récipient sur la case voisine ;
+2. les jets d'eau des arroseurs doivent être animés : le moteur n'avance pas les images du calque d'une tuile ordinaire
+   (base de connaissances, « Calque animé (`AttachAnim`) »), donc le jet quitte les tuiles « en marche » et devient
+   un calque `sprinkler_jet` de 6 images × 4 orientations (index `80 + 4 * f + k`) que le client fait défiler (D08a) :
+   le jet balaie ±36° par crans, avec la gerbe de la palette du marteau une image sur deux.
+
+Clôture (2026-11-18). Tileset `batman_livewater_01`, tiledef **7176** (libre dans le Workshop 108600, `Zomboid\mods` et
+`Zomboid\Workshop`, `pzforge.modgen.used_tiledef_ids`), indices du
+[contrat des tuiles](../annexes/conception/tuiles-contrat.md) : 98 sprites (22-23 et 76-79 réservés). Fichiers :
+`common/media/texturepacks/batman_livewater_01.pack`, `common/media/batman_livewater_01.tiles`,
+`common/media/depthmaps/DEPTH_batman_livewater_01.png`, `common/media/tileGeometry.txt`, `pack=` et `tiledef=` dans
+`42.21/mod.info`, noms des meubles posables dans `Translate/EN|FR/Moveables.json` (groupe « Live Water »), icônes
+`42.21/media/textures/Item_LWT_PipeSection.png` et `Item_LWT_WaterFilter.png`. Propriétés : tuyaux sans
+`IsMoveAble` (posés par une action de construction), autres pièces posables à la clé à tuyau (`Wrench`, comme les
+éviers vanilla) avec `CustomItem = Base.Mov_LiveWater_<Nom>`, `Facing` et décalages de faces
+(`Noffset`/`Soffset`/`Eoffset`/`Woffset`) ; calques du jet sans propriétés. Commandes (en-tête de la recette) :
+rendu Blender sans interface, `style`, `package`, puis `build_depthmap.py` du skill `pz-blender-assets`. Contrôles :
+`pzforge inspect` relit 98 sprites et 74 tuiles définies ; profondeur « total: 98 sprites, hits outside the sprite 0,
+left without depth 0 ». Non vérifié en jeu : rotation à la pose, hauteur des raccords de baril, jet animé (E07).
 
 ### E07 — Adaptateurs serveur
 
