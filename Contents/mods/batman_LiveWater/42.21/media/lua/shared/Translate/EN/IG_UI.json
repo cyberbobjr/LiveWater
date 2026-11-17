@@ -15,5 +15,11 @@
     "IGUI_LWT_Pump_NoPower": "Pump: no power",
     "IGUI_LWT_Pump_Flow": "Flow: %1 L per 10 minutes",
     "IGUI_LWT_LW_Pumps": "Water pumps running: %1 of %2",
-    "IGUI_LWT_LW_Flow": "Water pumped: %1 L per 10 minutes"
+    "IGUI_LWT_LW_Flow": "Water pumped: %1 L per 10 minutes",
+    "IGUI_LWT_NoFilter": "You need a water filter cartridge.",
+    "IGUI_LWT_NoFilterFitted": "There is no filter in it.",
+    "IGUI_LWT_NoFilterSlot": "No filter fits in this.",
+    "IGUI_LWT_Filter_Left": "Filter: %1%% left",
+    "IGUI_LWT_Filter_Worn": "Filter: worn out, replace it",
+    "IGUI_LWT_Filter_None": "Filter: none, the water stays unfiltered"
 }

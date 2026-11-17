@@ -322,6 +322,23 @@ function Parts:lines(part)
     return out
 end
 
+-- Actions the part menu offers for the part: the `actions` lists of its capabilities, in kind
+-- order; action = { command, key, item = full type the player must carry, or nil }.
+function Parts:actions(part)
+    local def = self.defs[part.type]
+    local out = {}
+    if not def then return out end
+    for i = 1, #def.caps do
+        local c = def.caps[i]
+        local fn = c.impl.actions
+        local list = fn and fn(c.params, stateOf(part, c.kind)) or {}
+        for j = 1, #list do
+            out[#out + 1] = { command = list[j].command, key = list[j].key, item = list[j].item }
+        end
+    end
+    return out
+end
+
 -- Public description of a part type (a copy), or nil.
 function Parts:describe(id)
     local def = self.defs[id]

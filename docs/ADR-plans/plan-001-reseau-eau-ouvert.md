@@ -13,7 +13,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 | E07 | Adaptateurs serveur : pose et retrait, raccord automatique des sprites, commandes, horloge `EveryTenMinutes` | Terminée (2026-11-18) | E05, E06 | D08-D12 | L | — |
 | E08 | Pompe d'étang et électricité : `registerConsumer` (`display`, `summary`), repli vanilla | Terminée (2026-11-18) | E07 | D16, D20 | M | E09 |
 | E09 | Arrivée d'eau de la maison : réservoirs invisibles `LiveWaterRelay`, cohabitation Live Wire | À faire | E07 | D18, D21 | M | E08 |
-| E10 | Filtre : pièce, usure au volume, remplacement | À faire | E08, E09, E06 | D17, D23 | S | E11 |
+| E10 | Filtre : pièce, usure au volume, remplacement | Terminée (2026-11-18) | E08, E09, E06 | D17, D23 | S | E11 |
 | E11 | Arroseur manuel : vanne, rayon, doses de 200 ml | À faire | E07 | D19 | M | E10 |
 | E12 | Arroseur automatique : recette (niveau d'Électricité), minuterie consommatrice | À faire | E11, E08 | D19, D20 | M | — |
 | E13 | Interface : menus, vue du réseau en surbrillance persistante, états « sans pression » et « eau non filtrée » | À faire | E08-E12 | D11, D14, D17 | M | — |
@@ -256,6 +256,29 @@ retrait propre des relais.
 ### E10 — Filtre
 
 Objet et icône validés sur la planche d'E06 (D23). Fichiers : `shared/LiveWater/Parts/LWT_PartFilter.lua`, objet et recette.
+
+Clôture (2026-11-18). Fichiers : `Capabilities/LWT_CapFilter.lua` (réglage `item` : cartouche amovible ; crochets
+`cartridge`, `fit`, `unfit`, `look` → `filter`, `lines`, `actions` ; capacité × option `FilterCapacityMultiplier`,
+notée à la pose de la cartouche), `Parts/LWT_PartPondPump.lua` (capacité `filter` : `LiveWater.WaterFilter`, 500 L),
+`LWT_Parts.lua` (`actions`), `LWT_Capabilities.lua` et `LWT_API.lua` (révision 3), `LWT_Protocol.lua`,
+`LWT_Reasons.lua` (`no_cartridge`, `no_filter`, `no_filter_slot`), serveur `Commands/LWT_CmdCartridge.lua`,
+`LWT_CmdFitFilter.lua`, `LWT_CmdRemoveFilter.lua`, `LWT_GamePlayers.lua` (part restante = état de l'objet),
+`LWT_Commands.lua`, `LWT_Server.lua` ; client `LWT_PartMenu.lua` (menu générique des actions des capacités, lu dans
+l'état recopié) ; `LWT_items.txt` (`LiveWater.WaterFilter`, `ConditionMax = 100`), recette `LWTMakeWaterFilter`
+(2 charbons `tags[base:charcoal]`, 2 `Base.RippedSheets`), option sandbox, traductions EN et FR (dont
+`Tooltip.json`) ; tests `tests/test_filter.py`.
+Choix faits sans l'utilisateur :
+- pas de pièce `LWT_PartFilter.lua` à part : la cartouche se monte dans la pompe (capacité `filter` de la pompe,
+  sprites `filter_on`/`filter_off` du contrat) ; un filtre en ligne reste possible plus tard par une pièce qui porte
+  la même capacité ;
+- l'état de la cartouche (0-100) est la part qui reste : une cartouche retirée à moitié usée revient à 50 et reprend
+  son usure si on la remonte ; une cartouche usée est jetée au retrait ; « Remplacer » retire l'ancienne puis monte
+  la neuve ;
+- recette sans outil ni compétence, 2 charbons (de bois ou de fabrication) et 2 bandes de tissu propres (Q02).
+Preuves :
+- `python -B -m unittest discover -s tests` → `Ran 120 tests` … `OK` ;
+- `python -B tools/check_mod.py` → `OK: 48 Lua file(s) checked`.
+Non testé en jeu.
 
 ### E11 — Arroseur manuel
 

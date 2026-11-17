@@ -1,4 +1,5 @@
 {
     "LiveWater.PipeSection": "Pipe Section",
-    "Base.Mov_LiveWater_PondPump": "Pond Pump"
+    "Base.Mov_LiveWater_PondPump": "Pond Pump",
+    "LiveWater.WaterFilter": "Water Filter Cartridge"
 }

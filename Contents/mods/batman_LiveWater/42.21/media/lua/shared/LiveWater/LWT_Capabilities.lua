@@ -27,12 +27,18 @@
 --                      the part, quality } (d created)
 --   output(p, d)       litres the part gave the network last step (Live Wire summary)
 --   lines(p, d)        text lines { { key, arg, ..., rank = n } } (information, Live Wire)
+-- Revision 3 (filter cartridge, part menu):
+--   cartridge(p, d, ctx)  removable cartridge: item full type, fitted (bool), share left 0..1
+--   fit(p, d, share, ctx) a cartridge with `share` left goes in (d created)
+--   unfit(p, d)           the cartridge comes out (d created)
+--   actions(p, d)         actions of the part menu: { { command, key, item = item to carry } }
 -- ctx is the context of the step: { need, scale = function(optionName) -> multiplier }.
 
 local Check = require "LiveWater/LWT_Check"
 
 local HOOKS = { "define", "carries", "blocks", "pressurizes", "ports", "supply", "source", "outlet", "purifies",
-    "wear", "layable", "look", "attach", "power", "powered", "stepped", "output", "lines" }
+    "wear", "layable", "look", "attach", "power", "powered", "stepped", "output", "lines",
+    "cartridge", "fit", "unfit", "actions" }
 
 local Capabilities = {}
 Capabilities.__index = Capabilities

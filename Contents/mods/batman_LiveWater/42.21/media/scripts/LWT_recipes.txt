@@ -49,4 +49,22 @@ module LiveWater
             item 1 Base.Mov_LiveWater_PondPump,
         }
     }
+
+    /* Water filter cartridge (ADR-001 Q02): charcoal wrapped in cloth. */
+    craftRecipe LWTMakeWaterFilter
+    {
+        timedAction = Making,
+        time = 100,
+        Tags = InHandCraft;AnySurfaceCraft,
+        category = Miscellaneous,
+        inputs
+        {
+            item 2 tags[base:charcoal],
+            item 2 [Base.RippedSheets] mode:destroy,
+        }
+        outputs
+        {
+            item 1 LiveWater.WaterFilter,
+        }
+    }
 }

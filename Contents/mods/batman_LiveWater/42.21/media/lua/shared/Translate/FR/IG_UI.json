@@ -15,5 +15,11 @@
     "IGUI_LWT_Pump_NoPower": "Pompe : pas de courant",
     "IGUI_LWT_Pump_Flow": "Débit : %1 L par 10 minutes",
     "IGUI_LWT_LW_Pumps": "Pompes à eau en marche : %1 sur %2",
-    "IGUI_LWT_LW_Flow": "Eau pompée : %1 L par 10 minutes"
+    "IGUI_LWT_LW_Flow": "Eau pompée : %1 L par 10 minutes",
+    "IGUI_LWT_NoFilter": "Il vous faut une cartouche filtrante.",
+    "IGUI_LWT_NoFilterFitted": "Il n'y a pas de filtre dedans.",
+    "IGUI_LWT_NoFilterSlot": "Aucun filtre ne se monte ici.",
+    "IGUI_LWT_Filter_Left": "Filtre : il reste %1 %%",
+    "IGUI_LWT_Filter_Worn": "Filtre : usé, à remplacer",
+    "IGUI_LWT_Filter_None": "Filtre : aucun, l'eau n'est pas filtrée"
 }

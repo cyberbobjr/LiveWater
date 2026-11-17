@@ -1,4 +1,7 @@
 {
     "ContextMenu_LWT_Lay": "Lay %1",
-    "ContextMenu_LWT_Dismantle": "Dismantle %1"
+    "ContextMenu_LWT_Dismantle": "Dismantle %1",
+    "ContextMenu_LWT_FitFilter": "Fit Water Filter",
+    "ContextMenu_LWT_ReplaceFilter": "Replace Water Filter",
+    "ContextMenu_LWT_RemoveFilter": "Remove Water Filter"
 }

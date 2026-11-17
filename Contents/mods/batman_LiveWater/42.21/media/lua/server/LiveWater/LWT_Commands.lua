@@ -4,7 +4,8 @@ if isClient() then return end
 --   function(ctx, player, args) -> true, or false and a reason
 -- and re-checks every argument: nothing the client sends is trusted. A refusal is told to the
 -- player as a translation key (REASONS, else GENERIC), translated on the client side.
--- ctx = { topology, catalog, world, players } (ports: LWT_GameWorld, LWT_GamePlayers).
+-- ctx = { topology, catalog, world, players, publisher, scale } (ports: LWT_GameWorld,
+-- LWT_GamePlayers, LWT_Publisher; scale: sandbox multipliers, also the context of the hooks).
 
 local Commands = {}
 Commands.__index = Commands

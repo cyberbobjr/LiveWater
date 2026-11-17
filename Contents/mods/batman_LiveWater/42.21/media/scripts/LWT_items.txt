@@ -15,4 +15,17 @@ module LiveWater
         Weight = 0.4,
         Icon = LWT_PipeSection,
     }
+
+    /* Charcoal cartridge of the pond pump (ADR-001 D17, Q02): 500 L each. Its condition is the
+       share left: a cartridge taken out of a pump keeps its wear. */
+
+    item WaterFilter
+    {
+        DisplayCategory = Material,
+        ItemType = base:normal,
+        Weight = 0.5,
+        Icon = LWT_WaterFilter,
+        ConditionMax = 100,
+        Tooltip = Tooltip_LWT_WaterFilter,
+    }
 }

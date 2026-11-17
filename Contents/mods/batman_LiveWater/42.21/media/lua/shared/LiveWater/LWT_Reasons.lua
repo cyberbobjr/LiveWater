@@ -14,6 +14,9 @@ local Reasons = {
         need_tool = "IGUI_LWT_NeedTool",
         nothing_here = "IGUI_LWT_NothingHere",
         no_source = "IGUI_LWT_NoSource",
+        no_cartridge = "IGUI_LWT_NoFilter",
+        no_filter = "IGUI_LWT_NoFilterFitted",
+        no_filter_slot = "IGUI_LWT_NoFilterSlot",
     },
     GENERIC = "IGUI_LWT_Refused",
 }

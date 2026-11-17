@@ -30,6 +30,8 @@ local Publisher = require "LiveWater/LWT_Publisher"
 local COMMANDS = {
     [Protocol.LAY] = "LWT_CmdLay",
     [Protocol.DISMANTLE] = "LWT_CmdDismantle",
+    [Protocol.FIT_FILTER] = "LWT_CmdFitFilter",
+    [Protocol.REMOVE_FILTER] = "LWT_CmdRemoveFilter",
 }
 
 local MODDATA_KEY = "LiveWater"
@@ -51,7 +53,7 @@ local function build()
         events = LiveWater.Events, sprites = sprites, sites = world, log = log })
     local publisher = Publisher.new({ catalog = catalog, sprites = sprites, mirror = world })
     local commands = Commands.new({ topology = topology, catalog = catalog, world = world,
-        players = GamePlayers.new() })
+        players = GamePlayers.new(), publisher = publisher, scale = GameSettings.scale })
     for name, file in pairs(COMMANDS) do
         commands:register(name, require("LiveWater/Commands/" .. file))
     end

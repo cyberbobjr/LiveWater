@@ -1,4 +1,7 @@
 {
     "ContextMenu_LWT_Lay": "Poser : %1",
-    "ContextMenu_LWT_Dismantle": "Démonter : %1"
+    "ContextMenu_LWT_Dismantle": "Démonter : %1",
+    "ContextMenu_LWT_FitFilter": "Monter la cartouche filtrante",
+    "ContextMenu_LWT_ReplaceFilter": "Remplacer la cartouche filtrante",
+    "ContextMenu_LWT_RemoveFilter": "Retirer la cartouche filtrante"
 }

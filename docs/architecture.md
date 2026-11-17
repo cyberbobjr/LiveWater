@@ -62,7 +62,8 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
 - `LWT_Sprites.lua` : la pièce et ses quatre voisins prennent le sprite de leur masque, appliqué seulement s'il change ;
   un type sans sprite pour ce masque garde celui de sa pose (orientation d'un meuble).
 - `LWT_Commands.lua` : répartiteur, table de gestionnaires par nom (un fichier par commande sous `Commands/`, plus
-  `LWT_CmdChecks.lua` pour les contrôles d'arguments et de portée) ; un refus est dit au joueur par clé de traduction.
+  `LWT_CmdChecks.lua` pour les contrôles d'arguments et de portée, `LWT_CmdCartridge.lua` pour ce que partagent les
+commandes du filtre) ; un refus est dit au joueur par clé de traduction.
 - `LWT_Clock.lua` : pas de dix minutes de chaque réseau éveillé (une pièce sous pression sur une case chargée) :
   courant de chaque pièce qui en a besoin (port `power`, crochet `powered`), distribution, crochet `stepped` de chaque
   membre (litres passés), présentation (port `publisher`), `waterDelivered` pour chaque sortie servie ; besoin des
@@ -79,7 +80,9 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
   note). Les services ne reçoivent que ces ports ; les tests les remplacent par des doublures (`tests/lwt_fakes.py`).
 
 `client/LiveWater/` : `LWT_PipeMenu.lua` (menu minimal : poser ou démonter une pièce `layable`, envoi de la commande
-seulement) et `LWT_NoticeClient.lua` (affiche les notes `notice` du serveur). Interface complète : E13.
+seulement), `LWT_PartMenu.lua` (menu générique : les actions que les capacités d'une pièce proposent, crochet
+`actions`, lues dans l'état recopié sur l'objet ; une action qui demande un objet n'apparaît que si le joueur le
+porte) et `LWT_NoticeClient.lua` (affiche les notes `notice` du serveur). Interface complète : E13.
 
 ## Flux, persistance, extension
 

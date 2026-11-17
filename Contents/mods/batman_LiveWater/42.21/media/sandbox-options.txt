@@ -5,3 +5,9 @@ option LiveWater.PumpFlowMultiplier
     type = double, min = 0.1, max = 10.0, default = 1.0,
     page = LiveWater, translation = LWT_PumpFlowMultiplier,
 }
+
+option LiveWater.FilterCapacityMultiplier
+{
+    type = double, min = 0.1, max = 10.0, default = 1.0,
+    page = LiveWater, translation = LWT_FilterCapacityMultiplier,
+}

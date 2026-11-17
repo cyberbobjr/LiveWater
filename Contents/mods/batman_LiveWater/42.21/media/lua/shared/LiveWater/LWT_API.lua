@@ -49,7 +49,9 @@ LiveWater.Events = EventBus.new(EventBus.NAMES)
 
 -- Revision 2: part definition field `variants`, capability hooks look, attach, power, powered,
 -- stepped, output, lines (LWT_Parts.lua, LWT_Capabilities.lua).
-local API = { revision = 2 }
+-- Revision 3: filter capability field `item` (removable cartridge), hooks cartridge, fit, unfit,
+-- actions.
+local API = { revision = 3 }
 LiveWater.API = API
 
 local function answer(call, id, ok, reason, detail)

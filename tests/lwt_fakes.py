@@ -102,17 +102,22 @@ FakePlayers.__index = FakePlayers
 function FakePlayers.new() return setmetatable({}, FakePlayers) end
 function FakePlayers:position(p) return p.x, p.y, p.z end
 function FakePlayers:has(p, fullType) return (p.items[fullType] or 0) > 0 end
+-- take answers the share of the item left (its condition), p.fractions[fullType] or 1.
 function FakePlayers:take(p, fullType)
     if (p.items[fullType] or 0) <= 0 then return false end
     p.items[fullType] = p.items[fullType] - 1
+    return true, (p.fractions or {})[fullType] or 1
+end
+function FakePlayers:give(p, fullType, fraction)
+    p.items[fullType] = (p.items[fullType] or 0) + 1
+    table.insert(p.given, { type = fullType, fraction = fraction })
     return true
 end
-function FakePlayers:give(p, fullType) p.items[fullType] = (p.items[fullType] or 0) + 1 return true end
 function FakePlayers:hasTool(p, tag) return p.tools[tag] == true end
 function FakePlayers:tell(p, key) table.insert(p.told, key) end
 
 function newPlayer(x, y, z, items, tools)
-    return { x = x, y = y, z = z or 0, items = items or {}, tools = tools or {}, told = {} }
+    return { x = x, y = y, z = z or 0, items = items or {}, tools = tools or {}, told = {}, given = {} }
 end
 
 EMITTED = {}
