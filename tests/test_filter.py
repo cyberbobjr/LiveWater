@@ -118,6 +118,7 @@ SENT = {}
 function sendClientCommand(player, module, command, args) table.insert(SENT, { module, command, args }) end
 function getText(key, a) return key end
 function getItemNameFromFullType(t) return "<" .. t .. ">" end
+ISToolTip = { new = function() return { initialise = function() end, setName = function() end } end }
 STATE = nil
 local function object(sprite)
     return { getSpriteName = function() return sprite end,
@@ -157,14 +158,18 @@ class Menu(unittest.TestCase):
         self.assertEqual((lua.eval("SENT[1][3].x"), lua.eval("SENT[1][3].y")), (4, 5))
         lua.execute('STATE = { type = "LiveWater:PondPump", data = { filter = { fitted = true, used = 0 } } }'
                     ' click({ "%s36" }, {})' % TILE)
-        self.assertEqual(list(lua.eval("texts()").values()), ["ContextMenu_LWT_RemoveFilter"])
+        texts = list(lua.eval("texts()").values())
+        self.assertIn("ContextMenu_LWT_RemoveFilter", texts)
+        self.assertNotIn("ContextMenu_LWT_ReplaceFilter", texts)
         lua.execute('click({ "%s36" }, { [%r] = true })' % (TILE, FILTER))
         self.assertIn("ContextMenu_LWT_ReplaceFilter", list(lua.eval("texts()").values()))
 
     def test_nothing_without_a_cartridge_on_a_pump_without_filter(self):
         lua = self.menu()
         lua.execute('STATE = { type = "LiveWater:PondPump", data = {} } click({ "%s24" }, {})' % TILE)
-        self.assertEqual(lua.eval("#OPTIONS"), 0)
+        texts = list(lua.eval("texts()").values())
+        for key in ("ContextMenu_LWT_FitFilter", "ContextMenu_LWT_ReplaceFilter", "ContextMenu_LWT_RemoveFilter"):
+            self.assertNotIn(key, texts)
 
 
 def script(name):

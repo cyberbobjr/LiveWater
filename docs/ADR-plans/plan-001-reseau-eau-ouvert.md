@@ -17,7 +17,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 | E11 | Arroseur manuel : vanne, rayon, doses de 200 ml | À faire | E07 | D19 | M | E10 |
 | E12 | Arroseur automatique : recette (niveau d'Électricité), minuterie consommatrice | À faire | E11, E08 | D19, D20 | M | — |
 | E13 | Interface : menus, vue du réseau en surbrillance persistante, états « sans pression » et « eau non filtrée » | À faire | E08-E12 | D11, D14, D17 | M | — |
-| E15 | Pompe : interrupteur, usure du rendement, pannes, réparation, fenêtre d'information, son (P03-P05, P08, P15) | À faire | E08 | D24 | M | E16 |
+| E15 | Pompe : interrupteur, usure du rendement, pannes, réparation, fenêtre d'information, son (P03-P05, P08, P15) | Terminée (2026-11-18) | E08 | D24 | M | E16 |
 | E16 | Débitmètre (P12) | À faire | E07 | D24 | S | E15 |
 | E17 | Puits comme source d'eau propre (P02) | À faire | E08 | D24 | S | E16 |
 | E18 | Tuyaux d'un étage à l'autre (P10) | Annulée (Q06 : non repris, l'arrivée d'eau dessert les étages) | — | D24 | — | — |
@@ -299,6 +299,38 @@ aucun abonnement par image.
 
 Une pièce ou une capacité par fonctionnalité de la liste P01-P23 de l'ADR (D24), un fichier chacune, tests rouges
 d'abord. Aucune reprise de code, d'asset, de texte ni de nom (D25). E14 de la version précédente du plan devient E22.
+
+### E15 — Pompe : interrupteur, usure, pannes, réparation, information, son
+
+Clôture (2026-11-18). Fichiers : `Capabilities/LWT_CapPump.lua` (état `on`, `efficiency`, `broken` ; réglages `wear`,
+`breakdownBelow`, `breakdownChance`, `repairItem`, `repairCount`, `repairTool`, `sound`, `noiseRadius`,
+`noiseVolume` ; crochets `switchable`, `switch`, `repairable`, `repair`, `sound`, lignes état, débit, rendement,
+actions), `LWT_CapIntake.lua` (ligne de la source), `LWT_Parts.lua` (`first` rend jusqu'à 4 valeurs),
+`LWT_Capabilities.lua` et `LWT_API.lua` (révision 4), `LWT_Protocol.lua` (`switchPump`, `repairPump`, `sound`),
+`LWT_Reasons.lua`, `Parts/LWT_PartPondPump.lua` (2 ferrailles et une clé, boucle `GeneratorLoop`), serveur
+`Commands/LWT_CmdSwitchPump.lua`, `LWT_CmdRepairPump.lua`, `LWT_Publisher.lua` (boucle sonore annoncée au changement
+et répétée à chaque pas, bruit pour les zombies), `LWT_GameSounds.lua` (`sendServerCommand` à tous les clients,
+`triggerEvent("OnServerCommand")` en solo, `addSound(nil, …)`), `LWT_Clock.lua` (`random` dans le contexte du pas),
+`LWT_GamePlayers.lua` (`count`), `LWT_Server.lua` ; client `LWT_PumpSounds.lua` (un émetteur libre par case,
+`playSoundImpl(nom, false, nil)`, arrêt sur ordre), `LWT_PartMenu.lua` (option « Informations » dont l'infobulle
+montre les lignes) ; `sandbox-options.txt` (`PumpWearMultiplier`), traductions EN et FR ; tests `tests/test_upkeep.py`.
+Choix faits sans l'utilisateur :
+- usure par défaut 0,01 point de rendement par minute de marche (environ une semaine de marche continue de 100 à
+  0 %), × option sandbox (0 = aucune usure) ; débit proportionnel au rendement ; sous 20 %, 2 % de risque de panne
+  par pas de marche ; à 0 % la pompe s'arrête ; une panne arrête seulement (Q05) ;
+- réparation complète (100 %) d'une pompe arrêtée (éteinte, en attente ou en panne) : 2 `Base.ScrapMetal`
+  consommées et une clé (`tags[base:wrench]`) gardée ; refus si elle tourne (« Éteignez-la d'abord ») ou n'en a pas
+  besoin ;
+- l'interrupteur coupe aussitôt la pompe (sprite et son), en plus de l'arrêt automatique ;
+- fenêtre d'information réduite à l'infobulle d'une option « Informations » du clic droit (état, débit, rendement,
+  filtre, source), lue dans l'état recopié ; aucun dessin par image ;
+- son : boucle vanilla `GeneratorLoop` (42.22, `sounds_object_generator.txt`), jouée par chaque client sur ordre du
+  serveur (ordre répété à chaque pas pour les joueurs arrivés depuis, donc jusqu'à 10 minutes de silence pour eux) ;
+  bruit pour les zombies `addSound(nil, x, y, z, 20, 20)` à chaque pas de marche (un générateur vanilla : 40, 60).
+Preuves :
+- `python -B -m unittest discover -s tests` → `Ran 134 tests` … `OK` ;
+- `python -B tools/check_mod.py` → `OK: 52 Lua file(s) checked`.
+Non testé en jeu.
 
 ### E22 — Traductions, parité, passage en jeu
 

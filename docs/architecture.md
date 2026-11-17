@@ -71,8 +71,11 @@ commandes du filtre) ; un refus est dit au joueur par clé de traduction.
 - `LWT_Power.lua` : seul adaptateur du courant. À `OnInitWorld`, si `LiveWire.API.revision >= 6`, inscrit chaque type
   qui a besoin de courant comme consommateur de Live Wire (`powerConsumption`, `display`, `summary` lus dans l'état
   recopié sur l'objet) ; `powered(part)` : `consumerPowered` de Live Wire, sinon la règle vanilla de la case.
-- `LWT_Publisher.lua` : après un pas ou une action, sprite selon l'état (`Sprites:show`) et état recopié sur l'objet
-  seulement quand il change (rien pour une pièce sans état).
+- `LWT_Publisher.lua` : après un pas ou une action, sprite selon l'état (`Sprites:show`), état recopié sur l'objet
+  seulement quand il change (rien pour une pièce sans état), boucle sonore annoncée aux joueurs quand elle change et
+  répétée après chaque pas, bruit pour les zombies après chaque pas (port `sounds`, crochet `sound`).
+- `LWT_GameSounds.lua` : port des sons (ordre `sound` à tous les clients, ou au client local en solo par
+  `triggerEvent`, `addSound` pour les zombies).
 - `LWT_GameSettings.lua` : lecture des options sandbox `LiveWater.*` (`getSandboxOptions`).
 - Adaptateurs du jeu, minces : `LWT_GameWorld.lua` (port monde : case chargée, case libre, objet d'une pièce par son
   sprite, `setSpriteFromName` + `transmitUpdatedSpriteToClients`, `transmitAddObjectToSquare`,
@@ -82,7 +85,8 @@ commandes du filtre) ; un refus est dit au joueur par clé de traduction.
 `client/LiveWater/` : `LWT_PipeMenu.lua` (menu minimal : poser ou démonter une pièce `layable`, envoi de la commande
 seulement), `LWT_PartMenu.lua` (menu générique : les actions que les capacités d'une pièce proposent, crochet
 `actions`, lues dans l'état recopié sur l'objet ; une action qui demande un objet n'apparaît que si le joueur le
-porte) et `LWT_NoticeClient.lua` (affiche les notes `notice` du serveur). Interface complète : E13.
+porte) `LWT_PumpSounds.lua` (boucle sonore jouée localement sur un émetteur libre, à l'ordre du serveur, aucun abonnement
+par image) et `LWT_NoticeClient.lua` (affiche les notes `notice` du serveur). Interface complète : E13.
 
 ## Flux, persistance, extension
 

@@ -21,5 +21,13 @@
     "IGUI_LWT_NoFilterSlot": "Aucun filtre ne se monte ici.",
     "IGUI_LWT_Filter_Left": "Filtre : il reste %1 %%",
     "IGUI_LWT_Filter_Worn": "Filtre : usé, à remplacer",
-    "IGUI_LWT_Filter_None": "Filtre : aucun, l'eau n'est pas filtrée"
+    "IGUI_LWT_Filter_None": "Filtre : aucun, l'eau n'est pas filtrée",
+    "IGUI_LWT_Pump_Off": "Pompe : éteinte",
+    "IGUI_LWT_Pump_Broken": "Pompe : en panne, à réparer",
+    "IGUI_LWT_Pump_Efficiency": "Rendement : %1 %%",
+    "IGUI_LWT_Source_water": "Source : eau naturelle (non filtrée)",
+    "IGUI_LWT_NoScrap": "Il vous faut 2 morceaux de ferraille.",
+    "IGUI_LWT_NotNeeded": "Elle n'a pas besoin de réparation.",
+    "IGUI_LWT_StillRunning": "Éteignez-la d'abord.",
+    "IGUI_LWT_NeedWrench": "Il vous faut une clé."
 }

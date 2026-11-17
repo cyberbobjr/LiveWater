@@ -51,7 +51,9 @@ LiveWater.Events = EventBus.new(EventBus.NAMES)
 -- stepped, output, lines (LWT_Parts.lua, LWT_Capabilities.lua).
 -- Revision 3: filter capability field `item` (removable cartridge), hooks cartridge, fit, unfit,
 -- actions.
-local API = { revision = 3 }
+-- Revision 4: pump fields wear, breakdownBelow, breakdownChance, repairItem, repairCount,
+-- repairTool, sound, noiseRadius, noiseVolume; hooks switchable, switch, repairable, repair, sound.
+local API = { revision = 4 }
 LiveWater.API = API
 
 local function answer(call, id, ok, reason, detail)

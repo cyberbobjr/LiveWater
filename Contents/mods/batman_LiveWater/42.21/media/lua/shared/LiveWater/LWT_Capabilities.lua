@@ -32,13 +32,21 @@
 --   fit(p, d, share, ctx) a cartridge with `share` left goes in (d created)
 --   unfit(p, d)           the cartridge comes out (d created)
 --   actions(p, d)         actions of the part menu: { { command, key, item = item to carry } }
--- ctx is the context of the step: { need, scale = function(optionName) -> multiplier }.
+-- Revision 4 (pump upkeep):
+--   switchable(p, d)      the part has a switch: its position (true = on), else nil
+--   switch(p, d, on)      set the switch (d created)
+--   repairable(p, d)      repair: material full type, count, tool tag or nil, and the reason it
+--                         cannot be done now ("running", "not_needed") or nil
+--   repair(p, d)          the repair is done (d created)
+--   sound(p, d)           sound loop name, noise radius and volume while it makes noise, else nil
+-- ctx is the context of the step: { need, scale = function(optionName) -> multiplier,
+-- random = function() -> 0..1 (breakdowns; none without it) }.
 
 local Check = require "LiveWater/LWT_Check"
 
 local HOOKS = { "define", "carries", "blocks", "pressurizes", "ports", "supply", "source", "outlet", "purifies",
     "wear", "layable", "look", "attach", "power", "powered", "stepped", "output", "lines",
-    "cartridge", "fit", "unfit", "actions" }
+    "cartridge", "fit", "unfit", "actions", "switchable", "switch", "repairable", "repair", "sound" }
 
 local Capabilities = {}
 Capabilities.__index = Capabilities

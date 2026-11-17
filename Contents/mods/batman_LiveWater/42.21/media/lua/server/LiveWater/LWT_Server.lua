@@ -23,6 +23,7 @@ local Commands = require "LiveWater/LWT_Commands"
 local GameWorld = require "LiveWater/LWT_GameWorld"
 local GamePlayers = require "LiveWater/LWT_GamePlayers"
 local GameSettings = require "LiveWater/LWT_GameSettings"
+local GameSounds = require "LiveWater/LWT_GameSounds"
 local Power = require "LiveWater/LWT_Power"
 local Publisher = require "LiveWater/LWT_Publisher"
 
@@ -32,6 +33,8 @@ local COMMANDS = {
     [Protocol.DISMANTLE] = "LWT_CmdDismantle",
     [Protocol.FIT_FILTER] = "LWT_CmdFitFilter",
     [Protocol.REMOVE_FILTER] = "LWT_CmdRemoveFilter",
+    [Protocol.SWITCH_PUMP] = "LWT_CmdSwitchPump",
+    [Protocol.REPAIR_PUMP] = "LWT_CmdRepairPump",
 }
 
 local MODDATA_KEY = "LiveWater"
@@ -44,6 +47,10 @@ end
 local world = GameWorld.new(LiveWater.Parts, LiveWater.Sources)
 local power = Power.new({ catalog = LiveWater.Parts, world = world })
 
+local function randomShare()
+    return ZombRandFloat(0, 1)
+end
+
 local function build()
     local catalog = LiveWater.Parts
     local registry = Registry.new(ModData.getOrCreate(MODDATA_KEY), catalog)
@@ -51,7 +58,7 @@ local function build()
     local sprites = Sprites.new(network, catalog, world)
     local topology = Topology.new({ registry = registry, network = network, catalog = catalog,
         events = LiveWater.Events, sprites = sprites, sites = world, log = log })
-    local publisher = Publisher.new({ catalog = catalog, sprites = sprites, mirror = world })
+    local publisher = Publisher.new({ catalog = catalog, sprites = sprites, mirror = world, sounds = GameSounds.new() })
     local commands = Commands.new({ topology = topology, catalog = catalog, world = world,
         players = GamePlayers.new(), publisher = publisher, scale = GameSettings.scale })
     for name, file in pairs(COMMANDS) do
@@ -62,7 +69,8 @@ local function build()
         publisher = publisher, power = power,
         placement = Placement.new(topology, catalog, log, world),
         clock = Clock.new({ network = network, flow = Flow.new(catalog), catalog = catalog, world = world,
-            events = LiveWater.Events, power = power, publisher = publisher, scale = GameSettings.scale }),
+            events = LiveWater.Events, power = power, publisher = publisher, scale = GameSettings.scale,
+            random = randomShare }),
     }
     local count = topology:rebuild()
     log("LiveWater: " .. count .. " part(s) loaded")

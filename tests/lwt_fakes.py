@@ -102,6 +102,7 @@ FakePlayers.__index = FakePlayers
 function FakePlayers.new() return setmetatable({}, FakePlayers) end
 function FakePlayers:position(p) return p.x, p.y, p.z end
 function FakePlayers:has(p, fullType) return (p.items[fullType] or 0) > 0 end
+function FakePlayers:count(p, fullType) return p.items[fullType] or 0 end
 -- take answers the share of the item left (its condition), p.fractions[fullType] or 1.
 function FakePlayers:take(p, fullType)
     if (p.items[fullType] or 0) <= 0 then return false end

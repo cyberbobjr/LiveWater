@@ -9,8 +9,9 @@ if isClient() then return end
 --   4. each outlet served announces waterDelivered (part, litres, quality).
 -- No game API here; dependencies are injected: { network, flow, catalog, world (port with
 -- isLoaded(x, y, z)), events, need = function(part) -> litres (default 0), power (optional
--- port: powered(part) -> bool), publisher (optional port: present(part)), scale (optional:
--- function(optionName) -> sandbox multiplier) }.
+-- port: powered(part) -> bool), publisher (optional port: present(part, stepped)), scale
+-- (optional: function(optionName) -> sandbox multiplier), random (optional: function() -> 0..1,
+-- breakdowns) }.
 
 local Grid = require "LiveWater/LWT_Grid"
 
@@ -25,7 +26,7 @@ function Clock.new(deps)
     return setmetatable({
         network = deps.network, flow = deps.flow, catalog = deps.catalog, world = deps.world,
         events = deps.events, power = deps.power, publisher = deps.publisher,
-        ctx = { need = deps.need or noNeed, scale = deps.scale },
+        ctx = { need = deps.need or noNeed, scale = deps.scale, random = deps.random },
     }, Clock)
 end
 
@@ -58,7 +59,7 @@ function Clock:conclude(members, result)
         local part = members[i]
         local key = Grid.key(part.x, part.y, part.z)
         self.catalog:call(part, "stepped", { through = result.through[key] or 0, quality = result.quality }, self.ctx)
-        if self.publisher then self.publisher:present(part) end
+        if self.publisher then self.publisher:present(part, true) end
     end
 end
 

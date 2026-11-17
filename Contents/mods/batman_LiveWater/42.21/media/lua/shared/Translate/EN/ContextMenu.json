@@ -3,5 +3,9 @@
     "ContextMenu_LWT_Dismantle": "Dismantle %1",
     "ContextMenu_LWT_FitFilter": "Fit Water Filter",
     "ContextMenu_LWT_ReplaceFilter": "Replace Water Filter",
-    "ContextMenu_LWT_RemoveFilter": "Remove Water Filter"
+    "ContextMenu_LWT_RemoveFilter": "Remove Water Filter",
+    "ContextMenu_LWT_TurnOn": "Turn Pump On",
+    "ContextMenu_LWT_TurnOff": "Turn Pump Off",
+    "ContextMenu_LWT_Repair": "Repair Pump",
+    "ContextMenu_LWT_Info": "Information"
 }

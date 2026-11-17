@@ -3,5 +3,7 @@
     "Sandbox_LWT_PumpFlowMultiplier": "Pump flow",
     "Sandbox_LWT_PumpFlowMultiplier_tooltip": "Multiplies the litres a pump gives every 10 minutes (50 L for a pond pump at 1.0).",
     "Sandbox_LWT_FilterCapacityMultiplier": "Filter cartridge life",
-    "Sandbox_LWT_FilterCapacityMultiplier_tooltip": "Multiplies the litres a filter cartridge cleans before it is worn out (500 L at 1.0)."
+    "Sandbox_LWT_FilterCapacityMultiplier_tooltip": "Multiplies the litres a filter cartridge cleans before it is worn out (500 L at 1.0).",
+    "Sandbox_LWT_PumpWearMultiplier": "Pump wear",
+    "Sandbox_LWT_PumpWearMultiplier_tooltip": "Multiplies the efficiency a pump loses while it runs (about a week of running from 100%% to 0%% at 1.0; 0 = no wear). Below 20%% it may break down."
 }

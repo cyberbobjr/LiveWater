@@ -14,7 +14,7 @@ Contrats précis du mod (objets, commandes réseau, ModData, options sandbox, tr
 | Table Lua globale | `LiveWater` |
 | Préfixes | fichiers `LWT_*.lua`, recettes `LWT`, traductions `*_LWT_*`, ids de pièces `"<Mod>:<Nom>"` |
 
-## API publique (`LiveWater.API`, révision 3)
+## API publique (`LiveWater.API`, révision 4)
 
 Inscription depuis un fichier `shared`, pendant le chargement, avant `OnInitGlobalModData` (ensuite :
 `registration_closed`). Tout refus rend `false` et une raison, et écrit un avertissement en anglais dans la console.
@@ -24,7 +24,7 @@ Inscription depuis un fichier `shared`, pendant le chargement, avant `OnInitGlob
 | `registerPart(id, definition)` | type de pièce `"<Mod>:<Nom>"` | `invalid_id`, `duplicate_part`, `invalid_definition`, `invalid_sprites`, `duplicate_sprite`, `invalid_sides`, `invalid_capabilities`, `unknown_capability`, `invalid_field` |
 | `registerCapability(kind, implementation)` | nouvelle capacité ; `kind` nom simple ou `"<Mod>:<nom>"` ; `implementation.define(params)` obligatoire | `invalid_kind`, `duplicate_capability`, `invalid_implementation` |
 | `part(id)` | copie de la définition contrôlée, ou `nil` | — |
-| `revision` | entier ; 2 : champ `variants`, crochets `look`, `attach`, `power`, `powered`, `stepped`, `output`, `lines` ; 3 : réglage `item` du filtre, crochets `cartridge`, `fit`, `unfit`, `actions` | — |
+| `revision` | entier ; 2 : champ `variants`, crochets `look`, `attach`, `power`, `powered`, `stepped`, `output`, `lines` ; 3 : réglage `item` du filtre, crochets `cartridge`, `fit`, `unfit`, `actions` ; 4 : réglages d'entretien de la pompe, crochets `switchable`, `switch`, `repairable`, `repair`, `sound` | — |
 
 Définition d'une pièce (copiée champ par champ, le reste est ignoré) : `sprites` (`{ [masque] = sprite }`, masques
 0 à 15, redessinés selon les raccords), `variants` (révision 2 : `{ [clé] = { sprite S, E, N, O } }`, sprites
@@ -37,7 +37,7 @@ de capacité, joints par `_` (filtre `filter` + pompe `on` → `filter_on`). Ref
 |---|---|
 | `conduit` | aucun |
 | `intake` | `quality` : `"tainted"` (défaut) ou `"clean"` ; ne se pose qu'à côté d'une source (`attach`, refus `no_source`), dont la sorte est relevée dans son état (`source`) |
-| `pump` | `ports` 1-4 (4), `pressure` (6), `flow` litres par pas de dix minutes (50, × option `PumpFlowMultiplier`), `watts` en marche (250 ; 0 = sans courant) |
+| `pump` | `ports` 1-4 (4), `pressure` (6), `flow` litres par pas de dix minutes à plein rendement (50, × rendement, × option `PumpFlowMultiplier`), `watts` en marche (250 ; 0 = sans courant) ; révision 4 : `wear` points de rendement perdus par minute de marche (0,01, × option `PumpWearMultiplier`), `breakdownBelow` (20), `breakdownChance` par pas de marche (0,02), `repairItem` (`Base.ScrapMetal`), `repairCount` (2), `repairTool` étiquette facultative, `sound` boucle en marche (`GeneratorLoop`), `noiseRadius` et `noiseVolume` (20, 20) |
 | `valve` | `open` à la pose (`true`) |
 | `filter` | `capacity` litres par cartouche (500, × option `FilterCapacityMultiplier`, notée à la pose de la cartouche) ; `item` (révision 3) : type complet d'une cartouche amovible, le filtre n'agit que cartouche montée |
 | `outlet` | `type` obligatoire ; `pressureCost` et `needsClean` : `houseInlet` 2 et vrai, `sprinkler` 1 et faux, autre type 1 et faux |
@@ -56,7 +56,7 @@ du démontage). Révision 2 : `look` (jeton de la variante), `attach(p, d, place
 (lignes d'information `{ clé, arg…, rank = n }`). `supply`, `purifies` et `wear` reçoivent en dernier le contexte du
 pas (`ctx.scale(nom)` : multiplicateur sandbox). Révision 3 : `cartridge(p, d, ctx)` (objet de la cartouche, montée
 ou non, part restante 0-1), `fit(p, d, part, ctx)`, `unfit(p, d)`, `actions(p, d)` (actions du menu : `{ command,
-key, item }`, `item` = objet à porter).
+key, item }`, `item` = objet à porter). Révision 4 : `switchable` (position de l'interrupteur, ou `nil`), `switch(p, d, oui)`, `repairable` (matériau, nombre, outil, raison du refus `running` ou `not_needed` ou `nil`), `repair`, `sound` (nom de la boucle, rayon et volume du bruit tant que la pièce en fait).
 
 Sortes de source d'eau (`LiveWater.Sources`, interne en révision 2) : `water` (eau naturelle : drapeau `water` d'une
 des 8 cases voisines, eau croupie). Une sorte est une donnée `{ quality, flag?, sprites? }` ; les sortes propres
@@ -67,7 +67,7 @@ sont essayées d'abord.
 | Id | Sprites | Capacités |
 |---|---|---|
 | `LiveWater:PipeGalvanized` | `batman_livewater_01_<masque>`, masques 0 à 15 | `conduit`, `layable` (`LiveWater.PipeSection`, `base:pipewrench`) |
-| `LiveWater:PondPump` | `variants` : `off` 24-27, `on` 28-31, `filter_on` 32-35, `filter_off` 36-39 (S, E, N, O) | `filter` (`LiveWater.WaterFilter`, 500 L), `intake`, `pump` (4 ports, pression 6, 50 L, 250 W) |
+| `LiveWater:PondPump` | `variants` : `off` 24-27, `on` 28-31, `filter_on` 32-35, `filter_off` 36-39 (S, E, N, O) | `filter` (`LiveWater.WaterFilter`, 500 L), `intake`, `pump` (4 ports, pression 6, 50 L, 250 W, réparation 2 `Base.ScrapMetal` + `base:wrench`, boucle `GeneratorLoop`) |
 
 ## Objets et recettes
 
@@ -86,6 +86,7 @@ sont essayées d'abord.
 |---|---|---|
 | `LiveWater.PumpFlowMultiplier` | double 0,1-10, 1,0 | multiplie le débit des pompes (`flow`) |
 | `LiveWater.FilterCapacityMultiplier` | double 0,1-10, 1,0 | multiplie les litres d'une cartouche (`capacity`) |
+| `LiveWater.PumpWearMultiplier` | double 0-10, 1,0 | multiplie la perte de rendement en marche (`wear`) ; 0 = aucune usure |
 
 Traductions `Sandbox_LWT_<Option>` et `_tooltip` dans `Sandbox.json`, onglet `Sandbox_LiveWater`.
 
@@ -116,12 +117,15 @@ Tout argument est recontrôlé sur l'autorité. Portée : 3 cases (Tchebychev) s
 | client → serveur | `dismantle` | `x`, `y`, `z` entiers | arguments (`invalid`), pièce présente (`nothing_here`), type `layable` (`not_layable`), portée (`too_far`), outil de l'étiquette (`need_tool`) | pièce retirée, tuile retirée, objet rendu (au sol si trop lourd) |
 | client → serveur | `fitFilter` | `x`, `y`, `z` entiers | arguments (`invalid`), pièce (`nothing_here`), emplacement de cartouche (`no_filter_slot`), portée (`too_far`), cartouche dans l'inventaire (`no_cartridge`) | cartouche prise (son état = part restante) ; l'ancienne ressort d'abord (rendue avec sa part restante, jetée si usée) |
 | client → serveur | `removeFilter` | `x`, `y`, `z` entiers | mêmes contrôles jusqu'à la portée, puis cartouche montée (`no_filter`) | cartouche rendue avec sa part restante, ou jetée si usée |
+| client → serveur | `switchPump` | `x`, `y`, `z` entiers | arguments, pièce, interrupteur (`not_switchable`), portée | interrupteur basculé ; éteinte, la pompe s'arrête aussitôt |
+| client → serveur | `repairPump` | `x`, `y`, `z` entiers | arguments, pièce, réparable (`not_repairable`), à l'arrêt (`running`), usée ou en panne (`not_needed`), portée, outil (`need_wrench`), matériau (`no_parts`) | matériau consommé, rendement 100 %, panne effacée |
+| serveur → client | `sound` | `x`, `y`, `z`, `name` (absent = arrêt) | — | boucle jouée ou arrêtée localement (en solo, par `triggerEvent`) |
 | serveur → client | `notice` | `key` (clé de traduction) | — | note au-dessus du joueur (en solo, affichée directement) |
 
-Clés des refus (`IG_UI.json`, table partagée `LWT_Reasons`) : `IGUI_LWT_NoSource` (`no_source`), `IGUI_LWT_NoFilter` (`no_cartridge`), `IGUI_LWT_NoFilterFitted` (`no_filter`), `IGUI_LWT_NoFilterSlot` (`no_filter_slot`), `IGUI_LWT_Invalid`, `IGUI_LWT_NotLayable`, `IGUI_LWT_TooFar` (`too_far`,
+Clés des refus (`IG_UI.json`, table partagée `LWT_Reasons`) : `IGUI_LWT_NoSource` (`no_source`), `IGUI_LWT_NoFilter` (`no_cartridge`), `IGUI_LWT_NoFilterFitted` (`no_filter`), `IGUI_LWT_NoFilterSlot` (`no_filter_slot`), `IGUI_LWT_StillRunning` (`running`), `IGUI_LWT_NotNeeded` (`not_needed`), `IGUI_LWT_NeedWrench` (`need_wrench`), `IGUI_LWT_NoScrap` (`no_parts`), `IGUI_LWT_Invalid`, `IGUI_LWT_NotLayable`, `IGUI_LWT_TooFar` (`too_far`,
 `not_loaded`), `IGUI_LWT_Blocked`, `IGUI_LWT_Occupied`, `IGUI_LWT_PortsFull`, `IGUI_LWT_NoItem`, `IGUI_LWT_NeedTool`,
 `IGUI_LWT_NothingHere`, autre raison `IGUI_LWT_Refused`. Menu : `ContextMenu_LWT_Lay`, `ContextMenu_LWT_Dismantle`
-(`%1` = nom de l'objet posé) ; menu des pièces : `ContextMenu_LWT_FitFilter`, `ContextMenu_LWT_ReplaceFilter`, `ContextMenu_LWT_RemoveFilter`.
+(`%1` = nom de l'objet posé) ; menu des pièces : `ContextMenu_LWT_FitFilter`, `ContextMenu_LWT_ReplaceFilter`, `ContextMenu_LWT_RemoveFilter`, `ContextMenu_LWT_TurnOn`, `ContextMenu_LWT_TurnOff`, `ContextMenu_LWT_Repair`, `ContextMenu_LWT_Info` (infobulle : lignes d'information traduites, `IGUI_LWT_Pump_*`, `IGUI_LWT_Filter_*`, `IGUI_LWT_Source_<sorte>`).
 
 ## Registre persistant (ModData globale `LiveWater`, `LWT_Registry`)
 
@@ -135,7 +139,7 @@ partie à l'autre) ; le graphe en est reconstruit à ce moment.
 
 Entrée : `v` (version du schéma, 1), `type` (id `"<Mod>:<Nom>"`), `x`, `y`, `z`, `order` (ordre de pose), `data`
 (`{ [capacité] = état }`, par exemple `valve = { open = false }`, `filter = { used = 120 }`, `intake = { source =
-"water" }`, `pump = { powered, running, litres }`). Tout autre champ est
+"water" }`, `pump = { on, powered, running, litres, efficiency, broken }`). Tout autre champ est
 conservé tel quel. Une pièce dont le type n'est pas inscrit reste dans le registre, inerte. Refus d'ajout :
 `unknown_part`, `occupied`.
 

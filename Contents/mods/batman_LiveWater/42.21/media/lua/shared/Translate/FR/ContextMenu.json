@@ -3,5 +3,9 @@
     "ContextMenu_LWT_Dismantle": "Démonter : %1",
     "ContextMenu_LWT_FitFilter": "Monter la cartouche filtrante",
     "ContextMenu_LWT_ReplaceFilter": "Remplacer la cartouche filtrante",
-    "ContextMenu_LWT_RemoveFilter": "Retirer la cartouche filtrante"
+    "ContextMenu_LWT_RemoveFilter": "Retirer la cartouche filtrante",
+    "ContextMenu_LWT_TurnOn": "Allumer la pompe",
+    "ContextMenu_LWT_TurnOff": "Éteindre la pompe",
+    "ContextMenu_LWT_Repair": "Réparer la pompe",
+    "ContextMenu_LWT_Info": "Informations"
 }

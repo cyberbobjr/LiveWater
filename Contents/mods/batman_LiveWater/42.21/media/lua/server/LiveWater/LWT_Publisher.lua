@@ -3,9 +3,13 @@ if isClient() then return end
 -- an action, present(part):
 --   the sprite follows the state (LWT_Sprites:show: variants, facing kept);
 --   the state is mirrored on the game object ({ type, data }, LWT_Mirror) only when it changed,
---   for the client menus, Live Wire and a moveable picked up then set down again.
+--   for the client menus, Live Wire and a moveable picked up then set down again;
+--   its sound loop (`sound` hook, P15) starts or stops for the players when it changes; after a
+--   step (present(part, true)) a part that makes noise is heard by zombies and its loop is told
+--   again (players who came near since).
 -- No game API here; dependencies are injected: { catalog, sprites (LWT_Sprites), mirror (port:
--- writeState(x, y, z, typeId, state)) }.
+-- writeState(x, y, z, typeId, state)), sounds (optional port: loop(x, y, z, name or nil),
+-- noise(x, y, z, radius, volume)) }.
 
 local Grid = require "LiveWater/LWT_Grid"
 
@@ -13,7 +17,8 @@ local Publisher = {}
 Publisher.__index = Publisher
 
 function Publisher.new(deps)
-    return setmetatable({ catalog = deps.catalog, sprites = deps.sprites, mirror = deps.mirror, sent = {} }, Publisher)
+    return setmetatable({ catalog = deps.catalog, sprites = deps.sprites, mirror = deps.mirror, sounds = deps.sounds,
+        sent = {}, playing = {} }, Publisher)
 end
 
 -- Text of a value with sorted keys: two equal states give the same text.
@@ -37,11 +42,28 @@ local function isEmpty(t)
     return true
 end
 
+-- Sound loop and noise of the part; `stepped`: after a ten-minute step.
+function Publisher:sound(part, key, stepped)
+    if not self.sounds then return end
+    local name, radius, volume = self.catalog:first(part, "sound")
+    if name then
+        if stepped then self.sounds:noise(part.x, part.y, part.z, radius, volume) end
+        if stepped or self.playing[key] ~= name then
+            self.sounds:loop(part.x, part.y, part.z, name)
+            self.playing[key] = name
+        end
+    elseif self.playing[key] then
+        self.sounds:loop(part.x, part.y, part.z, nil)
+        self.playing[key] = nil
+    end
+end
+
 -- A part without state (a pipe) is never mirrored.
-function Publisher:present(part)
+function Publisher:present(part, stepped)
     local x, y, z = part.x, part.y, part.z
     self.sprites:show(x, y, z)
     local key = Grid.key(x, y, z)
+    self:sound(part, key, stepped)
     local data = part.data or {}
     if self.sent[key] == nil and isEmpty(data) then return end
     local state = { type = part.type, data = data }
@@ -53,7 +75,12 @@ end
 
 -- The part left its square: the next one there is presented anew.
 function Publisher:forget(part)
-    self.sent[Grid.key(part.x, part.y, part.z)] = nil
+    local key = Grid.key(part.x, part.y, part.z)
+    self.sent[key] = nil
+    if self.playing[key] then
+        self.sounds:loop(part.x, part.y, part.z, nil)
+        self.playing[key] = nil
+    end
 end
 
 return Publisher

@@ -1,8 +1,10 @@
--- LiveWater: right-click menu of the parts that have actions (fit or remove a filter, switch a
--- pump...). It reads the state mirrored on the object (LWT_Mirror, synced by the server), asks
--- the part's capabilities for their actions (`actions` hook) and only sends the command; the
--- server checks everything and answers a refusal with a note (LWT_NoticeClient). An action
--- that needs an item is offered only when the player carries one.
+-- LiveWater: right-click menu of the parts that have actions (fit or remove a filter, switch or
+-- repair a pump...) or information lines (state, power, source, efficiency, filter: P08). It
+-- reads the state mirrored on the object (LWT_Mirror, synced by the server), asks the part's
+-- capabilities for their actions (`actions` hook) and lines (`lines` hook), and only sends the
+-- command; the server checks everything and answers a refusal with a note (LWT_NoticeClient).
+-- An action that needs an item is offered only when the player carries one. The information is
+-- the tooltip of an "Information" option: nothing is drawn per frame by LiveWater.
 
 require "LiveWater/LWT_API"
 local Protocol = require "LiveWater/LWT_Protocol"
@@ -34,6 +36,27 @@ function PartMenu.partsOn(sq, catalog)
     return out
 end
 
+-- Text of the information lines of a part (`lines` hooks, P08), one per line of the tooltip.
+function PartMenu.describe(catalog, part)
+    local lines, out = catalog:lines(part), {}
+    for i = 1, #lines do
+        local l = lines[i]
+        out[i] = getText(l[1], l[2], l[3], l[4], l[5])
+    end
+    return table.concat(out, " <LINE> ")
+end
+
+-- "Information" option: its tooltip shows the lines; choosing it does nothing more.
+local function addInformation(context, catalog, part)
+    if #catalog:lines(part) == 0 then return end
+    local option = context:addOption(getText("ContextMenu_LWT_Info"), nil, nil)
+    local tooltip = ISToolTip:new()
+    tooltip:initialise()
+    tooltip:setName(getText("ContextMenu_LWT_Info"))
+    tooltip.description = PartMenu.describe(catalog, part)
+    option.toolTip = tooltip
+end
+
 local function send(player, command, sq)
     sendClientCommand(player, Protocol.MODULE, command, { x = sq:getX(), y = sq:getY(), z = sq:getZ() })
 end
@@ -53,6 +76,7 @@ function PartMenu.fill(playerNum, context, worldobjects, test)
                 context:addOption(getText(a.key), player, send, a.command, sq)
             end
         end
+        if not test then addInformation(context, catalog, parts[i]) end
     end
 end
 

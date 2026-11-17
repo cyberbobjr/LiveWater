@@ -17,6 +17,12 @@ local Reasons = {
         no_cartridge = "IGUI_LWT_NoFilter",
         no_filter = "IGUI_LWT_NoFilterFitted",
         no_filter_slot = "IGUI_LWT_NoFilterSlot",
+        not_switchable = "IGUI_LWT_Invalid",
+        not_repairable = "IGUI_LWT_Invalid",
+        running = "IGUI_LWT_StillRunning",
+        not_needed = "IGUI_LWT_NotNeeded",
+        need_wrench = "IGUI_LWT_NeedWrench",
+        no_parts = "IGUI_LWT_NoScrap",
     },
     GENERIC = "IGUI_LWT_Refused",
 }

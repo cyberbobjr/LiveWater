@@ -194,7 +194,7 @@ class Running(unittest.TestCase):
         state = lua.eval('WORLD:stateOf(0, 0, 0, "LiveWater:PondPump")')
         self.assertEqual(state.type, "LiveWater:PondPump")
         self.assertTrue(state.data.pump.running)
-        lua.execute("WORLD.writes = 0 CLOCK:tick()")
+        lua.execute('NEED["1,0"] = 0 CLOCK:tick() WORLD.writes = 0 CLOCK:tick()')
         self.assertEqual(lua.eval("WORLD.writes"), 0)
 
     def test_a_pump_placed_again_keeps_its_mirrored_state(self):

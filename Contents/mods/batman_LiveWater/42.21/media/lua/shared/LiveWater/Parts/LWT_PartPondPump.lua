@@ -23,6 +23,7 @@ LiveWater.API.registerPart("LiveWater:PondPump", {
     capabilities = {
         filter = { item = "LiveWater.WaterFilter", capacity = 500 },
         intake = true,
-        pump = { ports = 4, pressure = 6, flow = 50, watts = 250 },
+        pump = { ports = 4, pressure = 6, flow = 50, watts = 250, repairItem = "Base.ScrapMetal", repairCount = 2,
+            repairTool = "base:wrench", sound = "GeneratorLoop" },
     },
 })

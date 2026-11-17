@@ -3,5 +3,7 @@
     "Sandbox_LWT_PumpFlowMultiplier": "Débit des pompes",
     "Sandbox_LWT_PumpFlowMultiplier_tooltip": "Multiplie les litres qu'une pompe donne toutes les 10 minutes (50 L pour une pompe d'étang à 1,0).",
     "Sandbox_LWT_FilterCapacityMultiplier": "Durée des cartouches filtrantes",
-    "Sandbox_LWT_FilterCapacityMultiplier_tooltip": "Multiplie les litres qu'une cartouche filtrante nettoie avant d'être usée (500 L à 1,0)."
+    "Sandbox_LWT_FilterCapacityMultiplier_tooltip": "Multiplie les litres qu'une cartouche filtrante nettoie avant d'être usée (500 L à 1,0).",
+    "Sandbox_LWT_PumpWearMultiplier": "Usure des pompes",
+    "Sandbox_LWT_PumpWearMultiplier_tooltip": "Multiplie le rendement qu'une pompe perd en marche (environ une semaine de marche de 100 %% à 0 %% à 1,0 ; 0 = aucune usure). Sous 20 %% elle peut tomber en panne."
 }

@@ -31,4 +31,10 @@ function Intake.source(p, d, ctx)
     return nil
 end
 
+-- Source line (P08): key "IGUI_LWT_Source_<kind>", ":" and other signs of a mod's kind as "_".
+function Intake.lines(p, d)
+    if not (d and d.source) then return {} end
+    return { { "IGUI_LWT_Source_" .. string.gsub(d.source, "[^%w_]", "_"), rank = 40 } }
+end
+
 return Intake

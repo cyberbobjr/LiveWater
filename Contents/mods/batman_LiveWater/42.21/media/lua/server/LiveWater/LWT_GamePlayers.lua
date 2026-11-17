@@ -3,6 +3,7 @@ if isClient() then return end
 -- inventory is the one that counts; changes are sent to the owner).
 --   position(player)          x, y, z
 --   has(player, fullType)     item of that full type in the inventory (bags included)
+--   count(player, fullType)   how many (bags included)
 --   take(player, fullType)    remove one: true and the share of it left (condition / max,
 --                             1 for an item without condition), or false
 --   give(player, fullType, share)  add one (dropped at the feet when too heavy); `share`
@@ -33,6 +34,10 @@ local function shareOf(item)
     local max = item:getConditionMax()
     if not max or max <= 0 then return 1 end
     return item:getCondition() / max
+end
+
+function GamePlayers:count(player, fullType)
+    return player:getInventory():getCountTypeRecurse(fullType)
 end
 
 function GamePlayers:take(player, fullType)

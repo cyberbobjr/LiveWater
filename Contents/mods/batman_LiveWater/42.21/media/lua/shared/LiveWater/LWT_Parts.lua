@@ -236,7 +236,7 @@ function Parts:any(part, hook, ...)
     return false
 end
 
--- Results of the first capability of the part whose `hook` answers non-nil, or nil.
+-- Results (up to four) of the first capability of the part whose `hook` answers non-nil, or nil.
 function Parts:first(part, hook, ...)
     local def = self.defs[part.type]
     if not def then return nil end
@@ -244,8 +244,8 @@ function Parts:first(part, hook, ...)
         local c = def.caps[i]
         local fn = c.impl[hook]
         if fn then
-            local a, b, d = fn(c.params, stateOf(part, c.kind), ...)
-            if a ~= nil then return a, b, d end
+            local a, b, d, e = fn(c.params, stateOf(part, c.kind), ...)
+            if a ~= nil then return a, b, d, e end
         end
     end
     return nil

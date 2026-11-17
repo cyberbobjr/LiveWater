@@ -2,7 +2,9 @@
 -- sendServerCommand (module and command names). Arguments are always re-checked on the server.
 --   client -> server  LAY { x, y, z, part }   DISMANTLE { x, y, z }
 --                     FIT_FILTER { x, y, z }  REMOVE_FILTER { x, y, z }
+--                     SWITCH_PUMP { x, y, z } REPAIR_PUMP { x, y, z }
 --   server -> client  NOTICE { key }          (translation key of a refusal)
+--                     SOUND { x, y, z, name } (sound loop of a part: name, or nil to stop)
 
 local Protocol = {
     MODULE = "LiveWater",
@@ -10,6 +12,9 @@ local Protocol = {
     DISMANTLE = "dismantle",
     FIT_FILTER = "fitFilter",
     REMOVE_FILTER = "removeFilter",
+    SWITCH_PUMP = "switchPump",
+    REPAIR_PUMP = "repairPump",
+    SOUND = "sound",
     NOTICE = "notice",
 }
 

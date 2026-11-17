@@ -11,3 +11,8 @@ du [plan 001](ADR-plans/plan-001-reseau-eau-ouvert.md) sont terminées. Rien n'e
 | F03 | Courant de la pompe : générateur ou réseau public ; avec Live Wire, consommateur de 250 W en marche, coupé par ses disjoncteurs, visible dans le logiciel de gestion (état, débit ; total des pompes du réseau) | E08 |
 | F04 | Réglage sandbox du débit des pompes (multiplicateur, 1,0 par défaut) | E08 |
 | F05 | Cartouche filtrante : fabriquée avec 2 charbons et 2 bandes de tissu ; montée dans la pompe au clic droit, elle rend l'eau propre (la maison la reçoit) sur 500 L ; son état montre ce qui reste ; retirée, elle revient avec son usure, ou est jetée si usée ; la pompe montre le filtre ; durée réglable en sandbox | E10 |
+| F06 | Interrupteur de la pompe au clic droit (« Allumer », « Éteindre »), en plus de l'arrêt automatique | E15 |
+| F07 | Usure de la pompe : son rendement baisse quand elle tourne, le débit suit ; sous 20 % elle peut tomber en panne, à 0 % elle s'arrête ; pas d'incendie ; usure réglable en sandbox | E15 |
+| F08 | Réparation d'une pompe arrêtée et usée ou en panne : 2 morceaux de ferraille et une clé, rendement remis à 100 % | E15 |
+| F09 | Informations de la pompe au clic droit : état (en marche, en attente, éteinte, sans courant, en panne), débit, rendement, filtre, source | E15 |
+| F10 | Bruit de la pompe en marche : boucle sonore entendue par les joueurs proches, bruit qui attire les zombies | E15 |

@@ -21,5 +21,13 @@
     "IGUI_LWT_NoFilterSlot": "No filter fits in this.",
     "IGUI_LWT_Filter_Left": "Filter: %1%% left",
     "IGUI_LWT_Filter_Worn": "Filter: worn out, replace it",
-    "IGUI_LWT_Filter_None": "Filter: none, the water stays unfiltered"
+    "IGUI_LWT_Filter_None": "Filter: none, the water stays unfiltered",
+    "IGUI_LWT_Pump_Off": "Pump: switched off",
+    "IGUI_LWT_Pump_Broken": "Pump: broken down, repair it",
+    "IGUI_LWT_Pump_Efficiency": "Efficiency: %1%%",
+    "IGUI_LWT_Source_water": "Source: natural water (unfiltered)",
+    "IGUI_LWT_NoScrap": "You need 2 scrap metal.",
+    "IGUI_LWT_NotNeeded": "It does not need a repair.",
+    "IGUI_LWT_StillRunning": "Switch it off first.",
+    "IGUI_LWT_NeedWrench": "You need a wrench."
 }
