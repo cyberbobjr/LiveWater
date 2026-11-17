@@ -86,6 +86,14 @@ Faits établis :
 
 - **D08 — Interdits.** Aucun abonnement à `OnTick`, `OnTickEvenPaused`, `OnPlayerUpdate`, `OnRenderTick`,
   `OnPostRender`, `OnPreUIDraw` ni à un autre événement par image, y compris pour une vue ouverte.
+- **D08a — Exception visuelle : jet animé des arroseurs** (ajout du 2026-11-18, décision prise par l'agent sur la
+  carte blanche de l'utilisateur, à confirmer par lui). Demande de l'utilisateur du 2026-11-17 : « assure-toi que les
+  jets d'eau des arroseurs soient bien animés ». Le moteur n'anime pas le calque d'une tuile de mod : seuls `IsoFire`,
+  `IsoFireplace`, `IsoBarbecue` font avancer les images (confirmé statiquement, Java 42.22, entrée « Calque animé » de
+  la base de connaissances). D08 reste la règle ; une seule exception : un module **client** qui ne s'abonne à
+  `OnTick` que tant qu'au moins un arroseur en marche est chargé près du joueur, se désabonne dès qu'il n'y en a plus,
+  change l'image du jet au plus 6 fois par seconde, et ne fait aucun travail de jeu (aucune donnée, aucune commande).
+  Option client pour le couper (jet fixe). Rien de cela ne tourne sur un serveur dédié.
 - **D09 — Horloge unique sur l'autorité.** Un seul abonné `Events.EveryTenMinutes` côté serveur (solo : le jeu) fait
   avancer tous les réseaux : distribution, usure, minuteries d'arrosage (comparaison d'un numéro de tranche, pas de
   `getMinutes() == …`, `api-42-21.md:173`). Le travail est borné : seuls les réseaux dont la pompe est sur une case

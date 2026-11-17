@@ -24,9 +24,12 @@ Orientations dans l'ordre S, E, N, W. Axe `ew` = tuyau est-ouest, `ns` = nord-su
 | 68-71 | raccord de baril « Remplir », récipient bas (caisse bâchée) | `barrel_fill_low` |
 | 72-75 | raccord de baril « Pomper » | `barrel_pump` |
 | 76-79 | réservés | — |
+| 80-103 | jet d'eau d'arroseur, image f (0-5), orientation k : `80 + 4 * f + k` (calque, sans propriétés) | `sprinkler_jet` |
 
-Jet d'eau animé des arroseurs : calque attaché par le client, images fournies par le mod ; nommage et mécanisme
-définis par la recherche moteur de l'étape E06 (voir la fiche E06 du plan).
+Jet d'eau animé des arroseurs : le moteur n'anime pas le calque d'une tuile ordinaire (base de connaissances,
+`custom-tiles-entities.md`, « Calque animé (`AttachAnim`) »). Le client attache lui-même l'image courante du jet
+(index 80-103) sur un arroseur en marche, par l'exception D08a de l'ADR-001. Les tuiles « en marche » (52-55, 60-63)
+ne portent donc pas le jet.
 
 Objets d'inventaire : `LiveWater.PipeSection` (icône `Item_LWT_PipeSection`), `LiveWater.WaterFilter`
 (`Item_LWT_WaterFilter`). Objets posables `Base.Mov_LiveWater_<Nom>` : `PondPump`, `Valve`, `FlowMeter`,
