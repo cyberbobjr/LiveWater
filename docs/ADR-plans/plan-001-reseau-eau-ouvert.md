@@ -133,7 +133,9 @@ robinet ouvert et fermé, débitmètre, pompe arrêtée, en marche et avec filtr
 arroseurs manuel et automatique au repos et actifs, raccord de baril « Remplir » et « Pomper », objets section de
 tuyau et cartouche filtrante) et [réseau d'exemple](../images/art/planche-reseau-exemple.png) étang → robinets →
 maison et potager. Rendu : Blender 5.3 sans interface, `source/tiles/build_livewater_tiles.py`, planche par
-`tools/make_tile_board.py`.
+`tools/make_tile_board.py`. Planche refaite le 2026-11-17 dans le style vanilla (matériaux texturés et passe de style
+pzforge comme Live Wire, matériel rural réaliste, première ligne de sprites vanilla pour comparer) ; réseau d'exemple
+composé sur sol vanilla par `tools/make_network_scene.py`.
 
 ### E07 — Adaptateurs serveur
 
