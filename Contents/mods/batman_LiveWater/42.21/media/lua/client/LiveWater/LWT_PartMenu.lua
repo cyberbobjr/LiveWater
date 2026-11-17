@@ -36,12 +36,20 @@ function PartMenu.partsOn(sq, catalog)
     return out
 end
 
+-- Argument of a line as text: a whole number without a decimal part (a Lua number reaches
+-- Java's getText as a Double, "50.0").
+local function asText(v)
+    if type(v) == "number" and v % 1 == 0 then return string.format("%d", v) end
+    return tostring(v)
+end
+
 -- Text of the information lines of a part (`lines` hooks, P08), one per line of the tooltip.
 function PartMenu.describe(catalog, part)
     local lines, out = catalog:lines(part), {}
     for i = 1, #lines do
-        local l = lines[i]
-        out[i] = getText(l[1], l[2], l[3], l[4], l[5])
+        local l, args = lines[i], {}
+        for j = 2, #l do args[j - 1] = asText(l[j]) end
+        out[i] = getText(l[1], unpack(args))
     end
     return table.concat(out, " <LINE> ")
 end

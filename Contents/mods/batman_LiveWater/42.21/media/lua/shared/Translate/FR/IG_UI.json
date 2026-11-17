@@ -9,7 +9,7 @@
     "IGUI_LWT_NeedTool": "Il vous faut une clé à tuyau.",
     "IGUI_LWT_NothingHere": "Rien à démonter ici.",
     "IGUI_LWT_Refused": "Impossible.",
-    "IGUI_LWT_NoSource": "Doit être posée au bord d'une eau naturelle (lac, étang, rivière).",
+    "IGUI_LWT_NoSource": "Doit être posée au bord d'une eau naturelle (lac, étang, rivière) ou contre un puits.",
     "IGUI_LWT_Pump_Running": "Pompe : en marche",
     "IGUI_LWT_Pump_Standby": "Pompe : en attente, rien n'a besoin d'eau",
     "IGUI_LWT_Pump_NoPower": "Pompe : pas de courant",
@@ -32,5 +32,6 @@
     "IGUI_LWT_NeedWrench": "Il vous faut une clé.",
     "IGUI_LWT_Meter_Flow": "10 dernières minutes : %1 L",
     "IGUI_LWT_Meter_Water_clean": "Fluide : eau propre",
-    "IGUI_LWT_Meter_Water_tainted": "Fluide : eau non filtrée"
+    "IGUI_LWT_Meter_Water_tainted": "Fluide : eau non filtrée",
+    "IGUI_LWT_Source_well": "Source : puits (eau propre)"
 }

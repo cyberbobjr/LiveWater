@@ -17,3 +17,4 @@ du [plan 001](ADR-plans/plan-001-reseau-eau-ouvert.md) sont terminées. Rien n'e
 | F09 | Informations de la pompe au clic droit : état (en marche, en attente, éteinte, sans courant, en panne), débit, rendement, filtre, source | E15 |
 | F10 | Bruit de la pompe en marche : boucle sonore entendue par les joueurs proches, bruit qui attire les zombies | E15 |
 | F11 | Compteur d'eau : fabriqué (section de tuyau, tôle, vis, tournevis), posé en ligne sur un tuyau au curseur de meuble ; il suit le sens du tuyau ; « Informations » montre les litres passés pendant les 10 dernières minutes et le fluide (eau propre ou non filtrée) | E16 |
+| F12 | Pompe contre un puits : la même pompe posée à côté d'un puits vanilla donne de l'eau propre, qui va à la maison sans filtre ; ses informations disent « Source : puits » | E17 |

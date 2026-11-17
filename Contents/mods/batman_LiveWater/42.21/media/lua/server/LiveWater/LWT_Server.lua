@@ -70,7 +70,7 @@ local function build()
         placement = Placement.new(topology, catalog, log, world),
         clock = Clock.new({ network = network, flow = Flow.new(catalog), catalog = catalog, world = world,
             events = LiveWater.Events, power = power, publisher = publisher, scale = GameSettings.scale,
-            random = randomShare }),
+            random = randomShare, sources = LiveWater.Sources }),
     }
     local count = topology:rebuild()
     log("LiveWater: " .. count .. " part(s) loaded")

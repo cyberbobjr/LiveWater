@@ -19,7 +19,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 | E13 | Interface : menus, vue du réseau en surbrillance persistante, états « sans pression » et « eau non filtrée » | À faire | E08-E12 | D11, D14, D17 | M | — |
 | E15 | Pompe : interrupteur, usure du rendement, pannes, réparation, fenêtre d'information, son (P03-P05, P08, P15) | Terminée (2026-11-18) | E08 | D24 | M | E16 |
 | E16 | Débitmètre (P12) | Terminée (2026-11-18) | E07 | D24 | S | E15 |
-| E17 | Puits comme source d'eau propre (P02) | À faire | E08 | D24 | S | E16 |
+| E17 | Puits comme source d'eau propre (P02) | Terminée (2026-11-18) | E08 | D24 | S | E16 |
 | E18 | Tuyaux d'un étage à l'autre (P10) | Annulée (Q06 : non repris, l'arrivée d'eau dessert les étages) | — | D24 | — | — |
 | E19 | Sous-sols et lave-linge desservis par l'arrivée d'eau (P16, P18) | À faire | E09 | D18, D24 | S | E20 |
 | E20 | Raccord de baril « Remplir » ou « Pomper », réseau d'essence (P02, P17) | À faire | E07 | D24, D26 | M | E19 |
@@ -353,6 +353,28 @@ Choix faits sans l'utilisateur :
 Preuves :
 - `python -B -m unittest discover -s tests` → `Ran 140 tests` … `OK` ;
 - `python -B tools/check_mod.py` → `OK: 54 Lua file(s) checked`.
+Non testé en jeu.
+
+### E17 — Puits comme source d'eau propre
+
+Clôture (2026-11-18). Fichiers : `Sources/LWT_SourceWell.lua` (sorte `well` : sprite `camping_01_16`, eau propre),
+`LWT_API.lua` (`registerSource`, révision 6), `Capabilities/LWT_CapIntake.lua` (qualité de la sorte relevée, lue dans
+`ctx.sources`, réglage `quality` en repli), `LWT_Capabilities.lua`, serveur `LWT_Clock.lua` (`sources` dans le
+contexte du pas), `LWT_Server.lua` ; client `LWT_PartMenu.lua` (arguments des lignes passés en texte entier à
+`getText`, correction d'E15) ; traductions EN et FR (`IGUI_LWT_Source_well`, refus `IGUI_LWT_NoSource` qui cite le
+puits) ; tests `tests/test_well.py`.
+Choix faits sans l'utilisateur :
+- même pièce que la pompe d'étang : posée contre un puits (une des 8 cases voisines porte un objet `camping_01_16`),
+  elle relève la sorte `well` et donne de l'eau propre, qui va à la maison sans filtre ; à côté d'un puits et d'une eau
+  naturelle, le puits l'emporte (sortes propres essayées d'abord) ;
+- seul `camping_01_16` est retenu : c'est le sprite de l'entité vanilla `Well` (42.22, `entity_well.txt`) ; les tuiles
+  `camping_01_64`-`67` portent aussi `waterAmount = 999999` mais ressemblent à des abreuvoirs (`CanAttachAnimal`),
+  non vérifiées : laissées de côté, un autre mod peut les inscrire par `registerSource` ;
+- le puits est une source inépuisable comme l'eau naturelle ; tirer sur la réserve du puits (son `FluidContainer`
+  de 10 000 L) reste possible plus tard par le point d'extension `available` de la capacité `intake`.
+Preuves :
+- `python -B -m unittest discover -s tests` → `Ran 147 tests` … `OK` ;
+- `python -B tools/check_mod.py` → `OK: 55 Lua file(s) checked`.
 Non testé en jeu.
 
 ### E22 — Traductions, parité, passage en jeu

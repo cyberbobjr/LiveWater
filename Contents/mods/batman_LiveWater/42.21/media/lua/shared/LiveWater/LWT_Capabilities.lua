@@ -41,7 +41,8 @@
 --   repair(p, d)          the repair is done (d created)
 --   sound(p, d)           sound loop name, noise radius and volume while it makes noise, else nil
 -- ctx is the context of the step: { need, scale = function(optionName) -> multiplier,
--- random = function() -> 0..1 (breakdowns; none without it) }.
+-- random = function() -> 0..1 (breakdowns; none without it), sources = registry of source kinds
+-- (revision 6, LWT_Sources) }.
 
 local Check = require "LiveWater/LWT_Check"
 

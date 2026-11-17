@@ -1,7 +1,8 @@
 -- LiveWater capability "intake": the part takes water from a source (ADR-001 D16, D17).
 --   quality  "tainted" (lake, pond, river: default) or "clean": quality of a part that recorded
---            no source kind
--- State: { source = kind of the source found next to the part (LWT_Sources) }.
+--            no source kind, or a kind no longer registered
+-- State: { source = kind of the source found next to the part (LWT_Sources) }. The water has the
+-- quality of that kind (natural water tainted, well clean: P02), asked from ctx.sources.
 -- The part stands only next to a source: attach records the kind the site finds, or refuses.
 
 local Check = require "LiveWater/LWT_Check"
@@ -27,8 +28,9 @@ local function available(p, d, ctx)
 end
 
 function Intake.source(p, d, ctx)
-    if available(p, d, ctx) then return p.quality end
-    return nil
+    if not available(p, d, ctx) then return nil end
+    local kind, sources = d and d.source, ctx and ctx.sources
+    return kind and sources and sources:quality(kind) or p.quality
 end
 
 -- Source line (P08): key "IGUI_LWT_Source_<kind>", ":" and other signs of a mod's kind as "_".

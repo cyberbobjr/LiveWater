@@ -28,6 +28,7 @@ local STARTING_CAPABILITIES = {
 -- Starting source kinds (D16, D17): kind -> file under LiveWater/Sources.
 local STARTING_SOURCES = {
     water = "LWT_SourceNaturalWater",
+    well = "LWT_SourceWell",
 }
 
 LiveWater = LiveWater or {}
@@ -55,7 +56,8 @@ LiveWater.Events = EventBus.new(EventBus.NAMES)
 -- Revision 4: pump fields wear, breakdownBelow, breakdownChance, repairItem, repairCount,
 -- repairTool, sound, noiseRadius, noiseVolume; hooks switchable, switch, repairable, repair, sound.
 -- Revision 5: capability "meter", conduit field `ports`, outcome.quality of `stepped` per part.
-local API = { revision = 5 }
+-- Revision 6: registerSource; the intake reports the quality of the source kind it recorded.
+local API = { revision = 6 }
 LiveWater.API = API
 
 local function answer(call, id, ok, reason, detail)
@@ -73,6 +75,14 @@ end
 -- Returns true, or false and a reason (see LWT_Capabilities.lua).
 function API.registerCapability(kind, implementation)
     return answer("registerCapability", kind, capabilities:register(kind, implementation))
+end
+
+-- New kind of water source an intake can draw from (revision 6), see LWT_Sources.lua:
+--   LiveWater.API.registerSource("MyMod:Cistern", { quality = "clean", sprites = { "my_tiles_0" } })
+-- Returns true, or false and "registration_closed", "invalid_kind", "duplicate_source",
+-- "invalid_definition".
+function API.registerSource(kind, definition)
+    return answer("registerSource", kind, sources:register(kind, definition))
 end
 
 -- Copy of the checked definition of a part type, or nil.

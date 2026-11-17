@@ -11,7 +11,7 @@ if isClient() then return end
 -- isLoaded(x, y, z)), events, need = function(part) -> litres (default 0), power (optional
 -- port: powered(part) -> bool), publisher (optional port: present(part, stepped)), scale
 -- (optional: function(optionName) -> sandbox multiplier), random (optional: function() -> 0..1,
--- breakdowns) }.
+-- breakdowns), sources (optional: registry of source kinds, LWT_Sources) }.
 
 local Grid = require "LiveWater/LWT_Grid"
 
@@ -26,7 +26,7 @@ function Clock.new(deps)
     return setmetatable({
         network = deps.network, flow = deps.flow, catalog = deps.catalog, world = deps.world,
         events = deps.events, power = deps.power, publisher = deps.publisher,
-        ctx = { need = deps.need or noNeed, scale = deps.scale, random = deps.random },
+        ctx = { need = deps.need or noNeed, scale = deps.scale, random = deps.random, sources = deps.sources },
     }, Clock)
 end
 

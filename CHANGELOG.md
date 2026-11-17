@@ -16,3 +16,4 @@
   menu shows its state, flow, efficiency, filter and source. A running pump hums and draws zombies.
 - Water meter: build it and set it inline on a pipe; its "Information" shows the litres that went through it in the
   last 10 minutes and whether the water is clean or unfiltered.
+- Wells: a pond pump set down next to a well draws clean water, which reaches the house without a filter.

@@ -27,7 +27,9 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
   mod (`LWT_PartPipe.lua` : `LiveWater:PipeGalvanized` ; `LWT_PartPondPump.lua` : `LiveWater:PondPump` ; `LWT_PartFlowMeter.lua` :
   `LiveWater:FlowMeter`).
 - `LWT_Sources.lua` (pur) : registre des sortes de source d'eau (données : qualité, drapeau d'une case voisine ou
-  sprites d'un objet voisin) ; `Sources/LWT_Source<Nom>.lua` : une sorte par fichier (`water` : eau naturelle).
+  sprites d'un objet voisin) ; `Sources/LWT_Source<Nom>.lua` : une sorte par fichier (`water` : eau naturelle,
+  croupie ; `well` : puits vanilla, propre) ; un autre mod en ajoute par `LiveWater.API.registerSource`. La capacité
+  `intake` relève la sorte trouvée à la pose et donne la qualité de cette sorte (`ctx.sources` du pas).
 - `LWT_Settings.lua` (pur) : multiplicateurs sandbox lus dans le contexte d'un pas (`ctx.scale`).
 - Adaptateurs partagés (client et autorité) : `LWT_GameSite.lua` (les 8 cases voisines d'une place : drapeau, sprite,
   source trouvée), `LWT_PlaceRules.lua` (règles de pose au curseur de meuble vanilla : enveloppe

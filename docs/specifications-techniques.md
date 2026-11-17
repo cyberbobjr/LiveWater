@@ -14,7 +14,7 @@ Contrats précis du mod (objets, commandes réseau, ModData, options sandbox, tr
 | Table Lua globale | `LiveWater` |
 | Préfixes | fichiers `LWT_*.lua`, recettes `LWT`, traductions `*_LWT_*`, ids de pièces `"<Mod>:<Nom>"` |
 
-## API publique (`LiveWater.API`, révision 5)
+## API publique (`LiveWater.API`, révision 6)
 
 Inscription depuis un fichier `shared`, pendant le chargement, avant `OnInitGlobalModData` (ensuite :
 `registration_closed`). Tout refus rend `false` et une raison, et écrit un avertissement en anglais dans la console.
@@ -24,7 +24,8 @@ Inscription depuis un fichier `shared`, pendant le chargement, avant `OnInitGlob
 | `registerPart(id, definition)` | type de pièce `"<Mod>:<Nom>"` | `invalid_id`, `duplicate_part`, `invalid_definition`, `invalid_sprites`, `duplicate_sprite`, `invalid_sides`, `invalid_capabilities`, `unknown_capability`, `invalid_field` |
 | `registerCapability(kind, implementation)` | nouvelle capacité ; `kind` nom simple ou `"<Mod>:<nom>"` ; `implementation.define(params)` obligatoire | `invalid_kind`, `duplicate_capability`, `invalid_implementation` |
 | `part(id)` | copie de la définition contrôlée, ou `nil` | — |
-| `revision` | entier ; 2 : champ `variants`, crochets `look`, `attach`, `power`, `powered`, `stepped`, `output`, `lines` ; 3 : réglage `item` du filtre, crochets `cartridge`, `fit`, `unfit`, `actions` ; 4 : réglages d'entretien de la pompe, crochets `switchable`, `switch`, `repairable`, `repair`, `sound` ; 5 : capacité `meter`, réglage `ports` de `conduit`, qualité par pièce dans le bilan de `stepped` | — |
+| `registerSource(kind, definition)` | révision 6 : sorte de source d'eau `{ quality = "clean" ou "tainted", flag = drapeau IsoFlagType d'une case voisine, sprites = { sprite d'un objet voisin } }` (au moins `flag` ou `sprites`) ; `kind` nom simple ou `"<Mod>:<Nom>"` | `registration_closed`, `invalid_kind`, `duplicate_source`, `invalid_definition` |
+| `revision` | entier ; 2 : champ `variants`, crochets `look`, `attach`, `power`, `powered`, `stepped`, `output`, `lines` ; 3 : réglage `item` du filtre, crochets `cartridge`, `fit`, `unfit`, `actions` ; 4 : réglages d'entretien de la pompe, crochets `switchable`, `switch`, `repairable`, `repair`, `sound` ; 5 : capacité `meter`, réglage `ports` de `conduit`, qualité par pièce dans le bilan de `stepped` ; 6 : `registerSource`, qualité de l'eau d'une prise selon la sorte de source relevée | — |
 
 Définition d'une pièce (copiée champ par champ, le reste est ignoré) : `sprites` (`{ [masque] = sprite }`, masques
 0 à 15, redessinés selon les raccords), `variants` (révision 2 : `{ [clé] = { sprite S, E, N, O } }`, sprites
@@ -59,9 +60,11 @@ pas (`ctx.scale(nom)` : multiplicateur sandbox). Révision 3 : `cartridge(p, d, 
 ou non, part restante 0-1), `fit(p, d, part, ctx)`, `unfit(p, d)`, `actions(p, d)` (actions du menu : `{ command,
 key, item }`, `item` = objet à porter). Révision 4 : `switchable` (position de l'interrupteur, ou `nil`), `switch(p, d, oui)`, `repairable` (matériau, nombre, outil, raison du refus `running` ou `not_needed` ou `nil`), `repair`, `sound` (nom de la boucle, rayon et volume du bruit tant que la pièce en fait).
 
-Sortes de source d'eau (`LiveWater.Sources`, interne en révision 2) : `water` (eau naturelle : drapeau `water` d'une
-des 8 cases voisines, eau croupie). Une sorte est une donnée `{ quality, flag?, sprites? }` ; les sortes propres
-sont essayées d'abord.
+Sortes de source d'eau (`LiveWater.Sources`, publiques par `registerSource` en révision 6) : `water` (eau
+naturelle : drapeau `water` d'une des 8 cases voisines, eau croupie), `well` (puits vanilla : objet `camping_01_16`
+sur une des 8 cases voisines, eau propre). Une sorte est une donnée `{ quality, flag?, sprites? }` ; les sortes
+propres sont essayées d'abord. La prise (`intake`) relève la sorte à la pose (`source`) et donne sa qualité ; une
+sorte qui n'est plus inscrite donne le réglage `quality` de la capacité.
 
 ## Pièces de LiveWater
 
@@ -143,7 +146,7 @@ partie à l'autre) ; le graphe en est reconstruit à ce moment.
 
 Entrée : `v` (version du schéma, 1), `type` (id `"<Mod>:<Nom>"`), `x`, `y`, `z`, `order` (ordre de pose), `data`
 (`{ [capacité] = état }`, par exemple `valve = { open = false }`, `filter = { used = 120 }`, `intake = { source =
-"water" }`, `pump = { on, powered, running, litres, efficiency, broken }`, `meter = { litres, quality }`). Tout autre champ est
+"water" ou "well" }`, `pump = { on, powered, running, litres, efficiency, broken }`, `meter = { litres, quality }`). Tout autre champ est
 conservé tel quel. Une pièce dont le type n'est pas inscrit reste dans le registre, inerte. Refus d'ajout :
 `unknown_part`, `occupied`.
 
