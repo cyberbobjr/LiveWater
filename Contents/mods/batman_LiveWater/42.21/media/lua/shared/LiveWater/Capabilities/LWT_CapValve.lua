@@ -11,4 +11,10 @@ function Valve.define(params)
     return Check.fields(params, SPEC)
 end
 
+-- Closed when its state says so, else as placed.
+function Valve.blocks(p, d)
+    if d and d.open ~= nil then return not d.open end
+    return not p.open
+end
+
 return Valve

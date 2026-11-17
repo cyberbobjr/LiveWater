@@ -6,7 +6,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 |---|---|---|---|---|---|---|
 | E01 | Squelette du projet : dépôt, `workshop.txt`, `mod.info` (`incompatible=` de Q09), documents obligatoires, banc de tests hors jeu | Terminée (2026-11-17) | ADR accepté | D22 | S | — |
 | E02 | API publique : registres des pièces et capacités, validation, scellé, révision, événements | Terminée (2026-11-17) | E01 | D01-D07 | M | — |
-| E03 | Domaine : graphe du réseau, masques de raccord, ports, vannes, fusion de réseaux | À faire | E02 | D10, D12-D15 | M | E04 |
+| E03 | Domaine : graphe du réseau, masques de raccord, ports, vannes, fusion de réseaux | Terminée (2026-11-17) | E02 | D10, D12-D15 | M | E04 |
 | E04 | Domaine : pas de distribution, pression, qualité, filtre, besoin des sorties | À faire | E02 | D09, D14, D16, D17 | M | E03 |
 | E05 | Persistance : registre global versionné, pièces de type inconnu conservées | À faire | E03 | D03, D04, D10 | M | E06 |
 | E06 | Tuiles provisoires : 16 tuyaux, robinet, arroseurs, arrivée d'eau, pompe, filtre ; planche de présentation validée par l'utilisateur | À valider (planche soumise le 2026-11-17, intégration au mod après validation) | E01 | D12, D23 | L | E02-E05 |
@@ -75,6 +75,17 @@ inconnu prend le coût 1 sans exigence de propreté. Preuves :
 Fichiers : `shared/LiveWater/LWT_Network.lua` (pur). Tests rouges : masque de 4 bits et sprite attendu pour les 16
 formes ; raccord refusé au-delà des `ports` ; vanne fermée qui coupe l'aval ; fusion et scission de réseaux à la pose et
 au retrait ; distance en tuyau et ordre de service stable.
+
+Clôture (2026-11-17). Fichiers : `shared/LiveWater/LWT_Network.lua` (graphe pur, catalogue des types injecté),
+`LWT_Grid.lua` (côtés, `has`, clé `"x,y,z"`), `LWT_Parts.lua` (requêtes du catalogue `sides`, `sprite`, `any`,
+`first`), `LWT_Capabilities.lua` (crochets `carries`, `blocks`, `pressurizes`, `ports`), crochets dans
+`LWT_CapConduit`, `LWT_CapPump`, `LWT_CapValve`, `tests/test_network.py`. Lectures retenues : `ports` compte les
+tuyaux directement raccordés à la pièce (les T et croix plus loin ne comptent pas, Q03) ; avec 4 par défaut et quatre
+côtés, la limite ne mord que pour une pompe réglée plus bas. Une pièce sans `conduit` (sortie) termine un chemin ; une
+vanne fermée est atteinte mais ne laisse rien passer. Un type sans sprite pour un masque montre `sprites[0]`.
+Preuves :
+- `python -B -m unittest discover -s tests` → `Ran 30 tests` … `OK` ;
+- `python -B tools/check_mod.py` → `OK: 14 Lua file(s) checked`.
 
 ### E04 — Distribution
 

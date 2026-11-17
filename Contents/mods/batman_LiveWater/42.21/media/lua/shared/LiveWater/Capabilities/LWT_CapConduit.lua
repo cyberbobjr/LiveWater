@@ -9,4 +9,8 @@ function Conduit.define(params)
     return Check.fields(params, {})
 end
 
+function Conduit.carries()
+    return true
+end
+
 return Conduit

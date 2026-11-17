@@ -17,4 +17,12 @@ function Pump.define(params)
     return Check.fields(params, SPEC)
 end
 
+function Pump.pressurizes()
+    return true
+end
+
+function Pump.ports(p)
+    return p.ports
+end
+
 return Pump

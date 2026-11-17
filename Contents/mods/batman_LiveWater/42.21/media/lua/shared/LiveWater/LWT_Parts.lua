@@ -88,6 +88,53 @@ local function deepCopy(v)
     return out
 end
 
+-- ---------------------------------------------------------------- catalog of placed parts
+-- A placed part is { type = id, data = { [kind] = state } , ... }; a part whose type is not
+-- registered answers nothing (inert, D03).
+
+function Parts:sides(id)
+    local def = self.defs[id]
+    return def and def.sides or 0
+end
+
+-- Sprite of the type for a side mask: sprites[mask], else sprites[0].
+function Parts:sprite(id, mask)
+    local def = self.defs[id]
+    if not def then return nil end
+    return def.sprites[mask] or def.sprites[0]
+end
+
+local function stateOf(part, kind)
+    return part.data and part.data[kind]
+end
+
+-- True when one capability of the part answers `hook` with a true value.
+function Parts:any(part, hook, ...)
+    local def = self.defs[part.type]
+    if not def then return false end
+    for i = 1, #def.caps do
+        local c = def.caps[i]
+        local fn = c.impl[hook]
+        if fn and fn(c.params, stateOf(part, c.kind), ...) then return true end
+    end
+    return false
+end
+
+-- Results of the first capability of the part whose `hook` answers non-nil, or nil.
+function Parts:first(part, hook, ...)
+    local def = self.defs[part.type]
+    if not def then return nil end
+    for i = 1, #def.caps do
+        local c = def.caps[i]
+        local fn = c.impl[hook]
+        if fn then
+            local a, b = fn(c.params, stateOf(part, c.kind), ...)
+            if a ~= nil then return a, b end
+        end
+    end
+    return nil
+end
+
 -- Public description of a part type (a copy), or nil.
 function Parts:describe(id)
     local def = self.defs[id]

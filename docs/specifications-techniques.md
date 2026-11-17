@@ -40,6 +40,12 @@ Définition d'une pièce (copiée champ par champ, le reste est ignoré) : `spri
 | `outlet` | `type` obligatoire ; `pressureCost` et `needsClean` : `houseInlet` 2 et vrai, `sprinkler` 1 et faux, autre type 1 et faux |
 | `controller` | `mode` : `"manual"` (défaut) ou `"timer"` |
 
+Crochets d'une capacité (tous facultatifs sauf `define`), appelés avec les réglages contrôlés puis l'état de la
+pièce pour cette capacité (`part.data[kind]`, éventuellement `nil`) : `carries` (l'eau traverse), `blocks` (coupe
+l'eau, vanne fermée), `pressurizes` (l'eau part de là), `ports` (nombre maximal de tuyaux raccordés).
+
+Masque de raccord : N = 1, E = 2, S = 4, O = 8 ; le sprite affiché est `sprites[masque]`, sinon `sprites[0]`.
+
 Événements `LiveWater.Events.on(nom, fn)` / `off(nom, fn)` (rendent `true`, ou `false` et `unknown_event`,
 `invalid_handler`), émis sur l'autorité : `partAdded`, `partRemoved`, `networkChanged`, `waterDelivered` (pièce,
 litres, qualité), `valveChanged`.

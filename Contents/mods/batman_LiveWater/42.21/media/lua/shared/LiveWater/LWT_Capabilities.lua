@@ -3,10 +3,16 @@
 -- params of the part definition first. Hooks:
 --   define(params)  required: whitelist copy of the params with their defaults, or nil and
 --                   the name of the invalid field (params is {} when the part wrote `true`).
+-- Optional hooks take (params, data), data being the part's own state for this kind
+-- (part.data[kind], possibly nil, ADR-001 D04):
+--   carries(p, d)      water goes through the part (network)
+--   blocks(p, d)       the part cuts the water now, e.g. a closed valve (network)
+--   pressurizes(p, d)  the part puts its network under pressure: water starts there (network)
+--   ports(p, d)        most pipes that may leave the part (network)
 
 local Check = require "LiveWater/LWT_Check"
 
-local HOOKS = { "define" }
+local HOOKS = { "define", "carries", "blocks", "pressurizes", "ports" }
 
 local Capabilities = {}
 Capabilities.__index = Capabilities

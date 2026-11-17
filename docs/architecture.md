@@ -25,7 +25,12 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
   `outlet`, `controller`), réglages et valeurs par défaut de la capacité.
 - `LWT_Parts.lua` : registre des types de pièce, copie par liste blanche, unicité des sprites.
 - `LWT_Events.lua` : bus d'événements public (D06).
-- `LWT_Check.lua` : contrôles de valeurs et copie de champs par règles ; `LWT_Grid.lua` : côtés et masque de 4 bits.
+- `LWT_Check.lua` : contrôles de valeurs et copie de champs par règles ; `LWT_Grid.lua` : côtés, masque de 4 bits,
+  clé de case `"x,y,z"`.
+- `LWT_Network.lua` (domaine pur) : graphe d'une case par pièce, liens entre voisins qui s'offrent le côté commun,
+  ports, fusion et scission des réseaux, masque et sprite, eau partie des pièces qui mettent sous pression (distance
+  en tuyau, ordre de service : distance puis ordre de pose). Le registre des pièces lui est injecté comme catalogue ;
+  il interroge des crochets (`carries`, `blocks`, `pressurizes`, `ports`) et ne nomme aucune capacité.
 
 À venir : `server/LiveWater/` (autorité, persistance, horloge `EveryTenMinutes`), `client/LiveWater/` (menus, vue).
 
