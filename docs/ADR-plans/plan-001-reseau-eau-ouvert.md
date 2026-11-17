@@ -8,7 +8,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 | E02 | API publique : registres des pièces et capacités, validation, scellé, révision, événements | Terminée (2026-11-17) | E01 | D01-D07 | M | — |
 | E03 | Domaine : graphe du réseau, masques de raccord, ports, vannes, fusion de réseaux | Terminée (2026-11-17) | E02 | D10, D12-D15 | M | E04 |
 | E04 | Domaine : pas de distribution, pression, qualité, filtre, besoin des sorties | Terminée (2026-11-17) | E02 | D09, D14, D16, D17 | M | E03 |
-| E05 | Persistance : registre global versionné, pièces de type inconnu conservées | À faire | E03 | D03, D04, D10 | M | E06 |
+| E05 | Persistance : registre global versionné, pièces de type inconnu conservées | Terminée (2026-11-17) | E03 | D03, D04, D10 | M | E06 |
 | E06 | Tuiles provisoires : 16 tuyaux, robinet, arroseurs, arrivée d'eau, pompe, filtre ; planche de présentation validée par l'utilisateur | À valider (planche soumise le 2026-11-17, intégration au mod après validation) | E01 | D12, D23 | L | E02-E05 |
 | E07 | Adaptateurs serveur : pose et retrait, raccord automatique des sprites, commandes, horloge `EveryTenMinutes` | À faire | E05, E06 | D08-D12 | L | — |
 | E08 | Pompe d'étang et électricité : `registerConsumer` (`display`, `summary`), repli vanilla | À faire | E07 | D16, D20 | M | E09 |
@@ -111,6 +111,14 @@ Preuves :
 
 Fichiers : `server/LiveWater/LWT_Registry.lua`. Tests rouges : entrée versionnée `v` ; champs inconnus conservés ;
 pièce de type non inscrit conservée et inerte, réactivée au retour de son type ; index par coordonnées.
+
+Clôture (2026-11-17). Fichiers : `server/LiveWater/LWT_Registry.lua` (garde `isClient()`, magasin ModData injecté,
+catalogue réduit à `has`), `tests/test_registry.py`. Les entrées ne sont jamais recopiées : un champ inconnu, une
+version `v` plus récente ou l'état d'une capacité absente restent tels quels. Aucune migration n'existe encore
+(schéma 1). Le branchement sur `ModData.getOrCreate` et la reconstruction du graphe au chargement viennent avec E07.
+Preuves :
+- `python -B -m unittest discover -s tests` → `Ran 47 tests` … `OK` ;
+- `python -B tools/check_mod.py` → `OK: 16 Lua file(s) checked`.
 
 ### E06 — Tuiles provisoires
 

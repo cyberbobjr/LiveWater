@@ -46,6 +46,18 @@ l'eau, vanne fermée), `pressurizes` (l'eau part de là), `ports` (nombre maxima
 (pression et litres par pas), `source` (qualité `"clean"` ou `"tainted"`, `nil` à sec), `outlet` (coût de pression,
 eau propre exigée), `purifies` (le filtre agit), `wear(p, d, litres)` (seul crochet qui écrit son état).
 
+## Registre persistant (ModData globale, `LWT_Registry`)
+
+| Clé | Contenu |
+|---|---|
+| `seq` | dernier ordre de pose attribué (jamais réutilisé) |
+| `parts["x,y,z"]` | entrée d'une pièce posée |
+
+Entrée : `v` (version du schéma, 1), `type` (id `"<Mod>:<Nom>"`), `x`, `y`, `z`, `order` (ordre de pose), `data`
+(`{ [capacité] = état }`, par exemple `valve = { open = false }`, `filter = { used = 120 }`). Tout autre champ est
+conservé tel quel. Une pièce dont le type n'est pas inscrit reste dans le registre, inerte. Refus d'ajout :
+`unknown_part`, `occupied`.
+
 États d'une sortie après un pas (`LWT_Flow`) : `served`, `idle` (aucun besoin), `closed`, `no_water`, `unfiltered`
 (« eau non filtrée »), `no_pressure` (« sans pression »).
 

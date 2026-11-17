@@ -35,11 +35,20 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
   qualité, sorties servies dans l'ordre de service selon leur besoin, réserve de pression, filtre sur le chemin et
   son usure. Crochets `supply`, `source`, `outlet`, `purifies`, `wear` ; le besoin vient des adaptateurs.
 
-À venir : `server/LiveWater/` (autorité, persistance, horloge `EveryTenMinutes`), `client/LiveWater/` (menus, vue).
+`server/LiveWater/` (chaque fichier commence par `if isClient() then return end`) :
+- `LWT_Registry.lua` : registre persistant des pièces posées, sur un magasin injecté (la ModData globale en jeu).
+
+À venir : adaptateurs serveur (pose, commandes, horloge `EveryTenMinutes`), `client/LiveWater/` (menus, vue).
 
 ## Flux, persistance, extension
 
-À compléter avec les étapes E02 (API), E05 (persistance) et E07 (commandes). Aucun abonnement par image (D08).
+- Extension : un autre mod inscrit des types de pièce et des capacités par `LiveWater.API` (fichier `shared`, avant
+  `OnInitGlobalModData`) et suit `LiveWater.Events`.
+- Persistance : une entrée par pièce posée, indexée par `"x,y,z"`, versionnée (`v`), jamais recopiée ; une pièce de
+  type absent reste inerte dans le registre (`active()` l'écarte) et revient avec son type. Le graphe
+  (`LWT_Network`) se construit à partir des entrées actives, gardées par référence : l'état d'une capacité (vanne,
+  usure du filtre) écrit par le domaine est l'état sauvegardé.
+- Flux : commandes et horloge à venir (E07). Aucun abonnement par image (D08).
 
 ## Outillage
 
