@@ -21,7 +21,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 | E16 | Débitmètre (P12) | Terminée (2026-11-18) | E07 | D24 | S | E15 |
 | E17 | Puits comme source d'eau propre (P02) | Terminée (2026-11-18) | E08 | D24 | S | E16 |
 | E18 | Tuyaux d'un étage à l'autre (P10) | Annulée (Q06 : non repris, l'arrivée d'eau dessert les étages) | — | D24 | — | — |
-| E19 | Sous-sols et lave-linge desservis par l'arrivée d'eau (P16, P18) | À faire | E09 | D18, D24 | S | E20 |
+| E19 | Sous-sols et lave-linge desservis par l'arrivée d'eau (P16, P18) | Terminée (2026-11-18) | E09 | D18, D24 | S | E20 |
 | E20 | Raccord de baril « Remplir » ou « Pomper », réseau d'essence (P02, P17) | À faire | E07 | D24, D26 | M | E19 |
 | E21 | Retrait propre du mod (P21) | À faire | E09, E11 | D03, D24 | S | — |
 | E23 | Baril raccordé à la maison : gravité, courant sur la case, réserve partagée, mise en réserve, baril gardé pour un liquide (L01-L03, L06, L07) | À faire | E09 | D27, D28 | L | E24 |
@@ -413,6 +413,27 @@ Choix faits sans l'utilisateur :
 Preuves :
 - `python -B -m unittest discover -s tests` → `Ran 147 tests` … `OK` ;
 - `python -B tools/check_mod.py` → `OK: 55 Lua file(s) checked`.
+Non testé en jeu.
+
+### E19 — Sous-sols et lave-linge
+
+Clôture (2026-11-18). Fichiers : `shared/LiveWater/LWT_InletArea.lua` (niveaux sous terre jusqu'à
+`BASEMENT_LEVELS` = 2 ; une case sous terre est servie si elle appartient au bâtiment ou si la case de la même colonne
+au rez-de-chaussée lui appartient), tests `tests/test_basement.py`.
+Lave-linge (P16), confirmé statiquement : en 42.22 les tuiles `IsoClothingWasher` (4) et `IsoCombinationWasherDryer`
+(4) de `appliances_laundry_01` portent le drapeau `waterPiped` (`media/tile_definitions/newtiledefinitions.tiles.txt`,
+par exemple `appliances_laundry_01_0`) ; le menu vanilla « Raccorder » vient de Java pour tout objet `waterPiped`
+(`ISWorldObjectContextMenuLogic.java:466-471, 1104-1122`) et le lave-linge tire son eau par `getFluidAmount` /
+`useFluid` (`ClothingWasherLogic.java:74, 89`). Il est donc servi comme un évier, sans code propre : aucun cas
+particulier n'est ajouté.
+Choix faits sans l'utilisateur :
+- deux niveaux de sous-sol au plus (les sous-sols vanilla de 42.22 descendent d'un niveau, rarement deux) ; le relais
+  d'un point d'eau du sous-sol se pose au rez-de-chaussée, au-dessus de lui ;
+- « emprise » lue au rez-de-chaussée (niveau 0) : une cave sous un perron ou un garage hors du bâtiment n'est pas
+  servie.
+Preuves :
+- `python -B -m unittest discover -s tests` → `Ran 167 tests` … `OK` ;
+- `python -B tools/check_mod.py` → `OK: 62 Lua file(s) checked`.
 Non testé en jeu.
 
 ### E22 — Traductions, parité, passage en jeu

@@ -4,13 +4,16 @@
 --       around), or nil: { x1, y1, x2, y2 (bounds, inclusive), minLevel, maxLevel,
 --       contains(self, x, y, z) }
 -- Building mode: the squares of that building within `ranges.building` squares of the inlet (a
--- circle), from its lowest level up to LEVELS_UP floors above the inlet.
+-- circle), from its lowest level up to LEVELS_UP floors above the inlet; below ground, down to
+-- BASEMENT_LEVELS, every square under its ground floor footprint (P18: a basement belongs to the
+-- building above it, part of it or not).
 -- An area: { mode, x, y, z, range, minX, maxX, minY, maxY, minZ, maxZ, contains(self, x, y, z) }.
 
 local InletArea = {}
 InletArea.__index = InletArea
 
 InletArea.LEVELS_UP = 3
+InletArea.BASEMENT_LEVELS = 2
 
 local function inCircle(area, x, y)
     local dx, dy = x - area.x, y - area.y
@@ -31,9 +34,9 @@ function InletArea.building(b, x, y, z, range)
     local area = new({ mode = "building", x = x, y = y, z = z, range = range,
         minX = math.max(b.x1, x - range), maxX = math.min(b.x2, x + range),
         minY = math.max(b.y1, y - range), maxY = math.min(b.y2, y + range),
-        minZ = math.min(b.minLevel, z), maxZ = z + InletArea.LEVELS_UP })
+        minZ = math.min(b.minLevel, z, -InletArea.BASEMENT_LEVELS), maxZ = z + InletArea.LEVELS_UP })
     function area:holds(fx, fy, fz)
-        return b:contains(fx, fy, fz)
+        return b:contains(fx, fy, fz) or (fz < 0 and b:contains(fx, fy, 0))
     end
     return area
 end

@@ -173,7 +173,8 @@ dix minutes, par sortie servie), `valveChanged`. La reconstruction au chargement
   posé un niveau au-dessus d'un point d'eau (le moteur y cherche la source : case au-dessus puis les 8 autour).
 - Points d'eau servis : sprite `waterPiped`, raccordés (`getUsesExternalWaterSource`) ou raccordables (ModData
   `canBeWaterPiped`, ou d'origine après la coupure de l'eau de la ville), dans la zone de l'arrivée d'eau
-  (`LWT_InletArea`). Un point d'eau dont la source n'est pas un relais de LiveWater est laissé tel quel ; un relais de
+  (`LWT_InletArea` : bâtiment de la carte touché, cercle de portée, jusqu'à 3 étages au-dessus, et 2 niveaux de sous-sol
+  sous l'emprise du rez-de-chaussée). Lave-linge compris (tuiles `waterPiped` en 42.22). Un point d'eau dont la source n'est pas un relais de LiveWater est laissé tel quel ; un relais de
   Live Wire (`LiveWireRelay`) n'est jamais posé, rempli ni retiré.
 - Besoin de l'arrivée d'eau = place libre de ses relais qui servent un point d'eau raccordé ; l'eau livrée les remplit
   (eau propre). Points d'eau relevés à la pose puis toutes les heures de jeu ; relais retirés avec l'arrivée d'eau.

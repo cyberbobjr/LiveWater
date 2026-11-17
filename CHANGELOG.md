@@ -22,3 +22,4 @@
   3 floors above (range set in the sandbox options). A green light shows clean water; an amber light means the pump's
   water is unfiltered and the house gets none. Fixtures already fed by something else (a Live Wire pump, a barrel) are
   left alone.
+- The house water inlet also serves the basement (fixtures under the house) and plumbed washing machines.
