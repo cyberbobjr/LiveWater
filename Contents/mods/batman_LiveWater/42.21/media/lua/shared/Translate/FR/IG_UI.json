@@ -39,5 +39,8 @@
     "IGUI_LWT_Outlet_no_water": "Eau : aucune dans les tuyaux",
     "IGUI_LWT_Outlet_unfiltered": "Eau : non filtrée, la maison n'en reçoit pas (montez un filtre)",
     "IGUI_LWT_Outlet_no_pressure": "Eau : pression insuffisante",
-    "IGUI_LWT_Outlet_closed": "Eau : coupée"
+    "IGUI_LWT_Outlet_closed": "Eau : coupée",
+    "IGUI_LWT_NotBarrel": "Aucun baril raccordable ici.",
+    "IGUI_LWT_NoInlet": "Aucune arrivée d'eau ne dessert cet endroit : posez-en une contre le mur extérieur de ce bâtiment.",
+    "IGUI_LWT_NotConnected": "Ce baril n'est pas raccordé."
 }

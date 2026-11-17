@@ -130,12 +130,15 @@ Tout argument est recontrôlé sur l'autorité. Portée : 3 cases (Tchebychev) s
 | client → serveur | `removeFilter` | `x`, `y`, `z` entiers | mêmes contrôles jusqu'à la portée, puis cartouche montée (`no_filter`) | cartouche rendue avec sa part restante, ou jetée si usée |
 | client → serveur | `switchPump` | `x`, `y`, `z` entiers | arguments, pièce, interrupteur (`not_switchable`), portée | interrupteur basculé ; éteinte, la pompe s'arrête aussitôt |
 | client → serveur | `repairPump` | `x`, `y`, `z` entiers | arguments, pièce, réparable (`not_repairable`), à l'arrêt (`running`), usée ou en panne (`not_needed`), portée, outil (`need_wrench`), matériau (`no_parts`) | matériau consommé, rendement 100 %, panne effacée |
+| client → serveur | `connectBarrel` | `x`, `y`, `z` entiers | arguments, portée, clé à tuyau (`need_tool`), baril raccordable (`not_barrel`), arrivée d'eau dont la zone atteint la case (`no_inlet`) | baril raccordé à l'arrivée d'eau la plus proche, marque `LiveWaterBarrel` |
+| client → serveur | `disconnectBarrel` | `x`, `y`, `z` entiers | arguments, portée, clé à tuyau, baril raccordé (`not_connected`) | raccord et marque effacés |
+| client → serveur | `reserveBarrel` | `x`, `y`, `z` entiers | arguments, portée, baril raccordé | « en réserve » basculé |
 | serveur → client | `sound` | `x`, `y`, `z`, `name` (absent = arrêt) | — | boucle jouée ou arrêtée localement (en solo, par `triggerEvent`) |
 | serveur → client | `notice` | `key` (clé de traduction) | — | note au-dessus du joueur (en solo, affichée directement) |
 
 Clés des refus (`IG_UI.json`, table partagée `LWT_Reasons`) : `IGUI_LWT_NoSource` (`no_source`), `IGUI_LWT_NoFilter` (`no_cartridge`), `IGUI_LWT_NoFilterFitted` (`no_filter`), `IGUI_LWT_NoFilterSlot` (`no_filter_slot`), `IGUI_LWT_StillRunning` (`running`), `IGUI_LWT_NotNeeded` (`not_needed`), `IGUI_LWT_NeedWrench` (`need_wrench`), `IGUI_LWT_NoScrap` (`no_parts`), `IGUI_LWT_Invalid`, `IGUI_LWT_NotLayable`, `IGUI_LWT_TooFar` (`too_far`,
 `not_loaded`), `IGUI_LWT_Blocked`, `IGUI_LWT_Occupied`, `IGUI_LWT_PortsFull`, `IGUI_LWT_NoItem`, `IGUI_LWT_NeedTool`,
-`IGUI_LWT_NothingHere`, autre raison `IGUI_LWT_Refused`. Menu : `ContextMenu_LWT_Lay`, `ContextMenu_LWT_Dismantle`
+`IGUI_LWT_NothingHere`, `IGUI_LWT_NotBarrel` (`not_barrel`), `IGUI_LWT_NoInlet` (`no_inlet`), `IGUI_LWT_NotConnected` (`not_connected`), autre raison `IGUI_LWT_Refused`. Menu : `ContextMenu_LWT_Lay`, `ContextMenu_LWT_Dismantle`
 (`%1` = nom de l'objet posé) ; menu des pièces : `ContextMenu_LWT_FitFilter`, `ContextMenu_LWT_ReplaceFilter`, `ContextMenu_LWT_RemoveFilter`, `ContextMenu_LWT_TurnOn`, `ContextMenu_LWT_TurnOff`, `ContextMenu_LWT_Repair`, `ContextMenu_LWT_Info` (infobulle : lignes d'information traduites, `IGUI_LWT_Pump_*`, `IGUI_LWT_Filter_*`, `IGUI_LWT_Source_<sorte>`).
 
 ## Registre persistant (ModData globale `LiveWater`, `LWT_Registry`)
@@ -148,6 +151,7 @@ partie à l'autre) ; le graphe en est reconstruit à ce moment.
 | `seq` | dernier ordre de pose attribué (jamais réutilisé) |
 | `parts["x,y,z"]` | entrée d'une pièce posée |
 | `relays["x,y,z"]` | relais d'une arrivée d'eau (clé de sa case) : `{ ["x,y,z"] = { x, y, z } }` |
+| `barrels["x,y,z"]` | barils raccordés à une arrivée d'eau (clé de sa case) : `{ ["x,y,z"] = { x, y, z, reserve } }` |
 | `orphans["x,y,z"]` | relais à retirer dès que sa case est chargée : `{ x, y, z, owner }` |
 
 Entrée : `v` (version du schéma, 1), `type` (id `"<Mod>:<Nom>"`), `x`, `y`, `z`, `order` (ordre de pose), `data`
@@ -178,4 +182,16 @@ dix minutes, par sortie servie), `valveChanged`. La reconstruction au chargement
   Live Wire (`LiveWireRelay`) n'est jamais posé, rempli ni retiré.
 - Besoin de l'arrivée d'eau = place libre de ses relais qui servent un point d'eau raccordé ; l'eau livrée les remplit
   (eau propre). Points d'eau relevés à la pose puis toutes les heures de jeu ; relais retirés avec l'arrivée d'eau.
+
+## Barils raccordés à la maison (`LWT_HouseBarrels`, `LWT_Reserve`, D28)
+
+- Baril raccordable (`LWT_WaterObjects.isBarrel`) : objet du monde avec un `FluidContainer` d'au moins 20 L, ni point
+  d'eau, ni relais, ni marqué par un autre mod (`LiveWireRelay`, `LiveWireBarrel`). Marque sur le baril :
+  `LiveWaterBarrel = { inlet = "x,y,z", reserve }` (menus du client). Menu : `ContextMenu_LWT_ConnectBarrel`,
+  `_DisconnectBarrel`, `_ReserveBarrel`, `_UseBarrel`.
+- Zone : dans le bâtiment de l'arrivée d'eau ou juste au-dessus d'une de ses cases (toit), dans sa portée.
+- Toutes les dix minutes, après les relais : les barils remplissent les relais qui servent un point d'eau raccordé ;
+  gravité (un baril sert son niveau et ceux du dessous), levée par une pompe du réseau de l'arrivée d'eau ou le
+  courant de la case du baril ; prorata de l'eau des barils, ceux en réserve en dernier ; un baril qui contient autre
+  chose que de l'eau ne donne rien. Le réseau complète ensuite. Fluides gardés en proportion (`FluidContainer.Transfer`).
 

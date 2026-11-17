@@ -7,5 +7,9 @@
     "ContextMenu_LWT_TurnOn": "Allumer la pompe",
     "ContextMenu_LWT_TurnOff": "Éteindre la pompe",
     "ContextMenu_LWT_Repair": "Réparer la pompe",
-    "ContextMenu_LWT_Info": "Informations"
+    "ContextMenu_LWT_Info": "Informations",
+    "ContextMenu_LWT_ConnectBarrel": "Raccorder à l'arrivée d'eau de la maison",
+    "ContextMenu_LWT_DisconnectBarrel": "Débrancher de l'arrivée d'eau de la maison",
+    "ContextMenu_LWT_ReserveBarrel": "Garder en réserve (pris en dernier)",
+    "ContextMenu_LWT_UseBarrel": "Utiliser avec les autres barils"
 }

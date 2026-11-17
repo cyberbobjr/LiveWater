@@ -6,6 +6,9 @@ local Checks = {}
 -- Chebyshev distance on the player's floor within which a player may act on a square.
 Checks.RANGE = 3
 
+-- Tag of the pipe wrench (Java 42.22 ItemTag.PIPE_WRENCH): plumbing actions.
+Checks.PIPE_WRENCH = "base:pipewrench"
+
 local function isCoordinate(v)
     return type(v) == "number" and v == v and v % 1 == 0 and v >= -1000000 and v <= 1000000
 end

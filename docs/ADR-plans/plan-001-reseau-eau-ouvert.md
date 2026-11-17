@@ -24,7 +24,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 | E19 | Sous-sols et lave-linge desservis par l'arrivée d'eau (P16, P18) | Terminée (2026-11-18) | E09 | D18, D24 | S | E20 |
 | E20 | Raccord de baril « Remplir » ou « Pomper », réseau d'essence (P02, P17) | À faire | E07 | D24, D26 | M | E19 |
 | E21 | Retrait propre du mod (P21) | À faire | E09, E11 | D03, D24 | S | — |
-| E23 | Baril raccordé à la maison : gravité, courant sur la case, réserve partagée, mise en réserve, baril gardé pour un liquide (L01-L03, L06, L07) | À faire | E09 | D27, D28 | L | E24 |
+| E23 | Baril raccordé à la maison : gravité, courant sur la case, réserve partagée, mise en réserve, baril gardé pour un liquide (L01-L03, L06, L07) | Terminée (2026-11-18) | E09 | D27, D28 | L | E24 |
 | E24 | Liquide choisi par point d'eau (L05) | Annulée (Q07 : eau seulement aux points d'eau) | — | D28 | — | — |
 | E25 | Conteneurs remplis par la réserve, liste sandbox et API (L08) | À faire | E20 | D26, D28 | S | E23 |
 | E26 | Base du joueur (portée), diagnostic au point d'eau, réglages effacés au ramassage (L09, L11, L12) | À faire | E09 | D28 | M | E25 |
@@ -434,6 +434,44 @@ Choix faits sans l'utilisateur :
 Preuves :
 - `python -B -m unittest discover -s tests` → `Ran 167 tests` … `OK` ;
 - `python -B tools/check_mod.py` → `OK: 62 Lua file(s) checked`.
+Non testé en jeu.
+
+### E23 — Baril raccordé à la maison
+
+Clôture (2026-11-18). Fichiers : `shared/LiveWater/LWT_Reserve.lua` (pur : réserve partagée, gravité, mise en
+réserve), `LWT_WaterObjects.lua` (règles des objets d'eau des deux côtés : point d'eau, baril raccordable, marques,
+eau seulement, eau de la ville), `LWT_InletArea.lua` (`reaches` : dans la zone ou juste au-dessus, jusqu'au toit),
+`LWT_Protocol.lua`, `LWT_Reasons.lua` (`not_barrel`, `no_inlet`, `not_connected`) ; serveur `LWT_HouseBarrels.lua`
+(raccord, débranchement, mise en réserve, tâche de l'horloge après les relais), `LWT_GamePlumbing.lua` (`barrel`,
+`markBarrel`, `transfer` par `FluidContainer.Transfer`), `Commands/LWT_CmdConnectBarrel.lua`,
+`LWT_CmdDisconnectBarrel.lua`, `LWT_CmdReserveBarrel.lua`, `LWT_CmdChecks.lua` (`PIPE_WRENCH`), `LWT_Server.lua`
+(service, commandes, pompe du réseau, baril emporté débranché) ; client `LWT_BarrelMenu.lua`, `LWT_PartMenu.lua`
+(`squareOf`, `send` partagés) ; traductions EN et FR ; tests `tests/test_barrels.py`, doublure `hasModData` dans
+`tests/test_placement.py`.
+Vérifié dans l'API 42.22 (confirmé statiquement) : récupérateurs d'eau de pluie = entités avec un composant
+`FluidContainer` (400 et 600 L, `generated/entities/outdoors/entity_raincollector*.txt`) ; `getFluidContainer()`,
+`getAmount`, `getCapacity`, `getFreeCapacity`, `getSpecificFluidAmount(Fluid.Water | Fluid.TaintedWater)`,
+`FluidContainer.Transfer(source, cible, litres)` qui garde la proportion de chaque fluide
+(`FluidContainer.java:1027-1081`).
+Choix faits sans l'utilisateur :
+- baril raccordable : tout objet du monde avec un `FluidContainer` d'au moins 20 L, ni point d'eau, ni relais, ni
+  marqué par Live Wire (`LiveWireRelay`, `LiveWireBarrel`, D21) ;
+- « dans le bâtiment ou sur son toit » : case du bâtiment, ou case juste au-dessus d'une case du bâtiment (jusqu'au
+  niveau au-dessus du dernier étage), dans la portée de l'arrivée d'eau ; l'arrivée d'eau la plus proche est choisie ;
+- raccord et débranchement à la clé à tuyau (gardée) ; mise en réserve sans outil ;
+- l'eau des barils passe dans les relais avant que le réseau ne complète ; le baril donne son eau telle quelle (eau de
+  pluie croupie : le robinet la purifie, règle vanilla) ;
+- gravité : un baril sert les points d'eau de son niveau et des niveaux en dessous ; une pompe dans le réseau de
+  l'arrivée d'eau, ou du courant sur la case du baril (générateur ou réseau public, règle vanilla), lève la règle ;
+- réserve partagée : les barils qui peuvent servir un relais se vident ensemble au prorata de leur eau ; ceux « en
+  réserve » seulement quand les autres n'ont plus rien pour ce relais ; un baril vide reste raccordé ; un baril qui
+  contient autre chose que de l'eau ne donne rien jusqu'à ce qu'il soit vidé (il reste raccordé) ;
+- un baril retiré (ramassé, détruit) est débranché ; un baril absent d'une case chargée est oublié au pas suivant ;
+  le retrait de l'arrivée d'eau débranche ses barils ;
+- L03 : le robinet montre l'eau de son relais (25 L au plus), pas le total des barils ; les barils se vident ensemble.
+Preuves :
+- `python -B -m unittest discover -s tests` → `Ran 180 tests` … `OK` ;
+- `python -B tools/check_mod.py` → `OK: 69 Lua file(s) checked`.
 Non testé en jeu.
 
 ### E22 — Traductions, parité, passage en jeu

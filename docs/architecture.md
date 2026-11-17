@@ -39,6 +39,9 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
   source trouvée), `LWT_PlaceRules.lua` (règles de pose au curseur de meuble vanilla : enveloppe
   `canPlaceMoveableInternal` et le panneau d'information, refus seulement pour nos tuiles), `LWT_Mirror.lua` (état
   d'une pièce recopié dans `movableData` de son objet), `LWT_Reasons.lua` (raison de refus → clé de traduction).
+- `LWT_Reserve.lua` (pur) : réserve partagée d'une maison (barils qui se vident ensemble, mis en réserve, gravité,
+  raison d'un manque). `LWT_WaterObjects.lua` (adaptateur partagé) : règles des objets d'eau (point d'eau, baril
+  raccordable, marques `LiveWaterRelay` et `LiveWaterBarrel`, marques d'autres mods jamais touchées, eau de la ville).
 - `LWT_Protocol.lua` : noms du module et des commandes réseau partagés par client et serveur ; `LWT_Notice.lua` : note
   traduite au-dessus du joueur (refus d'une commande).
 - `LWT_Parts.lua` : registre des types de pièce, copie par liste blanche, unicité des sprites (formes et
@@ -81,6 +84,8 @@ commandes du filtre) ; un refus est dit au joueur par clé de traduction.
 - `LWT_Relays.lua` : réservoirs relais des arrivées d'eau (gestionnaire `houseInlet` et tâche de l'horloge) : pose,
   retrait, besoin, remplissage, relais en attente d'une case chargée (`orphans`) ; `LWT_GamePlumbing.lua` : adaptateur
   du jeu (bâtiment, points d'eau, objets relais).
+- `LWT_HouseBarrels.lua` : barils raccordés à une arrivée d'eau (raccord, débranchement, mise en réserve, tâche de
+  l'horloge après les relais : l'eau des barils remplit les relais selon `LWT_Reserve`).
 - `LWT_Power.lua` : seul adaptateur du courant. À `OnInitWorld`, si `LiveWire.API.revision >= 6`, inscrit chaque type
   qui a besoin de courant comme consommateur de Live Wire (`powerConsumption`, `display`, `summary` lus dans l'état
   recopié sur l'objet) ; `powered(part)` : `consumerPowered` de Live Wire, sinon la règle vanilla de la case.
@@ -99,7 +104,8 @@ commandes du filtre) ; un refus est dit au joueur par clé de traduction.
 seulement), `LWT_PartMenu.lua` (menu générique : les actions que les capacités d'une pièce proposent, crochet
 `actions`, lues dans l'état recopié sur l'objet ; une action qui demande un objet n'apparaît que si le joueur le
 porte) `LWT_PumpSounds.lua` (boucle sonore jouée localement sur un émetteur libre, à l'ordre du serveur, aucun abonnement
-par image) et `LWT_NoticeClient.lua` (affiche les notes `notice` du serveur). Interface complète : E13.
+par image) et `LWT_NoticeClient.lua` (affiche les notes `notice` du serveur), `LWT_BarrelMenu.lua` (raccorder, débrancher, mettre
+en réserve un baril, lu dans sa marque). Interface complète : E13.
 
 ## Flux, persistance, extension
 

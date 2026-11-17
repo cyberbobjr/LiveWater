@@ -39,5 +39,8 @@
     "IGUI_LWT_Outlet_no_water": "Water: none in the pipes",
     "IGUI_LWT_Outlet_unfiltered": "Water: unfiltered, the house gets none (fit a filter)",
     "IGUI_LWT_Outlet_no_pressure": "Water: not enough pressure",
-    "IGUI_LWT_Outlet_closed": "Water: shut off"
+    "IGUI_LWT_Outlet_closed": "Water: shut off",
+    "IGUI_LWT_NotBarrel": "There is no barrel here that can be connected.",
+    "IGUI_LWT_NoInlet": "No house water inlet serves this place: set one against the outside wall of this building.",
+    "IGUI_LWT_NotConnected": "This barrel is not connected."
 }

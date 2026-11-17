@@ -1,6 +1,7 @@
 if isClient() then return end
--- LiveWater: game adapter of the plumbing port, authority only (ADR-001 D18, D21). Thin: the
--- decisions are in LWT_InletArea, LWT_RelayPlan and LWT_Relays.
+-- LiveWater: game adapter of the plumbing port, authority only (ADR-001 D18, D21, D28). Thin: the
+-- decisions are in LWT_InletArea, LWT_RelayPlan, LWT_Reserve, LWT_Relays and LWT_HouseBarrels;
+-- the object rules in LWT_WaterObjects.
 --   building(x, y, z)          map building touching the square (the square or the 4 around), not
 --                              one the players built: { x1, y1, x2, y2, minLevel, maxLevel,
 --                              contains(self, x, y, z) } (BuildingDef, Java 42.22), or nil
@@ -14,12 +15,19 @@ if isClient() then return end
 --   removeRelay(x, y, z, owner)          true when done or nothing to do, false when not loaded
 --   fillRelay(x, y, z, litres, quality)  litres added (clean water, or tainted water)
 --   markRelay(x, y, z, why)    note the reason the relay stays empty (diagnostic, L09)
--- Never touches an object without the ModData key RELAY_KEY (Live Wire relays: LiveWireRelay).
+--   barrel(x, y, z)            barrel on the square (LWT_WaterObjects.isBarrel): { amount, capacity,
+--                              waterOnly, mark }, and whether the square is loaded
+--   markBarrel(x, y, z, mark)  write (nil: clear) its LiveWaterBarrel mark, sent to the clients
+--   transfer(bx, by, bz, rx, ry, rz, litres)  barrel -> relay, fluids kept in proportion
+--                              (FluidContainer.Transfer); litres moved
+-- Never touches an object marked by another mod (Live Wire relays and barrels, D21).
+
+local WaterObjects = require "LiveWater/LWT_WaterObjects"
 
 local GamePlumbing = {}
 GamePlumbing.__index = GamePlumbing
 
-GamePlumbing.RELAY_KEY = "LiveWaterRelay"
+GamePlumbing.RELAY_KEY = WaterObjects.RELAY_KEY
 -- Reserved tile of the tileset, defined without an image (tuiles-contrat.md): invisible.
 GamePlumbing.RELAY_SPRITE = "batman_livewater_01_76"
 
@@ -32,22 +40,9 @@ local function squareAt(x, y, z)
     return cell and cell:getGridSquare(x, y, z) or nil
 end
 
--- The fixture's sprite carries the waterPiped flag.
-function GamePlumbing.isFixture(obj)
-    if instanceof(obj, "IsoWorldInventoryObject") then return false end
-    local sprite = obj:getSprite()
-    local props = sprite and sprite:getProperties()
-    return props ~= nil and props:has(IsoFlagType.waterPiped)
-end
-
--- The city water still runs (rule of IsoObject.isWaterInfinite, Java 42.22).
-function GamePlumbing.cityWaterRuns()
-    return getGameTime():getWorldAgeDaysSinceBegin() < getSandboxOptions():getWaterShutModifier()
-end
-
 local function mayUseSource(obj)
     if obj:getUsesExternalWaterSource() then return true end
-    return obj:getModData().canBeWaterPiped == true or not GamePlumbing.cityWaterRuns()
+    return obj:getModData().canBeWaterPiped == true or not WaterObjects.cityWaterRuns()
 end
 
 local function wrapBuilding(def)
@@ -71,7 +66,7 @@ function GamePlumbing:building(x, y, z)
 end
 
 local function markOf(obj)
-    return obj and obj:hasModData() and obj:getModData()[GamePlumbing.RELAY_KEY] or nil
+    return WaterObjects.mark(obj, GamePlumbing.RELAY_KEY)
 end
 
 -- Source of a fixture's square, as LWT_RelayPlan reads it.
@@ -79,7 +74,7 @@ local function sourceOf(sq)
     local src = IsoObject.FindExternalWaterSource(sq)
     if not src then return nil end
     local mark = markOf(src)
-    if type(mark) ~= "table" then return "other" end
+    if not mark then return "other" end
     local ss = src:getSquare()
     return { owner = mark.inlet, x = ss:getX(), y = ss:getY(), z = ss:getZ() }
 end
@@ -88,7 +83,7 @@ local function fixtureOn(sq)
     local objects = sq:getObjects()
     for i = 0, objects:size() - 1 do
         local obj = objects:get(i)
-        if GamePlumbing.isFixture(obj) and mayUseSource(obj) then return obj end
+        if WaterObjects.isFixture(obj) and mayUseSource(obj) then return obj end
     end
     return nil
 end
@@ -114,7 +109,7 @@ local function relayObject(x, y, z)
     local objects = sq:getObjects()
     for i = 0, objects:size() - 1 do
         local obj = objects:get(i)
-        if type(markOf(obj)) == "table" then return obj, sq end
+        if markOf(obj) then return obj, sq end
     end
     return nil, sq
 end
@@ -128,7 +123,7 @@ local function feeds(relay, x, y, z)
                 local objects = sq:getObjects()
                 for i = 0, objects:size() - 1 do
                     local obj = objects:get(i)
-                    if GamePlumbing.isFixture(obj) and obj:getUsesExternalWaterSource()
+                    if WaterObjects.isFixture(obj) and obj:getUsesExternalWaterSource()
                         and IsoObject.FindExternalWaterSource(sq) == relay then
                         return true
                     end
@@ -171,7 +166,7 @@ function GamePlumbing:removeRelay(x, y, z, owner)
     local obj, sq = relayObject(x, y, z)
     if not sq then return false end
     local mark = markOf(obj)
-    if obj and mark.inlet == owner then sq:transmitRemoveItemFromSquare(obj) end
+    if mark and mark.inlet == owner then sq:transmitRemoveItemFromSquare(obj) end
     return true
 end
 
@@ -192,6 +187,46 @@ function GamePlumbing:markRelay(x, y, z, why)
     if not mark or mark.why == why then return end
     mark.why = why
     if isServer() then obj:transmitModData() end
+end
+
+local function barrelObject(x, y, z)
+    local sq = squareAt(x, y, z)
+    if not sq then return nil, nil end
+    local objects = sq:getObjects()
+    for i = 0, objects:size() - 1 do
+        local obj = objects:get(i)
+        if WaterObjects.isBarrel(obj) then return obj, sq end
+    end
+    return nil, sq
+end
+
+function GamePlumbing:barrel(x, y, z)
+    local obj, sq = barrelObject(x, y, z)
+    if not obj then return nil, sq ~= nil end
+    local fc = obj:getFluidContainer()
+    return { amount = fc:getAmount(), capacity = fc:getCapacity(), waterOnly = WaterObjects.isWaterOnly(fc),
+        mark = WaterObjects.mark(obj, WaterObjects.BARREL_KEY) }, true
+end
+
+function GamePlumbing:markBarrel(x, y, z, mark)
+    local obj = barrelObject(x, y, z)
+    if not obj then return end
+    obj:getModData()[WaterObjects.BARREL_KEY] = mark
+    if isServer() then obj:transmitModData() end
+end
+
+function GamePlumbing:transfer(bx, by, bz, rx, ry, rz, litres)
+    local barrel, relay = barrelObject(bx, by, bz), relayObject(rx, ry, rz)
+    if not barrel or not relay then return 0 end
+    local target = relay:getFluidContainer()
+    local before = target:getAmount()
+    FluidContainer.Transfer(barrel:getFluidContainer(), target, litres)
+    local moved = target:getAmount() - before
+    if moved > 0 then
+        relay:sync()
+        barrel:sync()
+    end
+    return moved
 end
 
 return GamePlumbing

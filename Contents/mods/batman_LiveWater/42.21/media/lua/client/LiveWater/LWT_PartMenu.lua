@@ -12,13 +12,15 @@ local Mirror = require "LiveWater/LWT_Mirror"
 
 local PartMenu = {}
 
-local function squareOf(worldobjects)
+-- Square of the clicked objects, or nil (shared with the other LiveWater menus).
+function PartMenu.squareOf(worldobjects)
     for i = 1, #worldobjects do
         local sq = worldobjects[i]:getSquare()
         if sq then return sq end
     end
     return nil
 end
+local squareOf = PartMenu.squareOf
 
 -- Parts on the square, as { type, data } from their mirrored state (data {} when none yet).
 function PartMenu.partsOn(sq, catalog)
@@ -65,9 +67,11 @@ local function addInformation(context, catalog, part)
     option.toolTip = tooltip
 end
 
-local function send(player, command, sq)
+-- Send a command about a square to the authority (shared with the other LiveWater menus).
+function PartMenu.send(player, command, sq)
     sendClientCommand(player, Protocol.MODULE, command, { x = sq:getX(), y = sq:getY(), z = sq:getZ() })
 end
+local send = PartMenu.send
 
 function PartMenu.fill(playerNum, context, worldobjects, test)
     local player = getSpecificPlayer(playerNum)

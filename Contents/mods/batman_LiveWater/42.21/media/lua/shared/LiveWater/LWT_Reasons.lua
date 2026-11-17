@@ -23,6 +23,9 @@ local Reasons = {
         not_needed = "IGUI_LWT_NotNeeded",
         need_wrench = "IGUI_LWT_NeedWrench",
         no_parts = "IGUI_LWT_NoScrap",
+        not_barrel = "IGUI_LWT_NotBarrel",
+        no_inlet = "IGUI_LWT_NoInlet",
+        not_connected = "IGUI_LWT_NotConnected",
     },
     GENERIC = "IGUI_LWT_Refused",
 }

@@ -126,6 +126,7 @@ local function fakeObject(sprite, sq)
     function o:setSpriteFromName(n) self.sprite = n end
     function o:transmitUpdatedSpriteToClients() self.sent = (self.sent or 0) + 1 end
     function o:getModData() self.md = self.md or {} return self.md end
+    function o:hasModData() return self.md ~= nil end
     function o:transmitModData() end
     return o
 end

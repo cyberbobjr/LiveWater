@@ -22,4 +22,8 @@
   3 floors above (range set in the sandbox options). A green light shows clean water; an amber light means the pump's
   water is unfiltered and the house gets none. Fixtures already fed by something else (a Live Wire pump, a barrel) are
   left alone.
+- Barrels connected to the house: right-click a rain collector or barrel inside the house or on its roof and connect
+  it to the house water inlet with a pipe wrench, no pipe nor pump needed. It feeds its own floor and the floors below,
+  or every floor when a pump is on the inlet's network or the barrel has power. All the barrels drain together; keep
+  one in reserve to have it used last. A barrel holding anything but water gives nothing.
 - The house water inlet also serves the basement (fixtures under the house) and plumbed washing machines.
