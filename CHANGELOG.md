@@ -14,3 +14,5 @@
 - Pond pump upkeep: turn it on or off from its right-click menu; its efficiency drops while it runs (and the flow
   with it), below 20% it may break down; repair a stopped pump with 2 scrap metal and a wrench. "Information" in its
   menu shows its state, flow, efficiency, filter and source. A running pump hums and draws zombies.
+- Water meter: build it and set it inline on a pipe; its "Information" shows the litres that went through it in the
+  last 10 minutes and whether the water is clean or unfiltered.

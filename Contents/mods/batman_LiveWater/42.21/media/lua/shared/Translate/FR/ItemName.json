@@ -1,5 +1,6 @@
 {
     "LiveWater.PipeSection": "Section de tuyau",
     "Base.Mov_LiveWater_PondPump": "Pompe d'étang",
-    "LiveWater.WaterFilter": "Cartouche filtrante"
+    "LiveWater.WaterFilter": "Cartouche filtrante",
+    "Base.Mov_LiveWater_FlowMeter": "Compteur d'eau"
 }

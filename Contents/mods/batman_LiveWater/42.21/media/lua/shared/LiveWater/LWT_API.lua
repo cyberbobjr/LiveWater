@@ -22,6 +22,7 @@ local STARTING_CAPABILITIES = {
     outlet = "LWT_CapOutlet",
     controller = "LWT_CapController",
     layable = "LWT_CapLayable",
+    meter = "LWT_CapMeter",
 }
 
 -- Starting source kinds (D16, D17): kind -> file under LiveWater/Sources.
@@ -53,7 +54,8 @@ LiveWater.Events = EventBus.new(EventBus.NAMES)
 -- actions.
 -- Revision 4: pump fields wear, breakdownBelow, breakdownChance, repairItem, repairCount,
 -- repairTool, sound, noiseRadius, noiseVolume; hooks switchable, switch, repairable, repair, sound.
-local API = { revision = 4 }
+-- Revision 5: capability "meter", conduit field `ports`, outcome.quality of `stepped` per part.
+local API = { revision = 5 }
 LiveWater.API = API
 
 local function answer(call, id, ok, reason, detail)

@@ -18,7 +18,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 | E12 | Arroseur automatique : recette (niveau d'Électricité), minuterie consommatrice | À faire | E11, E08 | D19, D20 | M | — |
 | E13 | Interface : menus, vue du réseau en surbrillance persistante, états « sans pression » et « eau non filtrée » | À faire | E08-E12 | D11, D14, D17 | M | — |
 | E15 | Pompe : interrupteur, usure du rendement, pannes, réparation, fenêtre d'information, son (P03-P05, P08, P15) | Terminée (2026-11-18) | E08 | D24 | M | E16 |
-| E16 | Débitmètre (P12) | À faire | E07 | D24 | S | E15 |
+| E16 | Débitmètre (P12) | Terminée (2026-11-18) | E07 | D24 | S | E15 |
 | E17 | Puits comme source d'eau propre (P02) | À faire | E08 | D24 | S | E16 |
 | E18 | Tuyaux d'un étage à l'autre (P10) | Annulée (Q06 : non repris, l'arrivée d'eau dessert les étages) | — | D24 | — | — |
 | E19 | Sous-sols et lave-linge desservis par l'arrivée d'eau (P16, P18) | À faire | E09 | D18, D24 | S | E20 |
@@ -330,6 +330,29 @@ Choix faits sans l'utilisateur :
 Preuves :
 - `python -B -m unittest discover -s tests` → `Ran 134 tests` … `OK` ;
 - `python -B tools/check_mod.py` → `OK: 52 Lua file(s) checked`.
+Non testé en jeu.
+
+### E16 — Débitmètre
+
+Clôture (2026-11-18). Fichiers : `Parts/LWT_PartFlowMeter.lua` (`LiveWater:FlowMeter` : sprites par masque des tuyaux
+droits, 20 est-ouest pour les masques 2, 8, 10 et 21 nord-sud pour 1, 4, 5 ; `conduit` à 2 ports, `meter`),
+`Capabilities/LWT_CapMeter.lua` (nouvelle capacité : litres et qualité du dernier pas, lignes « 10 dernières
+minutes » et fluide), `LWT_CapConduit.lua` (réglage facultatif `ports`), `LWT_Flow.lua` (litres et qualité de l'eau
+servie portés sur chaque pièce du chemin : `through`, `qualityAt`), `LWT_Clock.lua` (qualité par pièce dans le bilan
+de `stepped`), `LWT_API.lua` (capacité de départ `meter`, révision 5), `LWT_Capabilities.lua` ;
+`LWT_moveables.txt` (`Base.Mov_LiveWater_FlowMeter`), recette `LWTBuildFlowMeter`, traductions EN et FR ; tests
+`tests/test_meter.py` ; `tests/test_api.py` prend `gauge` comme exemple de capacité nouvelle (`meter` est désormais
+inscrite).
+Choix faits sans l'utilisateur :
+- un seul type de pièce : le compteur suit son tuyau (est-ouest ou nord-sud) par la table de formes, comme un tuyau ;
+  seul ou dans un coude, il garde le sprite de sa pose ; 2 tuyaux au plus (pièce en ligne) ;
+- il compte l'eau qui passe par lui vers les sorties servies au dernier pas de dix minutes ; le fluide est l'eau,
+  propre après un filtre, non filtrée avant (réseau d'essence : D26, E20) ;
+- « Informations » du clic droit (menu générique d'E15) montre ces lignes ; pas de fenêtre propre ;
+- recette sans compétence : une section de tuyau, une petite tôle, 2 vis, tournevis gardé.
+Preuves :
+- `python -B -m unittest discover -s tests` → `Ran 140 tests` … `OK` ;
+- `python -B tools/check_mod.py` → `OK: 54 Lua file(s) checked`.
 Non testé en jeu.
 
 ### E22 — Traductions, parité, passage en jeu

@@ -22,9 +22,10 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
 - `LWT_Capabilities.lua` : registre des capacités (pattern strategy : chaque capacité est une table de crochets copiée
   par liste blanche).
 - `Capabilities/LWT_Cap<Nom>.lua` : un fichier par capacité (`conduit`, `intake`, `pump`, `valve`, `filter`,
-  `outlet`, `controller`, `layable`), réglages et valeurs par défaut de la capacité.
+  `outlet`, `controller`, `layable`, `meter`), réglages et valeurs par défaut de la capacité.
 - `Parts/LWT_Part<Nom>.lua` : un fichier par pièce de LiveWater, inscrite par l'API publique comme celle d'un autre
-  mod (`LWT_PartPipe.lua` : `LiveWater:PipeGalvanized` ; `LWT_PartPondPump.lua` : `LiveWater:PondPump`).
+  mod (`LWT_PartPipe.lua` : `LiveWater:PipeGalvanized` ; `LWT_PartPondPump.lua` : `LiveWater:PondPump` ; `LWT_PartFlowMeter.lua` :
+  `LiveWater:FlowMeter`).
 - `LWT_Sources.lua` (pur) : registre des sortes de source d'eau (données : qualité, drapeau d'une case voisine ou
   sprites d'un objet voisin) ; `Sources/LWT_Source<Nom>.lua` : une sorte par fichier (`water` : eau naturelle).
 - `LWT_Settings.lua` (pur) : multiplicateurs sandbox lus dans le contexte d'un pas (`ctx.scale`).
@@ -46,7 +47,8 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
   il interroge des crochets (`carries`, `blocks`, `pressurizes`, `ports`) et ne nomme aucune capacité.
 - `LWT_Flow.lua` (domaine pur) : un pas de dix minutes d'un réseau : pression et débit additionnés des pompes,
   qualité, sorties servies dans l'ordre de service selon leur besoin, réserve de pression, filtre sur le chemin et
-  son usure. Crochets `supply`, `source`, `outlet`, `purifies`, `wear` ; le besoin vient des adaptateurs.
+  son usure ; litres et qualité de l'eau servie portés sur chaque pièce de son chemin (`through`, `qualityAt` ; part
+  de chaque pompe). Crochets `supply`, `source`, `outlet`, `purifies`, `wear` ; le besoin vient des adaptateurs.
 
 `server/LiveWater/` (chaque fichier commence par `if isClient() then return end`) :
 - `LWT_Server.lua` : racine de composition sur l'autorité. À `OnInitGlobalModData`, construit les services avec leurs

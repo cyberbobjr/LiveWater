@@ -24,7 +24,8 @@
 --   power(p, d)        needs current (bool) and watts drawn now
 --   powered(p, d, on)  the authority tells whether the part has current this step (d created)
 --   stepped(p, d, outcome, ctx)  end of a step: outcome = { through = litres that went through
---                      the part, quality } (d created)
+--                      the part, quality = of that water (revision 5: per part; the network's
+--                      water when none went through) } (d created)
 --   output(p, d)       litres the part gave the network last step (Live Wire summary)
 --   lines(p, d)        text lines { { key, arg, ..., rank = n } } (information, Live Wire)
 -- Revision 3 (filter cartridge, part menu):

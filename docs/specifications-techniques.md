@@ -14,7 +14,7 @@ Contrats précis du mod (objets, commandes réseau, ModData, options sandbox, tr
 | Table Lua globale | `LiveWater` |
 | Préfixes | fichiers `LWT_*.lua`, recettes `LWT`, traductions `*_LWT_*`, ids de pièces `"<Mod>:<Nom>"` |
 
-## API publique (`LiveWater.API`, révision 4)
+## API publique (`LiveWater.API`, révision 5)
 
 Inscription depuis un fichier `shared`, pendant le chargement, avant `OnInitGlobalModData` (ensuite :
 `registration_closed`). Tout refus rend `false` et une raison, et écrit un avertissement en anglais dans la console.
@@ -24,7 +24,7 @@ Inscription depuis un fichier `shared`, pendant le chargement, avant `OnInitGlob
 | `registerPart(id, definition)` | type de pièce `"<Mod>:<Nom>"` | `invalid_id`, `duplicate_part`, `invalid_definition`, `invalid_sprites`, `duplicate_sprite`, `invalid_sides`, `invalid_capabilities`, `unknown_capability`, `invalid_field` |
 | `registerCapability(kind, implementation)` | nouvelle capacité ; `kind` nom simple ou `"<Mod>:<nom>"` ; `implementation.define(params)` obligatoire | `invalid_kind`, `duplicate_capability`, `invalid_implementation` |
 | `part(id)` | copie de la définition contrôlée, ou `nil` | — |
-| `revision` | entier ; 2 : champ `variants`, crochets `look`, `attach`, `power`, `powered`, `stepped`, `output`, `lines` ; 3 : réglage `item` du filtre, crochets `cartridge`, `fit`, `unfit`, `actions` ; 4 : réglages d'entretien de la pompe, crochets `switchable`, `switch`, `repairable`, `repair`, `sound` | — |
+| `revision` | entier ; 2 : champ `variants`, crochets `look`, `attach`, `power`, `powered`, `stepped`, `output`, `lines` ; 3 : réglage `item` du filtre, crochets `cartridge`, `fit`, `unfit`, `actions` ; 4 : réglages d'entretien de la pompe, crochets `switchable`, `switch`, `repairable`, `repair`, `sound` ; 5 : capacité `meter`, réglage `ports` de `conduit`, qualité par pièce dans le bilan de `stepped` | — |
 
 Définition d'une pièce (copiée champ par champ, le reste est ignoré) : `sprites` (`{ [masque] = sprite }`, masques
 0 à 15, redessinés selon les raccords), `variants` (révision 2 : `{ [clé] = { sprite S, E, N, O } }`, sprites
@@ -35,7 +35,8 @@ de capacité, joints par `_` (filtre `filter` + pompe `on` → `filter_on`). Ref
 
 | Capacité | Réglages (défaut) |
 |---|---|
-| `conduit` | aucun |
+| `conduit` | `ports` facultatif 1-4 (révision 5 : pièce en ligne, 2 pour un compteur) |
+| `meter` | aucun (révision 5) ; état `{ litres, quality }` du dernier pas |
 | `intake` | `quality` : `"tainted"` (défaut) ou `"clean"` ; ne se pose qu'à côté d'une source (`attach`, refus `no_source`), dont la sorte est relevée dans son état (`source`) |
 | `pump` | `ports` 1-4 (4), `pressure` (6), `flow` litres par pas de dix minutes à plein rendement (50, × rendement, × option `PumpFlowMultiplier`), `watts` en marche (250 ; 0 = sans courant) ; révision 4 : `wear` points de rendement perdus par minute de marche (0,01, × option `PumpWearMultiplier`), `breakdownBelow` (20), `breakdownChance` par pas de marche (0,02), `repairItem` (`Base.ScrapMetal`), `repairCount` (2), `repairTool` étiquette facultative, `sound` boucle en marche (`GeneratorLoop`), `noiseRadius` et `noiseVolume` (20, 20) |
 | `valve` | `open` à la pose (`true`) |
@@ -67,6 +68,7 @@ sont essayées d'abord.
 | Id | Sprites | Capacités |
 |---|---|---|
 | `LiveWater:PipeGalvanized` | `batman_livewater_01_<masque>`, masques 0 à 15 | `conduit`, `layable` (`LiveWater.PipeSection`, `base:pipewrench`) |
+| `LiveWater:FlowMeter` | `sprites` : 20 (masques 2, 8, 10), 21 (masques 1, 4, 5) ; seul ou en coude, garde le sprite de sa pose | `conduit` (2 ports), `meter` |
 | `LiveWater:PondPump` | `variants` : `off` 24-27, `on` 28-31, `filter_on` 32-35, `filter_off` 36-39 (S, E, N, O) | `filter` (`LiveWater.WaterFilter`, 500 L), `intake`, `pump` (4 ports, pression 6, 50 L, 250 W, réparation 2 `Base.ScrapMetal` + `base:wrench`, boucle `GeneratorLoop`) |
 
 ## Objets et recettes
@@ -77,6 +79,8 @@ sont essayées d'abord.
 | `LWTCutPipeSections` | `media/scripts/LWT_recipes.txt` : 1 `Base.MetalPipe` et un outil `tags[base:metalsaw]` gardé donnent 4 `LiveWater.PipeSection` (action `SawSmallItemMetal`) |
 | `LiveWater.WaterFilter` | `base:normal`, 0,5 kg, icône `Item_LWT_WaterFilter`, `ConditionMax = 100` : l'état est la part restante (100 neuve) ; infobulle `Tooltip_LWT_WaterFilter` |
 | `LWTMakeWaterFilter` | action `Making`, 2 `tags[base:charcoal]`, 2 `Base.RippedSheets` → 1 `LiveWater.WaterFilter` |
+| `Base.Mov_LiveWater_FlowMeter` | `base:moveable`, `WorldObjectSprite = batman_livewater_01_20` (objet `CustomItem` des tuiles 20-21) |
+| `LWTBuildFlowMeter` | action `Making` : tournevis gardé, 1 `LiveWater.PipeSection`, 1 `Base.SmallSheetMetal`, 2 `Base.Screws` → 1 `Base.Mov_LiveWater_FlowMeter` |
 | `Base.Mov_LiveWater_PondPump` | `media/scripts/LWT_moveables.txt`, `base:moveable`, `WorldObjectSprite = batman_livewater_01_24` (objet `CustomItem` des tuiles 24-39) |
 | `LWTBuildPondPump` | Électricité 2, action `MakingElectrical` : tournevis et clé gardés, 1 `Base.MetalPipe`, 2 `Base.SmallSheetMetal`, 3 `Base.ElectronicsScrap`, 2 `Base.ElectricWire`, 4 `Base.Screws` → 1 `Base.Mov_LiveWater_PondPump` ; 15 XP d'Électricité |
 
@@ -139,7 +143,7 @@ partie à l'autre) ; le graphe en est reconstruit à ce moment.
 
 Entrée : `v` (version du schéma, 1), `type` (id `"<Mod>:<Nom>"`), `x`, `y`, `z`, `order` (ordre de pose), `data`
 (`{ [capacité] = état }`, par exemple `valve = { open = false }`, `filter = { used = 120 }`, `intake = { source =
-"water" }`, `pump = { on, powered, running, litres, efficiency, broken }`). Tout autre champ est
+"water" }`, `pump = { on, powered, running, litres, efficiency, broken }`, `meter = { litres, quality }`). Tout autre champ est
 conservé tel quel. Une pièce dont le type n'est pas inscrit reste dans le registre, inerte. Refus d'ajout :
 `unknown_part`, `occupied`.
 

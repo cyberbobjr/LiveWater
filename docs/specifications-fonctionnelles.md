@@ -16,3 +16,4 @@ du [plan 001](ADR-plans/plan-001-reseau-eau-ouvert.md) sont terminées. Rien n'e
 | F08 | Réparation d'une pompe arrêtée et usée ou en panne : 2 morceaux de ferraille et une clé, rendement remis à 100 % | E15 |
 | F09 | Informations de la pompe au clic droit : état (en marche, en attente, éteinte, sans courant, en panne), débit, rendement, filtre, source | E15 |
 | F10 | Bruit de la pompe en marche : boucle sonore entendue par les joueurs proches, bruit qui attire les zombies | E15 |
+| F11 | Compteur d'eau : fabriqué (section de tuyau, tôle, vis, tournevis), posé en ligne sur un tuyau au curseur de meuble ; il suit le sens du tuyau ; « Informations » montre les litres passés pendant les 10 dernières minutes et le fluide (eau propre ou non filtrée) | E16 |

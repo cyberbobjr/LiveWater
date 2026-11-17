@@ -29,5 +29,8 @@
     "IGUI_LWT_NoScrap": "Il vous faut 2 morceaux de ferraille.",
     "IGUI_LWT_NotNeeded": "Elle n'a pas besoin de réparation.",
     "IGUI_LWT_StillRunning": "Éteignez-la d'abord.",
-    "IGUI_LWT_NeedWrench": "Il vous faut une clé."
+    "IGUI_LWT_NeedWrench": "Il vous faut une clé.",
+    "IGUI_LWT_Meter_Flow": "10 dernières minutes : %1 L",
+    "IGUI_LWT_Meter_Water_clean": "Fluide : eau propre",
+    "IGUI_LWT_Meter_Water_tainted": "Fluide : eau non filtrée"
 }

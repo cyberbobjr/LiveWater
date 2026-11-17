@@ -1,5 +1,6 @@
 {
     "LWTCutPipeSections": "Cut Pipe Sections",
     "LWTBuildPondPump": "Build Pond Pump",
-    "LWTMakeWaterFilter": "Make Water Filter"
+    "LWTMakeWaterFilter": "Make Water Filter",
+    "LWTBuildFlowMeter": "Build Water Meter"
 }

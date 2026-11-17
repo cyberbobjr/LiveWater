@@ -13,7 +13,9 @@
 --     else                     -> "served": min(need, water left) litres, pressure taken;
 --   the first working filter on the way from the pump (outlet included) makes the water clean
 --   and wears by the litres served through it;
---   each pressurizing part is credited its share of the water served (through, by key).
+--   every part on the way of the water served is credited those litres and their quality
+--   (through, qualityAt by key: clean from the filter on, the network's water before it); a
+--   pressurizing part is credited its share of all the water served instead.
 -- The context `ctx` is passed to the hooks supply, source, purifies and wear (LWT_Settings).
 
 local Flow = {}
@@ -59,9 +61,21 @@ function Flow:purifierOf(node, byKey, ctx)
     return nil
 end
 
+-- Credit `litres` to every node from `node` back to its pressurizing part: clean from the
+-- filter (included) to the outlet, `raw` before it.
+function Flow:route(node, byKey, litres, raw, filter, result)
+    local quality = filter and Flow.CLEAN or raw
+    while node do
+        result.through[node.key] = (result.through[node.key] or 0) + litres
+        result.qualityAt[node.key] = mix(result.qualityAt[node.key], quality)
+        if node.part == filter then quality = raw end
+        node = node.from and byKey[node.from]
+    end
+end
+
 -- State, litres and quality for one outlet of pressure `cost`; `left` holds the water and
--- pressure left.
-function Flow:serve(node, cost, needsClean, byKey, left, ctx)
+-- pressure left; the litres served are routed into `result`.
+function Flow:serve(node, cost, needsClean, byKey, left, ctx, result)
     local catalog, part = self.catalog, node.part
     if catalog:any(part, "blocks") then return "closed", 0 end
     local need = ctx.need(part) or 0
@@ -77,23 +91,24 @@ function Flow:serve(node, cost, needsClean, byKey, left, ctx)
     local litres = math.min(need, left.water)
     left.water, left.pressure = left.water - litres, left.pressure - cost
     if filter then catalog:call(filter, "wear", litres, ctx) end
+    self:route(node, byKey, litres, left.quality, filter, result)
     return "served", litres, quality
 end
 
 -- One step of network `id`. Returns { pressure, water, quality, served = litres, outlets = list
--- in service order, at = by key, through = litres by key }, outlet = { key, part, state, litres,
--- quality }.
+-- in service order, at = by key, through = litres by key, qualityAt = quality by key }, outlet =
+-- { key, part, state, litres, quality }.
 function Flow:step(network, id, ctx)
     local nodes, byKey = network:reach(id)
     local pressure, water, quality, given = self:supply(nodes, ctx)
     local result = { pressure = pressure, water = water, quality = quality, served = 0, outlets = {}, at = {},
-        through = {} }
+        through = {}, qualityAt = {} }
     local left = { pressure = pressure, water = water, quality = quality, starved = false }
     for i = 1, #nodes do
         local node = nodes[i]
         local cost, needsClean = self.catalog:first(node.part, "outlet")
         if cost then
-            local state, litres, q = self:serve(node, cost, needsClean, byKey, left, ctx)
+            local state, litres, q = self:serve(node, cost, needsClean, byKey, left, ctx, result)
             local out = { key = node.key, part = node.part, state = state, litres = litres, quality = q }
             result.outlets[#result.outlets + 1] = out
             result.at[node.key] = out

@@ -58,7 +58,8 @@ function Clock:conclude(members, result)
     for i = 1, #members do
         local part = members[i]
         local key = Grid.key(part.x, part.y, part.z)
-        self.catalog:call(part, "stepped", { through = result.through[key] or 0, quality = result.quality }, self.ctx)
+        local outcome = { through = result.through[key] or 0, quality = result.qualityAt[key] or result.quality }
+        self.catalog:call(part, "stepped", outcome, self.ctx)
         if self.publisher then self.publisher:present(part, true) end
     end
 end

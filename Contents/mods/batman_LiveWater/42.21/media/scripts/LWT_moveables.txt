@@ -12,4 +12,13 @@ module Base
         Weight = 15.0,
         WorldObjectSprite = batman_livewater_01_24,
     }
+
+    item Mov_LiveWater_FlowMeter
+    {
+        DisplayCategory = Furniture,
+        ItemType = base:moveable,
+        Icon = default,
+        Weight = 4.0,
+        WorldObjectSprite = batman_livewater_01_20,
+    }
 }

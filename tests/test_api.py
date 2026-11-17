@@ -128,19 +128,19 @@ class RegisterPart(unittest.TestCase):
         lua = api()
         lua.execute('fire("OnInitGlobalModData", false)')
         self.assertEqual(register(lua, "Test:Pipe", PIPE), (False, "registration_closed"))
-        self.assertEqual(call(lua, 'LiveWater.API.registerCapability("meter", { define = function() return {} end })'),
+        self.assertEqual(call(lua, 'LiveWater.API.registerCapability("gauge", { define = function() return {} end })'),
                          (False, "registration_closed"))
 
     def test_revision(self):
-        self.assertEqual(api().eval("LiveWater.API.revision"), 4)
+        self.assertEqual(api().eval("LiveWater.API.revision"), 5)
 
 
 class RegisterCapability(unittest.TestCase):
     def test_a_new_capability_can_be_used_by_a_part(self):
         lua = api()
-        self.assertEqual(call(lua, 'LiveWater.API.registerCapability("meter", { define = function(p) return {} end })'),
+        self.assertEqual(call(lua, 'LiveWater.API.registerCapability("gauge", { define = function(p) return {} end })'),
                          (True, None))
-        self.assertEqual(register(lua, "Test:Meter", '{ sprites = { [0] = "t_m" }, capabilities = { meter = true } }'),
+        self.assertEqual(register(lua, "Test:Gauge", '{ sprites = { [0] = "t_m" }, capabilities = { gauge = true } }'),
                          (True, None))
 
     def test_invalid_or_duplicate_capability_is_refused(self):
@@ -148,8 +148,8 @@ class RegisterCapability(unittest.TestCase):
         ok = "{ define = function(p) return {} end }"
         self.assertEqual(call(lua, 'LiveWater.API.registerCapability("valve", %s)' % ok), (False, "duplicate_capability"))
         self.assertEqual(call(lua, 'LiveWater.API.registerCapability("bad kind", %s)' % ok), (False, "invalid_kind"))
-        self.assertEqual(call(lua, 'LiveWater.API.registerCapability("meter", {})'), (False, "invalid_implementation"))
-        self.assertEqual(call(lua, 'LiveWater.API.registerCapability("meter", { define = "nope" })'),
+        self.assertEqual(call(lua, 'LiveWater.API.registerCapability("gauge", {})'), (False, "invalid_implementation"))
+        self.assertEqual(call(lua, 'LiveWater.API.registerCapability("gauge", { define = "nope" })'),
                          (False, "invalid_implementation"))
 
 

@@ -29,5 +29,8 @@
     "IGUI_LWT_NoScrap": "You need 2 scrap metal.",
     "IGUI_LWT_NotNeeded": "It does not need a repair.",
     "IGUI_LWT_StillRunning": "Switch it off first.",
-    "IGUI_LWT_NeedWrench": "You need a wrench."
+    "IGUI_LWT_NeedWrench": "You need a wrench.",
+    "IGUI_LWT_Meter_Flow": "Last 10 minutes: %1 L",
+    "IGUI_LWT_Meter_Water_clean": "Fluid: clean water",
+    "IGUI_LWT_Meter_Water_tainted": "Fluid: unfiltered water"
 }
