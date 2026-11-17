@@ -23,4 +23,30 @@ module LiveWater
             item 4 LiveWater.PipeSection,
         }
     }
+
+    /* Pond pump (ADR-001 D16, P19): an electric pump built from pipes, sheet metal and the
+       electronics of scrap; set down next to a water source with the furniture cursor. */
+    craftRecipe LWTBuildPondPump
+    {
+        timedAction = MakingElectrical,
+        time = 300,
+        Tags = AnySurfaceCraft,
+        category = Electrical,
+        SkillRequired = Electricity:2,
+        xpAward = Electricity:15,
+        inputs
+        {
+            item 1 tags[base:screwdriver] mode:keep flags[Prop1;MayDegradeLight],
+            item 1 tags[base:wrench] mode:keep flags[MayDegradeLight],
+            item 1 [Base.MetalPipe],
+            item 2 [Base.SmallSheetMetal],
+            item 3 [Base.ElectronicsScrap],
+            item 2 [Base.ElectricWire],
+            item 4 [Base.Screws],
+        }
+        outputs
+        {
+            item 1 Base.Mov_LiveWater_PondPump,
+        }
+    }
 }

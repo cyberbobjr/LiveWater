@@ -24,10 +24,19 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
 - `Capabilities/LWT_Cap<Nom>.lua` : un fichier par capacité (`conduit`, `intake`, `pump`, `valve`, `filter`,
   `outlet`, `controller`, `layable`), réglages et valeurs par défaut de la capacité.
 - `Parts/LWT_Part<Nom>.lua` : un fichier par pièce de LiveWater, inscrite par l'API publique comme celle d'un autre
-  mod (`LWT_PartPipe.lua` : `LiveWater:PipeGalvanized`).
+  mod (`LWT_PartPipe.lua` : `LiveWater:PipeGalvanized` ; `LWT_PartPondPump.lua` : `LiveWater:PondPump`).
+- `LWT_Sources.lua` (pur) : registre des sortes de source d'eau (données : qualité, drapeau d'une case voisine ou
+  sprites d'un objet voisin) ; `Sources/LWT_Source<Nom>.lua` : une sorte par fichier (`water` : eau naturelle).
+- `LWT_Settings.lua` (pur) : multiplicateurs sandbox lus dans le contexte d'un pas (`ctx.scale`).
+- Adaptateurs partagés (client et autorité) : `LWT_GameSite.lua` (les 8 cases voisines d'une place : drapeau, sprite,
+  source trouvée), `LWT_PlaceRules.lua` (règles de pose au curseur de meuble vanilla : enveloppe
+  `canPlaceMoveableInternal` et le panneau d'information, refus seulement pour nos tuiles), `LWT_Mirror.lua` (état
+  d'une pièce recopié dans `movableData` de son objet), `LWT_Reasons.lua` (raison de refus → clé de traduction).
 - `LWT_Protocol.lua` : noms du module et des commandes réseau partagés par client et serveur ; `LWT_Notice.lua` : note
   traduite au-dessus du joueur (refus d'une commande).
-- `LWT_Parts.lua` : registre des types de pièce, copie par liste blanche, unicité des sprites.
+- `LWT_Parts.lua` : registre des types de pièce, copie par liste blanche, unicité des sprites (formes et
+  `variants`) ; requêtes du catalogue : `look` (variante d'après les jetons des capacités), `attach` (la place
+  convient-elle ?), `lines` (lignes d'information), `hasHook`, `spritesOf`.
 - `LWT_Events.lua` : bus d'événements public (D06).
 - `LWT_Check.lua` : contrôles de valeurs et copie de champs par règles ; `LWT_Grid.lua` : côtés, masque de 4 bits,
   clé de case `"x,y,z"`.
@@ -54,11 +63,19 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
   un type sans sprite pour ce masque garde celui de sa pose (orientation d'un meuble).
 - `LWT_Commands.lua` : répartiteur, table de gestionnaires par nom (un fichier par commande sous `Commands/`, plus
   `LWT_CmdChecks.lua` pour les contrôles d'arguments et de portée) ; un refus est dit au joueur par clé de traduction.
-- `LWT_Clock.lua` : pas de dix minutes de chaque réseau éveillé (une pièce sous pression sur une case chargée), besoin
-  des sorties injecté (0 par défaut), `waterDelivered` pour chaque sortie servie.
+- `LWT_Clock.lua` : pas de dix minutes de chaque réseau éveillé (une pièce sous pression sur une case chargée) :
+  courant de chaque pièce qui en a besoin (port `power`, crochet `powered`), distribution, crochet `stepped` de chaque
+  membre (litres passés), présentation (port `publisher`), `waterDelivered` pour chaque sortie servie ; besoin des
+  sorties injecté (0 par défaut), multiplicateurs sandbox par `scale`.
+- `LWT_Power.lua` : seul adaptateur du courant. À `OnInitWorld`, si `LiveWire.API.revision >= 6`, inscrit chaque type
+  qui a besoin de courant comme consommateur de Live Wire (`powerConsumption`, `display`, `summary` lus dans l'état
+  recopié sur l'objet) ; `powered(part)` : `consumerPowered` de Live Wire, sinon la règle vanilla de la case.
+- `LWT_Publisher.lua` : après un pas ou une action, sprite selon l'état (`Sprites:show`) et état recopié sur l'objet
+  seulement quand il change (rien pour une pièce sans état).
+- `LWT_GameSettings.lua` : lecture des options sandbox `LiveWater.*` (`getSandboxOptions`).
 - Adaptateurs du jeu, minces : `LWT_GameWorld.lua` (port monde : case chargée, case libre, objet d'une pièce par son
   sprite, `setSpriteFromName` + `transmitUpdatedSpriteToClients`, `transmitAddObjectToSquare`,
-  `transmitRemoveItemFromSquare`) et `LWT_GamePlayers.lua` (port joueurs : position, inventaire, outil par étiquette,
+  `transmitRemoveItemFromSquare`, place (`LWT_GameSite`), courant vanilla, état recopié + `transmitModData`) et `LWT_GamePlayers.lua` (port joueurs : position, inventaire, outil par étiquette,
   note). Les services ne reçoivent que ces ports ; les tests les remplacent par des doublures (`tests/lwt_fakes.py`).
 
 `client/LiveWater/` : `LWT_PipeMenu.lua` (menu minimal : poser ou démonter une pièce `layable`, envoi de la commande
@@ -81,8 +98,14 @@ seulement) et `LWT_NoticeClient.lua` (affiche les notes `notice` du serveur). In
   `Commands:dispatch` → `LWT_CmdLay` (tous les contrôles, section retirée, tuile créée, `Topology:add`).
   `dismantle { x, y, z }` → `LWT_CmdDismantle` (clé à tuyau, `Topology:remove`, tuile retirée, section rendue).
   Refus → note traduite (solo : directement ; serveur : `sendServerCommand("LiveWater", "notice", { key })`).
-- Horloge : `EveryTenMinutes` → `Clock:tick` → `Flow:step` par réseau éveillé → `waterDelivered`. Aucun abonnement
-  par image (D08).
+- Pose d'un meuble de LiveWater (pompe) : le curseur vanilla demande `LWT_PlaceRules` (refus loin de l'eau, ligne
+  rouge du panneau) ; l'autorité refait le contrôle à la fin de l'action, puis `OnObjectAdded` → `Placement:added` →
+  `Topology:add` avec l'état rapporté par l'objet (`movableData`) → `attach` (sorte de source relevée) → `partAdded` →
+  `Publisher:present`.
+- Horloge : `EveryTenMinutes` → `Clock:tick` → par réseau éveillé : courant (`LWT_Power`), `Flow:step`, `stepped`,
+  `Publisher:present`, `waterDelivered`. Aucun abonnement par image (D08).
+- Live Wire (facultatif) : `OnInitWorld` → `Power:register` ; Live Wire appelle ensuite `powerConsumption`, `display`
+  et `summary` sur l'autorité, qui lisent l'état recopié sur l'objet de la pompe.
 
 ## Outillage
 

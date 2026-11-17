@@ -8,5 +8,12 @@
     "IGUI_LWT_NoItem": "You need a pipe section.",
     "IGUI_LWT_NeedTool": "You need a pipe wrench.",
     "IGUI_LWT_NothingHere": "There is nothing to dismantle here.",
-    "IGUI_LWT_Refused": "That cannot be done."
+    "IGUI_LWT_Refused": "That cannot be done.",
+    "IGUI_LWT_NoSource": "Must stand next to natural water (lake, pond, river).",
+    "IGUI_LWT_Pump_Running": "Pump: running",
+    "IGUI_LWT_Pump_Standby": "Pump: on standby, nothing needs water",
+    "IGUI_LWT_Pump_NoPower": "Pump: no power",
+    "IGUI_LWT_Pump_Flow": "Flow: %1 L per 10 minutes",
+    "IGUI_LWT_LW_Pumps": "Water pumps running: %1 of %2",
+    "IGUI_LWT_LW_Flow": "Water pumped: %1 L per 10 minutes"
 }

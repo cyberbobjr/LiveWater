@@ -24,8 +24,48 @@ local function k(x, y, z) return x .. "," .. y .. "," .. z end
 FakeWorld = {}
 FakeWorld.__index = FakeWorld
 function FakeWorld.new(catalog)
-    return setmetatable({ catalog = catalog, unloaded = {}, blocked = {}, objects = {}, sets = 0 }, FakeWorld)
+    return setmetatable({ catalog = catalog, unloaded = {}, blocked = {}, objects = {}, sets = 0, dry = {}, near = {},
+        unpowered = {}, states = {}, writes = 0, things = {} }, FakeWorld)
 end
+-- Neighbourhood probe of a square: natural water everywhere unless dry[key]; near[key] = set of sprites around.
+function FakeWorld:site(x, y, z)
+    local world, key = self, k(x, y, z)
+    local probe = {
+        hasFlag = function(_, name) return name == "water" and not world.dry[key] end,
+        hasSprite = function(_, name) return (world.near[key] or {})[name] == true end,
+    }
+    function probe:source() return LiveWater.Sources:find(self) end
+    return probe
+end
+function FakeWorld:hasPower(x, y, z) return not self.unpowered[k(x, y, z)] end
+-- Stand-in of the game object of a part (one per square and type), with the mirrored state.
+function FakeWorld:object(x, y, z, typeId)
+    local key = k(x, y, z) .. "," .. typeId
+    local obj = self.things[key]
+    if not obj then
+        obj = { x = x, y = y, z = z, typeId = typeId }
+        self.things[key] = obj
+    end
+    return obj
+end
+local function copy(v)
+    if type(v) ~= "table" then return v end
+    local out = {}
+    for a, b in pairs(v) do out[a] = copy(b) end
+    return out
+end
+function FakeWorld:writeState(x, y, z, typeId, state)
+    self.states[k(x, y, z)] = copy(state)
+    self.writes = self.writes + 1
+    return true
+end
+function FakeWorld:stateOf(x, y, z, typeId)
+    local s = self.states[k(x, y, z)]
+    if s and s.type == typeId then return s end
+    return nil
+end
+-- What LWT_Mirror.read gives for a stand-in object.
+function FakeWorld:stateOfObject(obj) return self:stateOf(obj.x, obj.y, obj.z, obj.typeId) end
 function FakeWorld:list(x, y, z)
     local l = self.objects[k(x, y, z)]
     if not l then l = {} self.objects[k(x, y, z)] = l end
@@ -94,7 +134,7 @@ function newServices(store)
     NET = require("LiveWater/LWT_Network").new(LiveWater.Parts)
     SPRITES = require("LiveWater/LWT_Sprites").new(NET, LiveWater.Parts, WORLD)
     TOPO = require("LiveWater/LWT_Topology").new({ registry = REG, network = NET, catalog = LiveWater.Parts,
-        events = LiveWater.Events, sprites = SPRITES, log = function(m) table.insert(LOGS, m) end })
+        events = LiveWater.Events, sprites = SPRITES, sites = WORLD, log = function(m) table.insert(LOGS, m) end })
 end
 
 -- A part placed as the game would: its object on the square, then the topology.

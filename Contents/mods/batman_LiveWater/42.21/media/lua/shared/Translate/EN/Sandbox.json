@@ -1,0 +1,5 @@
+{
+    "Sandbox_LiveWater": "LiveWater",
+    "Sandbox_LWT_PumpFlowMultiplier": "Pump flow",
+    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "Multiplies the litres a pump gives every 10 minutes (50 L for a pond pump at 1.0)."
+}

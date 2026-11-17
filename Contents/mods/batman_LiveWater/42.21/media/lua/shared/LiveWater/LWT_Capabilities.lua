@@ -9,18 +9,30 @@
 --   blocks(p, d)       the part cuts the water now, e.g. a closed valve (network)
 --   pressurizes(p, d)  the part puts its network under pressure: water starts there (network)
 --   ports(p, d)        most pipes that may leave the part (network)
---   supply(p, d)       pressure and litres per ten-minute step the part gives (flow)
+--   supply(p, d, ctx)  pressure and litres per ten-minute step the part gives (flow)
 --   source(p, d, ctx)  quality of the water the part takes ("clean", "tainted"), nil when dry (flow)
 --   outlet(p, d)       pressure cost and "needs clean water" of a part water leaves by (flow)
---   purifies(p, d)     the part makes the water going through it clean now (flow)
---   wear(p, d, litres) litres went through the part; d is created when absent (flow)
+--   purifies(p, d, ctx) the part makes the water going through it clean now (flow)
+--   wear(p, d, litres, ctx) litres went through the part; d is created when absent (flow)
 --   layable(p, d)      full type of the item the part is laid with and tag of the tool that
 --                      dismantles it (server commands)
+-- Revision 2 (pond pump, power):
+--   look(p, d)         token of the part's look ("on", "filter"); the tokens of all its
+--                      capabilities, joined by "_" in kind order, name the variant drawn
+--   attach(p, d, site) may the part stand there? true, or false and a reason; may record what
+--                      it found in d (created). site: port of LWT_GameSite (source())
+--   power(p, d)        needs current (bool) and watts drawn now
+--   powered(p, d, on)  the authority tells whether the part has current this step (d created)
+--   stepped(p, d, outcome, ctx)  end of a step: outcome = { through = litres that went through
+--                      the part, quality } (d created)
+--   output(p, d)       litres the part gave the network last step (Live Wire summary)
+--   lines(p, d)        text lines { { key, arg, ..., rank = n } } (information, Live Wire)
+-- ctx is the context of the step: { need, scale = function(optionName) -> multiplier }.
 
 local Check = require "LiveWater/LWT_Check"
 
 local HOOKS = { "define", "carries", "blocks", "pressurizes", "ports", "supply", "source", "outlet", "purifies",
-    "wear", "layable" }
+    "wear", "layable", "look", "attach", "power", "powered", "stepped", "output", "lines" }
 
 local Capabilities = {}
 Capabilities.__index = Capabilities

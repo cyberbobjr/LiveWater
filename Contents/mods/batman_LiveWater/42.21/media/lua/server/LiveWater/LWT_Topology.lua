@@ -4,7 +4,9 @@ if isClient() then return end
 -- together, sprites follow (LWT_Sprites) and the public events are emitted:
 --   partAdded (entry), partRemoved (entry), networkChanged (network id).
 -- No game API here; dependencies are injected: { registry, network, catalog, events, sprites,
--- log = function(message) }.
+-- sites (port: site(x, y, z) -> the place a part asks, see LWT_GameSite), log = function(message) }.
+-- A part joins only where its capabilities accept the place (Parts:attach, e.g. an intake next
+-- to a water source); what they find is recorded in the part's state.
 
 local Grid = require "LiveWater/LWT_Grid"
 
@@ -14,7 +16,7 @@ Topology.__index = Topology
 function Topology.new(deps)
     return setmetatable({
         registry = deps.registry, network = deps.network, catalog = deps.catalog,
-        events = deps.events, sprites = deps.sprites, log = deps.log or print,
+        events = deps.events, sprites = deps.sprites, sites = deps.sites, log = deps.log or print,
     }, Topology)
 end
 
@@ -40,21 +42,37 @@ function Topology:at(x, y, z)
     return self.registry:at(x, y, z)
 end
 
+function Topology:siteAt(x, y, z)
+    return self.sites and self.sites:site(x, y, z) or nil
+end
+
 -- Could a part of type `partType` join this square? Returns true, or false and
--- "unknown_part", "occupied", "ports_full". Changes nothing.
+-- "unknown_part", "occupied", "ports_full", or the refusal of a capability (attach, e.g.
+-- "no_source"). Changes nothing.
 function Topology:canAdd(partType, x, y, z)
     if not self.catalog:has(partType) then return false, "unknown_part" end
     if self.registry:at(x, y, z) then return false, "occupied" end
     local ok, reason = self.network:canAdd({ type = partType, x = x, y = y, z = z })
     if not ok then return false, reason end
-    return true
+    return self.catalog:attach({ type = partType }, self:siteAt(x, y, z))
 end
 
--- Add a part. Returns true and the registry entry, or false and a reason of canAdd.
-function Topology:add(partType, x, y, z)
+local function copy(v)
+    if type(v) ~= "table" then return v end
+    local out = {}
+    for k, x in pairs(v) do out[k] = copy(x) end
+    return out
+end
+
+-- Add a part. `data` (optional) is the state it brings back (a moveable picked up and set down
+-- again, LWT_Placement), copied. Returns true and the registry entry, or false and a reason of
+-- canAdd.
+function Topology:add(partType, x, y, z, data)
     local ok, reason = self:canAdd(partType, x, y, z)
     if not ok then return false, reason end
     local entry = self.registry:add(partType, x, y, z)
+    if type(data) == "table" then entry.data = copy(data) end
+    self.catalog:attach(entry, self:siteAt(x, y, z))
     local _, id = self.network:add(entry)
     self.sprites:around(x, y, z)
     self.events.emit("partAdded", entry)

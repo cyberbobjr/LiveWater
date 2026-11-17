@@ -1,0 +1,5 @@
+{
+    "Sandbox_LiveWater": "LiveWater",
+    "Sandbox_LWT_PumpFlowMultiplier": "Débit des pompes",
+    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "Multiplie les litres qu'une pompe donne toutes les 10 minutes (50 L pour une pompe d'étang à 1,0)."
+}

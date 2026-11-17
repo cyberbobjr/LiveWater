@@ -11,7 +11,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 | E05 | Persistance : registre global versionné, pièces de type inconnu conservées | Terminée (2026-11-17) | E03 | D03, D04, D10 | M | E06 |
 | E06 | Tuiles provisoires : 16 tuyaux, robinet, arroseurs, arrivée d'eau, pompe, filtre ; planche de présentation validée par l'utilisateur | Terminée (2026-11-18) | E01 | D12, D23 | L | E02-E05 |
 | E07 | Adaptateurs serveur : pose et retrait, raccord automatique des sprites, commandes, horloge `EveryTenMinutes` | Terminée (2026-11-18) | E05, E06 | D08-D12 | L | — |
-| E08 | Pompe d'étang et électricité : `registerConsumer` (`display`, `summary`), repli vanilla | À faire | E07 | D16, D20 | M | E09 |
+| E08 | Pompe d'étang et électricité : `registerConsumer` (`display`, `summary`), repli vanilla | Terminée (2026-11-18) | E07 | D16, D20 | M | E09 |
 | E09 | Arrivée d'eau de la maison : réservoirs invisibles `LiveWaterRelay`, cohabitation Live Wire | À faire | E07 | D18, D21 | M | E08 |
 | E10 | Filtre : pièce, usure au volume, remplacement | À faire | E08, E09, E06 | D17, D23 | S | E11 |
 | E11 | Arroseur manuel : vanne, rayon, doses de 200 ml | À faire | E07 | D19 | M | E10 |
@@ -210,6 +210,42 @@ Fichiers : `shared/LiveWater/Parts/LWT_PartPondPump.lua`, `server/LiveWater/LWT_
 Wire et repli vanilla). Tests rouges : pose refusée loin de l'eau ; inscription `registerConsumer` seulement si
 `revision >= 6` ; 250 W en marche, 0 à l'arrêt ; `display` et `summary` au format de l'ADR-002 ; pas de travail sans
 courant.
+
+Clôture (2026-11-18). Fichiers : `shared/LiveWater/Parts/LWT_PartPondPump.lua` (`LiveWater:PondPump`, `intake` +
+`pump`, 50 L par pas, 250 W ; sprites 24-39 en `variants` `off`, `on`, `filter_on`, `filter_off` × S, E, N, O),
+`LWT_Parts.lua` (champ `variants`, `typeOfSprite` les reconnaît, `facingOf`, `variant`, `spritesOf`, `hasHook`,
+`look`, `attach`, `lines`), `LWT_Capabilities.lua` (crochets `look`, `attach`, `power`, `powered`, `stepped`, `output`,
+`lines` ; `supply`, `purifies`, `wear` reçoivent le contexte du pas), `LWT_API.lua` (révision 2, registre des
+sources), `LWT_Sources.lua` + `Sources/LWT_SourceNaturalWater.lua` (sortes de source en données : eau naturelle =
+drapeau `water`, croupie), `LWT_GameSite.lua` (8 cases voisines), `LWT_PlaceRules.lua` (curseur de meuble vanilla :
+`canPlaceMoveableInternal` et ligne du panneau d'information), `LWT_Reasons.lua` (raisons → clés, partagé),
+`LWT_Settings.lua`, `LWT_Mirror.lua` (état recopié dans `movableData` de l'objet), `Capabilities/LWT_CapPump.lua`,
+`LWT_CapIntake.lua`, `LWT_Flow.lua` (part de chaque pompe dans l'eau servie, `through`), côté serveur
+`LWT_Power.lua` (seul adaptateur du courant), `LWT_Publisher.lua` (sprite selon l'état, état recopié sur l'objet
+quand il change), `LWT_GameSettings.lua`, `LWT_Clock.lua` (courant, pas, `stepped`, présentation), `LWT_Topology.lua`
+(`attach` à la pose, état rapporté par un meuble), `LWT_Placement.lua`, `LWT_Sprites.lua` (`show`), `LWT_GameWorld.lua`,
+`LWT_Server.lua` (`OnInitWorld`, abonnés `partAdded`/`partRemoved`) ; `media/scripts/LWT_moveables.txt`
+(`Base.Mov_LiveWater_PondPump`), recette `LWTBuildPondPump`, `media/sandbox-options.txt` (`PumpFlowMultiplier`),
+traductions EN et FR ; tests `tests/test_pump.py`, doublures étendues `tests/lwt_fakes.py`.
+Choix faits sans l'utilisateur :
+- les 16 sprites de la pompe sont des `variants` (état × orientation), jamais redessinés par le masque ; la variante
+  affichée est le nom formé par les jetons `look` des capacités (`filter` + `on` → `filter_on`, contrat des tuiles) ;
+- règle vanilla sans Live Wire : générateur à portée ou réseau public (`haveElectricity() or hasGridPower()`, règle
+  `ExteriorOK` des sons d'objets du moteur, Java 42.22), car `haveElectricity()` seul ne voit que les générateurs ;
+- inscription Live Wire à `OnInitWorld` (tous les Lua chargés, Live Wire pas encore scellé), comme le mod de
+  compatibilité de Live Wire ; seulement sur l'autorité (le client lit l'état recopié) ; identifiant
+  `LiveWater_LiveWater_PondPump`, catégorie `other`, circuit `equipment`, sans `name` (Live Wire garde le nom du
+  meuble) ; `display` = les 4 premières lignes d'information ; `summary` = pompes en marche sur le total, eau pompée ;
+- la pompe ne marche que si une sortie prend de l'eau (arrêt automatique) ; deux pompes d'un réseau se partagent
+  l'eau servie au prorata de leur débit ;
+- pose refusée loin de l'eau au curseur (client) et sur l'autorité ; une pompe ramassée puis reposée garde son état
+  (ModData `movableData`, recopiée par le vanilla) ;
+- recette de fabrication de la pompe (Électricité 2, tournevis et clé gardés, tuyau, tôles, électronique, fils, vis)
+  ajoutée pour que la pompe existe en jeu (P19).
+Preuves :
+- `python -B -m unittest discover -s tests` → `Ran 109 tests` … `OK` ;
+- `python -B tools/check_mod.py` → `OK: 44 Lua file(s) checked`.
+Non testé en jeu.
 
 ### E09 — Arrivée d'eau de la maison
 

@@ -12,7 +12,9 @@
 --     the pressure left is too low, or was too low for an earlier outlet -> "no_pressure"
 --     else                     -> "served": min(need, water left) litres, pressure taken;
 --   the first working filter on the way from the pump (outlet included) makes the water clean
---   and wears by the litres served through it.
+--   and wears by the litres served through it;
+--   each pressurizing part is credited its share of the water served (through, by key).
+-- The context `ctx` is passed to the hooks supply, source, purifies and wear (LWT_Settings).
 
 local Flow = {}
 Flow.__index = Flow
@@ -28,28 +30,30 @@ local function mix(a, b)
     return b
 end
 
--- Pressure, litres and quality the pressurizing parts give this step.
+-- Pressure, litres and quality the pressurizing parts give this step, and the litres of each
+-- (by key).
 function Flow:supply(nodes, ctx)
-    local pressure, water, quality = 0, 0, nil
+    local pressure, water, quality, given = 0, 0, nil, {}
     for i = 1, #nodes do
         local part = nodes[i].part
         if nodes[i].root then
-            local p, litres = self.catalog:first(part, "supply")
+            local p, litres = self.catalog:first(part, "supply", ctx)
             pressure = pressure + (p or 0)
             local q = self.catalog:first(part, "source", ctx)
-            if q and litres then
+            if q and litres and litres > 0 then
                 water = water + litres
                 quality = mix(quality, q)
+                given[nodes[i].key] = litres
             end
         end
     end
-    return pressure, water, quality
+    return pressure, water, quality, given
 end
 
 -- First part on the way from the pump to `node`, node included, whose filter works now.
-function Flow:purifierOf(node, byKey)
+function Flow:purifierOf(node, byKey, ctx)
     while node do
-        if self.catalog:any(node.part, "purifies") then return node.part end
+        if self.catalog:any(node.part, "purifies", ctx) then return node.part end
         node = node.from and byKey[node.from]
     end
     return nil
@@ -63,7 +67,7 @@ function Flow:serve(node, cost, needsClean, byKey, left, ctx)
     local need = ctx.need(part) or 0
     if need <= 0 then return "idle", 0 end
     if left.water <= 0 then return "no_water", 0 end
-    local filter = self:purifierOf(node, byKey)
+    local filter = self:purifierOf(node, byKey, ctx)
     local quality = filter and Flow.CLEAN or left.quality
     if needsClean and quality ~= Flow.CLEAN then return "unfiltered", 0 end
     if left.starved or left.pressure < cost then
@@ -72,16 +76,18 @@ function Flow:serve(node, cost, needsClean, byKey, left, ctx)
     end
     local litres = math.min(need, left.water)
     left.water, left.pressure = left.water - litres, left.pressure - cost
-    if filter then catalog:call(filter, "wear", litres) end
+    if filter then catalog:call(filter, "wear", litres, ctx) end
     return "served", litres, quality
 end
 
--- One step of network `id`. Returns { pressure, water, quality, outlets = list in service
--- order, at = by key }, outlet = { key, part, state, litres, quality }.
+-- One step of network `id`. Returns { pressure, water, quality, served = litres, outlets = list
+-- in service order, at = by key, through = litres by key }, outlet = { key, part, state, litres,
+-- quality }.
 function Flow:step(network, id, ctx)
     local nodes, byKey = network:reach(id)
-    local pressure, water, quality = self:supply(nodes, ctx)
-    local result = { pressure = pressure, water = water, quality = quality, outlets = {}, at = {} }
+    local pressure, water, quality, given = self:supply(nodes, ctx)
+    local result = { pressure = pressure, water = water, quality = quality, served = 0, outlets = {}, at = {},
+        through = {} }
     local left = { pressure = pressure, water = water, quality = quality, starved = false }
     for i = 1, #nodes do
         local node = nodes[i]
@@ -91,8 +97,10 @@ function Flow:step(network, id, ctx)
             local out = { key = node.key, part = node.part, state = state, litres = litres, quality = q }
             result.outlets[#result.outlets + 1] = out
             result.at[node.key] = out
+            result.served = result.served + litres
         end
     end
+    for key, litres in pairs(given) do result.through[key] = litres * result.served / water end
     return result
 end
 

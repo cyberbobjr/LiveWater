@@ -10,6 +10,7 @@
 local Capabilities = require "LiveWater/LWT_Capabilities"
 local Parts = require "LiveWater/LWT_Parts"
 local EventBus = require "LiveWater/LWT_Events"
+local Sources = require "LiveWater/LWT_Sources"
 
 -- Starting capability kinds (D02): kind -> file under LiveWater/Capabilities.
 local STARTING_CAPABILITIES = {
@@ -23,6 +24,11 @@ local STARTING_CAPABILITIES = {
     layable = "LWT_CapLayable",
 }
 
+-- Starting source kinds (D16, D17): kind -> file under LiveWater/Sources.
+local STARTING_SOURCES = {
+    water = "LWT_SourceNaturalWater",
+}
+
 LiveWater = LiveWater or {}
 
 local capabilities = Capabilities.new()
@@ -30,13 +36,20 @@ for kind, file in pairs(STARTING_CAPABILITIES) do
     capabilities:register(kind, require("LiveWater/Capabilities/" .. file))
 end
 local parts = Parts.new(capabilities)
+local sources = Sources.new()
+for kind, file in pairs(STARTING_SOURCES) do
+    sources:register(kind, require("LiveWater/Sources/" .. file))
+end
 
 -- Internal to LiveWater (not the public API): the catalog the domain and adapters use.
 LiveWater.Capabilities = capabilities
 LiveWater.Parts = parts
+LiveWater.Sources = sources
 LiveWater.Events = EventBus.new(EventBus.NAMES)
 
-local API = { revision = 1 }
+-- Revision 2: part definition field `variants`, capability hooks look, attach, power, powered,
+-- stepped, output, lines (LWT_Parts.lua, LWT_Capabilities.lua).
+local API = { revision = 2 }
 LiveWater.API = API
 
 local function answer(call, id, ok, reason, detail)
@@ -64,6 +77,7 @@ end
 Events.OnInitGlobalModData.Add(function()
     capabilities:seal()
     parts:seal()
+    sources:seal()
 end)
 
 return API

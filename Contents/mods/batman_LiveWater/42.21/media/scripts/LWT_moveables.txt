@@ -1,0 +1,15 @@
+module Base
+{
+    /* Moveables of LiveWater (ADR-001 D22): the CustomItem of the tiles of the tileset
+       batman_livewater_01. The name comes from Moveables.json (GroupName CustomName), the weight
+       from PickUpWeight (Moveable.ReadFromWorldSprite). */
+
+    item Mov_LiveWater_PondPump
+    {
+        DisplayCategory = Furniture,
+        ItemType = base:moveable,
+        Icon = default,
+        Weight = 15.0,
+        WorldObjectSprite = batman_livewater_01_24,
+    }
+}

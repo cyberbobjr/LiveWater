@@ -1,7 +1,11 @@
 -- LiveWater: registry of part types (ADR-001 D01-D03, D05, D12). Pure, no game API; the
 -- capability registry is injected. A definition is copied by whitelist:
---   sprites       required: { [mask] = spriteName } for masks 0..15 (side mask of LWT_Grid);
---                 a sprite belongs to one part type only
+--   sprites       { [mask] = spriteName } for masks 0..15 (side mask of LWT_Grid), redrawn when
+--                 the links change; required unless `variants` is given
+--   variants      optional (API revision 2): { [key] = { spriteName, ... } } sprites drawn by the
+--                 state of the part: key = the look of the part (Parts:look, e.g. "on",
+--                 "filter_off"), list index = facing 1..4 (S, E, N, W). Never redrawn by the mask.
+--                 A sprite belongs to one part type only (sprites and variants together).
 --   sides         optional: mask of the sides the part may connect by (default 15)
 --   capabilities  required: { kind = params or true }, every kind registered, params checked
 --                 by the kind's define hook
@@ -14,8 +18,14 @@ local Grid = require "LiveWater/LWT_Grid"
 local Parts = {}
 Parts.__index = Parts
 
+Parts.MAX_FACINGS = 4
+
 function Parts.new(capabilities)
-    return setmetatable({ capabilities = capabilities, defs = {}, bySprite = {}, sealed = false }, Parts)
+    return setmetatable({ capabilities = capabilities, defs = {}, bySprite = {}, facing = {}, sealed = false }, Parts)
+end
+
+local function isSpriteName(s)
+    return type(s) == "string" and s ~= ""
 end
 
 local function copySprites(src)
@@ -24,13 +34,41 @@ local function copySprites(src)
     for mask = 0, Grid.ALL do
         local s = src[mask]
         if s ~= nil then
-            if type(s) ~= "string" or s == "" then return nil end
+            if not isSpriteName(s) then return nil end
             out[mask] = s
             count = count + 1
         end
     end
     if count == 0 then return nil end
     return out
+end
+
+-- Copy of the variants ({} when absent) and how many sprites they hold, or nil when invalid.
+local function copyVariants(src)
+    if src == nil then return {}, 0 end
+    if type(src) ~= "table" then return nil end
+    local out, count = {}, 0
+    for key, list in pairs(src) do
+        if not Check.isName(key) or type(list) ~= "table" or #list < 1 or #list > Parts.MAX_FACINGS then return nil end
+        local copy = {}
+        for i = 1, #list do
+            if not isSpriteName(list[i]) then return nil end
+            copy[i] = list[i]
+        end
+        out[key] = copy
+        count = count + #copy
+    end
+    return out, count
+end
+
+-- Every sprite name of a definition: list of { name, facing or nil }.
+local function allSprites(sprites, variants)
+    local list = {}
+    for _, s in pairs(sprites) do list[#list + 1] = { s } end
+    for _, l in pairs(variants) do
+        for i = 1, #l do list[#list + 1] = { l[i], i } end
+    end
+    return list
 end
 
 -- Sorted list { kind, params, impl } so hooks run in a stable order.
@@ -51,25 +89,34 @@ function Parts:copyCapabilities(src)
 end
 
 -- Returns true, or false, a reason and sometimes a detail: "registration_closed",
--- "invalid_id", "duplicate_part", "invalid_definition", "invalid_sprites", "duplicate_sprite",
--- "invalid_sides", "invalid_capabilities", "unknown_capability", "invalid_field".
+-- "invalid_id", "duplicate_part", "invalid_definition", "invalid_sprites", "invalid_variants",
+-- "duplicate_sprite", "invalid_sides", "invalid_capabilities", "unknown_capability", "invalid_field".
 function Parts:register(id, def)
     if self.sealed then return false, "registration_closed" end
     if not Check.isNamespaced(id) then return false, "invalid_id" end
     if self.defs[id] then return false, "duplicate_part" end
     if type(def) ~= "table" then return false, "invalid_definition" end
+    local variants, variantCount = copyVariants(def.variants)
+    if not variants then return false, "invalid_variants" end
     local sprites = copySprites(def.sprites)
-    if not sprites then return false, "invalid_sprites" end
-    for _, s in pairs(sprites) do
-        if self.bySprite[s] then return false, "duplicate_sprite", s end
+    if not sprites then
+        if def.sprites ~= nil or variantCount == 0 then return false, "invalid_sprites" end
+        sprites = {}
+    end
+    local names = allSprites(sprites, variants)
+    for i = 1, #names do
+        if self.bySprite[names[i][1]] then return false, "duplicate_sprite", names[i][1] end
     end
     local sides = def.sides
     if sides == nil then sides = Grid.ALL end
     if not Check.isInteger(sides, 0, Grid.ALL) then return false, "invalid_sides" end
     local caps, reason, detail = self:copyCapabilities(def.capabilities)
     if not caps then return false, reason, detail end
-    self.defs[id] = { sprites = sprites, sides = sides, caps = caps }
-    for _, s in pairs(sprites) do self.bySprite[s] = id end
+    self.defs[id] = { sprites = sprites, variants = variants, sides = sides, caps = caps }
+    for i = 1, #names do
+        self.bySprite[names[i][1]] = id
+        if names[i][2] then self.facing[names[i][1]] = names[i][2] end
+    end
     return true
 end
 
@@ -97,7 +144,7 @@ function Parts:sides(id)
     return def and def.sides or 0
 end
 
--- Sprite of the type for a side mask: sprites[mask], else sprites[0].
+-- Sprite of the type for a side mask: sprites[mask], else sprites[0] (nil when neither).
 function Parts:sprite(id, mask)
     local def = self.defs[id]
     if not def then return nil end
@@ -111,9 +158,47 @@ function Parts:hasShape(id, mask)
     return def ~= nil and def.sprites[mask] ~= nil
 end
 
--- Type id a sprite belongs to, or nil (sprites are unique among types).
+-- Type id a sprite belongs to, or nil (sprites are unique among types, variants included).
 function Parts:typeOfSprite(name)
     return self.bySprite[name]
+end
+
+-- Facing (1..4) of a variant sprite, or nil.
+function Parts:facingOf(name)
+    return self.facing[name]
+end
+
+-- Sprite of the variant `key` of a type for a facing (the first facing when it has fewer), or nil.
+function Parts:variant(id, key, facing)
+    local def = self.defs[id]
+    local list = def and def.variants[key]
+    if not list then return nil end
+    return list[facing or 1] or list[1]
+end
+
+-- Every sprite name of a type (shapes and variants), sorted, without duplicates.
+function Parts:spritesOf(id)
+    local def, seen, list = self.defs[id], {}, {}
+    if not def then return list end
+    local names = allSprites(def.sprites, def.variants)
+    for i = 1, #names do
+        if not seen[names[i][1]] then
+            seen[names[i][1]] = true
+            list[#list + 1] = names[i][1]
+        end
+    end
+    table.sort(list)
+    return list
+end
+
+-- Does one capability of the type have this hook?
+function Parts:hasHook(id, hook)
+    local def = self.defs[id]
+    if not def then return false end
+    for i = 1, #def.caps do
+        if def.caps[i].impl[hook] then return true end
+    end
+    return false
 end
 
 -- Registered type ids, sorted.
@@ -126,6 +211,17 @@ end
 
 local function stateOf(part, kind)
     return part.data and part.data[kind]
+end
+
+-- State table of one capability of the part, created under part.data[kind] when absent.
+local function ownState(part, kind)
+    part.data = part.data or {}
+    local state = part.data[kind]
+    if state == nil then
+        state = {}
+        part.data[kind] = state
+    end
+    return state
 end
 
 -- True when one capability of the part answers `hook` with a true value.
@@ -148,8 +244,8 @@ function Parts:first(part, hook, ...)
         local c = def.caps[i]
         local fn = c.impl[hook]
         if fn then
-            local a, b = fn(c.params, stateOf(part, c.kind), ...)
-            if a ~= nil then return a, b end
+            local a, b, d = fn(c.params, stateOf(part, c.kind), ...)
+            if a ~= nil then return a, b, d end
         end
     end
     return nil
@@ -163,16 +259,67 @@ function Parts:call(part, hook, ...)
     for i = 1, #def.caps do
         local c = def.caps[i]
         local fn = c.impl[hook]
-        if fn then
-            part.data = part.data or {}
-            local state = part.data[c.kind]
-            if state == nil then
-                state = {}
-                part.data[c.kind] = state
-            end
-            fn(c.params, state, ...)
+        if fn then fn(c.params, ownState(part, c.kind), ...) end
+    end
+end
+
+-- Look of a part: the tokens its capabilities answer to `look` (in kind order) joined by "_",
+-- e.g. "filter" and "on" give "filter_on"; nil when none answers. Picks the variant drawn.
+function Parts:look(part)
+    local def = self.defs[part.type]
+    if not def then return nil end
+    local tokens = {}
+    for i = 1, #def.caps do
+        local c = def.caps[i]
+        local fn = c.impl.look
+        local token = fn and fn(c.params, stateOf(part, c.kind))
+        if token then tokens[#tokens + 1] = token end
+    end
+    if #tokens == 0 then return nil end
+    return table.concat(tokens, "_")
+end
+
+-- Can the part stand where `site` is (port of the place, see LWT_GameSite)? Every capability
+-- with an `attach` hook may refuse, or record what it found in its own state. Returns true, or
+-- false and the reason of the first refusal ("unknown_part" for a type not registered).
+function Parts:attach(part, site)
+    local def = self.defs[part.type]
+    if not def then return false, "unknown_part" end
+    for i = 1, #def.caps do
+        local c = def.caps[i]
+        if c.impl.attach then
+            local ok, reason = c.impl.attach(c.params, ownState(part, c.kind), site)
+            if not ok then return false, reason end
         end
     end
+    return true
+end
+
+-- Text lines the part shows (information, Live Wire): { { key, arg, ... }, ... } gathered from
+-- the `lines` hooks, sorted by their `rank` field (default 50, then kind order), rank dropped.
+function Parts:lines(part)
+    local def = self.defs[part.type]
+    local found = {}
+    if not def then return found end
+    for i = 1, #def.caps do
+        local c = def.caps[i]
+        local fn = c.impl.lines
+        local list = fn and fn(c.params, stateOf(part, c.kind)) or {}
+        for j = 1, #list do
+            found[#found + 1] = { line = list[j], rank = list[j].rank or 50, n = #found }
+        end
+    end
+    table.sort(found, function(a, b)
+        if a.rank ~= b.rank then return a.rank < b.rank end
+        return a.n < b.n
+    end)
+    local out = {}
+    for i = 1, #found do
+        local line = {}
+        for j = 1, #found[i].line do line[j] = found[i].line[j] end
+        out[i] = line
+    end
+    return out
 end
 
 -- Public description of a part type (a copy), or nil.
@@ -181,7 +328,7 @@ function Parts:describe(id)
     if not def then return nil end
     local caps = {}
     for i = 1, #def.caps do caps[def.caps[i].kind] = deepCopy(def.caps[i].params) end
-    return { sprites = deepCopy(def.sprites), sides = def.sides, capabilities = caps }
+    return { sprites = deepCopy(def.sprites), variants = deepCopy(def.variants), sides = def.sides, capabilities = caps }
 end
 
 return Parts

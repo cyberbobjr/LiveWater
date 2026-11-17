@@ -2,7 +2,8 @@ if isClient() then return end
 -- LiveWater: sprites follow the links of the parts (ADR-001 D11, D12). After a topology change
 -- the part and its four neighbours get the sprite of their side mask, applied only when it
 -- changed. A type that draws no sprite for a mask keeps the sprite it was placed with (an
--- orientation chosen at placement). No game API here: the sprite port is injected:
+-- orientation chosen at placement); a type drawn by its state follows it through `show`.
+-- No game API here: the sprite port is injected:
 --   port:spriteOf(x, y, z, typeId)        current sprite of the part object, nil if not found
 --   port:setSprite(x, y, z, typeId, name) change and broadcast it (LWT_GameWorld)
 
@@ -24,6 +25,19 @@ function Sprites:refresh(x, y, z)
     local want = self.catalog:sprite(part.type, mask)
     local current = self.port:spriteOf(x, y, z, part.type)
     if current == nil or current == want then return false end
+    return self.port:setSprite(x, y, z, part.type, want) == true
+end
+
+-- Draw the part of a square by its state (variants, Parts:look), keeping the facing it was set
+-- down with. Returns true when its sprite changed.
+function Sprites:show(x, y, z)
+    local part = self.network:part(x, y, z)
+    local key = part and self.catalog:look(part)
+    if not key then return false end
+    local current = self.port:spriteOf(x, y, z, part.type)
+    if current == nil then return false end
+    local want = self.catalog:variant(part.type, key, self.catalog:facingOf(current))
+    if want == nil or want == current then return false end
     return self.port:setSprite(x, y, z, part.type, want) == true
 end
 

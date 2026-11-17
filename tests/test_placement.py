@@ -125,6 +125,8 @@ local function fakeObject(sprite, sq)
     function o:getSquare() return self.sq end
     function o:setSpriteFromName(n) self.sprite = n end
     function o:transmitUpdatedSpriteToClients() self.sent = (self.sent or 0) + 1 end
+    function o:getModData() self.md = self.md or {} return self.md end
+    function o:transmitModData() end
     return o
 end
 function fakeSquare(x, y, z)

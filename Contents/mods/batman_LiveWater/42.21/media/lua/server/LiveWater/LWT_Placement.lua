@@ -3,13 +3,15 @@ if isClient() then return end
 -- a part when its sprite belongs to a registered part type (catalog lookup, never a list of
 -- names). The composition root (LWT_Server) calls these from OnObjectAdded (vanilla moveable
 -- placement, ISMoveableSpriteProps:placeMoveableInternal, solo and server) and
--- OnObjectAboutToBeRemoved (pickup, removal of a square object). No game API here.
+-- OnObjectAboutToBeRemoved (pickup, removal of a square object). No game API here; the optional
+-- `states` port (stateOf(x, y, z, typeId) -> { type, data } mirrored on the object, LWT_GameWorld)
+-- gives back the state a moveable carried while it was picked up (wear, filter).
 
 local Placement = {}
 Placement.__index = Placement
 
-function Placement.new(topology, catalog, log)
-    return setmetatable({ topology = topology, catalog = catalog, log = log or print }, Placement)
+function Placement.new(topology, catalog, log, states)
+    return setmetatable({ topology = topology, catalog = catalog, log = log or print, states = states }, Placement)
 end
 
 -- A tile with this sprite appeared on a square. Returns true (added, or already known), or
@@ -20,7 +22,8 @@ function Placement:added(spriteName, x, y, z)
     if not partType then return false, "not_a_part" end
     local entry = self.topology:at(x, y, z)
     if entry and entry.type == partType then return true end
-    local ok, reason = self.topology:add(partType, x, y, z)
+    local carried = self.states and self.states:stateOf(x, y, z, partType)
+    local ok, reason = self.topology:add(partType, x, y, z, carried and carried.data)
     if not ok then
         self.log("LiveWater: " .. partType .. " placed at " .. x .. "," .. y .. "," .. z
             .. " is not connected: " .. tostring(reason))
