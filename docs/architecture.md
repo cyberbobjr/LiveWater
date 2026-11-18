@@ -25,7 +25,7 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
   `outlet`, `controller`, `layable`, `meter`, `spray`), réglages et valeurs par défaut de la capacité.
 - `Parts/LWT_Part<Nom>.lua` : un fichier par pièce de LiveWater, inscrite par l'API publique comme celle d'un autre
   mod (`LWT_PartPipe.lua` : `LiveWater:PipeGalvanized` ; `LWT_PartPondPump.lua` : `LiveWater:PondPump` ; `LWT_PartFlowMeter.lua` :
-  `LiveWater:FlowMeter` ; `LWT_PartHouseInlet.lua` : `LiveWater:HouseInlet` ; `LWT_PartSprinkler.lua` : `LiveWater:Sprinkler`). `LWT_Tiles.lua` : noms des sprites du
+  `LiveWater:FlowMeter` ; `LWT_PartHouseInlet.lua` : `LiveWater:HouseInlet` ; `LWT_PartSprinkler.lua` : `LiveWater:Sprinkler` ; `LWT_PartSprinklerAuto.lua` : `LiveWater:SprinklerAuto`). `LWT_Tiles.lua` : noms des sprites du
   tileset et `variants` d'une pièce dessinée par état et orientation.
 - `LWT_InletArea.lua` (pur) : cases servies par une arrivée d'eau (bâtiment de la carte touché, cercle de portée,
   jusqu'à 3 étages au-dessus, sous-sols jusqu'à 2 niveaux sous l'emprise du rez-de-chaussée ; hors bâtiment de la carte,
@@ -56,7 +56,8 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
 - `LWT_Network.lua` (domaine pur) : graphe d'une case par pièce, liens entre voisins qui s'offrent le côté commun,
   ports, fusion et scission des réseaux, masque et sprite, eau partie des pièces qui mettent sous pression (distance
   en tuyau, ordre de service : distance puis ordre de pose). Le registre des pièces lui est injecté comme catalogue ;
-  il interroge des crochets (`carries`, `blocks`, `pressurizes`, `ports`) et ne nomme aucune capacité.
+  il interroge des crochets (`carries`, `pressurizes`, `ports`, fermeture par `Parts:closed` : `blocks` sans `opens`)
+  et ne nomme aucune capacité.
 - `LWT_Flow.lua` (domaine pur) : un pas de dix minutes d'un réseau : pression et débit additionnés des pompes,
   qualité, sorties servies dans l'ordre de service selon leur besoin, réserve de pression, filtre sur le chemin et
   son usure ; litres et qualité de l'eau servie portés sur chaque pièce de son chemin (`through`, `qualityAt` ; part
@@ -79,7 +80,8 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
   `LWT_CmdChecks.lua` pour les contrôles d'arguments et de portée, `LWT_CmdCartridge.lua` pour ce que partagent les
 commandes du filtre) ; un refus est dit au joueur par clé de traduction.
 - `LWT_Clock.lua` : tâches injectées (`chores`, travail borné du même pas), puis pas de dix minutes de chaque réseau éveillé (une pièce sous pression sur une case chargée) :
-  courant de chaque pièce qui en a besoin (port `power`, crochet `powered`), distribution, crochet `stepped` de chaque
+  courant de chaque pièce qui en a besoin (port `power`, crochet `powered`), préparation (`prepare` : une minuterie
+  d'arroseur tient sa vanne ouverte, `ctx.hours`), distribution, crochet `stepped` de chaque
   membre (litres passés), présentation (port `publisher`), `waterDelivered` pour chaque sortie servie ; besoin des
   sorties injecté (0 par défaut), multiplicateurs sandbox par `scale`.
 - `LWT_Outlets.lua` : où va l'eau d'une sortie, par type de sortie (gestionnaire : `need`, `deliver`, `release`) ;

@@ -53,6 +53,7 @@ local COMMANDS = {
     [Protocol.RESERVE_BARREL] = "LWT_CmdReserveBarrel",
     [Protocol.CITY_WATER] = "LWT_CmdCityWater",
     [Protocol.SWITCH_VALVE] = "LWT_CmdSwitchValve",
+    [Protocol.SET_TIMER] = "LWT_CmdSetTimer",
 }
 
 local MODDATA_KEY = "LiveWater"
@@ -117,7 +118,7 @@ local function build()
         placement = Placement.new(topology, catalog, log, world),
         clock = Clock.new({ network = network, flow = Flow.new(catalog), catalog = catalog, world = world,
             events = LiveWater.Events, power = power, publisher = publisher, scale = GameSettings.scale,
-            random = randomShare, sources = LiveWater.Sources, chores = { relays, barrels, diagnostics, washerFix },
+            random = randomShare, hours = gameHours, sources = LiveWater.Sources, chores = { relays, barrels, diagnostics, washerFix },
             need = function(part) return outlets:need(part) end }),
     }
     local count = topology:rebuild()

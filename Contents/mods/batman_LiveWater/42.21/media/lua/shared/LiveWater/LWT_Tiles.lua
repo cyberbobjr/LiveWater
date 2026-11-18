@@ -5,6 +5,10 @@ local Tiles = {}
 
 Tiles.SHEET = "batman_livewater_01_"
 
+-- Jet frames of the sprinklers (D08a): frame f, facing k at index JET_FIRST + 4 * f + k.
+Tiles.JET_FIRST = 80
+Tiles.JET_FRAMES = 6
+
 -- Sprite name of a tile index.
 function Tiles.sprite(index)
     return Tiles.SHEET .. index

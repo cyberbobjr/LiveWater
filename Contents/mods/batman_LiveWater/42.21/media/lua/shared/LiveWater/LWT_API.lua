@@ -62,7 +62,9 @@ LiveWater.Events = EventBus.new(EventBus.NAMES)
 -- step did with an outlet); the outlet keeps it as its state, its look and its information line.
 -- Revision 8: capability "spray" (radius, dose, jet frames; hooks spray, jet), valve hooks opened,
 -- open, actions, lines; event valveChanged emitted when a player opens or closes a valve.
-local API = { revision = 8 }
+-- Revision 9: controller timer (fields every, watts, choices; hooks prepare, opens, timer,
+-- setTimer), Parts:closed, action `choices`, ctx.hours of the step.
+local API = { revision = 9 }
 LiveWater.API = API
 
 local function answer(call, id, ok, reason, detail)

@@ -49,7 +49,13 @@
 --                         frame count, and whether it sprays now (D08a)
 --   opened(p, d)          a valve: open now (true/false), else nil
 --   open(p, d, on)        open or close it (d created)
--- ctx is the context of the step: { need, scale = function(optionName) -> multiplier,
+-- Revision 9 (timers):
+--   prepare(p, d, ctx)    start of a step, after `powered`: a timer may hold its part open (d created)
+--   opens(p, d)           the part is held open now even if a valve of it is closed (Parts:closed)
+--   timer(p, d)           hours between two openings of a timer, else nil
+--   setTimer(p, d, hours) a player set them (d created)
+--   actions may carry `choices` = { { key, arg, args } }: a submenu, args sent with the command
+-- ctx is the context of the step: { need, hours (revision 9: world age in hours), scale = function(optionName) -> multiplier,
 -- random = function() -> 0..1 (breakdowns; none without it), sources = registry of source kinds
 -- (revision 6, LWT_Sources) }.
 
@@ -58,7 +64,7 @@ local Check = require "LiveWater/LWT_Check"
 local HOOKS = { "define", "carries", "blocks", "pressurizes", "ports", "supply", "source", "outlet", "purifies",
     "wear", "layable", "look", "attach", "power", "powered", "stepped", "output", "lines",
     "cartridge", "fit", "unfit", "actions", "switchable", "switch", "repairable", "repair", "sound",
-    "spray", "jet", "opened", "open" }
+    "spray", "jet", "opened", "open", "prepare", "opens", "timer", "setTimer" }
 
 local Capabilities = {}
 Capabilities.__index = Capabilities

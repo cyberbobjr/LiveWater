@@ -39,4 +39,13 @@ module Base
         Weight = 3.0,
         WorldObjectSprite = batman_livewater_01_48,
     }
+
+    item Mov_LiveWater_SprinklerAuto
+    {
+        DisplayCategory = Furniture,
+        ItemType = base:moveable,
+        Icon = default,
+        Weight = 3.5,
+        WorldObjectSprite = batman_livewater_01_56,
+    }
 }

@@ -15,5 +15,7 @@
     "ContextMenu_LWT_NoWater": "Pas d'eau : %1",
     "ContextMenu_LWT_CityWater": "Raccorder au réseau public",
     "ContextMenu_LWT_OpenValve": "Ouvrir la vanne",
-    "ContextMenu_LWT_CloseValve": "Fermer la vanne"
+    "ContextMenu_LWT_CloseValve": "Fermer la vanne",
+    "ContextMenu_LWT_SetTimer": "Minuterie d'arrosage",
+    "ContextMenu_LWT_EveryHours": "Toutes les %1 h"
 }

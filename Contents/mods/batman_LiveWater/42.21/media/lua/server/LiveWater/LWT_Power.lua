@@ -2,7 +2,8 @@ if isClient() then return end
 -- LiveWater: the only adapter of electric current (ADR-001 D20), on the authority.
 --   register(liveWireApi)  at OnInitWorld (every mod's Lua is loaded, Live Wire not sealed yet):
 --                          when Live Wire's API has revision 6 or later, every part type that
---                          needs current (`power` hook) becomes a Live Wire consumer: billed
+--                          needs current (`power` hook true for a new part: pump, sprinkler
+--                          timer) becomes a Live Wire consumer: billed
 --                          `watts` while running, 0 when stopped, `display` (its information
 --                          lines, at most 4) and `summary` (pumps running, water pumped), in the
 --                          format of Live Wire ADR-002. Returns how many types were registered.
@@ -50,18 +51,20 @@ function Power:display(obj)
 end
 
 -- Pumps running among the objects served by a Live Wire network, and the water they pumped.
+-- Only the parts that pressurize count as pumps (a sprinkler timer is a consumer too).
 function Power:summary(objects)
-    local running, litres = 0, 0
+    local pumps, running, litres = 0, 0, 0
     for i = 1, #objects do
         local part = self:partOf(objects[i])
-        if part then
+        if part and self.catalog:any(part, "pressurizes") then
+            pumps = pumps + 1
             local _, watts = self.catalog:first(part, "power")
             if watts and watts > 0 then running = running + 1 end
             litres = litres + (self.catalog:first(part, "output") or 0)
         end
     end
     return { lines = {
-        { "IGUI_LWT_LW_Pumps", running, #objects },
+        { "IGUI_LWT_LW_Pumps", running, pumps },
         { "IGUI_LWT_LW_Flow", math.floor(litres + 0.5) },
     } }
 end
@@ -87,7 +90,7 @@ function Power:register(api)
     local count, ids = 0, self.catalog:ids()
     for i = 1, #ids do
         local id = ids[i]
-        if self.catalog:hasHook(id, "power") then
+        if self.catalog:first({ type = id }, "power") then
             local ok, reason = api.registerConsumer(Power.consumerId(id), self:definition(id))
             if ok or reason == "duplicate_consumer" then
                 self.registered[id] = true

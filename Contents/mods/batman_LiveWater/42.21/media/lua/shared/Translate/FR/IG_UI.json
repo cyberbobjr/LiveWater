@@ -64,5 +64,8 @@
     "IGUI_LWT_Sprinkler_no_water": "Pas d'eau dans les tuyaux",
     "IGUI_LWT_Sprinkler_unfiltered": "Eau non filtrée",
     "IGUI_LWT_Sprinkler_no_pressure": "Pression insuffisante",
-    "IGUI_LWT_Sprinkler_closed": "Vanne fermée : pas d'arrosage"
+    "IGUI_LWT_Sprinkler_closed": "Vanne fermée : pas d'arrosage",
+    "IGUI_LWT_Timer_Every": "Minuterie : arrose toutes les %1 h",
+    "IGUI_LWT_Timer_NoPower": "Minuterie : pas de courant, elle n'ouvrira pas",
+    "IGUI_LWT_OutOfBounds": "Cet intervalle n'est pas permis sur ce serveur."
 }

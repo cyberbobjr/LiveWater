@@ -15,7 +15,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 | E09 | Arrivée d'eau de la maison : réservoirs invisibles `LiveWaterRelay`, cohabitation Live Wire | Terminée (2026-11-18) | E07 | D18, D21 | M | E08 |
 | E10 | Filtre : pièce, usure au volume, remplacement | Terminée (2026-11-18) | E08, E09, E06 | D17, D23 | S | E11 |
 | E11 | Arroseur manuel : vanne, rayon, doses de 200 ml | Terminée (2026-11-18) | E07 | D19 | M | E10 |
-| E12 | Arroseur automatique : recette (niveau d'Électricité), minuterie consommatrice | À faire | E11, E08 | D19, D20 | M | — |
+| E12 | Arroseur automatique : recette (niveau d'Électricité), minuterie consommatrice | Terminée (2026-11-18) | E11, E08 | D19, D20 | M | — |
 | E13 | Interface : menus, vue du réseau en surbrillance persistante, états « sans pression » et « eau non filtrée » | À faire | E08-E12 | D11, D14, D17 | M | — |
 | E15 | Pompe : interrupteur, usure du rendement, pannes, réparation, fenêtre d'information, son (P03-P05, P08, P15) | Terminée (2026-11-18) | E08 | D24 | M | E16 |
 | E16 | Débitmètre (P12) | Terminée (2026-11-18) | E07 | D24 | S | E15 |
@@ -368,6 +368,38 @@ Non testé en jeu.
 
 Fichiers : capacité `controller` `timer`, recette `LWTUpgradeSprinkler` (niveau d'Électricité 2 par défaut). Tests
 rouges : déclenchement par tranche d'heures ; minuterie sans courant inerte ; ouverture manuelle toujours possible.
+
+Clôture (2026-11-18). Fichiers : `Parts/LWT_PartSprinklerAuto.lua` (`LiveWater:SprinklerAuto` : mêmes capacités que
+l'arroseur manuel, `controller` `timer` toutes les 6 heures, 5 W ; `variants` `off` 56-59 et `on` 60-63),
+`Capabilities/LWT_CapController.lua` (minuterie : réglages `every`, `watts`, `choices` ; crochets `power`, `powered`,
+`prepare`, `opens`, `stepped`, `timer`, `setTimer`, `actions` avec sous-menu, `lines`), `LWT_Parts.lua`
+(`Parts:closed` : une vanne fermée qu'aucune capacité ne tient ouverte ; `choices` des actions), `LWT_Network.lua` et
+`LWT_Flow.lua` (fermeture lue par `Parts:closed`), `LWT_Capabilities.lua` et `LWT_API.lua` (révision 9), `LWT_Tiles.lua`
+(`JET_FIRST`, `JET_FRAMES` partagés par les deux arroseurs), `LWT_Protocol.lua` (`setTimer`), `LWT_Reasons.lua`
+(`not_timer`, `out_of_bounds`) ; serveur `LWT_Clock.lua` (`prepare` de chaque membre après le courant, `ctx.hours`),
+`Commands/LWT_CmdSetTimer.lua`, `LWT_Power.lua` (inscrit un type seulement si une pièce neuve a besoin de courant ; le
+résumé de Live Wire ne compte que les pompes), `LWT_Server.lua` ; client `LWT_PartMenu.lua` (sous-menu des `choices`,
+arguments envoyés avec la commande) ; `LWT_moveables.txt` (`Base.Mov_LiveWater_SprinklerAuto`), recette
+`LWTUpgradeSprinkler`, options `SprinklerTimerMin` et `SprinklerTimerMax`, traductions EN et FR ; tests
+`tests/test_timer.py`, doublures `getGameTime` (`test_placement.py`) et `addSubMenu` (`test_upkeep.py`), `test_api.py`
+(révision 9).
+Choix faits sans l'utilisateur :
+- tranche = `floor(heures du monde / X)` comparée au numéro de la dernière tranche arrosée (D09) ; à une tranche
+  nouvelle, avec du courant, la minuterie tient la vanne ouverte tant que l'arroseur est servi, et la relâche au
+  premier pas où il ne l'est pas (plantes servies, pas d'eau, pression) ; une tranche manquée sans courant n'est pas
+  rattrapée ;
+- X = 6 heures par défaut, choisi au clic droit (« Minuterie d'arrosage » → toutes les 1, 2, 3, 4, 6, 8, 12 ou 24 h),
+  borné par les options `SprinklerTimerMin` (1) et `SprinklerTimerMax` (24) ; refus « intervalle non permis » ;
+- la minuterie tire 5 W en permanence (consommateur Live Wire `LiveWater_LiveWater_SprinklerAuto`, sinon règle
+  vanilla de la case) ; elle n'est pas comptée parmi les pompes du résumé de Live Wire ; l'arroseur manuel n'est
+  plus inscrit à Live Wire (sa capacité `controller` n'a pas besoin de courant) ;
+- la vanne reste manœuvrable à la main : ouverte, l'arroseur arrose sans minuterie ni courant ;
+- recette : Électricité 2, tournevis gardé, l'arroseur manuel, 2 débris électroniques, 1 fil électrique ; 10 XP ;
+  l'état de l'arroseur manuel n'est pas repris (objet neuf).
+Preuves :
+- `python -B -m unittest discover -s tests` → `Ran 231 tests` … `OK` ;
+- `python -B tools/check_mod.py` → `OK: 87 Lua file(s) checked`.
+Non testé en jeu.
 
 ### E13 — Interface
 

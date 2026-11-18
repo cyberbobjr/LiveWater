@@ -4,5 +4,6 @@
     "LWTMakeWaterFilter": "Fabriquer une cartouche filtrante",
     "LWTBuildFlowMeter": "Fabriquer un compteur d'eau",
     "LWTBuildHouseInlet": "Fabriquer une arrivée d'eau de maison",
-    "LWTBuildSprinkler": "Fabriquer un arroseur"
+    "LWTBuildSprinkler": "Fabriquer un arroseur",
+    "LWTUpgradeSprinkler": "Ajouter une minuterie à un arroseur"
 }

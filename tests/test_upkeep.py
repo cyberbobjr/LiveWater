@@ -178,7 +178,8 @@ function click(sprites, items)
         getObjects = function() return { size = function() return #objs end, get = function(_, i) return objs[i + 1] end } end }
     OPTIONS = {}
     local context = { addOption = function(self, text, target, fn, ...)
-        local o = { text = text } table.insert(OPTIONS, o) return o end }
+        local o = { text = text } table.insert(OPTIONS, o) return o end,
+        addSubMenu = function(self, option, sub) option.sub = sub end }
     fire("OnFillWorldObjectContextMenu", 0, context, { { getSquare = function() return sq end } }, false)
 end
 function texts() local out = {} for i, o in ipairs(OPTIONS) do out[i] = o.text end return out end

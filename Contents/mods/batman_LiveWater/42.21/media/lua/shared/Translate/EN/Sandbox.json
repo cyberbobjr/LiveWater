@@ -13,5 +13,9 @@
     "Sandbox_LWT_WasherFix": "Fix plumbed washing machines (multiplayer)",
     "Sandbox_LWT_WasherFix_tooltip": "On a server, the washing machines fed by a house water inlet show their real state to the players: plumbed, and stopped when they run out of water.",
     "Sandbox_LWT_SprinklerRadiusMultiplier": "Sprinkler reach",
-    "Sandbox_LWT_SprinklerRadiusMultiplier_tooltip": "Multiplies how far a sprinkler waters the plants (2 squares at 1.0, 10 at most)."
+    "Sandbox_LWT_SprinklerRadiusMultiplier_tooltip": "Multiplies how far a sprinkler waters the plants (2 squares at 1.0, 10 at most).",
+    "Sandbox_LWT_SprinklerTimerMin": "Sprinkler timer: shortest interval",
+    "Sandbox_LWT_SprinklerTimerMin_tooltip": "Fewest hours a player may set between two waterings of an automatic sprinkler.",
+    "Sandbox_LWT_SprinklerTimerMax": "Sprinkler timer: longest interval",
+    "Sandbox_LWT_SprinklerTimerMax_tooltip": "Most hours a player may set between two waterings of an automatic sprinkler."
 }

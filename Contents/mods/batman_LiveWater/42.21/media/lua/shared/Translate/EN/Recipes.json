@@ -4,5 +4,6 @@
     "LWTMakeWaterFilter": "Make Water Filter",
     "LWTBuildFlowMeter": "Build Water Meter",
     "LWTBuildHouseInlet": "Build House Water Inlet",
-    "LWTBuildSprinkler": "Build Sprinkler"
+    "LWTBuildSprinkler": "Build Sprinkler",
+    "LWTUpgradeSprinkler": "Add a Timer to a Sprinkler"
 }

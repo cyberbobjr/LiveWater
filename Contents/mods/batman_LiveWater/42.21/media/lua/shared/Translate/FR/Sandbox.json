@@ -13,5 +13,9 @@
     "Sandbox_LWT_WasherFix": "Corriger les lave-linge raccordés (multijoueur)",
     "Sandbox_LWT_WasherFix_tooltip": "Sur un serveur, les lave-linge alimentés par une arrivée d'eau montrent leur état réel aux joueurs : raccordés, et arrêtés quand ils n'ont plus d'eau.",
     "Sandbox_LWT_SprinklerRadiusMultiplier": "Portée des arroseurs",
-    "Sandbox_LWT_SprinklerRadiusMultiplier_tooltip": "Multiplie la distance à laquelle un arroseur arrose les plantes (2 cases à 1,0 ; 10 au plus)."
+    "Sandbox_LWT_SprinklerRadiusMultiplier_tooltip": "Multiplie la distance à laquelle un arroseur arrose les plantes (2 cases à 1,0 ; 10 au plus).",
+    "Sandbox_LWT_SprinklerTimerMin": "Minuterie d'arroseur : intervalle le plus court",
+    "Sandbox_LWT_SprinklerTimerMin_tooltip": "Nombre d'heures minimal qu'un joueur peut régler entre deux arrosages d'un arroseur automatique.",
+    "Sandbox_LWT_SprinklerTimerMax": "Minuterie d'arroseur : intervalle le plus long",
+    "Sandbox_LWT_SprinklerTimerMax_tooltip": "Nombre d'heures maximal qu'un joueur peut régler entre deux arrosages d'un arroseur automatique."
 }

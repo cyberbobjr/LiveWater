@@ -236,6 +236,12 @@ function Parts:any(part, hook, ...)
     return false
 end
 
+-- Is the part closed now? One capability blocks the water (a closed valve) and none holds it open
+-- (a timer watering, `opens` hook, API revision 9).
+function Parts:closed(part)
+    return self:any(part, "blocks") and not self:any(part, "opens")
+end
+
 -- Results (up to four) of the first capability of the part whose `hook` answers non-nil, or nil.
 function Parts:first(part, hook, ...)
     local def = self.defs[part.type]
@@ -323,7 +329,9 @@ function Parts:lines(part)
 end
 
 -- Actions the part menu offers for the part: the `actions` lists of its capabilities, in kind
--- order; action = { command, key, item = full type the player must carry, or nil }.
+-- order; action = { command, key, item = full type the player must carry, or nil, choices = list
+-- of { key, arg, args } offered as a submenu (revision 9: the chosen args go with the command),
+-- or nil }.
 function Parts:actions(part)
     local def = self.defs[part.type]
     local out = {}
@@ -333,7 +341,8 @@ function Parts:actions(part)
         local fn = c.impl.actions
         local list = fn and fn(c.params, stateOf(part, c.kind)) or {}
         for j = 1, #list do
-            out[#out + 1] = { command = list[j].command, key = list[j].key, item = list[j].item }
+            out[#out + 1] = { command = list[j].command, key = list[j].key, item = list[j].item,
+                choices = deepCopy(list[j].choices) }
         end
     end
     return out

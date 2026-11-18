@@ -3,8 +3,9 @@
 -- reads the state mirrored on the object (LWT_Mirror, synced by the server), asks the part's
 -- capabilities for their actions (`actions` hook) and lines (`lines` hook), and only sends the
 -- command; the server checks everything and answers a refusal with a note (LWT_NoticeClient).
--- An action that needs an item is offered only when the player carries one. The information is
--- the tooltip of an "Information" option: nothing is drawn per frame by LiveWater.
+-- An action that needs an item is offered only when the player carries one; an action with
+-- `choices` (a timer's hours) opens a submenu whose choice sends its args with the command. The
+-- information is the tooltip of an "Information" option: nothing is drawn per frame by LiveWater.
 
 require "LiveWater/LWT_API"
 local Protocol = require "LiveWater/LWT_Protocol"
@@ -67,11 +68,29 @@ local function addInformation(context, catalog, part)
     option.toolTip = tooltip
 end
 
--- Send a command about a square to the authority (shared with the other LiveWater menus).
-function PartMenu.send(player, command, sq)
-    sendClientCommand(player, Protocol.MODULE, command, { x = sq:getX(), y = sq:getY(), z = sq:getZ() })
+-- Send a command about a square to the authority (shared with the other LiveWater menus); `extra`
+-- (optional) adds arguments.
+function PartMenu.send(player, command, sq, extra)
+    local args = { x = sq:getX(), y = sq:getY(), z = sq:getZ() }
+    for k, v in pairs(extra or {}) do args[k] = v end
+    sendClientCommand(player, Protocol.MODULE, command, args)
 end
 local send = PartMenu.send
+
+-- One option, or a submenu of its choices.
+local function addAction(context, player, sq, a)
+    if not a.choices then
+        context:addOption(getText(a.key), player, send, a.command, sq)
+        return
+    end
+    local option = context:addOption(getText(a.key), nil, nil)
+    local sub = ISContextMenu:getNew(context)
+    context:addSubMenu(option, sub)
+    for i = 1, #a.choices do
+        local c = a.choices[i]
+        sub:addOption(getText(c.key, asText(c.arg)), player, send, a.command, sq, c.args)
+    end
+end
 
 function PartMenu.fill(playerNum, context, worldobjects, test)
     local player = getSpecificPlayer(playerNum)
@@ -85,7 +104,7 @@ function PartMenu.fill(playerNum, context, worldobjects, test)
             local a = actions[j]
             if a.item == nil or inv:containsTypeRecurse(a.item) then
                 if test then return true end
-                context:addOption(getText(a.key), player, send, a.command, sq)
+                addAction(context, player, sq, a)
             end
         end
         if not test then addInformation(context, catalog, parts[i]) end

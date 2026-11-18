@@ -30,6 +30,8 @@ local Reasons = {
         not_map_building = "IGUI_LWT_NotMapBuilding",
         no_city_water = "IGUI_LWT_NoCityWater",
         not_valve = "IGUI_LWT_Invalid",
+        not_timer = "IGUI_LWT_Invalid",
+        out_of_bounds = "IGUI_LWT_OutOfBounds",
     },
     GENERIC = "IGUI_LWT_Refused",
 }

@@ -156,6 +156,7 @@ ModData = { getOrCreate = function(name)
     return GLOBAL_MODDATA[name]
 end }
 function isServer() return false end
+function getGameTime() return { getWorldAgeHours = function() return 0 end } end
 """
 
 

@@ -64,5 +64,8 @@
     "IGUI_LWT_Sprinkler_no_water": "No water in the pipes",
     "IGUI_LWT_Sprinkler_unfiltered": "Unfiltered water",
     "IGUI_LWT_Sprinkler_no_pressure": "Not enough pressure",
-    "IGUI_LWT_Sprinkler_closed": "Valve closed: no watering"
+    "IGUI_LWT_Sprinkler_closed": "Valve closed: no watering",
+    "IGUI_LWT_Timer_Every": "Timer: waters every %1 h",
+    "IGUI_LWT_Timer_NoPower": "Timer: no power, it will not open",
+    "IGUI_LWT_OutOfBounds": "This interval is not allowed on this server."
 }

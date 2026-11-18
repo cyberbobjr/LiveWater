@@ -196,7 +196,7 @@ function Network:reach(id)
         local node = queue[head]
         head = head + 1
         local part = node.part
-        if not catalog:any(part, "blocks") and (node.root or catalog:any(part, "carries")) then
+        if not catalog:closed(part) and (node.root or catalog:any(part, "carries")) then
             local links = self:linksOf(part)
             for i = 1, #links do
                 local key = links[i].key

@@ -5,7 +5,7 @@
 --   the parts that pressurize add their pressure and their litres (D15); litres count only
 --   when the part has a source of water; the water is tainted when one source is tainted;
 --   outlets are taken in service order (pipe distance, then placement order, D14):
---     closed (blocks)          -> "closed"
+--     closed (Parts:closed)    -> "closed"
 --     no need                  -> "idle", takes nothing (D09)
 --     no water left            -> "no_water"
 --     needs clean water and the water reaching it is not clean -> "unfiltered" (D17)
@@ -77,7 +77,7 @@ end
 -- pressure left; the litres served are routed into `result`.
 function Flow:serve(node, cost, needsClean, byKey, left, ctx, result)
     local catalog, part = self.catalog, node.part
-    if catalog:any(part, "blocks") then return "closed", 0 end
+    if catalog:closed(part) then return "closed", 0 end
     local need = ctx.need(part) or 0
     if need <= 0 then return "idle", 0 end
     if left.water <= 0 then return "no_water", 0 end

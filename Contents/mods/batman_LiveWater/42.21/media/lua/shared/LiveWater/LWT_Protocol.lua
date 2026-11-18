@@ -5,7 +5,7 @@
 --                     SWITCH_PUMP { x, y, z } REPAIR_PUMP { x, y, z }
 --                     CONNECT_BARREL, DISCONNECT_BARREL, RESERVE_BARREL { x, y, z }
 --                     CITY_WATER { x, y, z }
---                     SWITCH_VALVE { x, y, z }
+--                     SWITCH_VALVE { x, y, z }  SET_TIMER { x, y, z, hours }
 --   server -> client  NOTICE { key }          (translation key of a refusal)
 --                     SOUND { x, y, z, name } (sound loop of a part: name, or nil to stop)
 --                     JET { x, y, z }         (a sprinkler there started or stopped spraying:
@@ -24,6 +24,7 @@ local Protocol = {
     RESERVE_BARREL = "reserveBarrel",
     CITY_WATER = "cityWater",
     SWITCH_VALVE = "switchValve",
+    SET_TIMER = "setTimer",
     JET = "jet",
     SOUND = "sound",
     NOTICE = "notice",

@@ -39,4 +39,7 @@
   it waters the living plants that need water within 2 squares (sandbox option), 200 ml per dose taken from the pipes;
   unfiltered water is fine for plants. A watering sprinkler shows an animated water jet (a mod option shows a still
   jet instead).
+- Automatic sprinkler: add a timer to a sprinkler (Electrical 2). It opens on its own every 6 hours (choose 1 to 24 h
+  from its right-click menu, limits in the sandbox options) to water the plants, then closes. The timer needs a
+  little power (generator, grid or Live Wire); without power it does nothing, but you can still open the valve by hand.
 - The house water inlet also serves the basement (fixtures under the house) and plumbed washing machines.
