@@ -9,8 +9,11 @@
 -- building above it, part of it or not).
 -- Base mode (L11), when the inlet touches no map building (a base the players built): every square
 -- within `ranges.base` squares, from the inlet's level up to LEVELS_UP floors above.
+-- In base mode, a fixture of a map building (its original sinks, flagged mapBuilding by the probe)
+-- is never taken: after the city water shut-off the circle would otherwise put relays over a
+-- neighbour's house; one already fed by a relay of this inlet keeps it.
 -- An area: { mode, x, y, z, range, minX, maxX, minY, maxY, minZ, maxZ, topZ, contains(self, x, y, z),
--- reaches(self, x, y, z) }. reaches: a barrel there may join the reserve of the inlet (ADR-001 D28,
+-- reaches(self, x, y, z), serves(self, fixture, owner) }. reaches: a barrel there may join the reserve of the inlet (ADR-001 D28,
 -- L01): in the circle, inside the area or right above it (on the roof), up to topZ.
 
 local InletArea = {}
@@ -32,6 +35,13 @@ end
 function InletArea:reaches(x, y, z)
     if z < self.minZ or z > self.topZ or not inCircle(self, x, y) then return false end
     return self:holds(x, y, z) or self:holds(x, y, z - 1)
+end
+
+-- May the inlet `owner` (key) serve this fixture { x, y, z, source, mapBuilding } of its area?
+function InletArea:serves(fixture, owner)
+    if self.mode ~= "base" or not fixture.mapBuilding then return true end
+    local src = fixture.source
+    return type(src) == "table" and src.owner == owner
 end
 
 local function new(fields)

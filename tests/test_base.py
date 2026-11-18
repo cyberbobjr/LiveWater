@@ -55,6 +55,25 @@ class BaseMode(unittest.TestCase):
         self.assertIsNotNone(lua.eval("relayAt(105, 105, 1)"))
         self.assertIsNone(lua.eval("relayAt(130, 100, 1)"))
 
+    def test_the_original_fixtures_of_a_map_house_in_range_are_left_alone(self):
+        # A map house east of the base, its own fixtures in range: only the fixture the players set down in the base
+        # gets a relay (the house's sinks would draw invisible water after the city water shut-off).
+        lua = bench()
+        lua.execute('PLUMB:addBuilding({ x1 = 104, y1 = 98, x2 = 110, y2 = 106, minLevel = 0, maxLevel = 1 })'
+                    ' PLUMB:addFixture(106, 102, 0) PLUMB:addFixture(97, 100, 0)'
+                    ' place("LiveWater:HouseInlet", 100, 100, "%s40") CLOCK:tick()' % TILE)
+        self.assertIsNotNone(lua.eval("relayAt(97, 100, 1)"))
+        self.assertIsNone(lua.eval("relayAt(106, 102, 1)"))
+
+    def test_a_map_house_fixture_already_fed_by_this_base_keeps_its_relay(self):
+        lua = bench()
+        lua.execute('PLUMB:addBuilding({ x1 = 104, y1 = 98, x2 = 110, y2 = 106, minLevel = 0, maxLevel = 1 })'
+                    ' PLUMB:addFixture(106, 102, 0)'
+                    ' PLUMB.relays["106,102,1"] = { owner = "100,100,0", amount = 0, capacity = 25 }'
+                    ' STORE.relays["100,100,0"] = { ["106,102,1"] = { x = 106, y = 102, z = 1 } }'
+                    ' place("LiveWater:HouseInlet", 100, 100, "%s40") CLOCK:tick()' % TILE)
+        self.assertEqual(lua.eval("relayAt(106, 102, 1).owner"), "100,100,0")
+
     def test_sandbox_option_and_translations(self):
         with open(os.path.join(MEDIA, "sandbox-options.txt"), encoding="utf-8") as f:
             text = f.read()

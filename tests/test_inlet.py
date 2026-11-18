@@ -45,6 +45,12 @@ function FakePlumbing:building(x, y, z)
     end
     return nil
 end
+function FakePlumbing:inside(x, y, z)
+    for _, b in ipairs(self.buildings) do
+        if b:contains(x, y, z) then return true end
+    end
+    return false
+end
 -- What IsoObject.FindExternalWaterSource gives for a fixture: a source on the square above, else around it.
 function FakePlumbing:sourceOf(x, y, z)
     local found
@@ -61,7 +67,8 @@ function FakePlumbing:fixtures(area)
     local out = {}
     for _, f in ipairs(self.list) do
         if area:contains(f.x, f.y, f.z) then
-            table.insert(out, { x = f.x, y = f.y, z = f.z, source = self:sourceOf(f.x, f.y, f.z) })
+            table.insert(out, { x = f.x, y = f.y, z = f.z, source = self:sourceOf(f.x, f.y, f.z),
+                mapBuilding = self:inside(f.x, f.y, f.z) })
         end
     end
     return out

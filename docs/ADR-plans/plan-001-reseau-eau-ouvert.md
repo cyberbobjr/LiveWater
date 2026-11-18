@@ -927,3 +927,11 @@ Relecture de tout le mod contre l'ADR (D04, D08-D10, MP, Kahlua) ; chaque défau
   au-dessus du point d'eau à raccorder, et l'alimentation (`feeds`) est lue à chaque pas. Tests :
   `test_inlet.py` `Survey` (6), `test_placement.py`
   `test_fixtures_set_down_or_taken_and_chunks_loaded_reach_the_relays`.
+- **E26, base du joueur et maison voisine.** Défaut : le cercle de la base (12 cases) prenait aussi les points d'eau
+  d'origine d'une maison de la carte voisine dès la coupure de l'eau de la ville, et posait des relais invisibles
+  au-dessus. Correction (`LWT_InletArea.lua` `serves`, `LWT_Relays.lua` `refresh`, `LWT_GamePlumbing.lua`
+  `fixtures` → `mapBuilding`) : en mode base, un point d'eau sur une case d'un bâtiment de la carte n'est jamais pris,
+  sauf s'il est déjà servi par un relais de cette arrivée d'eau ; les points d'eau de la base (hors bâtiment, ou dans
+  un bâtiment construit par les joueurs) restent servis. Tests : `test_base.py`
+  `test_the_original_fixtures_of_a_map_house_in_range_are_left_alone`,
+  `test_a_map_house_fixture_already_fed_by_this_base_keeps_its_relay`.

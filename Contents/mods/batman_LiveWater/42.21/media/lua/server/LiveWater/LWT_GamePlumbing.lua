@@ -8,7 +8,8 @@ if isClient() then return end
 --   fixtures(area)             water fixtures (sprite flag waterPiped) of the area that use, or may
 --                              use, an outside source: plumbed (getUsesExternalWaterSource), set
 --                              down by a player (ModData canBeWaterPiped) or after the city water
---                              shut-off; { x, y, z, source } (source: see LWT_RelayPlan)
+--                              shut-off; { x, y, z, source, mapBuilding } (source: see
+--                              LWT_RelayPlan; mapBuilding: its square is in a map building)
 --   relay(x, y, z)             our relay on the square: { owner, amount, free, feeds, why }, or nil
 --                              (feeds: a plumbed fixture below draws from it)
 --   placeRelay(x, y, z, owner, litres)   invisible tank (IsoThumpable + FluidContainer)
@@ -62,14 +63,19 @@ local function wrapBuilding(def)
     }
 end
 
+-- The square belongs to a building of the map, not one the players built.
+local function inMapBuilding(sq)
+    local b = sq:getBuilding()
+    local def = b and b:getDef()
+    return def ~= nil and not def:isUserDefined()
+end
+
 local AROUND = { { 0, 0 }, { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } }
 
 function GamePlumbing:building(x, y, z)
     for i = 1, #AROUND do
         local sq = squareAt(x + AROUND[i][1], y + AROUND[i][2], z)
-        local b = sq and sq:getBuilding()
-        local def = b and b:getDef()
-        if def and not def:isUserDefined() then return wrapBuilding(def) end
+        if sq and inMapBuilding(sq) then return wrapBuilding(sq:getBuilding():getDef()) end
     end
     return nil
 end
@@ -104,7 +110,7 @@ function GamePlumbing:fixtures(area)
             for y = area.minY, area.maxY do
                 local sq = area:contains(x, y, z) and squareAt(x, y, z)
                 if sq and fixtureOn(sq) then
-                    out[#out + 1] = { x = x, y = y, z = z, source = sourceOf(sq) }
+                    out[#out + 1] = { x = x, y = y, z = z, source = sourceOf(sq), mapBuilding = inMapBuilding(sq) }
                 end
             end
         end

@@ -96,8 +96,12 @@ function Relays:refresh(part, force)
     if not force and self.seen[key] and not self.dirty[key] then return end
     self.seen[key] = true
     self.dirty[key] = nil
-    local area = self:areaOf(part)
-    local wanted = RelayPlan.wanted(area and self.plumbing:fixtures(area) or {}, key)
+    local area, served = self:areaOf(part), {}
+    local found = area and self.plumbing:fixtures(area) or {}
+    for i = 1, #found do
+        if area:serves(found[i], key) then served[#served + 1] = found[i] end
+    end
+    local wanted = RelayPlan.wanted(served, key)
     local own = self:own(key)
     local keys = sortedKeys(wanted)
     for i = 1, #keys do
