@@ -912,3 +912,18 @@ Choix faits sans l'utilisateur :
 
 Non prouvé par ces passages (à voir à l'œil) : rendu du jet animé et des tuiles, sons (pompe, arrosage), ressenti des
 menus et actions minutées, pose au curseur par un vrai clic, refus à un joueur non administrateur, serveur Linux.
+
+#### Revue finale (2026-11-18)
+
+Relecture de tout le mod contre l'ADR (D04, D08-D10, MP, Kahlua) ; chaque défaut corrigé par un test rouge puis vert.
+
+- **D10, relevé des points d'eau sur événement.** Défaut : chaque arrivée d'eau chargée relevait ses points d'eau
+  toutes les heures de jeu (jusqu'à 41 × 41 cases × 6 niveaux), sans événement. Correction (`LWT_Relays.lua`
+  `refresh`, `touched`, `chunkLoaded`, `tick` ; `LWT_Server.lua` ; `LWT_WaterObjects.changesSources`) : relevé au pas
+  suivant seulement quand l'arrivée d'eau est neuve ou de nouveau chargée, quand un point d'eau ou un réservoir (pas un
+  relais de LiveWater) est posé ou retiré à portée (`OnObjectAdded`, `OnObjectAboutToBeRemoved`), quand un chunk se
+  charge à portée (`LoadChunk`, une fois par chunk de 8 × 8 cases), ou quand l'eau de la ville est coupée ; un seul
+  relevé par pas et par arrivée d'eau. Le raccord vanilla (`ISPlumbItem`) n'en demande pas : le relais est déjà posé
+  au-dessus du point d'eau à raccorder, et l'alimentation (`feeds`) est lue à chaque pas. Tests :
+  `test_inlet.py` `Survey` (6), `test_placement.py`
+  `test_fixtures_set_down_or_taken_and_chunks_loaded_reach_the_relays`.

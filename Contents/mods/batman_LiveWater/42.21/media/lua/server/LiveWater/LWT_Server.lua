@@ -4,6 +4,8 @@ if isClient() then return end
 -- never keep a table of an earlier game) and wires the game events, each once:
 --   OnObjectAdded / OnObjectAboutToBeRemoved  -> LWT_Placement (and a barrel connected, taken away
 --                                                or set down again: LWT_HouseBarrels, L12)
+--   OnObjectAdded / OnObjectAboutToBeRemoved of a fixture or a water tank, LoadChunk
+--                                             -> LWT_Relays (fixtures surveyed again, D10)
 --   OnClientCommand (module LiveWater)        -> LWT_Commands
 --   EveryTenMinutes                           -> LWT_Clock (the only clock, ADR-001 D09)
 --   OnInitWorld                               -> LWT_Power:register (Live Wire consumers, D20)
@@ -121,7 +123,7 @@ local function build()
     local publisher = Publisher.new({ catalog = catalog, sprites = sprites, mirror = world, sounds = GameSounds.new(),
         visuals = GameVisuals.new() })
     local plumbing = GamePlumbing.new()
-    local relays = Relays.new({ store = store, plumbing = plumbing, world = world, now = gameHours,
+    local relays = Relays.new({ store = store, plumbing = plumbing, world = world,
         setting = GameSettings.scale, catalog = catalog, registry = registry, log = log })
     local outlets = Outlets.new(catalog)
     outlets:register("houseInlet", relays)
@@ -177,6 +179,7 @@ local function onObjectAdded(obj)
     local name, x, y, z = whereIs(obj)
     if not name then return end
     server.placement:added(name, x, y, z)
+    if WaterObjects.changesSources(obj) then server.relays:touched(x, y, z) end
     if WaterObjects.mark(obj, WaterObjects.BARREL_KEY) then server.barrels:placed(x, y, z) end
     if WaterObjects.mark(obj, WaterObjects.WASHER_KEY) then
         -- a washer set down again is not plumbed any more (L12)
@@ -191,7 +194,17 @@ local function onObjectAboutToBeRemoved(obj)
     local name, x, y, z = whereIs(obj)
     if not name then return end
     server.placement:removed(name, x, y, z)
+    if WaterObjects.changesSources(obj) then server.relays:touched(x, y, z) end
     if WaterObjects.mark(obj, WaterObjects.BARREL_KEY) then server.barrels:disconnect(x, y, z) end
+end
+
+-- Width of a chunk in squares (IsoChunk, Java 42.22).
+local CHUNK_SQUARES = 8
+
+local function onLoadChunk(chunk)
+    local server = LiveWater.Server
+    local sq = server and chunk and chunk:getGridSquare(0, 0, 0)
+    if sq then server.relays:chunkLoaded(sq:getX(), sq:getY(), CHUNK_SQUARES) end
 end
 
 local function onClientCommand(module, command, player, args)
@@ -242,6 +255,7 @@ LiveWater.Events.on("waterDelivered", onWaterDelivered)
 LiveWater.Events.on("waterDrawn", onWaterDrawn)
 Events.OnObjectAdded.Add(onObjectAdded)
 Events.OnObjectAboutToBeRemoved.Add(onObjectAboutToBeRemoved)
+Events.LoadChunk.Add(onLoadChunk)
 Events.OnClientCommand.Add(onClientCommand)
 Events.EveryTenMinutes.Add(onTenMinutes)
 

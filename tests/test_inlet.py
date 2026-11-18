@@ -24,7 +24,7 @@ FakePlumbing = {}
 FakePlumbing.__index = FakePlumbing
 function FakePlumbing.new()
     return setmetatable({ buildings = {}, list = {}, other = {}, relays = {}, placed = 0, removed = 0,
-        unloaded = {}, scans = 0 }, FakePlumbing)
+        unloaded = {}, scans = 0, cityRuns = true }, FakePlumbing)
 end
 local function building(b)
     function b:contains(x, y, z)
@@ -98,6 +98,7 @@ function FakePlumbing:fillRelay(x, y, z, litres)
     r.amount = r.amount + n
     return n
 end
+function FakePlumbing:cityWaterRuns() return self.cityRuns end
 function FakePlumbing:markRelay(x, y, z, why)
     local r = self.relays[k(x, y, z)]
     if r then r.why = why end
@@ -249,13 +250,53 @@ class Relays(unittest.TestCase):
         lua.execute('PLUMB.unloaded["2,12,1"] = nil CLOCK:tick()')
         self.assertIsNone(lua.eval("relayAt(2, 12, 1)"))
 
-    def test_the_fixtures_are_scanned_again_after_an_hour_only(self):
+
+class Survey(unittest.TestCase):
+    """ADR-001 D10: the fixtures of an inlet are surveyed on events only, never on a timer."""
+
+    def placed(self):
         lua = bench()
-        lua.execute('place("LiveWater:HouseInlet", 5, 9, "%s42") CLOCK:tick() CLOCK:tick()' % TILE)
+        lua.execute('place("LiveWater:HouseInlet", 5, 9, "%s42") CLOCK:tick()' % TILE)
         self.assertEqual(lua.eval("PLUMB.scans"), 1)
-        lua.execute("PLUMB:addFixture(2, 12, 0) NOW = 1 CLOCK:tick()")
+        return lua
+
+    def test_no_survey_while_nothing_happens(self):
+        lua = self.placed()
+        lua.execute("for i = 1, 12 do NOW = NOW + 1 CLOCK:tick() end")
+        self.assertEqual(lua.eval("PLUMB.scans"), 1)
+
+    def test_a_fixture_set_down_in_the_area_is_surveyed_at_the_next_step_once(self):
+        lua = self.placed()
+        lua.execute("PLUMB:addFixture(2, 12, 0) RELAYS:touched(2, 12, 0) RELAYS:touched(3, 12, 0) CLOCK:tick()")
         self.assertEqual(lua.eval("PLUMB.scans"), 2)
         self.assertIsNotNone(lua.eval("relayAt(2, 12, 1)"))
+        lua.execute("CLOCK:tick()")
+        self.assertEqual(lua.eval("PLUMB.scans"), 2)
+
+    def test_an_object_far_from_every_inlet_surveys_nothing(self):
+        lua = self.placed()
+        lua.execute("RELAYS:touched(300, 300, 0) RELAYS:chunkLoaded(296, 296, 8) CLOCK:tick()")
+        self.assertEqual(lua.eval("PLUMB.scans"), 1)
+
+    def test_a_chunk_loaded_over_the_area_surveys_again(self):
+        lua = self.placed()
+        lua.execute("PLUMB:addFixture(2, 12, 0) RELAYS:chunkLoaded(0, 8, 8) CLOCK:tick()")
+        self.assertEqual(lua.eval("PLUMB.scans"), 2)
+        self.assertIsNotNone(lua.eval("relayAt(2, 12, 1)"))
+
+    def test_an_inlet_loaded_again_is_surveyed_again(self):
+        lua = self.placed()
+        lua.execute('WORLD.unloaded["5,9,0"] = true CLOCK:tick()')
+        lua.execute('PLUMB:addFixture(2, 12, 0) WORLD.unloaded["5,9,0"] = nil CLOCK:tick()')
+        self.assertEqual(lua.eval("PLUMB.scans"), 2)
+        self.assertIsNotNone(lua.eval("relayAt(2, 12, 1)"))
+
+    def test_the_city_water_shut_off_surveys_again(self):
+        lua = self.placed()
+        lua.execute("PLUMB.cityRuns = false CLOCK:tick()")
+        self.assertEqual(lua.eval("PLUMB.scans"), 2)
+        lua.execute("CLOCK:tick()")
+        self.assertEqual(lua.eval("PLUMB.scans"), 2)
 
 
 class Delivery(unittest.TestCase):

@@ -2,8 +2,12 @@ if isClient() then return end
 -- LiveWater: relay tanks of the house inlets, on the authority (ADR-001 D18, D21). Outlet handler
 -- of the type "houseInlet" (LWT_Outlets) and chore of the clock (LWT_Clock):
 --   tick()                 removes the relays left on squares that were not loaded, then keeps the
---                          relays of every inlet on a loaded square up to date (fixtures scanned
---                          again after REFRESH_HOURS of game time, or at once for a new inlet)
+--                          relays of every inlet on a loaded square up to date
+--   touched(x, y)          a fixture or a water tank was set down or taken on that square
+--   chunkLoaded(x, y, size) the squares x..x+size-1, y..y+size-1 were loaded
+-- Survey on events only (D10): the fixtures of an inlet are scanned again at the next step only
+-- when it is new or loaded again, when something touched or loaded near it (within the larger of
+-- its two ranges), or when the city water stopped or came back; never on a timer.
 --   need(part)             litres missing in the inlet's relays that feed a plumbed fixture
 --   deliver(part, litres)  fills those relays
 --   release(part)          the inlet left: its relays are removed
@@ -13,7 +17,7 @@ if isClient() then return end
 -- ModData key LiveWaterRelay and its inlet; relays of Live Wire (LiveWireRelay) or of anything
 -- else are never placed over, filled nor removed (D21).
 -- No game API here; dependencies are injected: { store (persistent table: relays by inlet,
--- orphans), plumbing (port, LWT_GamePlumbing), world (isLoaded), now (function -> game hours),
+-- orphans), plumbing (port, LWT_GamePlumbing), world (isLoaded),
 -- setting (function(name) -> sandbox value), catalog, registry (active()), log, kind (outlet
 -- type served, "houseInlet") }.
 
@@ -25,7 +29,6 @@ local Relays = {}
 Relays.__index = Relays
 
 Relays.CAPACITY = 25
-Relays.REFRESH_HOURS = 1
 Relays.EPSILON = 0.001
 Relays.DEFAULT_RANGE = 20
 Relays.DEFAULT_BASE_RANGE = 12
@@ -34,9 +37,9 @@ function Relays.new(deps)
     local store = deps.store
     store.relays = store.relays or {}
     store.orphans = store.orphans or {}
-    return setmetatable({ store = store, plumbing = deps.plumbing, world = deps.world, now = deps.now,
+    return setmetatable({ store = store, plumbing = deps.plumbing, world = deps.world,
         setting = deps.setting, catalog = deps.catalog, registry = deps.registry, log = deps.log or print,
-        kind = deps.kind or "houseInlet", seen = {} }, Relays)
+        kind = deps.kind or "houseInlet", seen = {}, dirty = {}, loaded = {}, known = {} }, Relays)
 end
 
 local function sortedKeys(t)
@@ -86,12 +89,13 @@ function Relays:areaOf(part)
     return InletArea.of(self.plumbing, part.x, part.y, part.z, self:ranges())
 end
 
--- Place the relays the inlet wants, remove the ones it no longer wants. `force` scans at once.
+-- Place the relays the inlet wants, remove the ones it no longer wants. Scans the fixtures when
+-- the inlet was never surveyed, was touched since, or `force`.
 function Relays:refresh(part, force)
-    local key, now = Grid.key(part.x, part.y, part.z), self.now()
-    local seen = self.seen[key]
-    if not force and seen and now >= seen and now - seen < Relays.REFRESH_HOURS then return end
-    self.seen[key] = now
+    local key = Grid.key(part.x, part.y, part.z)
+    if not force and self.seen[key] and not self.dirty[key] then return end
+    self.seen[key] = true
+    self.dirty[key] = nil
     local area = self:areaOf(part)
     local wanted = RelayPlan.wanted(area and self.plumbing:fixtures(area) or {}, key)
     local own = self:own(key)
@@ -150,6 +154,7 @@ function Relays:release(part)
     for i = 1, #keys do self:drop(key, keys[i], own[keys[i]]) end
     self.store.relays[key] = nil
     self.seen[key] = nil
+    self.dirty[key] = nil
 end
 
 function Relays:mark(part, why)
@@ -172,14 +177,47 @@ function Relays:positions(part)
     return out
 end
 
--- Inlets of the registry on a loaded square.
-function Relays:inlets()
-    local out, entries = {}, self.registry:active()
+-- Inlets of the registry, then those on a loaded square.
+function Relays:allInlets()
+    local all, loaded, entries = {}, {}, self.registry:active()
     for i = 1, #entries do
         local e = entries[i]
-        if self:isInlet(e) and self.world:isLoaded(e.x, e.y, e.z) then out[#out + 1] = e end
+        if self:isInlet(e) then
+            all[#all + 1] = e
+            if self.world:isLoaded(e.x, e.y, e.z) then loaded[#loaded + 1] = e end
+        end
     end
-    return out
+    return all, loaded
+end
+
+function Relays:inlets()
+    local _, loaded = self:allInlets()
+    return loaded
+end
+
+-- Squares around an inlet where an event may change what it serves (the larger range).
+function Relays:reach()
+    local r = self:ranges()
+    return math.max(r.building, r.base)
+end
+
+-- Inlets known at the last step whose reach meets the rectangle x1..x2, y1..y2: marked dirty.
+function Relays:touchRect(x1, y1, x2, y2)
+    local reach, known = self:reach(), self.known
+    for i = 1, #known do
+        local p = known[i]
+        if p.x + reach >= x1 and p.x - reach <= x2 and p.y + reach >= y1 and p.y - reach <= y2 then
+            self.dirty[Grid.key(p.x, p.y, p.z)] = true
+        end
+    end
+end
+
+function Relays:touched(x, y)
+    self:touchRect(x, y, x, y)
+end
+
+function Relays:chunkLoaded(x, y, size)
+    self:touchRect(x, y, x + size - 1, y + size - 1)
 end
 
 function Relays:tick()
@@ -189,8 +227,21 @@ function Relays:tick()
         local o = orphans[keys[i]]
         if self.plumbing:removeRelay(o.x, o.y, o.z, o.owner) then orphans[keys[i]] = nil end
     end
-    local inlets = self:inlets()
-    for i = 1, #inlets do self:refresh(inlets[i]) end
+    local all, inlets = self:allInlets()
+    if #inlets > 0 then
+        -- the shut-off makes the original fixtures of the buildings eligible (LWT_GamePlumbing)
+        local runs = self.plumbing:cityWaterRuns()
+        if self.cityRuns ~= nil and runs ~= self.cityRuns then self.seen = {} end
+        self.cityRuns = runs
+    end
+    local loaded = {}
+    for i = 1, #inlets do
+        local key = Grid.key(inlets[i].x, inlets[i].y, inlets[i].z)
+        if not self.loaded[key] then self.seen[key] = nil end
+        loaded[key] = true
+        self:refresh(inlets[i])
+    end
+    self.known, self.loaded = all, loaded
 end
 
 return Relays

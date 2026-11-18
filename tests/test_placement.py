@@ -128,6 +128,16 @@ local function fakeObject(sprite, sq)
     function o:getModData() self.md = self.md or {} return self.md end
     function o:hasModData() return self.md ~= nil end
     function o:transmitModData() end
+    function o:getSprite() return self.spriteObj end
+    function o:getFluidContainer() return self.fc end
+    return o
+end
+function instanceof() return false end
+IsoFlagType = { waterPiped = "waterPiped" }
+-- A water fixture: its sprite carries the waterPiped flag.
+function addFixture(x, y, z)
+    local o = addObject("fixtures_sinks_01_0", x, y, z)
+    o.spriteObj = { getProperties = function() return { has = function(_, f) return f == "waterPiped" end } end }
     return o
 end
 function fakeSquare(x, y, z)
@@ -193,6 +203,22 @@ class Wiring(unittest.TestCase):
         lua.execute('fire("OnObjectAboutToBeRemoved", B)')
         self.assertIsNone(lua.eval("GLOBAL_MODDATA.LiveWater.parts['1,0,0']"))
         self.assertEqual(lua.eval("A.sprite"), "batman_livewater_01_0")
+
+    def test_fixtures_set_down_or_taken_and_chunks_loaded_reach_the_relays(self):
+        lua = self.server()
+        lua.execute("""
+        fire("OnInitGlobalModData", true)
+        TOUCHED, CHUNKS = {}, {}
+        LiveWater.Server.relays.touched = function(_, x, y) table.insert(TOUCHED, x .. "," .. y) end
+        LiveWater.Server.relays.chunkLoaded = function(_, x, y, n) table.insert(CHUNKS, x .. "," .. y .. "," .. n) end
+        F = addFixture(3, 4, 0)
+        fire("OnObjectAdded", F)
+        fire("OnObjectAdded", addObject("batman_livewater_01_0", 9, 9, 0))
+        fire("OnObjectAboutToBeRemoved", F)
+        fire("LoadChunk", { getGridSquare = function(_, x, y, z) return fakeSquare(16 + x, 24 + y, z) end })
+        """)
+        self.assertEqual(list(lua.eval("TOUCHED").values()), ["3,4", "3,4"])
+        self.assertEqual(list(lua.eval("CHUNKS").values()), ["16,24,8"])
 
     def test_events_before_init_are_ignored(self):
         lua = self.server()
