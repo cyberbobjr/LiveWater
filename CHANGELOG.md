@@ -54,4 +54,6 @@
   fills barrels through fittings set to Fill; houses and sprinklers get nothing and say so.
 - A barrel fitting set to Fill also fills a water cooler, with clean water only; more containers can be listed in the
   sandbox options.
+- Clean removal: an admin (or the player in solo) can right-click and choose "Remove LiveWater From This World" to
+  take every LiveWater part and hidden tank away before unsubscribing, so the save stays readable.
 - The house water inlet also serves the basement (fixtures under the house) and plumbed washing machines.

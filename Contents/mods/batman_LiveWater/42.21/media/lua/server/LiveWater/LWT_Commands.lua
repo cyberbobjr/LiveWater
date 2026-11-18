@@ -7,7 +7,7 @@ if isClient() then return end
 -- ctx = { topology, catalog, world, players, publisher, scale, events } (ports: LWT_GameWorld,
 -- LWT_GamePlayers, LWT_Publisher; scale: sandbox multipliers, also the context of the hooks;
 -- events: LiveWater.Events, e.g. valveChanged; replies: port to(player, command, args), answers to
--- one player such as the network view).
+-- one player such as the network view; removal: LWT_Removal).
 
 local Commands = {}
 Commands.__index = Commands

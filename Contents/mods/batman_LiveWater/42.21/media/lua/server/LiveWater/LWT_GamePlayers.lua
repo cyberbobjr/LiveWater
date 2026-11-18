@@ -11,6 +11,8 @@ if isClient() then return end
 --   hasTool(player, tag)      item with that tag ("base:pipewrench") in the inventory
 --   tell(player, key)         show a translated note: sent to the client on a server, shown
 --                             directly in solo (sendServerCommand does nothing in solo)
+--   isAdmin(player)           may remove LiveWater from the world: role capability
+--                             UseDebugContextMenu on a server (vanilla ClientCommands.lua), always in solo
 --   all()                     the players of the game (online players on a server, local ones
 --                             in solo)
 
@@ -64,6 +66,11 @@ end
 function GamePlayers:hasTool(player, tag)
     local itemTag = ItemTag.get(ResourceLocation.of(tag))
     return itemTag ~= nil and player:getInventory():containsTagRecurse(itemTag)
+end
+
+function GamePlayers:isAdmin(player)
+    if not isServer() then return true end
+    return player:getRole():hasCapability(Capability.UseDebugContextMenu)
 end
 
 function GamePlayers:all()

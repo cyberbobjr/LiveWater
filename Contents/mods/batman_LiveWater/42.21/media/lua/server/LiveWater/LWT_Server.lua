@@ -45,6 +45,7 @@ local Broadcast = require "LiveWater/LWT_GameBroadcast"
 local Fittings = require "LiveWater/LWT_Fittings"
 local GameContainers = require "LiveWater/LWT_GameContainers"
 local Containers = require "LiveWater/LWT_Containers"
+local Removal = require "LiveWater/LWT_Removal"
 local Checks = require "LiveWater/Commands/LWT_CmdChecks"
 local Reasons = require "LiveWater/LWT_Reasons"
 
@@ -64,6 +65,7 @@ local COMMANDS = {
     [Protocol.SET_TIMER] = "LWT_CmdSetTimer",
     [Protocol.SHOW_NETWORK] = "LWT_CmdShowNetwork",
     [Protocol.SWITCH_FITTING] = "LWT_CmdSwitchFitting",
+    [Protocol.REMOVE_ALL] = "LWT_CmdRemoveAll",
 }
 
 local MODDATA_KEY = "LiveWater"
@@ -135,9 +137,10 @@ local function build()
     local diagnostics = Diagnostics.new({ relays = relays, barrels = barrels, pumped = pumped })
     local washerFix = WasherFix.new({ relays = relays, plumbing = plumbing, multiplayer = isServer,
         enabled = function() return GameSettings.scale("WasherFix") ~= false end })
+    local removal = Removal.new({ store = store, registry = registry, topology = topology, world = world, log = log })
     local commands = Commands.new({ topology = topology, catalog = catalog, world = world,
         players = players, publisher = publisher, scale = GameSettings.scale, barrels = barrels,
-        plumbing = plumbing, events = LiveWater.Events, replies = replies })
+        plumbing = plumbing, events = LiveWater.Events, replies = replies, removal = removal })
     for name, file in pairs(COMMANDS) do
         commands:register(name, require("LiveWater/Commands/" .. file))
     end
@@ -148,7 +151,7 @@ local function build()
         placement = Placement.new(topology, catalog, log, world, notifier(players)),
         clock = Clock.new({ network = network, flow = Flow.new(catalog), catalog = catalog, world = world,
             events = LiveWater.Events, power = power, publisher = publisher, scale = GameSettings.scale,
-            random = randomShare, hours = gameHours, sources = LiveWater.Sources, chores = { relays, barrels, diagnostics, washerFix, fittings },
+            random = randomShare, hours = gameHours, sources = LiveWater.Sources, chores = { removal, relays, barrels, diagnostics, washerFix, fittings },
             need = function(part) return outlets:need(part) end }),
     }
     local count = topology:rebuild()

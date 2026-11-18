@@ -91,5 +91,8 @@
     "IGUI_LWT_Outlet_wrong_fluid": "Water: the pipes carry gasoline, the house gets none",
     "IGUI_LWT_Sprinkler_wrong_fluid": "The pipes carry gasoline: no watering",
     "IGUI_LWT_Meter_Water_fuel": "Fluid: gasoline",
-    "IGUI_LWT_Why_wrong_fluid": "the pipes carry gasoline, not water"
+    "IGUI_LWT_Why_wrong_fluid": "the pipes carry gasoline, not water",
+    "IGUI_LWT_RemoveConfirm": "Remove every LiveWater pipe, pump, sprinkler, inlet and fitting from this world, with their hidden tanks? Do it before unsubscribing from the mod. It cannot be undone.",
+    "IGUI_LWT_Removing": "LiveWater is being removed. Parts in areas not loaded go when the area loads. Then save, and unsubscribe.",
+    "IGUI_LWT_NotAdmin": "Only an admin can do that."
 }

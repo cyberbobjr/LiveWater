@@ -33,6 +33,7 @@ local Reasons = {
         not_timer = "IGUI_LWT_Invalid",
         out_of_bounds = "IGUI_LWT_OutOfBounds",
         not_fitting = "IGUI_LWT_Invalid",
+        not_admin = "IGUI_LWT_NotAdmin",
     },
     GENERIC = "IGUI_LWT_Refused",
 }

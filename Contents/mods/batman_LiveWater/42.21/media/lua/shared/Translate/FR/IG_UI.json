@@ -91,5 +91,8 @@
     "IGUI_LWT_Outlet_wrong_fluid": "Eau : les tuyaux transportent de l'essence, la maison n'en reçoit pas",
     "IGUI_LWT_Sprinkler_wrong_fluid": "Les tuyaux transportent de l'essence : pas d'arrosage",
     "IGUI_LWT_Meter_Water_fuel": "Fluide : essence",
-    "IGUI_LWT_Why_wrong_fluid": "les tuyaux transportent de l'essence, pas de l'eau"
+    "IGUI_LWT_Why_wrong_fluid": "les tuyaux transportent de l'essence, pas de l'eau",
+    "IGUI_LWT_RemoveConfirm": "Retirer de ce monde tous les tuyaux, pompes, arroseurs, arrivées d'eau et raccords de LiveWater, avec leurs réservoirs cachés ? À faire avant de se désabonner du mod. C'est définitif.",
+    "IGUI_LWT_Removing": "LiveWater est en cours de retrait. Les pièces des zones non chargées partent quand la zone se charge. Ensuite, sauvegardez et désabonnez-vous.",
+    "IGUI_LWT_NotAdmin": "Seul un administrateur peut faire cela."
 }

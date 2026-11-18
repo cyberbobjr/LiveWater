@@ -7,6 +7,7 @@
 --                     CITY_WATER { x, y, z }
 --                     SWITCH_VALVE { x, y, z }  SET_TIMER { x, y, z, hours }
 --                     SHOW_NETWORK { x, y, z }  SWITCH_FITTING { x, y, z }
+--                     REMOVE_ALL {} (admin: remove LiveWater from the world)
 --   server -> client  NOTICE { key }          (translation key of a refusal)
 --                     SOUND { x, y, z, name } (sound loop of a part: name, or nil to stop)
 --                     NETWORK { parts = { { x, y, z } } } (squares of a network, to one player)
@@ -29,6 +30,7 @@ local Protocol = {
     SET_TIMER = "setTimer",
     SHOW_NETWORK = "showNetwork",
     SWITCH_FITTING = "switchFitting",
+    REMOVE_ALL = "removeLiveWater",
     NETWORK = "network",
     JET = "jet",
     SOUND = "sound",

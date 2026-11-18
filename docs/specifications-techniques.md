@@ -157,6 +157,7 @@ Tout argument est recontrôlé sur l'autorité. Portée : 3 cases (Tchebychev) s
 | client → serveur | `showNetwork` | `x`, `y`, `z` entiers | arguments, pièce (`nothing_here`), portée | réponse `network` au seul joueur |
 | serveur → client | `network` | `parts` = liste de `{ x, y, z }` (500 au plus) | — | surbrillance persistante des pièces de ces cases (`LWT_NetworkView`) |
 | client → serveur | `switchFitting` | `x`, `y`, `z` entiers | arguments, pièce, raccord (`not_fitting`), portée | « Remplir » ↔ « Pomper » |
+| client → serveur | `removeLiveWater` | aucun | administrateur (`not_admin` ; rôle `UseDebugContextMenu` sur un serveur, toujours en solo) | retrait de LiveWater du monde (`LWT_Removal`), note `IGUI_LWT_Removing` |
 | serveur → client | `jet` | `x`, `y`, `z` | — | le client relit l'état recopié des pièces de la case et anime ou arrête le jet (D08a) |
 | serveur → client | `sound` | `x`, `y`, `z`, `name` (absent = arrêt) | — | boucle jouée ou arrêtée localement (en solo, par `triggerEvent`) |
 | serveur → client | `notice` | `key` (clé de traduction) | — | note au-dessus du joueur (en solo, affichée directement) |

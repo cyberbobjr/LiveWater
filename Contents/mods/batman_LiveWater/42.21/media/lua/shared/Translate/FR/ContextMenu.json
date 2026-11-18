@@ -21,5 +21,6 @@
     "ContextMenu_LWT_ShowNetwork": "Afficher le réseau d'eau",
     "ContextMenu_LWT_HideNetwork": "Masquer le réseau d'eau",
     "ContextMenu_LWT_FittingToPump": "Régler sur Pomper",
-    "ContextMenu_LWT_FittingToFill": "Régler sur Remplir"
+    "ContextMenu_LWT_FittingToFill": "Régler sur Remplir",
+    "ContextMenu_LWT_RemoveMod": "Retirer LiveWater de ce monde (admin)"
 }

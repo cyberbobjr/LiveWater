@@ -23,7 +23,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 | E18 | Tuyaux d'un étage à l'autre (P10) | Annulée (Q06 : non repris, l'arrivée d'eau dessert les étages) | — | D24 | — | — |
 | E19 | Sous-sols et lave-linge desservis par l'arrivée d'eau (P16, P18) | Terminée (2026-11-18) | E09 | D18, D24 | S | E20 |
 | E20 | Raccord de baril « Remplir » ou « Pomper », réseau d'essence (P02, P17) | Terminée (2026-11-18) | E07 | D24, D26 | M | E19 |
-| E21 | Retrait propre du mod (P21) | À faire | E09, E11 | D03, D24 | S | — |
+| E21 | Retrait propre du mod (P21) | Terminée (2026-11-18) | E09, E11 | D03, D24 | S | — |
 | E23 | Baril raccordé à la maison : gravité, courant sur la case, réserve partagée, mise en réserve, baril gardé pour un liquide (L01-L03, L06, L07) | Terminée (2026-11-18) | E09 | D27, D28 | L | E24 |
 | E24 | Liquide choisi par point d'eau (L05) | Annulée (Q07 : eau seulement aux points d'eau) | — | D28 | — | — |
 | E25 | Conteneurs remplis par la réserve, liste sandbox et API (L08) | Terminée (2026-11-18) | E20 | D26, D28 | S | E23 |
@@ -613,6 +613,33 @@ Choix faits sans l'utilisateur :
 Preuves :
 - `python -B -m unittest discover -s tests` → `Ran 260 tests` … `OK` ;
 - `python -B tools/check_mod.py` → `OK: 96 Lua file(s) checked`.
+Non testé en jeu.
+
+### E21 — Retrait propre du mod
+
+Clôture (2026-11-18). Fichiers : serveur `LWT_Removal.lua` (retrait : départ, tâche de l'horloge placée en premier,
+fin), `Commands/LWT_CmdRemoveAll.lua`, `LWT_GamePlayers.lua` (`isAdmin`), `LWT_Commands.lua` (`removal` dans le
+contexte), `LWT_Server.lua` ; client `LWT_AdminMenu.lua` (option « Retirer LiveWater de ce monde (admin) » et
+confirmation) ; `shared/LiveWater/LWT_Protocol.lua` (`removeLiveWater`), `LWT_Reasons.lua` (`not_admin`) ; traductions
+EN et FR ; tests `tests/test_removal.py`.
+Vérifié dans le vanilla 42.22 (confirmé statiquement) : droits d'administration côté serveur par le rôle du joueur,
+`player:getRole():hasCapability(Capability.UseDebugContextMenu)` (`server/ClientCommands.lua:167`, même capacité que
+le menu de débogage).
+Choix faits sans l'utilisateur :
+- action proposée au clic droit à un administrateur (capacité de rôle `UseDebugContextMenu`) sur un serveur, et au
+  joueur en solo, avec une fenêtre de confirmation ; le serveur refait le contrôle du rôle (`not_admin`) ;
+- retrait : chaque pièce d'un type inscrit sur une case chargée quitte le réseau et sa tuile est retirée ; l'événement
+  `partRemoved` emporte les réservoirs relais de ses arrivées d'eau (ceux d'une case non chargée attendent dans les
+  orphelins, retirés au chargement) et débranche ses barils ; les points d'eau gardent leur état vanilla (raccordés,
+  sans source) ; les pièces des cases non chargées partent quand leur zone se charge (tâche de l'horloge, drapeau
+  `removal` dans la ModData globale : le retrait continue après un redémarrage) ;
+- le retrait est définitif pour ce monde : une pièce posée ensuite est retirée au pas suivant ; aucun objet n'est rendu
+  (ils disparaîtraient avec le mod) ; les pièces d'un type qui n'est plus inscrit restent dans le registre (D03) ;
+- la marche à suivre (retirer, attendre que les zones soient chargées, sauvegarder, se désabonner) ira dans le wiki à
+  E22.
+Preuves :
+- `python -B -m unittest discover -s tests` → `Ran 266 tests` … `OK` ;
+- `python -B tools/check_mod.py` → `OK: 99 Lua file(s) checked`.
 Non testé en jeu.
 
 ### E23 — Baril raccordé à la maison

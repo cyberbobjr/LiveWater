@@ -101,6 +101,8 @@ commandes du filtre) ; un refus est dit au joueur par clé de traduction.
 - `LWT_Fittings.lua` : raccords de baril (tâche de l'horloge : conteneur relevé et présenté ; gestionnaire
   `barrelFill` ; litres puisés retirés sur `waterDrawn`) ; `LWT_GameContainers.lua` : adaptateur (baril,
   récupérateur, pompe à essence d'une station).
+- `LWT_Removal.lua` : retrait de LiveWater d'un monde (P21) : pièces des cases chargées retirées, les autres au
+  chargement de leur zone (tâche de l'horloge, drapeau persistant), relais et barils par `partRemoved`.
 - `LWT_Diagnostics.lua` : tâche de l'horloge, raison du manque d'eau notée sur les relais vides (`LWT_Diagnosis`).
 - `LWT_WasherFix.lua` : tâche de l'horloge, serveur seulement : état des lave-linge servis par nos relais renvoyé aux
   clients (arrêt à sec, raccord), option `WasherFix`.
@@ -128,7 +130,8 @@ en réserve un baril, lu dans sa marque), `LWT_FixtureMenu.lua` (ligne « Pas d'
 (« Raccorder au réseau public »), `LWT_WasherClient.lua` (état « raccordé » d'un lave-linge marqué par le serveur,
 appliqué à son menu et à son interrupteur), `LWT_SprinklerJet.lua` (jet animé des arroseurs, **seul abonnement par image
 du mod**, D08a : `OnTick` seulement tant qu'un arroseur en marche est chargé, 6 images par seconde au plus, option de
-mod pour un jet fixe ; jamais sur un serveur dédié), `LWT_NetworkView.lua` (vue du réseau : cases demandées au
+mod pour un jet fixe ; jamais sur un serveur dédié), `LWT_AdminMenu.lua` (« Retirer LiveWater de ce monde », administrateur, confirmation),
+`LWT_NetworkView.lua` (vue du réseau : cases demandées au
 serveur, surbrillance persistante colorée par le crochet `status`, retirée à la fermeture, aucun abonnement par image).
 
 ## Flux, persistance, extension
