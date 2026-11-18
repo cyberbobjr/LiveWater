@@ -215,4 +215,31 @@ function Network:reach(id)
     return queue, byKey
 end
 
+-- The parts a closed part keeps from the water: not reached (`byKey` from reach), but found from
+-- a reached closed part through parts that carry (closed or not). Returns a list of { key, part }.
+function Network:behindClosed(byKey)
+    local catalog, seen, queue, head, out = self.catalog, {}, {}, 1, {}
+    for key, node in pairs(byKey) do
+        if catalog:closed(node.part) then
+            seen[key] = true
+            queue[#queue + 1] = node.part
+        end
+    end
+    while head <= #queue do
+        local part = queue[head]
+        head = head + 1
+        local links = self:linksOf(part)
+        for i = 1, #links do
+            local key = links[i].key
+            if not seen[key] and not byKey[key] then
+                seen[key] = true
+                local other = self.parts[key]
+                out[#out + 1] = { key = key, part = other }
+                if catalog:any(other, "carries") then queue[#queue + 1] = other end
+            end
+        end
+    end
+    return out
+end
+
 return Network

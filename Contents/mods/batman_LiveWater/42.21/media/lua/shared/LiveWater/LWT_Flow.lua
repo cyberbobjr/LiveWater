@@ -162,6 +162,16 @@ function Flow:step(network, id, ctx)
             result.served = result.served + litres
         end
     end
+    -- outlets a closed valve keeps dry are "closed" too (the fixture menu says why, L09)
+    local behind = network:behindClosed(byKey)
+    for i = 1, #behind do
+        local node = behind[i]
+        if self.catalog:first(node.part, "outlet") then
+            local out = { key = node.key, part = node.part, state = "closed", litres = 0 }
+            result.outlets[#result.outlets + 1] = out
+            result.at[node.key] = out
+        end
+    end
     for key, litres in pairs(given) do result.through[key] = litres * result.served / water end
     for key, litres in pairs(drawn) do
         local taken = litres * result.served / water

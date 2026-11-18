@@ -91,6 +91,12 @@ class Water(unittest.TestCase):
         lua.execute('LiveWater.Parts:call(VALVE, "open", false) NEED["2,0"] = 10 CLOCK:tick()')
         self.assertNotEqual(lua.eval("REG:at(2, 0, 0).data.outlet.state"), "served")
 
+    def test_an_outlet_behind_a_closed_valve_says_closed(self):
+        # the fixture menu reads this state: "a valve is closed", not "water on its way" (L09)
+        lua = bench()
+        lua.execute('LiveWater.Parts:call(VALVE, "open", false) NEED["2,0"] = 10 CLOCK:tick()')
+        self.assertEqual(lua.eval("REG:at(2, 0, 0).data.outlet.state"), "closed")
+
 
 class Facings(unittest.TestCase):
     def test_invalid_facings_are_refused(self):
