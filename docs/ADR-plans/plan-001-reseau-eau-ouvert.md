@@ -860,3 +860,55 @@ Choix faits sans l'utilisateur (traductions, wiki, page Workshop) :
 - page Workshop courte (moins de 4 000 octets en anglais) pour que chaque langue tienne sous 8 000 octets ; aucun lien
   GitHub ni image externe (dépôt privé) ; « multijoueur pas encore testé » ; `workshop.txt` recopie `README.steam`,
   visibilité `unlisted`.
+
+#### Passage en jeu automatique (ajout du 2026-11-18)
+
+Outil `PZDevKit` (`pzdev`), jeu 42.22.2 (version lue dans les captures), sauvegarde copiée
+`Sandbox/2026-10-17_17-50-04`, mod seul (`Contents/mods/batman_LiveWater`), Live Wire en variante. Fichiers :
+`autotest.json`, `autotest/lwt_hooks.lua` (chemin nominal solo et MP), `autotest/lwt_server_hooks.lua` (serveur
+dédié seul), `autotest/scenarios/livewire.json` (variante avec Live Wire, `-P livewire=1`).
+
+Chemin nominal (en-tête de `lwt_hooks.lua`) : recherche d'une disposition autour de lieux candidats (premier trouvé :
+jardin de Riverside, pompe en 6650,5306 au bord d'une piscine, arrivée d'eau en 6650,5321 contre la maison, évier
+`fixtures_sinks_01_17` en 6650,5322, 13 tuyaux, vanne de ligne en 6650,5309, arroseur en 6651,5308, carottes en
+6649,5308, générateur en 6648,5306) ; pompe, arrivée d'eau, arroseur et vanne posés par la vraie pose de meuble
+(`ISMoveableSpriteProps:placeMoveable`, ce qu'exécute `ISMoveablesAction:complete`) ; tuyaux, vannes et filtre par
+les vraies commandes (`sendClientCommand`, module `LiveWater` : `lay`, `switchValve`, `fitFilter`) ; temps accéléré en
+solo, pas de 10 minutes réels (`EveryTenMinutes`) comptés, aucun appel direct de l'horloge.
+Contrôles : un seul réseau, formes des tuyaux par masque, vanne dessinée selon son axe ; pompe alimentée par le
+générateur, en marche, sprite allumé ; eau croupie refusée par l'arrivée d'eau (état `unfiltered`, voyant ambre,
+réservoir relais vide) pendant que l'arroseur arrose (niveau d'eau 0 → 70) ; filtre posé : arrivée servie, voyant
+vert, réservoir relais de 25 L d'eau propre (0 L croupie), l'évier donne 25 L ; vanne de ligne fermée : la maison ne
+reçoit plus rien, l'arroseur en amont arrose toujours ; vanne de l'arroseur fermée : état `closed`, plante non
+arrosée ; aucune erreur Lua. Zombies retirés à chaque sondage, joueur invincible et invisible.
+
+| Passage | Code | `summary` | Dossier |
+|---|---|---|---|
+| `sp LiveWater` | 0 | `30/30 PASS` | `runs/20261118-023310-sp-39994fcf14e3` |
+| `mp LiveWater --clients 1 --client-run` | 0 | serveur `20/20 PASS`, client 1 `6/6 PASS` | `runs/20261118-023848-mp-8e8063a1af75` |
+| `server LiveWater` (dédié, sans joueur) | 0 | `5/5 PASS` (autorité construite, 8 types de pièces, 15 commandes) | `runs/20261118-022632-server-c85d60fa262e` |
+| `sp LiveWater/autotest/scenarios/livewire.json` | 0 | `31/31 PASS` (pompe connue de Live Wire, 250 W facturés en marche) | `runs/20261118-022713-sp-bb005d186ff8` |
+
+Journaux : aucune erreur Lua de LiveWater au chargement (`f:0`) ni pendant les passages, côté solo, serveur et
+client ; seules restent l'erreur vanilla `handleMannequinZone` et les `NoSuchFileException` d'`AdvancedAnimator`
+(bruit connu du moteur, dossiers `AnimSets` absents). Live Wire : `LiveWater: 2 part type(s) registered as Live Wire
+consumers`.
+
+Aucun défaut du mod trouvé : les deux échecs du premier passage (`runs/20261118-015110-sp-93ade4b880a7`, 21/25)
+venaient du test, qui lisait l'état du dernier pas alors que la pompe s'arrête dès qu'aucune sortie n'a besoin d'eau
+(arrêt automatique voulu) ; chaque phase est désormais jugée sur tous ses pas.
+
+Choix faits sans l'utilisateur :
+- fixtures nommées comme telles : générateur créé par script (`IsoGenerator`, plein, branché, allumé), carottes
+  semées par le système de culture vanilla puis niveau d'eau mis à 0, évier raccordé comme `ISPlumbItem:complete`,
+  réservoirs relais vidés et plante desséchée avant la phase « vanne de ligne fermée » ;
+- en MP, le serveur pose les meubles avec le joueur connecté (même fonction que l'action vanilla sur le serveur) et
+  le client 1, téléporté par `/teleportto`, envoie les commandes ; le client est administrateur (refus aux joueurs
+  ordinaires non testés) ;
+- la « source naturelle » trouvée est une piscine de jardin : elle porte le drapeau `water` comme un lac (eau
+  croupie, ce que le mod attend) ;
+- « eau propre » prouvée par les fluides du réservoir relais : `isTaintedWater()` d'un point d'eau raccordé répond
+  faux dès que son réservoir contient du fluide (moteur, base de connaissances `water-and-plumbing.md`).
+
+Non prouvé par ces passages (à voir à l'œil) : rendu du jet animé et des tuiles, sons (pompe, arrosage), ressenti des
+menus et actions minutées, pose au curseur par un vrai clic, refus à un joueur non administrateur, serveur Linux.
