@@ -855,7 +855,8 @@ Choix faits sans l'utilisateur (traductions, wiki, page Workshop) :
 - wiki en 8 pages par langue ; les captures manquent (lignes `> Capture à faire` / `> Screenshot to do`) ; seules les
   deux planches de `docs/images/art/` sont utilisées ;
 - le wiki français nomme les outils comme le jeu en français (« clé anglaise » pour `Base.PipeWrench`, « clé à
-  molette » pour `Base.Wrench`), alors que les messages FR du mod disent « clé à tuyau » ;
+  molette » pour `Base.Wrench`) ; les messages FR du mod suivent ces noms depuis le 2026-11-18 (« Il vous faut une clé
+  anglaise », « … une clé à molette »), « clé à tuyau » n'y figure plus ;
 - page Workshop courte (moins de 4 000 octets en anglais) pour que chaque langue tienne sous 8 000 octets ; aucun lien
   GitHub ni image externe (dépôt privé) ; « multijoueur pas encore testé » ; `workshop.txt` recopie `README.steam`,
   visibilité `unlisted`.
