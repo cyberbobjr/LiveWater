@@ -29,7 +29,7 @@
   or every floor when a pump is on the inlet's network or the barrel has power. All the barrels drain together; keep
   one in reserve to have it used last. A barrel holding anything but water gives nothing.
 - Player bases: an inlet set down away from a map building serves the plumbed fixtures around it (12 squares by
-  default, sandbox option), up to 3 floors above.
+  default, sandbox option), up to 3 floors above. The original fixtures of a nearby map house are left alone.
 - A sink, shower or toilet without water says why in its right-click menu (not plumbed, no inlet, unfiltered water,
   low pressure, closed valve, barrels too low or empty...).
 - A barrel carried away is no longer connected to its old house.
@@ -57,5 +57,6 @@
 - A barrel fitting set to Fill also fills a water cooler, with clean water only; more containers can be listed in the
   sandbox options.
 - Clean removal: an admin (or the player in solo) can right-click and choose "Remove LiveWater From This World" to
-  take every LiveWater part and hidden tank away before unsubscribing, so the save stays readable.
+  take every LiveWater part and hidden tank away before unsubscribing, so the save stays readable. A part set down
+  afterwards stays a plain decoration you can pick up again.
 - The house water inlet also serves the basement (fixtures under the house) and plumbed washing machines.

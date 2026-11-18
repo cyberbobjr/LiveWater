@@ -212,7 +212,7 @@ dix minutes, par sortie servie), `valveChanged`. La reconstruction au chargement
   sous l'emprise du rez-de-chaussée). Lave-linge compris (tuiles `waterPiped` en 42.22). Un point d'eau dont la source n'est pas un relais de LiveWater est laissé tel quel ; un relais de
   Live Wire (`LiveWireRelay`) n'est jamais posé, rempli ni retiré.
 - Besoin de l'arrivée d'eau = place libre de ses relais qui servent un point d'eau raccordé ; l'eau livrée les remplit
-  (eau propre). Points d'eau relevés à la pose puis toutes les heures de jeu ; relais retirés avec l'arrivée d'eau.
+  (eau propre). Points d'eau relevés sur événement seulement (D10) : à la pose ou au rechargement de l'arrivée d'eau, à la pose ou au retrait d'un point d'eau ou d'un réservoir à portée (`OnObjectAdded`, `OnObjectAboutToBeRemoved`), au chargement d'un chunk à portée (`LoadChunk`) et à la coupure de l'eau de la ville, au plus un relevé par pas ; en mode base, jamais les points d'eau d'un bâtiment de la carte ; relais retirés avec l'arrivée d'eau.
 
 ## Barils raccordés à la maison (`LWT_HouseBarrels`, `LWT_Reserve`, D28)
 
