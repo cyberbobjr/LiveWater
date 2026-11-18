@@ -9,6 +9,7 @@
 --                           by another mod
 --   isWaterOnly(fc)         the container holds water (clean or tainted) only, or nothing
 --   cityWaterRuns()         the city water still runs (rule of IsoObject.isWaterInfinite, 42.22)
+--   cityInfo(obj)           what LWT_CityWater asks of a fixture
 
 local WaterObjects = {}
 
@@ -58,6 +59,13 @@ end
 
 function WaterObjects.cityWaterRuns()
     return getGameTime():getWorldAgeDaysSinceBegin() < getSandboxOptions():getWaterShutModifier()
+end
+
+function WaterObjects.cityInfo(obj)
+    local sq = obj:getSquare()
+    return { placed = obj:hasModData() and obj:getModData().canBeWaterPiped == true,
+        plumbed = obj:getUsesExternalWaterSource(), room = sq ~= nil and sq:getRoom() ~= nil,
+        noWater = sq ~= nil and sq:isNoWater() }
 end
 
 return WaterObjects

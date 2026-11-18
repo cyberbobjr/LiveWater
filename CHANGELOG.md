@@ -31,4 +31,6 @@
 - A sink, shower or toilet without water says why in its right-click menu (not plumbed, no inlet, unfiltered water,
   low pressure, closed valve, barrels too low or empty...).
 - A barrel carried away is no longer connected to its old house.
+- City water: right-click a sink, bathtub, shower, toilet or washing machine you set down inside a building of the map
+  and choose "Connect to the City Water" while the city water still runs; it then works like the original fixtures.
 - The house water inlet also serves the basement (fixtures under the house) and plumbed washing machines.

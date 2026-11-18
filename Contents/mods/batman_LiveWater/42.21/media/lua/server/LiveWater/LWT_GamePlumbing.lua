@@ -20,6 +20,10 @@ if isClient() then return end
 --   markBarrel(x, y, z, mark)  write (nil: clear) its LiveWaterBarrel mark, sent to the clients
 --   transfer(bx, by, bz, rx, ry, rz, litres)  barrel -> relay, fluids kept in proportion
 --                              (FluidContainer.Transfer); litres moved
+--   cityWaterRuns()            the city water still runs
+--   cityFixture(x, y, z)       LWT_WaterObjects.cityInfo of the fixture on the square, or nil
+--   connectCity(x, y, z)       the fixture takes the state of an original one (M01): its ModData
+--                              canBeWaterPiped goes, no outside source; sent to the clients
 -- Never touches an object marked by another mod (Live Wire relays and barrels, D21).
 
 local WaterObjects = require "LiveWater/LWT_WaterObjects"
@@ -227,6 +231,35 @@ function GamePlumbing:transfer(bx, by, bz, rx, ry, rz, litres)
         barrel:sync()
     end
     return moved
+end
+
+function GamePlumbing:cityWaterRuns()
+    return WaterObjects.cityWaterRuns()
+end
+
+local function fixtureObject(x, y, z)
+    local sq = squareAt(x, y, z)
+    if not sq then return nil end
+    local objects = sq:getObjects()
+    for i = 0, objects:size() - 1 do
+        local obj = objects:get(i)
+        if WaterObjects.isFixture(obj) then return obj end
+    end
+    return nil
+end
+
+function GamePlumbing:cityFixture(x, y, z)
+    local obj = fixtureObject(x, y, z)
+    return obj and WaterObjects.cityInfo(obj) or nil
+end
+
+function GamePlumbing:connectCity(x, y, z)
+    local obj = fixtureObject(x, y, z)
+    if not obj then return false end
+    obj:getModData().canBeWaterPiped = nil
+    obj:setUsesExternalWaterSource(false)
+    if isServer() then obj:transmitModData() end
+    return true
 end
 
 return GamePlumbing

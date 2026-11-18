@@ -43,6 +43,7 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
 - `LWT_Reserve.lua` (pur) : réserve partagée d'une maison (barils qui se vident ensemble, mis en réserve, gravité,
   raison d'un manque). `LWT_WaterObjects.lua` (adaptateur partagé) : règles des objets d'eau (point d'eau, baril
   raccordable, marques `LiveWaterRelay` et `LiveWaterBarrel`, marques d'autres mods jamais touchées, eau de la ville).
+- `LWT_CityWater.lua` (pur) : règle du raccord d'un point d'eau posé au réseau public (menu et commande).
 - `LWT_Diagnosis.lua` (pur) : raison du manque d'eau d'une arrivée d'eau et ligne d'un point d'eau sans eau.
 - `LWT_Protocol.lua` : noms du module et des commandes réseau partagés par client et serveur ; `LWT_Notice.lua` : note
   traduite au-dessus du joueur (refus d'une commande).
@@ -108,7 +109,8 @@ seulement), `LWT_PartMenu.lua` (menu générique : les actions que les capacité
 `actions`, lues dans l'état recopié sur l'objet ; une action qui demande un objet n'apparaît que si le joueur le
 porte) `LWT_PumpSounds.lua` (boucle sonore jouée localement sur un émetteur libre, à l'ordre du serveur, aucun abonnement
 par image) et `LWT_NoticeClient.lua` (affiche les notes `notice` du serveur), `LWT_BarrelMenu.lua` (raccorder, débrancher, mettre
-en réserve un baril, lu dans sa marque), `LWT_FixtureMenu.lua` (ligne « Pas d'eau : raison » d'un point d'eau sans eau). Interface complète : E13.
+en réserve un baril, lu dans sa marque), `LWT_FixtureMenu.lua` (ligne « Pas d'eau : raison » d'un point d'eau sans eau), `LWT_CityWaterMenu.lua`
+(« Raccorder au réseau public »). Interface complète : E13.
 
 ## Flux, persistance, extension
 

@@ -4,6 +4,7 @@
 --                     FIT_FILTER { x, y, z }  REMOVE_FILTER { x, y, z }
 --                     SWITCH_PUMP { x, y, z } REPAIR_PUMP { x, y, z }
 --                     CONNECT_BARREL, DISCONNECT_BARREL, RESERVE_BARREL { x, y, z }
+--                     CITY_WATER { x, y, z }
 --   server -> client  NOTICE { key }          (translation key of a refusal)
 --                     SOUND { x, y, z, name } (sound loop of a part: name, or nil to stop)
 
@@ -18,6 +19,7 @@ local Protocol = {
     CONNECT_BARREL = "connectBarrel",
     DISCONNECT_BARREL = "disconnectBarrel",
     RESERVE_BARREL = "reserveBarrel",
+    CITY_WATER = "cityWater",
     SOUND = "sound",
     NOTICE = "notice",
 }

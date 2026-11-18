@@ -26,6 +26,9 @@ local Reasons = {
         not_barrel = "IGUI_LWT_NotBarrel",
         no_inlet = "IGUI_LWT_NoInlet",
         not_connected = "IGUI_LWT_NotConnected",
+        not_fixture = "IGUI_LWT_NotFixture",
+        not_map_building = "IGUI_LWT_NotMapBuilding",
+        no_city_water = "IGUI_LWT_NoCityWater",
     },
     GENERIC = "IGUI_LWT_Refused",
 }

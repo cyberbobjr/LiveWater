@@ -134,12 +134,13 @@ Tout argument est recontrôlé sur l'autorité. Portée : 3 cases (Tchebychev) s
 | client → serveur | `connectBarrel` | `x`, `y`, `z` entiers | arguments, portée, clé à tuyau (`need_tool`), baril raccordable (`not_barrel`), arrivée d'eau dont la zone atteint la case (`no_inlet`) | baril raccordé à l'arrivée d'eau la plus proche, marque `LiveWaterBarrel` |
 | client → serveur | `disconnectBarrel` | `x`, `y`, `z` entiers | arguments, portée, clé à tuyau, baril raccordé (`not_connected`) | raccord et marque effacés |
 | client → serveur | `reserveBarrel` | `x`, `y`, `z` entiers | arguments, portée, baril raccordé | « en réserve » basculé |
+| client → serveur | `cityWater` | `x`, `y`, `z` entiers | arguments, point d'eau posé par un joueur et pas raccordé (`not_fixture`), portée, pièce d'un bâtiment de la carte (`not_map_building`), eau de la ville qui coule et case sans `isNoWater` (`no_city_water`) | ModData `canBeWaterPiped` effacée, `setUsesExternalWaterSource(false)`, `transmitModData` : point d'eau d'origine (M01) |
 | serveur → client | `sound` | `x`, `y`, `z`, `name` (absent = arrêt) | — | boucle jouée ou arrêtée localement (en solo, par `triggerEvent`) |
 | serveur → client | `notice` | `key` (clé de traduction) | — | note au-dessus du joueur (en solo, affichée directement) |
 
 Clés des refus (`IG_UI.json`, table partagée `LWT_Reasons`) : `IGUI_LWT_NoSource` (`no_source`), `IGUI_LWT_NoFilter` (`no_cartridge`), `IGUI_LWT_NoFilterFitted` (`no_filter`), `IGUI_LWT_NoFilterSlot` (`no_filter_slot`), `IGUI_LWT_StillRunning` (`running`), `IGUI_LWT_NotNeeded` (`not_needed`), `IGUI_LWT_NeedWrench` (`need_wrench`), `IGUI_LWT_NoScrap` (`no_parts`), `IGUI_LWT_Invalid`, `IGUI_LWT_NotLayable`, `IGUI_LWT_TooFar` (`too_far`,
 `not_loaded`), `IGUI_LWT_Blocked`, `IGUI_LWT_Occupied`, `IGUI_LWT_PortsFull`, `IGUI_LWT_NoItem`, `IGUI_LWT_NeedTool`,
-`IGUI_LWT_NothingHere`, `IGUI_LWT_NotBarrel` (`not_barrel`), `IGUI_LWT_NoInlet` (`no_inlet`), `IGUI_LWT_NotConnected` (`not_connected`), autre raison `IGUI_LWT_Refused`. Menu : `ContextMenu_LWT_Lay`, `ContextMenu_LWT_Dismantle`
+`IGUI_LWT_NothingHere`, `IGUI_LWT_NotBarrel` (`not_barrel`), `IGUI_LWT_NoInlet` (`no_inlet`), `IGUI_LWT_NotConnected` (`not_connected`), `IGUI_LWT_NotFixture` (`not_fixture`), `IGUI_LWT_NotMapBuilding` (`not_map_building`), `IGUI_LWT_NoCityWater` (`no_city_water`), autre raison `IGUI_LWT_Refused`. Menu : `ContextMenu_LWT_Lay`, `ContextMenu_LWT_Dismantle`
 (`%1` = nom de l'objet posé) ; menu des pièces : `ContextMenu_LWT_FitFilter`, `ContextMenu_LWT_ReplaceFilter`, `ContextMenu_LWT_RemoveFilter`, `ContextMenu_LWT_TurnOn`, `ContextMenu_LWT_TurnOff`, `ContextMenu_LWT_Repair`, `ContextMenu_LWT_Info` (infobulle : lignes d'information traduites, `IGUI_LWT_Pump_*`, `IGUI_LWT_Filter_*`, `IGUI_LWT_Source_<sorte>`).
 
 ## Registre persistant (ModData globale `LiveWater`, `LWT_Registry`)

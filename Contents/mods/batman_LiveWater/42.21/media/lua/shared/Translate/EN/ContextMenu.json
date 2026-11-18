@@ -12,5 +12,6 @@
     "ContextMenu_LWT_DisconnectBarrel": "Disconnect from the House Water Inlet",
     "ContextMenu_LWT_ReserveBarrel": "Keep in Reserve (used last)",
     "ContextMenu_LWT_UseBarrel": "Use With the Other Barrels",
-    "ContextMenu_LWT_NoWater": "No water: %1"
+    "ContextMenu_LWT_NoWater": "No water: %1",
+    "ContextMenu_LWT_CityWater": "Connect to the City Water"
 }

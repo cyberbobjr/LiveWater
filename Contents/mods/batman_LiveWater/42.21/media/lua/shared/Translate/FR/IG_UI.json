@@ -53,5 +53,8 @@
     "IGUI_LWT_Why_closed": "une vanne est fermée",
     "IGUI_LWT_Why_gravity": "les barils sont plus bas que ce point d'eau : une pompe ou du courant fait monter l'eau",
     "IGUI_LWT_Why_empty": "les barils sont vides ou contiennent autre chose que de l'eau",
-    "IGUI_LWT_Why_no_supply": "l'arrivée d'eau n'a ni pompe ni baril"
+    "IGUI_LWT_Why_no_supply": "l'arrivée d'eau n'a ni pompe ni baril",
+    "IGUI_LWT_NotFixture": "Seul un point d'eau que vous avez posé et pas raccordé peut aller sur l'eau de la ville.",
+    "IGUI_LWT_NotMapBuilding": "Seulement dans une pièce d'un bâtiment de la carte.",
+    "IGUI_LWT_NoCityWater": "L'eau de la ville ne coule plus ici."
 }

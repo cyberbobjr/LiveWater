@@ -53,5 +53,8 @@
     "IGUI_LWT_Why_closed": "a valve is closed",
     "IGUI_LWT_Why_gravity": "the barrels stand lower than this fixture: a pump or power lifts the water",
     "IGUI_LWT_Why_empty": "the barrels are empty or hold something other than water",
-    "IGUI_LWT_Why_no_supply": "the inlet has no pump and no barrel"
+    "IGUI_LWT_Why_no_supply": "the inlet has no pump and no barrel",
+    "IGUI_LWT_NotFixture": "Only a fixture you set down and did not plumb can join the city water.",
+    "IGUI_LWT_NotMapBuilding": "Only inside a room of a building of the map.",
+    "IGUI_LWT_NoCityWater": "The city water does not run here any more."
 }

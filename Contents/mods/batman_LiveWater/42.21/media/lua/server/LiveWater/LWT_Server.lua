@@ -46,6 +46,7 @@ local COMMANDS = {
     [Protocol.CONNECT_BARREL] = "LWT_CmdConnectBarrel",
     [Protocol.DISCONNECT_BARREL] = "LWT_CmdDisconnectBarrel",
     [Protocol.RESERVE_BARREL] = "LWT_CmdReserveBarrel",
+    [Protocol.CITY_WATER] = "LWT_CmdCityWater",
 }
 
 local MODDATA_KEY = "LiveWater"
@@ -95,7 +96,8 @@ local function build()
         lifted = pumped })
     local diagnostics = Diagnostics.new({ relays = relays, barrels = barrels, pumped = pumped })
     local commands = Commands.new({ topology = topology, catalog = catalog, world = world,
-        players = GamePlayers.new(), publisher = publisher, scale = GameSettings.scale, barrels = barrels })
+        players = GamePlayers.new(), publisher = publisher, scale = GameSettings.scale, barrels = barrels,
+        plumbing = plumbing })
     for name, file in pairs(COMMANDS) do
         commands:register(name, require("LiveWater/Commands/" .. file))
     end

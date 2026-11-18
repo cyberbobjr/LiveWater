@@ -28,7 +28,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 | E24 | Liquide choisi par point d'eau (L05) | Annulée (Q07 : eau seulement aux points d'eau) | — | D28 | — | — |
 | E25 | Conteneurs remplis par la réserve, liste sandbox et API (L08) | À faire | E20 | D26, D28 | S | E23 |
 | E26 | Base du joueur (portée), diagnostic au point d'eau, réglages effacés au ramassage (L09, L11, L12) | Terminée (2026-11-18) | E09 | D28 | M | E25 |
-| E27 | Raccordement au réseau public (M01) : état d'un point d'eau d'origine (`isWaterInfinite`), contrôles serveur | À faire | E09 | D27, D28 | M | E26 |
+| E27 | Raccordement au réseau public (M01) : état d'un point d'eau d'origine (`isWaterInfinite`), contrôles serveur | Terminée (2026-11-18) | E09 | D27, D28 | M | E26 |
 | E28 | Correctif du lave-linge raccordé en MP (désactivable), `incompatible=\LGExtendedPlumbing,\LGMainsWater` (L13) | À faire | E19 | D27, Q08, Q09 | S | — |
 | E22 | Traductions (11 langues), wiki EN/FR, contrôle de parité P01-P23 et L01-M01, passage automatique en jeu SP et MP | À faire | E13-E21, E23-E28 | toutes | L | — |
 
@@ -498,6 +498,33 @@ Choix faits sans l'utilisateur :
 Preuves :
 - `python -B -m unittest discover -s tests` → `Ran 191 tests` … `OK` ;
 - `python -B tools/check_mod.py` → `OK: 72 Lua file(s) checked`.
+Non testé en jeu.
+
+### E27 — Raccordement au réseau public
+
+Clôture (2026-11-18). Fichiers : `shared/LiveWater/LWT_CityWater.lua` (pur : règle partagée par le menu et la
+commande), `LWT_WaterObjects.lua` (`cityInfo`), `LWT_Protocol.lua` (`cityWater`), `LWT_Reasons.lua` (`not_fixture`,
+`not_map_building`, `no_city_water`) ; serveur `Commands/LWT_CmdCityWater.lua`, `LWT_GamePlumbing.lua`
+(`cityWaterRuns`, `cityFixture`, `connectCity`), `LWT_Server.lua` (commande, port `plumbing` dans le contexte des
+commandes) ; client `LWT_CityWaterMenu.lua` ; traductions EN et FR ; tests `tests/test_city.py`.
+Mécanisme (confirmé statiquement, Java et Lua 42.22) : `IsoObject.isWaterInfinite` (`IsoObject.java:2542-2564`) donne
+l'eau de la ville à un point d'eau `waterPiped` dans une pièce de la carte (`getRoom()`), sans source extérieure, case
+sans `isNoWater()`, avant la coupure, et sans ModData `canBeWaterPiped = true` ; la pose d'un meuble `waterPiped` écrit
+`canBeWaterPiped = true` (`ISMoveableSpriteProps.lua:2491-2493`) ; le raccord vanilla à la clé écrit `false` mais
+passe `usesExternalWaterSource` à vrai (`ISPlumbItem.lua:31-37`), d'où un point d'eau sans eau de la ville.
+Choix faits sans l'utilisateur :
+- l'action efface la clé `canBeWaterPiped` (absente, comme un point d'eau d'origine) et garde
+  `usesExternalWaterSource` faux, puis `transmitModData` : le point d'eau se comporte comme un point d'origine (eau de la
+  ville, coupure le même jour, réserve vanilla restante après la coupure) ;
+- proposée seulement pour un point d'eau posé par un joueur et pas raccordé à la clé (un point d'eau déjà sur un baril
+  ou un relais ne l'a pas), dans une pièce d'un bâtiment de la carte, case sans `isNoWater`, avant la coupure ; aucun
+  outil ni durée (le point d'eau a déjà été posé à la clé) ;
+- contrôles du serveur dans l'ordre : arguments, point d'eau posé et pas raccordé (`not_fixture`), portée
+  (`too_far`), bâtiment de la carte (`not_map_building`), eau de la ville (`no_city_water`) ;
+- reposer le point d'eau ailleurs le remet « à raccorder » (vanilla), ce qui efface ce raccord (L12).
+Preuves :
+- `python -B -m unittest discover -s tests` → `Ran 195 tests` … `OK` ;
+- `python -B tools/check_mod.py` → `OK: 75 Lua file(s) checked`.
 Non testé en jeu.
 
 ### E22 — Traductions, parité, passage en jeu
