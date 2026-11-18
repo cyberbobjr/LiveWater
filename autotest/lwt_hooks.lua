@@ -479,6 +479,27 @@ local function relaysOf(L)
     return n, amount
 end
 
+-- Clean and tainted litres in the inlet's relay tanks. IsoObject.isTaintedWater of a plumbed fixture answers
+-- false whenever its tank holds any fluid (Java 42.22 IsoObject.java:3004-3015): the tank's fluids are the proof.
+local function relayFluids(L)
+    local s = server()
+    local list = s.relays:positions({ x = L.inlet.x, y = L.inlet.y, z = 0 })
+    local clean, tainted = 0, 0
+    for i = 1, #list do
+        local square = sq(list[i].x, list[i].y, list[i].z)
+        local objects = square and square:getObjects()
+        for j = 0, (objects and objects:size() or 0) - 1 do
+            local obj = objects:get(j)
+            local fc = obj:hasModData() and obj:getModData().LiveWaterRelay and obj:getFluidContainer()
+            if fc then
+                clean = clean + fc:getSpecificFluidAmount(Fluid.Water)
+                tainted = tainted + fc:getSpecificFluidAmount(Fluid.TaintedWater)
+            end
+        end
+    end
+    return clean, tainted
+end
+
 -- ------------------------------------------------------------------ the solo scenario
 
 local S = {}
@@ -764,9 +785,10 @@ local function buildSteps(ctx)
         local isprite = spriteOf(L.inlet, "LiveWater:HouseInlet")
         rec(isprite == SHEET .. "40", "house inlet sprite green (filtered)", tostring(isprite))
         local obj = L.fixture.obj
-        rec(obj:getFluidAmount() > 0 and obj:hasWater() and not obj:isTaintedWater(),
-            "the plumbed fixture gives clean water", "litres " .. tostring(obj:getFluidAmount()) .. " tainted "
-            .. tostring(obj:isTaintedWater()))
+        local clean, tainted = relayFluids(L)
+        rec(obj:getFluidAmount() > 0 and obj:hasWater() and clean > 0 and tainted <= 0.001,
+            "the plumbed fixture gives clean water", "fixture litres " .. tostring(obj:getFluidAmount())
+            .. ", tank clean " .. clean .. " tainted " .. tainted)
         rec(seen.pumpSprite[SHEET .. "32"] == true, "pump sprite running with filter")
         return true
     end)
@@ -1038,8 +1060,9 @@ local function serverSteps(ctx)
         rec(S.seen.inlet.served and amount > 0, "house inlet served, relay filled (server)",
             "relays " .. n .. " litres " .. amount)
         local obj = L.fixture.obj
-        rec(obj:getFluidAmount() > 0 and not obj:isTaintedWater(), "the plumbed fixture gives clean water (server)",
-            "litres " .. tostring(obj:getFluidAmount()))
+        local clean, tainted = relayFluids(L)
+        rec(obj:getFluidAmount() > 0 and clean > 0 and tainted <= 0.001, "the plumbed fixture gives clean water (server)",
+            "fixture litres " .. tostring(obj:getFluidAmount()) .. ", tank clean " .. clean .. " tainted " .. tainted)
         tell("inline")
         return true
     end)
