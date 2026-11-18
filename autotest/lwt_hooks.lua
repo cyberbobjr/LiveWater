@@ -925,6 +925,31 @@ local function visualSteps(block)
         shot({ name = "pump-filter-running", at = at("pump"), note = spriteNote("pump", "LiveWater:PondPump") })
         shot({ name = "inlet-filtered", at = at("inlet"), offset = OUTSIDE, note = spriteNote("inlet", "LiveWater:HouseInlet") })
         shot({ name = "network-filtered", at = at("valve"), zoom = 0.75 })
+        -- whole installation working (pump, filter, line, valve, meter, sprinkler spraying, house served), for
+        -- a promotional picture: the trees around it are removed from this copied world (their faded outlines
+        -- would cover the parts).
+        addStep("staging: trees around the installation removed", function()
+            local L, n = S.L, 0
+            local x1, x2 = math.min(L.pump.x, L.inlet.x) - 10, math.max(L.pump.x, L.inlet.x) + 10
+            local y1, y2 = math.min(L.pump.y, L.inlet.y) - 10, math.max(L.pump.y, L.inlet.y) + 10
+            for x = x1, x2 do
+                for y = y1, y2 do
+                    local s = sq(x, y, 0)
+                    local objs = s and s:getObjects()
+                    for i = (objs and objs:size() or 0) - 1, 0, -1 do
+                        local o = objs:get(i)
+                        if instanceof(o, "IsoTree") then
+                            s:transmitRemoveItemFromSquare(o)
+                            n = n + 1
+                        end
+                    end
+                end
+            end
+            info("staging: " .. n .. " tree(s) removed")
+            return true
+        end)
+        shot({ name = "installation", at = middle, zoom = 1.0 })
+        shot({ name = "installation-close", at = at("valve"), zoom = 0.75 })
         stopDry()
     elseif block == "inline closed" then
         shot({ name = "valve-closed", at = at("valve"), note = spriteNote("valve", VALVE) })
