@@ -1,0 +1,6 @@
+{
+    "LiveWater.PipeSection": "Tramo de tubería",
+    "Base.Mov_LiveWater_PondPump": "Bomba de estanque",
+    "LiveWater.WaterFilter": "Cartucho filtrante de agua",
+    "Base.Mov_LiveWater_FlowMeter": "Contador de agua"
+}

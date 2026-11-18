@@ -1,0 +1,23 @@
+{
+    "Sandbox_LiveWater": "LiveWater",
+    "Sandbox_LWT_PumpFlowMultiplier": "Pumpendurchfluss",
+    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "Multipliziert die Liter, die eine Pumpe alle 10 Minuten fördert (50 L für eine Teichpumpe bei 1,0).",
+    "Sandbox_LWT_FilterCapacityMultiplier": "Lebensdauer der Filterkartuschen",
+    "Sandbox_LWT_FilterCapacityMultiplier_tooltip": "Multipliziert die Liter, die eine Filterkartusche reinigt, bevor sie verschlissen ist (500 L bei 1,0).",
+    "Sandbox_LWT_PumpWearMultiplier": "Pumpenverschleiß",
+    "Sandbox_LWT_PumpWearMultiplier_tooltip": "Multipliziert den Wirkungsgrad, den eine Pumpe im Betrieb verliert (bei 1,0 etwa eine Woche Betrieb von 100%% auf 0%%; 0 = kein Verschleiß). Unter 20%% kann sie ausfallen.",
+    "Sandbox_LWT_InletRange": "Reichweite des Hauswassereinlasses",
+    "Sandbox_LWT_InletRange_tooltip": "Wie weit (in Feldern) von einem Hauswassereinlass die angeschlossenen Armaturen seines Gebäudes Wasser bekommen, bis zu 3 Etagen darüber.",
+    "Sandbox_LWT_BaseRange": "Reichweite des Basis-Wassereinlasses",
+    "Sandbox_LWT_BaseRange_tooltip": "Außerhalb eines Kartengebäudes (einer selbst gebauten Basis): wie weit (in Feldern) ein Hauswassereinlass die angeschlossenen Armaturen versorgt, bis zu 3 Etagen darüber.",
+    "Sandbox_LWT_WasherFix": "Angeschlossene Waschmaschinen korrigieren (Mehrspieler)",
+    "Sandbox_LWT_WasherFix_tooltip": "Auf einem Server zeigen die Waschmaschinen, die ein Hauswassereinlass versorgt, den Spielern ihren echten Zustand: angeschlossen, und angehalten, wenn kein Wasser mehr da ist.",
+    "Sandbox_LWT_SprinklerRadiusMultiplier": "Reichweite der Sprinkler",
+    "Sandbox_LWT_SprinklerRadiusMultiplier_tooltip": "Multipliziert, wie weit ein Sprinkler die Pflanzen bewässert (2 Felder bei 1,0; höchstens 10).",
+    "Sandbox_LWT_SprinklerTimerMin": "Sprinkler-Zeitschaltuhr: kürzestes Intervall",
+    "Sandbox_LWT_SprinklerTimerMin_tooltip": "Die kleinste Anzahl Stunden, die ein Spieler zwischen zwei Bewässerungen eines automatischen Sprinklers einstellen darf.",
+    "Sandbox_LWT_SprinklerTimerMax": "Sprinkler-Zeitschaltuhr: längstes Intervall",
+    "Sandbox_LWT_SprinklerTimerMax_tooltip": "Die größte Anzahl Stunden, die ein Spieler zwischen zwei Bewässerungen eines automatischen Sprinklers einstellen darf.",
+    "Sandbox_LWT_FillContainers": "Behälter, die ein Fassanschluss befüllen darf",
+    "Sandbox_LWT_FillContainers_tooltip": "Namen von Entity-Skripten oder Sprites, getrennt durch ; (Wasserspender: WaterDispenser). Sie werden über einen Fassanschluss auf Befüllen gefüllt, unabhängig von ihrer Größe, nur mit sauberem Wasser. Fässer und Regenwassersammler funktionieren immer."
+}

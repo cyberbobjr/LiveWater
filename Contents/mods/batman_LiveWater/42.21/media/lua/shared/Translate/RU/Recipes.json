@@ -1,0 +1,10 @@
+{
+    "LWTCutPipeSections": "Нарезать отрезки трубы",
+    "LWTBuildPondPump": "Собрать насос для пруда",
+    "LWTMakeWaterFilter": "Сделать фильтрующий картридж",
+    "LWTBuildFlowMeter": "Собрать счётчик воды",
+    "LWTBuildHouseInlet": "Собрать ввод воды в дом",
+    "LWTBuildSprinkler": "Собрать дождеватель",
+    "LWTUpgradeSprinkler": "Добавить таймер к дождевателю",
+    "LWTBuildBarrelFitting": "Собрать врезку для бочки"
+}

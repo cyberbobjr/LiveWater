@@ -1,0 +1,10 @@
+{
+    "LWTCutPipeSections": "Boru Parçalarını Kes",
+    "LWTBuildPondPump": "Gölet Pompası Yap",
+    "LWTMakeWaterFilter": "Su Filtre Kartuşu Yap",
+    "LWTBuildFlowMeter": "Su Sayacı Yap",
+    "LWTBuildHouseInlet": "Ev Su Girişi Yap",
+    "LWTBuildSprinkler": "Yağmurlayıcı Yap",
+    "LWTUpgradeSprinkler": "Yağmurlayıcıya Zamanlayıcı Ekle",
+    "LWTBuildBarrelFitting": "Varil Tesisatı Yap"
+}

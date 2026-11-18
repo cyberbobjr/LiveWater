@@ -1,0 +1,6 @@
+{
+    "LiveWater.PipeSection": "配管の部品",
+    "Base.Mov_LiveWater_PondPump": "池のポンプ",
+    "LiveWater.WaterFilter": "浄水カートリッジ",
+    "Base.Mov_LiveWater_FlowMeter": "水道メーター"
+}

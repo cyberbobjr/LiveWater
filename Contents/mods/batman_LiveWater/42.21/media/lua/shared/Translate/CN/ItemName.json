@@ -1,0 +1,6 @@
+{
+    "LiveWater.PipeSection": "管段",
+    "Base.Mov_LiveWater_PondPump": "池塘水泵",
+    "LiveWater.WaterFilter": "净水滤芯",
+    "Base.Mov_LiveWater_FlowMeter": "水表"
+}

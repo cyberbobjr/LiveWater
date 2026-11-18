@@ -1,0 +1,5 @@
+{
+    "UI_LWT_Options": "LiveWater",
+    "UI_LWT_AnimatedJet": "Chorro animado de los aspersores",
+    "UI_LWT_AnimatedJet_Tooltip": "Desmárcalo para mostrar un chorro de agua fijo en los aspersores (más ligero en ordenadores lentos)."
+}

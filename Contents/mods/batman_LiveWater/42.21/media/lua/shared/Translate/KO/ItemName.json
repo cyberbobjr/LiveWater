@@ -1,0 +1,6 @@
+{
+    "LiveWater.PipeSection": "배관 부품",
+    "Base.Mov_LiveWater_PondPump": "연못 펌프",
+    "LiveWater.WaterFilter": "정수 필터 카트리지",
+    "Base.Mov_LiveWater_FlowMeter": "수도 계량기"
+}

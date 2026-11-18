@@ -1,0 +1,23 @@
+{
+    "Sandbox_LiveWater": "LiveWater",
+    "Sandbox_LWT_PumpFlowMultiplier": "Caudal de las bombas",
+    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "Multiplica los litros que da una bomba cada 10 minutos (50 L para una bomba de estanque con 1,0).",
+    "Sandbox_LWT_FilterCapacityMultiplier": "Duración de los cartuchos filtrantes",
+    "Sandbox_LWT_FilterCapacityMultiplier_tooltip": "Multiplica los litros que limpia un cartucho filtrante antes de gastarse (500 L con 1,0).",
+    "Sandbox_LWT_PumpWearMultiplier": "Desgaste de las bombas",
+    "Sandbox_LWT_PumpWearMultiplier_tooltip": "Multiplica la eficiencia que pierde una bomba mientras funciona (unos siete días de funcionamiento del 100%% al 0%% con 1,0; 0 = sin desgaste). Por debajo del 20%% puede averiarse.",
+    "Sandbox_LWT_InletRange": "Alcance de la entrada de agua",
+    "Sandbox_LWT_InletRange_tooltip": "A qué distancia (en casillas) de una entrada de agua de casa reciben agua los grifos conectados de su edificio, hasta 3 plantas por encima.",
+    "Sandbox_LWT_BaseRange": "Alcance de la entrada de agua de base",
+    "Sandbox_LWT_BaseRange_tooltip": "Fuera de un edificio del mapa (una base que construiste), a qué distancia (en casillas) una entrada de agua de casa da agua a los grifos conectados, hasta 3 plantas por encima.",
+    "Sandbox_LWT_WasherFix": "Corregir las lavadoras conectadas (multijugador)",
+    "Sandbox_LWT_WasherFix_tooltip": "En un servidor, las lavadoras alimentadas por una entrada de agua de casa muestran a los jugadores su estado real: conectadas y paradas cuando se quedan sin agua.",
+    "Sandbox_LWT_SprinklerRadiusMultiplier": "Alcance de los aspersores",
+    "Sandbox_LWT_SprinklerRadiusMultiplier_tooltip": "Multiplica la distancia a la que un aspersor riega las plantas (2 casillas con 1,0; 10 como máximo).",
+    "Sandbox_LWT_SprinklerTimerMin": "Temporizador de aspersor: intervalo más corto",
+    "Sandbox_LWT_SprinklerTimerMin_tooltip": "Las horas mínimas que un jugador puede poner entre dos riegos de un aspersor automático.",
+    "Sandbox_LWT_SprinklerTimerMax": "Temporizador de aspersor: intervalo más largo",
+    "Sandbox_LWT_SprinklerTimerMax_tooltip": "Las horas máximas que un jugador puede poner entre dos riegos de un aspersor automático.",
+    "Sandbox_LWT_FillContainers": "Recipientes que puede llenar una conexión de barril",
+    "Sandbox_LWT_FillContainers_tooltip": "Nombres de scripts de entidad o sprites, separados por ; (dispensadores de agua: WaterDispenser). Se llenan con una conexión de barril en Llenar, sea cual sea su tamaño, solo con agua limpia. Los barriles y los recolectores de lluvia siempre funcionan."
+}

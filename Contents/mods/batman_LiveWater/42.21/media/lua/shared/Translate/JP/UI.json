@@ -1,0 +1,5 @@
+{
+    "UI_LWT_Options": "LiveWater",
+    "UI_LWT_AnimatedJet": "スプリンクラーの水流アニメーション",
+    "UI_LWT_AnimatedJet_Tooltip": "オフにするとスプリンクラーの水流が静止画になります（古いコンピューターでは軽くなります）。"
+}

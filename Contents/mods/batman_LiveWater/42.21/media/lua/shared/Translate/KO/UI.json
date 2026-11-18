@@ -1,0 +1,5 @@
+{
+    "UI_LWT_Options": "LiveWater",
+    "UI_LWT_AnimatedJet": "스프링클러 물줄기 애니메이션",
+    "UI_LWT_AnimatedJet_Tooltip": "체크를 해제하면 스프링클러의 물줄기가 움직이지 않는 그림으로 나옵니다 (느린 컴퓨터에서 더 가볍습니다)."
+}

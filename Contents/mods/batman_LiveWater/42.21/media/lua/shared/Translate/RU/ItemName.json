@@ -1,0 +1,6 @@
+{
+    "LiveWater.PipeSection": "Отрезок трубы",
+    "Base.Mov_LiveWater_PondPump": "Насос для пруда",
+    "LiveWater.WaterFilter": "Фильтрующий картридж для воды",
+    "Base.Mov_LiveWater_FlowMeter": "Счётчик воды"
+}

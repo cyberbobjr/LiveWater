@@ -1,0 +1,23 @@
+{
+    "Sandbox_LiveWater": "LiveWater",
+    "Sandbox_LWT_PumpFlowMultiplier": "水泵流量",
+    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "乘以水泵每10分钟输出的升数（池塘水泵在1.0时为50升）。",
+    "Sandbox_LWT_FilterCapacityMultiplier": "滤芯寿命",
+    "Sandbox_LWT_FilterCapacityMultiplier_tooltip": "乘以滤芯磨损前能净化的升数（1.0时为500升）。",
+    "Sandbox_LWT_PumpWearMultiplier": "水泵磨损",
+    "Sandbox_LWT_PumpWearMultiplier_tooltip": "乘以水泵运行时损失的效率（1.0时，从100%%到0%%大约运行一周；0 = 不磨损）。低于20%%时可能故障。",
+    "Sandbox_LWT_InletRange": "进水口范围",
+    "Sandbox_LWT_InletRange_tooltip": "房屋进水口能为其所在建筑中已接管的水龙头供水的距离（格数），向上最多3层。",
+    "Sandbox_LWT_BaseRange": "基地进水口范围",
+    "Sandbox_LWT_BaseRange_tooltip": "在地图建筑之外（你建造的基地），房屋进水口为已接管的水龙头供水的距离（格数），向上最多3层。",
+    "Sandbox_LWT_WasherFix": "修复已接管的洗衣机（多人游戏）",
+    "Sandbox_LWT_WasherFix_tooltip": "在服务器上，由房屋进水口供水的洗衣机会向玩家显示真实状态：已接管，并在没水时停止。",
+    "Sandbox_LWT_SprinklerRadiusMultiplier": "喷灌器范围",
+    "Sandbox_LWT_SprinklerRadiusMultiplier_tooltip": "乘以喷灌器浇灌植物的距离（1.0时为2格，最多10格）。",
+    "Sandbox_LWT_SprinklerTimerMin": "喷灌定时器：最短间隔",
+    "Sandbox_LWT_SprinklerTimerMin_tooltip": "玩家可为自动喷灌器设置的两次浇水之间的最少小时数。",
+    "Sandbox_LWT_SprinklerTimerMax": "喷灌定时器：最长间隔",
+    "Sandbox_LWT_SprinklerTimerMax_tooltip": "玩家可为自动喷灌器设置的两次浇水之间的最多小时数。",
+    "Sandbox_LWT_FillContainers": "水桶接头可注满的容器",
+    "Sandbox_LWT_FillContainers_tooltip": "实体脚本或贴图的名称，用 ; 分隔（饮水机：WaterDispenser）。通过设为注入的水桶接头注满它们，无论大小，只注入干净的水。水桶和雨水收集桶始终有效。"
+}

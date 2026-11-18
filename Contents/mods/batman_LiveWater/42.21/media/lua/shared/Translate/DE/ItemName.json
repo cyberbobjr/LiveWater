@@ -1,0 +1,6 @@
+{
+    "LiveWater.PipeSection": "Rohrstück",
+    "Base.Mov_LiveWater_PondPump": "Teichpumpe",
+    "LiveWater.WaterFilter": "Filterkartusche",
+    "Base.Mov_LiveWater_FlowMeter": "Wasserzähler"
+}

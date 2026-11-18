@@ -1,0 +1,10 @@
+{
+    "LWTCutPipeSections": "Rohrstücke zuschneiden",
+    "LWTBuildPondPump": "Teichpumpe bauen",
+    "LWTMakeWaterFilter": "Filterkartusche herstellen",
+    "LWTBuildFlowMeter": "Wasserzähler bauen",
+    "LWTBuildHouseInlet": "Hauswassereinlass bauen",
+    "LWTBuildSprinkler": "Sprinkler bauen",
+    "LWTUpgradeSprinkler": "Zeitschaltuhr an einen Sprinkler anbauen",
+    "LWTBuildBarrelFitting": "Fassanschluss bauen"
+}

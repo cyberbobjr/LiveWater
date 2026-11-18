@@ -1,0 +1,10 @@
+{
+    "LWTCutPipeSections": "Cortar tramos de tubería",
+    "LWTBuildPondPump": "Construir bomba de estanque",
+    "LWTMakeWaterFilter": "Fabricar cartucho filtrante de agua",
+    "LWTBuildFlowMeter": "Construir contador de agua",
+    "LWTBuildHouseInlet": "Construir entrada de agua de la casa",
+    "LWTBuildSprinkler": "Construir aspersor",
+    "LWTUpgradeSprinkler": "Añadir un temporizador a un aspersor",
+    "LWTBuildBarrelFitting": "Construir conexión de barril"
+}

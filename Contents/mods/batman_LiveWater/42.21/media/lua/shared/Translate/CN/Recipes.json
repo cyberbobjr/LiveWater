@@ -1,0 +1,10 @@
+{
+    "LWTCutPipeSections": "切割管段",
+    "LWTBuildPondPump": "制作池塘水泵",
+    "LWTMakeWaterFilter": "制作净水滤芯",
+    "LWTBuildFlowMeter": "制作水表",
+    "LWTBuildHouseInlet": "制作房屋进水口",
+    "LWTBuildSprinkler": "制作喷灌器",
+    "LWTUpgradeSprinkler": "给喷灌器加装定时器",
+    "LWTBuildBarrelFitting": "制作水桶接头"
+}

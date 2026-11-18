@@ -1,0 +1,23 @@
+{
+    "Sandbox_LiveWater": "LiveWater",
+    "Sandbox_LWT_PumpFlowMultiplier": "Pompa debisi",
+    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "Bir pompanın her 10 dakikada verdiği litreyi çarpar (1,0'da gölet pompası için 50 L).",
+    "Sandbox_LWT_FilterCapacityMultiplier": "Filtre kartuşu ömrü",
+    "Sandbox_LWT_FilterCapacityMultiplier_tooltip": "Bir filtre kartuşunun eskimeden önce temizlediği litreyi çarpar (1,0'da 500 L).",
+    "Sandbox_LWT_PumpWearMultiplier": "Pompa aşınması",
+    "Sandbox_LWT_PumpWearMultiplier_tooltip": "Bir pompanın çalışırken kaybettiği verimi çarpar (1,0'da yaklaşık bir hafta, %%100'den %%0'a kadar çalışma; 0 = aşınma yok). Verim %%20 altına düşünce arızalanabilir.",
+    "Sandbox_LWT_InletRange": "Ev su girişi menzili",
+    "Sandbox_LWT_InletRange_tooltip": "Bir ev su girişinden, binasındaki bağlı tesisatların su alacağı uzaklık (kare cinsinden), üstte 3 kata kadar.",
+    "Sandbox_LWT_BaseRange": "Temel su girişi menzili",
+    "Sandbox_LWT_BaseRange_tooltip": "Harita binası dışında (kendi kurduğunuz bir üs), bir ev su girişinin bağlı tesisatlara hizmet ettiği uzaklık (kare cinsinden), üstte 3 kata kadar.",
+    "Sandbox_LWT_WasherFix": "Bağlı çamaşır makinelerini düzelt (çok oyunculu)",
+    "Sandbox_LWT_WasherFix_tooltip": "Bir sunucuda, ev su girişiyle beslenen çamaşır makineleri oyunculara gerçek durumlarını gösterir: bağlı ve su bitince durur.",
+    "Sandbox_LWT_SprinklerRadiusMultiplier": "Yağmurlayıcı menzili",
+    "Sandbox_LWT_SprinklerRadiusMultiplier_tooltip": "Bir yağmurlayıcının bitkileri sulama mesafesini çarpar (1,0'da 2 kare; en çok 10).",
+    "Sandbox_LWT_SprinklerTimerMin": "Yağmurlayıcı zamanlayıcısı: en kısa aralık",
+    "Sandbox_LWT_SprinklerTimerMin_tooltip": "Bir otomatik yağmurlayıcının iki sulaması arasında oyuncunun ayarlayabileceği en az saat.",
+    "Sandbox_LWT_SprinklerTimerMax": "Yağmurlayıcı zamanlayıcısı: en uzun aralık",
+    "Sandbox_LWT_SprinklerTimerMax_tooltip": "Bir otomatik yağmurlayıcının iki sulaması arasında oyuncunun ayarlayabileceği en çok saat.",
+    "Sandbox_LWT_FillContainers": "Varil tesisatının doldurabileceği kaplar",
+    "Sandbox_LWT_FillContainers_tooltip": "Varlık betiklerinin veya sprite'ların adları, ; ile ayrılmış (su sebilleri: WaterDispenser). Boyutları ne olursa olsun, yalnızca temiz suyla, Doldur ayarındaki bir varil tesisatından doldurulurlar. Varillar ve yağmur suyu toplayıcılar her zaman çalışır."
+}

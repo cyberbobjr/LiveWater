@@ -8,8 +8,8 @@ Checks:
   3. every file in lua/server starts with the isClient() guard;
   4. no subscription to a per-frame event (ADR-001 D08), except Events.OnTick in the one client
      file of the animated sprinkler jet (ADR-001 D08a, PER_FRAME_ALLOWED);
-  5. translations: EN and FR have the same files and keys, every other language
-     uses EN keys only, and every getText key used in Lua exists in EN.
+  5. translations: every language has exactly the EN files and keys, with the same %N
+     arguments and %% escapes in each string, and every getText key used in Lua exists in EN.
 Passing these checks proves nothing about in-game behaviour.
 """
 import glob
@@ -121,6 +121,26 @@ def check_lua():
     return files, sources
 
 
+def placeholders(text):
+    """Sorted %N arguments and %% escapes of a translation string."""
+    return sorted(re.findall(r"%(?:\d+|%)", text))
+
+
+def check_language(lang, files, en):
+    """A translation has exactly the EN files and keys, with the same %N and %% in each string."""
+    for name in sorted(set(en) ^ set(files)):
+        fail("Translate/%s: file %s %s" % (lang, name, "missing" if name in en else "unknown in EN"))
+    for name, en_strings in sorted(en.items()):
+        strings = files.get(name)
+        if strings is None:
+            continue
+        for k in sorted(set(en_strings) ^ set(strings)):
+            fail("Translate/%s/%s: key %s %s" % (lang, name, k, "missing" if k in en_strings else "unknown in EN"))
+        for k in sorted(set(en_strings) & set(strings)):
+            if placeholders(en_strings[k]) != placeholders(strings[k]):
+                fail("Translate/%s/%s: key %s has other %%N/%%%% than EN" % (lang, name, k))
+
+
 def check_translations(sources):
     tr = os.path.join(LUA, "shared", "Translate")
     if not os.path.isdir(tr):
@@ -132,16 +152,11 @@ def check_translations(sources):
                 langs[lang][os.path.basename(p)] = json.load(open(p, encoding="utf-8"))
             except ValueError as e:
                 fail("%s: invalid JSON: %s" % (rel(p), e))
-    en, fr = langs.get("EN", {}), langs.get("FR", {})
-    if set(en) != set(fr):
-        fail("Translate: EN and FR files differ: %s" % sorted(set(en) ^ set(fr)))
+    en = langs.get("EN", {})
     en_keys = {k for d in en.values() for k in d}
-    fr_keys = {k for d in fr.values() for k in d}
-    for k in sorted(en_keys ^ fr_keys):
-        fail("Translate: key %s missing in %s" % (k, "FR" if k in en_keys else "EN"))
-    for lang, files in langs.items():
-        for k in sorted({k for d in files.values() for k in d} - en_keys):
-            fail("Translate/%s: key %s unknown in EN" % (lang, k))
+    for lang, files in sorted(langs.items()):
+        if lang != "EN":
+            check_language(lang, files, en)
     for p, text in sources.items():
         for k in re.findall(r'getText\(\s*"([^"]+)"', text):
             if k not in en_keys:

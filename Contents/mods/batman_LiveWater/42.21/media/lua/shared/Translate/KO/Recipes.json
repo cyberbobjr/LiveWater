@@ -1,0 +1,10 @@
+{
+    "LWTCutPipeSections": "배관 부품 자르기",
+    "LWTBuildPondPump": "연못 펌프 만들기",
+    "LWTMakeWaterFilter": "정수 필터 카트리지 만들기",
+    "LWTBuildFlowMeter": "수도 계량기 만들기",
+    "LWTBuildHouseInlet": "집 급수구 만들기",
+    "LWTBuildSprinkler": "스프링클러 만들기",
+    "LWTUpgradeSprinkler": "스프링클러에 타이머 달기",
+    "LWTBuildBarrelFitting": "배럴 연결구 만들기"
+}

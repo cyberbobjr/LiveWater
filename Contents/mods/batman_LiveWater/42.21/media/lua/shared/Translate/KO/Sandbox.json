@@ -1,0 +1,23 @@
+{
+    "Sandbox_LiveWater": "LiveWater",
+    "Sandbox_LWT_PumpFlowMultiplier": "펌프 유량",
+    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "펌프가 10분마다 내보내는 리터 수에 곱해지는 배율입니다 (1.0일 때 연못 펌프 50 L).",
+    "Sandbox_LWT_FilterCapacityMultiplier": "정수 카트리지 수명",
+    "Sandbox_LWT_FilterCapacityMultiplier_tooltip": "마모되기 전에 필터 카트리지가 정화하는 리터 수에 곱해지는 배율입니다 (1.0일 때 500 L).",
+    "Sandbox_LWT_PumpWearMultiplier": "펌프 마모",
+    "Sandbox_LWT_PumpWearMultiplier_tooltip": "펌프가 가동 중에 잃는 효율에 곱해지는 배율입니다 (1.0일 때 100%% 에서 0%% 까지 약 일주일 가동, 0 = 마모 없음). 20%% 아래에서는 고장 날 수 있습니다.",
+    "Sandbox_LWT_InletRange": "집 급수구 범위",
+    "Sandbox_LWT_InletRange_tooltip": "집 급수구에서 같은 건물의 배관된 설비가 물을 받는 거리(칸 수)입니다. 급수구 위로 3층까지 적용됩니다.",
+    "Sandbox_LWT_BaseRange": "기지 급수구 범위",
+    "Sandbox_LWT_BaseRange_tooltip": "지도의 건물 밖(직접 지은 기지)에서 집 급수구가 배관된 설비에 물을 공급하는 거리(칸 수)입니다. 급수구 위로 3층까지 적용됩니다.",
+    "Sandbox_LWT_WasherFix": "배관된 세탁기 수정 (멀티플레이)",
+    "Sandbox_LWT_WasherFix_tooltip": "서버에서 집 급수구의 물을 받는 세탁기가 플레이어에게 실제 상태를 보여 줍니다: 배관됨, 물이 떨어지면 멈춤.",
+    "Sandbox_LWT_SprinklerRadiusMultiplier": "스프링클러 범위",
+    "Sandbox_LWT_SprinklerRadiusMultiplier_tooltip": "스프링클러가 식물에 물을 주는 거리에 곱해지는 배율입니다 (1.0일 때 2칸, 최대 10칸).",
+    "Sandbox_LWT_SprinklerTimerMin": "스프링클러 타이머: 최소 간격",
+    "Sandbox_LWT_SprinklerTimerMin_tooltip": "자동 스프링클러의 두 번 급수 사이에 플레이어가 설정할 수 있는 최소 시간(시간)입니다.",
+    "Sandbox_LWT_SprinklerTimerMax": "스프링클러 타이머: 최대 간격",
+    "Sandbox_LWT_SprinklerTimerMax_tooltip": "자동 스프링클러의 두 번 급수 사이에 플레이어가 설정할 수 있는 최대 시간(시간)입니다.",
+    "Sandbox_LWT_FillContainers": "배럴 연결구가 채울 수 있는 용기",
+    "Sandbox_LWT_FillContainers_tooltip": "엔티티 이름 또는 스프라이트 이름을 ; 로 구분해 입력합니다 (정수기: WaterDispenser). '채우기'로 설정된 배럴 연결구를 통해 크기와 상관없이 깨끗한 물만 채워집니다. 배럴과 빗물 수집통은 항상 작동합니다."
+}
