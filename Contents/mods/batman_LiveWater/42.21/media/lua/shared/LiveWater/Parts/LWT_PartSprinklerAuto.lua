@@ -12,6 +12,8 @@ local Tiles = require "LiveWater/LWT_Tiles"
 LiveWater.API.registerPart("LiveWater:SprinklerAuto", {
     -- variant key -> first index of its four facings
     variants = Tiles.variants({ off = 56, on = 60 }),
+    -- turned towards its pipe: the feed never ends in the air
+    facings = Tiles.FEED_FACINGS,
     capabilities = {
         outlet = { type = "sprinkler" },
         valve = { open = false },

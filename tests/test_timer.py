@@ -67,11 +67,11 @@ class Timer(unittest.TestCase):
         lua = bench()
         lua.execute("plant(3, 0, 40, 70)")
         self.assertAlmostEqual(lua.eval("delivered()"), 0.6)
-        self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "61")
+        self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "63")   # on, turned W to its pipe
         self.assertTrue(lua.eval("SPR.data.controller.watering"))
         self.assertEqual(lua.eval("delivered()"), 0)
         self.assertFalse(lua.eval("SPR.data.controller.watering"))
-        self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "57")
+        self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "59")   # off, turned W
         lua.execute("FARM.plants['3,0'].level = 40 HOURS = 5.9")
         self.assertEqual(lua.eval("delivered()"), 0)
         lua.execute("HOURS = 6")

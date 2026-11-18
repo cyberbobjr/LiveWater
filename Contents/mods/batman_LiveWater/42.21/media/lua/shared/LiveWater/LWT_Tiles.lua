@@ -9,6 +9,11 @@ Tiles.SHEET = "batman_livewater_01_"
 Tiles.JET_FIRST = 80
 Tiles.JET_FRAMES = 6
 
+-- `facings` of a part fed over one edge of its tile (the S edge when it faces S, e.g. the sprinklers):
+-- side mask of its one pipe (N = 1, E = 2, S = 4, W = 8) -> facing (1 S, 2 E, 3 N, 4 W) that turns
+-- the feed towards that pipe.
+Tiles.FEED_FACINGS = { [1] = 3, [2] = 2, [4] = 1, [8] = 4 }
+
 -- Sprite name of a tile index.
 function Tiles.sprite(index)
     return Tiles.SHEET .. index

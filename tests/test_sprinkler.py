@@ -108,6 +108,29 @@ def bench():
     return lua
 
 
+class Facing(unittest.TestCase):
+    """Fed over one edge of its tile (the S edge facing S): turned towards its pipe, whatever facing it was set
+    down with, so its feed never ends in the air."""
+
+    def check(self, part_file, part, base):
+        # pipe north, east, south, west of the sprinkler -> facings N, E, S, W (offsets 2, 1, 0, 3)
+        for (px, py), offset in (((0, -1), 2), ((1, 0), 1), ((0, 1), 0), ((-1, 0), 3)):
+            lua = services(new_lua, part_file) if part_file == SPRINKLER else services(new_lua, SPRINKLER, part_file)
+            lua.execute('place("Test:Pipe", %d, %d) place("%s", 0, 0, "%s%d")' % (px, py, part, TILE, base))
+            self.assertEqual(lua.eval("WORLD:sprite(0, 0, 0)"), TILE + str(base + offset), (px, py))
+
+    def test_the_manual_sprinkler_turns_its_feed_to_its_pipe(self):
+        self.check(SPRINKLER, "LiveWater:Sprinkler", 48)
+
+    def test_the_automatic_sprinkler_turns_its_feed_to_its_pipe(self):
+        self.check("shared/LiveWater/Parts/LWT_PartSprinklerAuto.lua", "LiveWater:SprinklerAuto", 56)
+
+    def test_a_pipe_laid_after_it_turns_it_too(self):
+        lua = services(new_lua, SPRINKLER)
+        lua.execute('place("LiveWater:Sprinkler", 0, 0, "%s48") place("Test:Pipe", 1, 0)' % TILE)
+        self.assertEqual(lua.eval("WORLD:sprite(0, 0, 0)"), TILE + "49")
+
+
 class Watering(unittest.TestCase):
     def test_a_closed_valve_gives_nothing(self):
         lua = bench()
@@ -127,7 +150,7 @@ class Watering(unittest.TestCase):
         self.assertIsNone(lua.eval("FARM.watered['1,1']"))
         self.assertEqual(lua.eval("FARM.plants['3,0'].level"), 75)
         self.assertTrue(lua.eval("SPR.data.spray.on"))
-        self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "52")
+        self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "55")   # on, turned W to its pipe
 
     def test_only_the_plants_in_the_radius(self):
         lua = bench()
@@ -143,10 +166,10 @@ class Watering(unittest.TestCase):
         lua = bench()
         lua.execute('LiveWater.Parts:call(SPR, "open", true) plant(3, 0, 0, 20)')
         lua.execute("delivered()")
-        self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "52")
+        self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "55")   # on, turned W to its pipe
         self.assertEqual(lua.eval("delivered()"), 0)
         self.assertEqual(lua.eval("SPR.data.outlet.state"), "idle")
-        self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "48")
+        self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "51")   # off, turned W
 
     def test_short_water_gives_whole_doses_only(self):
         lua = bench()

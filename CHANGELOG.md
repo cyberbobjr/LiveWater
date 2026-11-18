@@ -37,7 +37,8 @@
   them when they run out of water, instead of looking stuck (can be turned off in the sandbox options).
 - City water: right-click a sink, bathtub, shower, toilet or washing machine you set down inside a building of the map
   and choose "Connect to the City Water" while the city water still runs; it then works like the original fixtures.
-- Sprinkler: build it, set it down and feed it with a pipe; open its valve from the right-click menu. Every 10 minutes
+- Sprinkler: build it, set it down and feed it with a pipe (it turns to face its pipe on its own); open its valve
+  from the right-click menu. Every 10 minutes
   it waters the living plants that need water within 2 squares (sandbox option), 200 ml per dose taken from the pipes;
   unfiltered water is fine for plants. A watering sprinkler shows an animated water jet (a mod option shows a still
   jet instead) and makes the sound of watering.
