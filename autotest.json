@@ -1,0 +1,49 @@
+// pzdev configuration of LiveWater (PZDevKit/docs/wiki/fr/01-tests-automatiques.md). Nominal path (E22):
+// pond pump next to natural water, generator, pipes to a house inlet against a map house with a plumbed fixture,
+// branch to a manual sprinkler next to a crop; unfiltered water refused for the house, filter fitted, sprinkler
+// valve closed. Details at the top of autotest/lwt_hooks.lua.
+//   python PZDevKit/pzdev.py check LiveWater
+//   python PZDevKit/pzdev.py sp    LiveWater --wait-idle 3600
+//   python PZDevKit/pzdev.py server LiveWater --wait-idle 3600
+//   python PZDevKit/pzdev.py mp    LiveWater --clients 1 --client-run --wait-idle 3600
+{
+  "name": "LiveWater",
+  "gameVersion": "42.22",
+  "mods": [
+    {"path": "Contents/mods/batman_LiveWater"}
+  ],
+  "hooks": "autotest/lwt_hooks.lua",
+  // centers: candidate places "x,y;x,y" searched in order (Riverside ponds, Muldraugh objects.lua WaterZone).
+  "params": {"centers": "6640,5310;6670,5395;6625,5395;6575,5210;6290,5300", "radius": "40", "stepSec": "90"},
+  "sp": {
+    "save": "2026-10-17_17-50-04",
+    "gameMode": "Sandbox",
+    "saveMods": "replace",
+    "timeoutSec": 1200,
+    "startDelaySec": 5
+  },
+  // Dedicated server + client 1 (--client-run): the server sets the layout down around client 1, client 1 lays
+  // the pipes and works the valve and the filter through the real commands (sendClientCommand).
+  "mp": {
+    "serverName": "pzat_livewater_mp",
+    "port": 17431,
+    // Riverside, next to the pond of the first layout found in solo (fixed spawn, no spawn choice screen).
+    "spawn": "6650,5321,0",
+    "clients": 1,
+    "clientXmx": "4096m",
+    "serverRun": true,
+    "clientRun": true,
+    "timeoutSec": 1800,
+    "joinTimeoutSec": 600,
+    "params": {"clientWaitSec": "1500"},
+    "ini": {"Map": "Muldraugh, KY", "MaxPlayers": 4}
+  },
+  // Dedicated server alone: server files load cleanly, authority built (autotest/lwt_server_hooks.lua).
+  "server": {
+    "hooks": "autotest/lwt_server_hooks.lua",
+    "serverName": "pzat_livewater",
+    "port": 17421,
+    "timeoutSec": 600,
+    "ini": {"Map": "Muldraugh, KY", "MaxPlayers": 4}
+  }
+}

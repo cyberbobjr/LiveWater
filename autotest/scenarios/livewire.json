@@ -1,0 +1,22 @@
+// LiveWater with Live Wire (optional sister mod, never required): the same solo nominal path, plus the check that
+// Live Wire knows the pond pump as a consumer and bills its watts while it runs (-P livewire=1).
+//   python PZDevKit/pzdev.py sp LiveWater/autotest/scenarios/livewire.json --wait-idle 3600
+{
+  "name": "LiveWater-LiveWire",
+  "gameVersion": "42.22",
+  "mods": [
+    {"path": "../../../LiveWire/Contents/mods/batman_LiveWire"},
+    {"path": "../../Contents/mods/batman_LiveWater"}
+  ],
+  "hooks": "../lwt_hooks.lua",
+  "runsDir": "../../runs",
+  "params": {"centers": "6640,5310;6670,5395;6625,5395;6575,5210;6290,5300", "radius": "40", "stepSec": "90",
+    "livewire": "1"},
+  "sp": {
+    "save": "2026-10-17_17-50-04",
+    "gameMode": "Sandbox",
+    "saveMods": "replace",
+    "timeoutSec": 1200,
+    "startDelaySec": 5
+  }
+}
