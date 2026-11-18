@@ -30,10 +30,6 @@ local function isTag(v)
     return type(v) == "string" and #v <= 120 and string.match(v, "^%a[%w_]*:%a[%w_]*$") ~= nil
 end
 
-local function isSoundName(v)
-    return type(v) == "string" and #v <= 64 and string.match(v, "^%a[%w_]*$") ~= nil
-end
-
 local SPEC = {
     ports = Check.integer(1, 4, 4),
     pressure = Check.number(0, 1000, 6),
@@ -45,7 +41,7 @@ local SPEC = {
     repairItem = { default = "Base.ScrapMetal", valid = isFullType },
     repairCount = Check.integer(1, 100, 2),
     repairTool = { valid = isTag },
-    sound = { default = "GeneratorLoop", valid = isSoundName },
+    sound = { default = "GeneratorLoop", valid = Check.isName },
     noiseRadius = Check.integer(0, 100, 20),
     noiseVolume = Check.integer(0, 100, 20),
 }

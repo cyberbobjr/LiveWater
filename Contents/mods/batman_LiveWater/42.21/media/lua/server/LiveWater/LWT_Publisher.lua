@@ -4,7 +4,7 @@ if isClient() then return end
 --   the sprite follows the state (LWT_Sprites:show: variants, facing kept);
 --   the state is mirrored on the game object ({ type, data }, LWT_Mirror) only when it changed,
 --   for the client menus, Live Wire and a moveable picked up then set down again;
---   its sound loop (`sound` hook, P15) starts or stops for the players when it changes; after a
+--   its sound loop (`sound` hook: pump P15, sprinkler P14) starts or stops for the players when it changes; after a
 --   step (present(part, true)) a part that makes noise is heard by zombies and its loop is told
 --   again (players who came near since).
 --   a part with a jet (`jet` hook, sprinkler, D08a) tells the clients when it starts or stops

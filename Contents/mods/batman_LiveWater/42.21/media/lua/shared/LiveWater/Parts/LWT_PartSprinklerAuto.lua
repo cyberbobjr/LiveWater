@@ -16,6 +16,6 @@ LiveWater.API.registerPart("LiveWater:SprinklerAuto", {
         outlet = { type = "sprinkler" },
         valve = { open = false },
         controller = { mode = "timer", every = 6, watts = 5 },
-        spray = { radius = 2, dose = 0.2, jetSheet = Tiles.SHEET, jetFirst = Tiles.JET_FIRST, jetFrames = Tiles.JET_FRAMES },
+        spray = { radius = 2, dose = 0.2, jetSheet = Tiles.SHEET, jetFirst = Tiles.JET_FIRST, jetFrames = Tiles.JET_FRAMES, sound = "WaterCrops" },
     },
 })

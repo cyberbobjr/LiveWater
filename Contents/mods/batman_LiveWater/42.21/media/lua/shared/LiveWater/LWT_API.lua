@@ -73,7 +73,7 @@ LiveWater.Events = EventBus.new(EventBus.NAMES)
 -- registerContainer.
 -- Revision 12: registerContainer field `clean`; registered containers of any size (E25).
 -- Revision 13: part definition field `facings` (variant facing by side mask, Parts:facingFor),
--- valve field `look` (drawn by the valve state: variants "open", "closed").
+-- valve field `look` (drawn by the valve state: variants "open", "closed"), spray field `sound`.
 local API = { revision = 13 }
 LiveWater.API = API
 

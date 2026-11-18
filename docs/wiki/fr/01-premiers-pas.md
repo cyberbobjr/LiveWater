@@ -103,7 +103,8 @@ sur sa tuile.
 anglaise (gardée). Posez-le comme un meuble et alimentez-le par un tuyau. Clic droit : **Ouvrir la vanne**. Toutes les
 10 minutes, il arrose les plantes vivantes qui ont besoin d'eau dans un rayon de **2 cases** (option sandbox), par
 doses de 200 ml prises dans les tuyaux. L'eau non filtrée convient aux plantes. Un arroseur qui arrose montre un jet
-d'eau animé (option du mod *Jet des arroseurs animé* : décochez-la pour un jet fixe sur un ordinateur lent).
+d'eau animé (option du mod *Jet des arroseurs animé* : décochez-la pour un jet fixe sur un ordinateur lent) et on
+l'entend arroser.
 
 **Arroseur automatique.** Recette **Ajouter une minuterie à un arroseur** (Électricité 2) : 1 arroseur, 2 pièces
 électroniques, 1 fil électrique, avec un tournevis (gardé) ; 10 XP d'Électricité. Il s'ouvre seul **toutes les

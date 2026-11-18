@@ -97,7 +97,7 @@ keeps its wear; a worn-out one is thrown away. The pump shows the filter on its 
 Set it down like furniture and feed it with a pipe. Right-click: **Open the Valve**. Every 10 minutes it waters the
 living plants that need water within **2 squares** (sandbox option), 200 ml per dose taken from the pipes. Unfiltered
 water is fine for plants. A watering sprinkler shows an animated water jet (mod option *Animated sprinkler jet*: untick
-it for a still jet on slow computers).
+it for a still jet on slow computers) and you hear it water.
 
 **Automatic sprinkler.** Recipe **Add a Timer to a Sprinkler** (Electrical 2): 1 sprinkler, 2 electronics scrap,
 1 electric wire, with a screwdriver (kept); 10 Electrical XP. It opens on its own **every 6 hours**, waters the plants,

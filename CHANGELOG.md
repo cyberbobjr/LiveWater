@@ -40,7 +40,7 @@
 - Sprinkler: build it, set it down and feed it with a pipe; open its valve from the right-click menu. Every 10 minutes
   it waters the living plants that need water within 2 squares (sandbox option), 200 ml per dose taken from the pipes;
   unfiltered water is fine for plants. A watering sprinkler shows an animated water jet (a mod option shows a still
-  jet instead).
+  jet instead) and makes the sound of watering.
 - Automatic sprinkler: add a timer to a sprinkler (Electrical 2). It opens on its own every 6 hours (choose 1 to 24 h
   from its right-click menu, limits in the sandbox options) to water the plants, then closes. The timer needs a
   little power (generator, grid or Live Wire); without power it does nothing, but you can still open the valve by hand.

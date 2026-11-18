@@ -63,7 +63,7 @@ Une pièce dont le mod est retiré reste inerte dans la sauvegarde et revient av
 | 10 | crochet `status` (vue du réseau) ; commandes `showNetwork` et `network` |
 | 11 | capacité `fitting` ; crochets `draw`, `sense`, `fittingMode`, `setFittingMode` ; fluide accepté en quatrième résultat de `outlet` ; événement `waterDrawn` ; qualité `fuel` ; `registerContainer` |
 | 12 | `clean = true` dans `registerContainer` |
-| 13 | champ `facings` de la pièce (orientation de la variante selon le masque des côtés : pièce en ligne tournée selon son tuyau) ; réglage `look` de la vanne (dessin selon l'état de la vanne, variantes `open` / `closed`) |
+| 13 | champ `facings` de la pièce (orientation de la variante selon le masque des côtés : pièce en ligne tournée selon son tuyau) ; réglage `look` de la vanne (dessin selon l'état de la vanne, variantes `open` / `closed`) ; réglage `sound` de `spray` (boucle jouée pendant l'arrosage) |
 
 Les changements sont seulement additifs : une fonction ou un champ ne change jamais de sens dans une révision suivante.
 

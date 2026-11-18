@@ -796,7 +796,7 @@ et fichier de tests hors jeu (`tests/`). Rien de cette table n'est encore vérif
 | P11 | F31 : vanne d'arrêt `LiveWater:Valve` posée entre deux tuyaux, ouverte ou fermée au clic droit, coupe l'aval ; aussi la vanne de chaque arroseur (F21) | E22 `test_valve.py` (ajout du 2026-11-18), E03 `test_network.py`, E11 `test_sprinkler.py` |
 | P12 | F11 : compteur d'eau en ligne, litres et fluide | E16, `test_meter.py` |
 | P13 | F21 : arrose les plantes qui en ont besoin, rayon 2 × option (10 au plus) au lieu de 5 (choix d'E11, réglable) | E11, `test_sprinkler.py` |
-| P14 | partiel : F22 jet animé (D08a) ; aucun son propre à l'arroseur | E11, `test_sprinkler.py` |
+| P14 | F22 : jet animé (D08a) et son d'arrosage vanilla `WaterCrops` (réglage `sound` de `spray`, boucle des joueurs démarrée et arrêtée par le même changement d'état que le jet, aucun bruit pour les zombies, aucun code par image) ; qu'il boucle bien 10 minutes en jeu (événement FMOD à point de maintien, arrêté par `stopOrTriggerSound` en vanilla) reste une hypothèse | E11, E22 `test_sprinkler.py` (ajout du 2026-11-18) |
 | P15 | F10 : boucle sonore de la pompe en marche, bruit entendu par les zombies | E15, `test_upkeep.py` |
 | P16 | F13, F14 : tous les points d'eau raccordés du bâtiment, lave-linge compris | E09 `test_inlet.py`, E19 `test_basement.py` |
 | P17 | F27 : raccord de baril « Remplir » | E20, `test_fitting.py` |

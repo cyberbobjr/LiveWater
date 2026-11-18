@@ -10,6 +10,9 @@
 --              jetSheet .. (jetFirst + 4 * f + k)
 --   jetFirst   index of the first jet sprite (default 0)
 --   jetFrames  number of jet frames, 1..12 (default 6)
+--   sound      optional (API revision 13): sound script looped for the players while it sprays
+--              (P14; LiveWater's sprinklers: the vanilla watering sound "WaterCrops"); zombies
+--              hear nothing of it
 -- State: { on = water came out at the last step }.
 
 local Check = require "LiveWater/LWT_Check"
@@ -25,6 +28,7 @@ local SPEC = {
     jetSheet = { valid = isPrefix },
     jetFirst = Check.integer(0, 10000, 0),
     jetFrames = Check.integer(1, 12, 6),
+    sound = { valid = Check.isName },
 }
 
 local MAX_RADIUS = 10
@@ -51,6 +55,12 @@ end
 
 function Spray.look(p, d)
     return spraying(d) and "on" or "off"
+end
+
+-- Sound loop while it sprays (Publisher, the same state change as the jet): name, no noise.
+function Spray.sound(p, d)
+    if not (p.sound and spraying(d)) then return nil end
+    return p.sound, 0, 0
 end
 
 -- Jet frames (sheet, first index, frame count) and whether it sprays now; nil without a jet.

@@ -224,6 +224,45 @@ function frame() fire("OnTick") end
 """
 
 
+class Sound(unittest.TestCase):
+    """P14: a running sprinkler plays the vanilla watering sound for the players, through the same state change
+    that starts and stops its jet (Publisher.present after a step); zombies hear nothing of it."""
+
+    def bench(self):
+        lua = bench()
+        lua.execute("""
+        SOUNDS = { log = {} }
+        function SOUNDS:loop(x, y, z, name) table.insert(self.log, { "loop", x, y, name or false }) end
+        function SOUNDS:noise(x, y, z, radius, volume) table.insert(self.log, { "noise", x, y, radius }) end
+        PUB.sounds = SOUNDS
+        """)
+        return lua
+
+    def test_definition_and_hook(self):
+        lua = new_lua(API, SPRINKLER)
+        self.assertEqual(lua.eval('LiveWater.API.part("LiveWater:Sprinkler")').capabilities.spray.sound, "WaterCrops")
+        self.assertEqual(lua.eval('LiveWater.Parts:first({ type = "LiveWater:Sprinkler",'
+                                  ' data = { spray = { on = true } } }, "sound")')[0], "WaterCrops")
+        self.assertIsNone(lua.eval('LiveWater.Parts:first({ type = "LiveWater:Sprinkler", data = {} }, "sound")'))
+
+    def test_a_spray_without_a_sound_stays_silent(self):
+        lua = new_lua(API)
+        lua.execute('LiveWater.API.registerPart("T:S", { sprites = { [0] = "ts" }, capabilities = { spray = true } })')
+        self.assertIsNone(lua.eval('LiveWater.Parts:first({ type = "T:S", data = { spray = { on = true } } }, "sound")'))
+
+    def test_the_loop_starts_and_stops_with_the_spray(self):
+        lua = self.bench()
+        lua.execute('LiveWater.Parts:call(SPR, "open", true) plant(3, 0, 0, 20)')
+        lua.execute("delivered()")
+        loops = [tuple(e.values()) for e in lua.eval("SOUNDS.log").values() if e[1] == "loop"]
+        self.assertIn(("loop", 2, 0, "WaterCrops"), loops)
+        noises = [tuple(e.values()) for e in lua.eval("SOUNDS.log").values() if e[1] == "noise"]
+        self.assertTrue(all(n[3] == 0 for n in noises if (n[1], n[2]) == (2, 0)))
+        lua.execute("SOUNDS.log = {} delivered()")
+        loops = [tuple(e.values()) for e in lua.eval("SOUNDS.log").values() if e[1] == "loop"]
+        self.assertIn(("loop", 2, 0, False), loops)
+
+
 class Jet(unittest.TestCase):
     def bench(self, animated=True):
         lua = new_lua(API, SPRINKLER, "client/LiveWater/LWT_SprinklerJet.lua")

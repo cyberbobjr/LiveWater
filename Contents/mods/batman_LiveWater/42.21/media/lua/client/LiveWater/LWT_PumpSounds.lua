@@ -1,4 +1,4 @@
--- LiveWater: sound loops of the parts that run (pond pump, P15), played locally by each client
+-- LiveWater: sound loops of the parts that run (pond pump P15, sprinkler P14), played locally by each client
 -- when the authority says so (server command "sound" { x, y, z, name }; name nil = stop). One
 -- free emitter per square, started once (the authority repeats the order every ten minutes for
 -- the players who came near since), stopped on order. No per-frame code: nothing runs between
