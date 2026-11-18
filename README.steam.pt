@@ -1,0 +1,40 @@
+[h1]LiveWater[/h1]
+
+[b]Build 42.21+ · Um jogador e multijogador (multijogador ainda não testado)[/b]
+
+Um dia, as torneiras secam. Traga a água de volta com as suas próprias mãos: uma bomba de lagoa junto ao rio, canos atravessados no quintal, água corrente em casa e aspersores que regam as hortas sozinhos.
+
+[h2]O que pode construir[/h2]
+[list]
+[*][b]Secções de tubo[/b]: serre um tubo de metal em 4. Coloque uma por quadrícula através do menu do botão direito; os tubos ligam-se e mudam de forma sozinhos. Desmonte com uma chave de tubos.
+[*][b]Bomba de lagoa[/b] (Eletricidade 2): coloque-a junto a um lago, lagoa, rio ou poço. Bombeia 50 L a cada 10 minutos enquanto alguma saída precisar de água. Precisa de eletricidade (gerador, rede ou LiveWire). Interruptor, desgaste, avarias, reparação com sucata metálica e ruído que atrai zombies.
+[*][b]Cartucho filtrante[/b]: carvão e pano, cerca de 500 L de água limpa. A água da lagoa não é filtrada; a água do poço é limpa.
+[*][b]Entrada de água da casa[/b]: coloque-a contra a parede exterior de uma casa e ligue-a à bomba. Os lavatórios, banheiras, duches, sanitas e máquinas de lavar que canalizou recebem água corrente, até 3 pisos acima e na cave. Luz verde: água limpa. Luz âmbar: água não filtrada, a casa não recebe água.
+[*][b]Aspersor[/b]: abra a válvula e ele rega as plantas que precisam, num raio de 2 quadrículas, com um jato animado.
+[*][b]Aspersor automático[/b] (Eletricidade 2): um temporizador abre-o a cada 6 horas (de 1 a 24 h). Precisa de um pouco de eletricidade.
+[*][b]Acessório de barril[/b]: entre um tubo e um barril. "Definir como Encher": os tubos enchem o barril ou um bebedouro. "Definir como Bombear": a bomba puxa o conteúdo do barril. Funciona também com gasolina, apenas para barris.
+[*][b]Contador de água[/b]: colocado em linha num tubo, mostra os litros dos últimos 10 minutos.
+[/list]
+
+[h2]Sem bomba? Barris e rede da cidade[/h2]
+[list]
+[*]Ligue um coletor de chuva ou um barril, dentro de casa ou no telhado, à entrada de água da casa com uma chave de tubos. Alimenta o seu piso e os pisos de baixo (todos os pisos com bomba ou eletricidade). Os barris esvaziam-se em conjunto; guarde um de reserva.
+[*]A sua própria base: uma entrada fora de um edifício do mapa serve os equipamentos num raio de 12 quadrículas.
+[*]Enquanto a água da cidade estiver a correr, ligue à rede da cidade um lavatório, um duche ou uma sanita que tenha colocado num edifício do mapa.
+[/list]
+
+[h2]Saber sempre porquê[/h2]
+"Mostrar a rede de água" realça uma rede inteira consoante o estado. Um lavatório seco indica o motivo no menu do botão direito: não ligado, sem entrada, água não filtrada, pressão baixa, válvula fechada, barris demasiado baixos ou vazios...
+
+[h2]Opções e compatibilidade[/h2]
+[list]
+[*]Opções sandbox: caudal e desgaste da bomba, duração do filtro, alcance das entradas, alcance e limites do temporizador dos aspersores, recipientes a encher e correção da máquina de lavar em multijogador.
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] é opcional: a bomba passa então a funcionar com o seu inversor (250 W) e aparece no respetivo software.
+[*]Não compatível com LG Extended Plumbing nem com LG Connect To Water Supply (o LiveWater cobre o que eles fazem).
+[*]Remoção segura: um administrador escolhe "Remover LiveWater deste mundo (admin)" antes de cancelar a subscrição.
+[*]Aberto a outros mods através de uma API pública.
+[*]Traduzido para 11 línguas.
+[/list]
+
+[h2]Créditos[/h2]
+Criado por batmanfr. Código e tiles originais; nenhum conteúdo retirado de outros mods. Licença MIT.

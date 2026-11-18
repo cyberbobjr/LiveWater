@@ -1,0 +1,40 @@
+[h1]LiveWater[/h1]
+
+[b]Build 42.21+ · Solo et multijoueur (multijoueur pas encore testé)[/b]
+
+Un jour, l'eau ne coule plus au robinet. Ramenez-la vous-même : une pompe d'étang au bord de la rivière, des tuyaux à travers la cour, l'eau courante dans la maison et des arroseurs qui arrosent le potager tout seuls.
+
+[h2]Ce que vous pouvez construire[/h2]
+[list]
+[*][b]Sections de tuyau[/b] : sciez un tuyau en métal en 4. Posez-en une par case au clic droit ; les tuyaux se raccordent et prennent seuls leur forme. Démontage à la clé anglaise.
+[*][b]Pompe d'étang[/b] (Électricité 2) : posez-la au bord d'un lac, d'un étang, d'une rivière ou contre un puits. 50 L toutes les 10 minutes tant qu'une sortie a besoin d'eau. Il lui faut du courant (générateur, réseau public ou LiveWire). Interrupteur, usure, pannes, réparation à la ferraille, bruit qui attire les zombies.
+[*][b]Cartouche filtrante[/b] : charbon de bois et tissu, environ 500 L d'eau propre. L'eau d'étang n'est pas filtrée ; l'eau de puits est propre.
+[*][b]Arrivée d'eau de la maison[/b] : posez-la contre le mur extérieur d'une maison et reliez-la à la pompe. Les éviers, baignoires, douches, toilettes et lave-linge que vous avez raccordés reçoivent l'eau courante, jusqu'à 3 étages au-dessus et au sous-sol. Voyant vert : eau propre. Voyant ambre : eau non filtrée, la maison n'en reçoit pas.
+[*][b]Arroseur[/b] : ouvrez sa vanne et il arrose les plantes qui en ont besoin dans un rayon de 2 cases, avec un jet animé.
+[*][b]Arroseur automatique[/b] (Électricité 2) : une minuterie l'ouvre toutes les 6 heures (de 1 à 24 h). Il lui faut un peu de courant.
+[*][b]Raccord de baril[/b] : entre un tuyau et un baril. « Remplir » : les tuyaux remplissent le baril ou une fontaine à eau. « Pomper » : la pompe tire le contenu du baril. Marche aussi avec l'essence, pour des barils seulement.
+[*][b]Compteur d'eau[/b] : posé en ligne sur un tuyau, il montre les litres des 10 dernières minutes.
+[/list]
+
+[h2]Pas de pompe ? Barils et réseau public[/h2]
+[list]
+[*]Raccordez à l'arrivée d'eau, à la clé anglaise, un récupérateur d'eau de pluie ou un baril posé dans la maison ou sur son toit. Il alimente son étage et ceux du dessous (tous les étages avec une pompe ou du courant). Les barils se vident ensemble ; gardez-en un en réserve.
+[*]Votre propre base : une arrivée d'eau hors d'un bâtiment de la carte dessert les points d'eau dans un rayon de 12 cases.
+[*]Tant que l'eau de la ville coule, raccordez au réseau public un évier, une douche ou des toilettes posés par vous dans un bâtiment de la carte.
+[/list]
+
+[h2]Toujours savoir pourquoi[/h2]
+« Afficher le réseau d'eau » met tout un réseau en surbrillance selon son état. Un évier sec dit pourquoi dans son menu au clic droit : pas raccordé, aucune arrivée d'eau, eau non filtrée, pression insuffisante, vanne fermée, barils trop bas ou vides...
+
+[h2]Options et compatibilité[/h2]
+[list]
+[*]Options sandbox : débit et usure des pompes, durée des filtres, portées des arrivées d'eau, portée et bornes de la minuterie des arroseurs, conteneurs à remplir, correctif des lave-linge en multijoueur.
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] est facultatif : la pompe tourne alors sur son onduleur (250 W) et apparaît dans son logiciel.
+[*]Incompatible avec LG Extended Plumbing et LG Connect To Water Supply (LiveWater couvre ce qu'ils font).
+[*]Retrait sans risque : un administrateur choisit « Retirer LiveWater de ce monde » avant de se désabonner.
+[*]Ouvert aux autres mods par une API publique.
+[*]Traduit en 11 langues.
+[/list]
+
+[h2]Crédits[/h2]
+Créé par batmanfr. Code et tuiles originaux ; aucun contenu repris d'autres mods. Licence MIT.

@@ -1,0 +1,40 @@
+[h1]LiveWater[/h1]
+
+[b]Build 42.21+ · Tek oyunculu ve çok oyunculu (çok oyunculu henüz test edilmedi)[/b]
+
+Bir gün musluklar kurur. Suyu kendi ellerinizle geri getirin: nehir kenarına bir gölet pompası, avluya serilmiş borular, evin içinde akan su ve kendi kendine bahçeyi sulayan yağmurlayıcılar.
+
+[h2]Neler inşa edebilirsiniz[/h2]
+[list]
+[*][b]Boru parçaları[/b]: bir Metal Boruyu 4'e kesin. Sağ tık menüsünden kare başına birer tane yerleştirin; borular kendiliğinden birleşir ve şeklini alır. Boru Anahtarıyla sökün.
+[*][b]Gölet pompası[/b] (Elektrikçilik 2): bir göl, gölet, nehir ya da kuyunun yanına koyun. Bir çıkış su istediği sürece 10 dakikada bir 50 L. Elektrik gerekir (jeneratör, şebeke ya da LiveWire). Anahtar, aşınma, arızalar, hurda metalle onarım, zombileri çeken gürültü.
+[*][b]Su filtre kartuşu[/b]: mangal kömürü ve bez, yaklaşık 500 L temiz su. Gölet suyu filtrelenmez; kuyu suyu temizdir.
+[*][b]Ev su girişi[/b]: bir evin dış duvarına dayayın ve pompaya bağlayın. Tesisat döşediğiniz lavabolar, küvetler, duşlar, tuvaletler ve çamaşır makineleri, 3 kat yukarıya ve bodruma kadar akan su alır. Yeşil ışık: temiz su. Turuncu ışık: filtrelenmemiş su, ev hiç su almaz.
+[*][b]Yağmurlayıcı[/b]: vanasını açın; 2 kare çapındaki su isteyen bitkileri hareketli bir jetle sular.
+[*][b]Otomatik yağmurlayıcı[/b] (Elektrikçilik 2): bir zamanlayıcı onu 6 saatte bir açar (1 ila 24 saat). Biraz elektrik gerektirir.
+[*][b]Varil tesisatı[/b]: bir boru ile bir varil arasına. "Doldurmaya ayarla": borular varili ya da bir su soğutucusunu doldurur. "Pompalamaya ayarla": pompa varilden çeker. Benzinle de çalışır, yalnızca varillerde.
+[*][b]Su sayacı[/b]: bir borunun üzerine hat olarak takılır; son 10 dakikanın litre değerini gösterir.
+[/list]
+
+[h2]Pompa yok mu? Variller ve şehir suyu[/h2]
+[list]
+[*]Bir yağmur toplayıcıyı ya da evin içine veya çatısına konmuş bir varili, Boru Anahtarıyla ev su girişine bağlayın. Kendi katını ve altındaki katları besler (pompası ya da elektriği olan tüm katlar). Tüm variller birlikte boşalır; birini yedekte tutun.
+[*]Kendi üssünüz: haritadaki bir binanın dışındaki bir su girişi, 12 karelik yarıçapındaki su noktalarına hizmet eder.
+[*]Şehir suyu akarken, haritadaki bir binaya koyduğunuz bir lavaboyu, duşu ya da tuvaleti şehir suyuna bağlayın.
+[/list]
+
+[h2]Nedenini hep bilin[/h2]
+"Su ağını göster" bir ağın tamamını durumuna göre vurgular. Kuru bir lavabo, sağ tık menüsünde nedenini söyler: tesisata bağlı değil, su girişi yok, filtrelenmemiş su, düşük basınç, kapalı vana, variller az ya da boş...
+
+[h2]Seçenekler ve uyumluluk[/h2]
+[list]
+[*]Sandbox seçenekleri: pompa debisi ve aşınması, filtre ömrü, su girişi menzilleri, yağmurlayıcı menzili ve zamanlayıcı sınırları, doldurulacak kaplar, çok oyunculudaki çamaşır makinesi düzeltmesi.
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] isteğe bağlıdır: pompa o zaman kendi invertöründen (250 W) çalışır ve yazılımında görünür.
+[*]LG Extended Plumbing ve LG Connect To Water Supply ile uyumlu değildir (LiveWater onların yaptığını kapsar).
+[*]Güvenli kaldırma: bir yönetici, abonelikten çıkmadan önce "LiveWater'ı bu dünyadan kaldır (admin)" seçeneğini seçer.
+[*]Genel bir API ile diğer modlara açıktır.
+[*]11 dile çevrilmiştir.
+[/list]
+
+[h2]Katkıda bulunanlar[/h2]
+batmanfr tarafından oluşturuldu. Özgün kod ve kaplamalar; başka modlardan hiçbir içerik alınmadı. Lisans MIT.

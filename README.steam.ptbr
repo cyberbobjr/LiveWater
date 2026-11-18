@@ -1,0 +1,40 @@
+[h1]LiveWater[/h1]
+
+[b]Build 42.21+ · Single player e multiplayer (multiplayer ainda não testado)[/b]
+
+Um dia a torneira seca. Traga a água de volta por conta própria: uma bomba de lagoa na beira do rio, canos atravessando o quintal, água encanada dentro de casa e aspersores que regam a horta sozinhos.
+
+[h2]O que você pode construir[/h2]
+[list]
+[*][b]Trechos de cano[/b]: serre um Tubo de Ferro em 4. Coloque um por quadrado pelo menu do clique direito; os canos se conectam e mudam de forma sozinhos. Desmonte com a Chave de Cano.
+[*][b]Bomba de lagoa[/b] (Elétrica 2): coloque-a ao lado de um lago, lagoa, rio ou poço. 50 L a cada 10 minutos enquanto alguma saída precisar de água. Precisa de energia (gerador, rede elétrica ou LiveWire). Interruptor, desgaste, falhas, conserto com sucata metálica, barulho que atrai zumbis.
+[*][b]Cartucho filtrante[/b]: carvão e tecido, cerca de 500 L de água limpa. A água de lagoa não é filtrada; a de poço é limpa.
+[*][b]Entrada de água da casa[/b]: coloque-a encostada na parede externa de uma casa e ligue-a à bomba. Pias, banheiras, chuveiros, vasos sanitários e máquinas de lavar que você encanou recebem água corrente, até 3 andares acima e no porão. Luz verde: água limpa. Luz âmbar: água não filtrada, a casa não recebe nenhuma.
+[*][b]Aspersor[/b]: abra a válvula e ele rega as plantas que precisam dela num raio de 2 quadrados, com um jato animado.
+[*][b]Aspersor automático[/b] (Elétrica 2): um temporizador o abre a cada 6 horas (de 1 a 24 h). Precisa de um pouco de energia.
+[*][b]Conexão para barril[/b]: entre um cano e um barril. "Ajustar para Encher": os canos enchem o barril ou um bebedouro. "Ajustar para Bombear": a bomba puxa o barril. Funciona com gasolina também, só para barris.
+[*][b]Medidor de água[/b]: instalado em linha num cano, mostra os litros dos últimos 10 minutos.
+[/list]
+
+[h2]Sem bomba? Barris e rede da cidade[/h2]
+[list]
+[*]Conecte um coletor de chuva ou um barril dentro de casa ou no telhado à entrada de água da casa com a Chave de Cano. Ele abastece o próprio andar e os de baixo (todos os andares com bomba ou energia). Todos os barris esvaziam juntos; mantenha um em reserva.
+[*]Sua própria base: uma entrada de água fora de um prédio do mapa atende os pontos de água num raio de 12 quadrados.
+[*]Enquanto a água da cidade estiver correndo, conecte à rede da cidade uma pia, um chuveiro ou um vaso sanitário que você tiver colocado num prédio do mapa.
+[/list]
+
+[h2]Sempre saber o porquê[/h2]
+"Mostrar a rede de água" destaca uma rede inteira conforme o estado dela. Uma pia seca explica o motivo no menu do clique direito: não encanada, sem entrada de água, água não filtrada, pressão baixa, válvula fechada, barris baixos ou vazios...
+
+[h2]Opções e compatibilidade[/h2]
+[list]
+[*]Opções de sandbox: vazão e desgaste das bombas, duração dos filtros, alcance das entradas de água, alcance e limites do temporizador dos aspersores, recipientes a encher, correção da máquina de lavar no multiplayer.
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] é opcional: a bomba então funciona com o inversor dele (250 W) e aparece no software dele.
+[*]Incompatível com LG Extended Plumbing e LG Connect To Water Supply (LiveWater cobre o que eles fazem).
+[*]Remoção segura: um administrador escolhe "Remover LiveWater deste mundo (admin)" antes de se desinscrever.
+[*]Aberto a outros mods por meio de uma API pública.
+[*]Traduzido para 11 idiomas.
+[/list]
+
+[h2]Créditos[/h2]
+Criado por batmanfr. Código e tiles originais; nenhum conteúdo tirado de outros mods. Licença MIT.
