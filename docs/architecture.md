@@ -1,7 +1,7 @@
 # LiveWater — architecture
 
-Décisions de référence : [ADR-001](ADR/001-reseau-eau-ouvert.md). Ce document décrit l'état réel du code ; il suit
-le [plan 001](ADR-plans/plan-001-reseau-eau-ouvert.md) étape par étape.
+Décisions de référence : [ADR-001](ADR/termines/001-reseau-eau-ouvert.md). Ce document décrit l'état réel du code ; il suit
+le [plan 001](ADR-plans/termines/plan-001-reseau-eau-ouvert.md) étape par étape.
 
 ## Vue d'ensemble
 

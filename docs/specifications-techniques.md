@@ -1,7 +1,7 @@
 # LiveWater — spécifications techniques
 
 Contrats précis du mod (objets, commandes réseau, ModData, options sandbox, traductions, API publique). Ils sont
-écrits ici à mesure que les étapes du [plan 001](ADR-plans/plan-001-reseau-eau-ouvert.md) les livrent.
+écrits ici à mesure que les étapes du [plan 001](ADR-plans/termines/plan-001-reseau-eau-ouvert.md) les livrent.
 
 ## Identité
 

@@ -1,6 +1,6 @@
 # Plan 001 — Réseau d'eau ouvert : pompe d'étang, tuyaux visibles, maison et arrosage
 
-ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
+ADR : [ADR-001](../../ADR/termines/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 
 | # | Étape | Statut | Dépend de | Décisions ADR | Taille | Parallélisable avec |
 |---|---|---|---|---|---|---|
@@ -30,7 +30,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 | E26 | Base du joueur (portée), diagnostic au point d'eau, réglages effacés au ramassage (L09, L11, L12) | Terminée (2026-11-18) | E09 | D28 | M | E25 |
 | E27 | Raccordement au réseau public (M01) : état d'un point d'eau d'origine (`isWaterInfinite`), contrôles serveur | Terminée (2026-11-18) | E09 | D27, D28 | M | E26 |
 | E28 | Correctif du lave-linge raccordé en MP (désactivable), `incompatible=\LGExtendedPlumbing,\LGMainsWater` (L13) | Terminée (2026-11-18) | E19 | D27, Q08, Q09 | S | — |
-| E22 | Traductions (11 langues), wiki EN/FR, contrôle de parité P01-P23 et L01-M01, passage automatique en jeu SP et MP | À faire | E13-E21, E23-E28 | toutes | L | — |
+| E22 | Traductions (11 langues), wiki EN/FR, contrôle de parité P01-P23 et L01-M01, passage automatique en jeu SP et MP | Terminée (2026-11-18) | E13-E21, E23-E28 | toutes | L | — |
 
 ## Fiches
 
@@ -128,10 +128,10 @@ filtre (objet d'inventaire et icône). **Avant toute intégration au mod (D23)**
 de chaque tuile et de ses formes, exemple de réseau assemblé étang → robinet → maison et potager, icône du filtre) est
 soumise à l'utilisateur ; l'intégration (pack, `.tiles`, noms de meubles posables) n'a lieu qu'après sa validation.
 
-Planche soumise le 2026-11-17 : [tuiles](../images/art/planche-tuiles-provisoires.png) (66 cellules : 16 tuyaux,
+Planche soumise le 2026-11-17 : [tuiles](../../images/art/planche-tuiles-provisoires.png) (66 cellules : 16 tuyaux,
 robinet ouvert et fermé, débitmètre, pompe arrêtée, en marche et avec filtre, arrivée d'eau filtrée et non filtrée,
 arroseurs manuel et automatique au repos et actifs, raccord de baril « Remplir » et « Pomper », objets section de
-tuyau et cartouche filtrante) et [réseau d'exemple](../images/art/planche-reseau-exemple.png) étang → robinets →
+tuyau et cartouche filtrante) et [réseau d'exemple](../../images/art/planche-reseau-exemple.png) étang → robinets →
 maison et potager. Rendu : Blender 5.3 sans interface, `source/tiles/build_livewater_tiles.py`, planche par
 `tools/make_tile_board.py`. Planche refaite le 2026-11-17 dans le style vanilla (matériaux texturés et passe de style
 pzforge comme Live Wire, matériel rural réaliste, première ligne de sprites vanilla pour comparer) ; réseau d'exemple
@@ -149,7 +149,7 @@ Planche validée par l'utilisateur le 2026-11-17, avec deux remarques :
 
 Clôture (2026-11-18). Tileset `batman_livewater_01`, tiledef **7176** (libre dans le Workshop 108600, `Zomboid\mods` et
 `Zomboid\Workshop`, `pzforge.modgen.used_tiledef_ids`), indices du
-[contrat des tuiles](../annexes/conception/tuiles-contrat.md) : 98 sprites (22-23 et 76-79 réservés). Fichiers :
+[contrat des tuiles](../../annexes/conception/tuiles-contrat.md) : 98 sprites (22-23 et 76-79 réservés). Fichiers :
 `common/media/texturepacks/batman_livewater_01.pack`, `common/media/batman_livewater_01.tiles`,
 `common/media/depthmaps/DEPTH_batman_livewater_01.png`, `common/media/tileGeometry.txt`, `pack=` et `tiledef=` dans
 `42.21/mod.info`, noms des meubles posables dans `Translate/EN|FR/Moveables.json` (groupe « Live Water »), icônes
@@ -778,7 +778,7 @@ chaque ligne. Passage automatique SP et MP avec code de sortie, `summary` et dos
 #### Parité
 
 Inventaires de l'ADR-001 (D24 : P01-P23, D27 : L01-L14, M01). Fonctionnalités `F..` de
-[specifications-fonctionnelles.md](../specifications-fonctionnelles.md) ; preuve = paragraphe de clôture de l'étape
+[specifications-fonctionnelles.md](../../specifications-fonctionnelles.md) ; preuve = paragraphe de clôture de l'étape
 et fichier de tests hors jeu (`tests/`). Rien de cette table n'est encore vérifié en jeu.
 
 | # | Couverture LiveWater | Preuve |
@@ -999,3 +999,21 @@ Remarques laissées à l'utilisateur : la vanne ouverte ou fermée ne se disting
 normal (conforme à la planche validée) ; l'herbe haute vanilla couvre en partie les tuyaux posés au sol ; les contours
 pointillés visibles près des arbres sont la transparence vanilla des arbres. Non prouvé : sons (passages en
 `-nosound`), aspect en multijoueur.
+
+#### Clôture (2026-11-18)
+
+Passages en jeu relancés après la revue finale et le correctif de la vanne (jeu 42.22.2, aucune erreur Lua de
+LiveWater dans les journaux) :
+
+| Passage | Code | `summary` | Dossier |
+|---|---|---|---|
+| `sp LiveWater` | 0 | `30/30 PASS` | `runs/20261118-041354-sp-a40714f88000` |
+| `mp LiveWater --clients 1 --client-run` | 0 | serveur `20/20 PASS`, client 1 `6/6 PASS` | `runs/20261118-041934-mp-fcf90c6bffaf` |
+| `server LiveWater` (dédié) | 0 | `5/5 PASS` | `runs/20261118-042636-server-e8edad6d6229` |
+| `sp LiveWater/autotest/scenarios/livewire.json` | 0 | `31/31 PASS` | `runs/20261118-043243-sp-fa1d68fad0bb` |
+
+Hors jeu : `python -B -m unittest discover -s tests` → `Ran 296 tests`, `OK` ; `python -B tools/check_mod.py` →
+`OK: 100 Lua file(s) checked`.
+
+Reste hors de portée des passages automatiques : sons en jeu, serveur dédié Linux, relecture des traductions par des
+locuteurs natifs, captures restantes du wiki (recette, puits, cabane, menu FR de l'évier sec).
