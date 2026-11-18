@@ -34,6 +34,7 @@ local GamePlumbing = require "LiveWater/LWT_GamePlumbing"
 local HouseBarrels = require "LiveWater/LWT_HouseBarrels"
 local WaterObjects = require "LiveWater/LWT_WaterObjects"
 local Diagnostics = require "LiveWater/LWT_Diagnostics"
+local WasherFix = require "LiveWater/LWT_WasherFix"
 
 -- Command name -> handler file under LiveWater/Commands.
 local COMMANDS = {
@@ -95,6 +96,8 @@ local function build()
     local barrels = HouseBarrels.new({ store = store, plumbing = plumbing, world = world, relays = relays,
         lifted = pumped })
     local diagnostics = Diagnostics.new({ relays = relays, barrels = barrels, pumped = pumped })
+    local washerFix = WasherFix.new({ relays = relays, plumbing = plumbing, multiplayer = isServer,
+        enabled = function() return GameSettings.scale("WasherFix") ~= false end })
     local commands = Commands.new({ topology = topology, catalog = catalog, world = world,
         players = GamePlayers.new(), publisher = publisher, scale = GameSettings.scale, barrels = barrels,
         plumbing = plumbing })
@@ -107,7 +110,7 @@ local function build()
         placement = Placement.new(topology, catalog, log, world),
         clock = Clock.new({ network = network, flow = Flow.new(catalog), catalog = catalog, world = world,
             events = LiveWater.Events, power = power, publisher = publisher, scale = GameSettings.scale,
-            random = randomShare, sources = LiveWater.Sources, chores = { relays, barrels, diagnostics },
+            random = randomShare, sources = LiveWater.Sources, chores = { relays, barrels, diagnostics, washerFix },
             need = function(part) return outlets:need(part) end }),
     }
     local count = topology:rebuild()
@@ -134,6 +137,11 @@ local function onObjectAdded(obj)
     if not name then return end
     server.placement:added(name, x, y, z)
     if WaterObjects.mark(obj, WaterObjects.BARREL_KEY) then server.barrels:placed(x, y, z) end
+    if WaterObjects.mark(obj, WaterObjects.WASHER_KEY) then
+        -- a washer set down again is not plumbed any more (L12)
+        obj:getModData()[WaterObjects.WASHER_KEY] = nil
+        if isServer() then obj:transmitModData() end
+    end
 end
 
 local function onObjectAboutToBeRemoved(obj)

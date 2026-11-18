@@ -8,6 +8,7 @@ if isClient() then return end
 --   deliver(part, litres)  fills those relays
 --   release(part)          the inlet left: its relays are removed
 --   mark(part, why)        the inlet's empty relays carry the reason (LWT_Diagnosis), the others none
+--   positions(part)        squares of the inlet's relays, sorted: list of { x, y, z }
 -- A relay is an invisible 25 L tank one level above a fixture (LWT_RelayPlan), marked with the
 -- ModData key LiveWaterRelay and its inlet; relays of Live Wire (LiveWireRelay) or of anything
 -- else are never placed over, filled nor removed (D21).
@@ -162,6 +163,13 @@ function Relays:mark(part, why)
             self.plumbing:markRelay(pos.x, pos.y, pos.z, relay.amount <= Relays.EPSILON and why or nil)
         end
     end
+end
+
+function Relays:positions(part)
+    local own, out = self:own(Grid.key(part.x, part.y, part.z)), {}
+    local keys = sortedKeys(own)
+    for i = 1, #keys do out[i] = own[keys[i]] end
+    return out
 end
 
 -- Inlets of the registry on a loaded square.

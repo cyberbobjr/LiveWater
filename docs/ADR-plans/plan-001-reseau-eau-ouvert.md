@@ -29,7 +29,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 | E25 | Conteneurs remplis par la réserve, liste sandbox et API (L08) | À faire | E20 | D26, D28 | S | E23 |
 | E26 | Base du joueur (portée), diagnostic au point d'eau, réglages effacés au ramassage (L09, L11, L12) | Terminée (2026-11-18) | E09 | D28 | M | E25 |
 | E27 | Raccordement au réseau public (M01) : état d'un point d'eau d'origine (`isWaterInfinite`), contrôles serveur | Terminée (2026-11-18) | E09 | D27, D28 | M | E26 |
-| E28 | Correctif du lave-linge raccordé en MP (désactivable), `incompatible=\LGExtendedPlumbing,\LGMainsWater` (L13) | À faire | E19 | D27, Q08, Q09 | S | — |
+| E28 | Correctif du lave-linge raccordé en MP (désactivable), `incompatible=\LGExtendedPlumbing,\LGMainsWater` (L13) | Terminée (2026-11-18) | E19 | D27, Q08, Q09 | S | — |
 | E22 | Traductions (11 langues), wiki EN/FR, contrôle de parité P01-P23 et L01-M01, passage automatique en jeu SP et MP | À faire | E13-E21, E23-E28 | toutes | L | — |
 
 ## Fiches
@@ -526,6 +526,43 @@ Preuves :
 - `python -B -m unittest discover -s tests` → `Ran 195 tests` … `OK` ;
 - `python -B tools/check_mod.py` → `OK: 75 Lua file(s) checked`.
 Non testé en jeu.
+
+### E28 — Correctif du lave-linge raccordé en MP
+
+Défauts vanilla 42.22, confirmés statiquement :
+1. lave-linge à sec : sur le serveur, `ClothingWasherLogic.update` arrête un lave-linge qui n'a plus d'eau
+   (`setActivated(false)`, `ClothingWasherLogic.java:74-75`) sans rien envoyer ; seul `cycleFinished` envoie
+   `WASHER_STATE` (`:267-269`) ; le client sort de `update` avant ce contrôle (`:70-71`) et le croit en marche : son
+   en boucle, linge bloqué (`isRemoveItemAllowedFromContainer` : vide ou arrêté, `:251-253`), et plus d'interrupteur
+   puisqu'il n'a pas d'eau (`ClothingWasherToggle.lua:7`) ;
+2. raccord d'un lave-linge simple : `ISPlumbItem:complete` envoie `USES_EXTERNAL_WATER_SOURCE`
+   (`ISPlumbItem.lua:35`), mais `IsoClothingWasher.saveChange` et `loadChange` confient tout changement à sa logique
+   (`IsoClothingWasher.java:62-70`), qui n'écrit que `WASHER_STATE` (`ClothingWasherLogic.java:171-181`) : les clients
+   ne savent jamais qu'il est raccordé (le lave-linge séchant combiné, lui, le traite :
+   `IsoCombinationWasherDryer.java:72-95`).
+
+Clôture (2026-11-18). Fichiers : serveur `LWT_WasherFix.lua` (tâche de l'horloge, serveur seulement, option
+`WasherFix`), `LWT_GamePlumbing.lua` (`washers`, `sendWasherState`, `markWasher`, points d'eau servis par un relais
+mis en commun avec `feeds`), `LWT_Relays.lua` (`positions`), `LWT_Server.lua` (tâche, marque effacée quand un
+lave-linge est reposé) ; `shared/LiveWater/LWT_WaterObjects.lua` (`WASHER_KEY`) ; client `LWT_WasherClient.lua` ;
+option `LiveWater.WasherFix` (booléen, vrai par défaut), traductions EN et FR ; tests `tests/test_washer.py`.
+`mod.info` : `incompatible=\LGExtendedPlumbing,\LGMainsWater` déjà présent (E01), vérifié par le test.
+Choix faits sans l'utilisateur :
+- seuls les lave-linge servis par un relais de LiveWater sont touchés (Q08), et seulement sur un serveur (en solo, une
+  seule copie de chaque objet : pas de défaut) ;
+- défaut 1 : quand un tel lave-linge est arrêté sur le serveur, son état est envoyé une fois
+  (`sendObjectChange(IsoObjectChange.WASHER_STATE)`, comme le vanilla en fin de cycle), à la tâche de dix minutes :
+  le client peut le croire en marche jusqu'à 10 minutes ;
+- défaut 2 : le serveur pose sur un lave-linge simple ainsi servi la marque `LiveWaterWasher = { plumbed = true }`
+  (`transmitModData`, qui arrive bien aux clients) ; le client applique `setUsesExternalWaterSource(true)` quand le
+  joueur s'y intéresse : son menu au clic droit et l'interrupteur de sa fenêtre de conteneur (enveloppe de
+  `ISLootWindowObjectControlHandler_ClothingWasherToggle.shouldBeVisible`, arguments et résultat gardés) ; aucun
+  abonnement par image ;
+- un lave-linge reposé perd la marque (L12).
+Preuves :
+- `python -B -m unittest discover -s tests` → `Ran 200 tests` … `OK` ;
+- `python -B tools/check_mod.py` → `OK: 77 Lua file(s) checked`.
+Non testé en jeu (le défaut et le correctif ne se voient qu'en multijoueur : E22).
 
 ### E22 — Traductions, parité, passage en jeu
 

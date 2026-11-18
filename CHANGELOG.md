@@ -31,6 +31,8 @@
 - A sink, shower or toilet without water says why in its right-click menu (not plumbed, no inlet, unfiltered water,
   low pressure, closed valve, barrels too low or empty...).
 - A barrel carried away is no longer connected to its old house.
+- Multiplayer fix: washing machines fed by a house water inlet now show as plumbed to the players and stop for
+  them when they run out of water, instead of looking stuck (can be turned off in the sandbox options).
 - City water: right-click a sink, bathtub, shower, toilet or washing machine you set down inside a building of the map
   and choose "Connect to the City Water" while the city water still runs; it then works like the original fixtures.
 - The house water inlet also serves the basement (fixtures under the house) and plumbed washing machines.

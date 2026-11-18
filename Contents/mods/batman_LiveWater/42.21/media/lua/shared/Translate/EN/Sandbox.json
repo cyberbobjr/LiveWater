@@ -9,5 +9,7 @@
     "Sandbox_LWT_InletRange": "House inlet range",
     "Sandbox_LWT_InletRange_tooltip": "How far (in squares) from a house water inlet the plumbed fixtures of its building get water, up to 3 floors above it.",
     "Sandbox_LWT_BaseRange": "Base inlet range",
-    "Sandbox_LWT_BaseRange_tooltip": "Away from a map building (a base you built), how far (in squares) a house water inlet serves the plumbed fixtures, up to 3 floors above it."
+    "Sandbox_LWT_BaseRange_tooltip": "Away from a map building (a base you built), how far (in squares) a house water inlet serves the plumbed fixtures, up to 3 floors above it.",
+    "Sandbox_LWT_WasherFix": "Fix plumbed washing machines (multiplayer)",
+    "Sandbox_LWT_WasherFix_tooltip": "On a server, the washing machines fed by a house water inlet show their real state to the players: plumbed, and stopped when they run out of water."
 }

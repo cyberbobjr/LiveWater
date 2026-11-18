@@ -90,6 +90,8 @@ commandes du filtre) ; un refus est dit au joueur par clé de traduction.
 - `LWT_HouseBarrels.lua` : barils raccordés à une arrivée d'eau (raccord, débranchement, mise en réserve, tâche de
   l'horloge après les relais : l'eau des barils remplit les relais selon `LWT_Reserve`).
 - `LWT_Diagnostics.lua` : tâche de l'horloge, raison du manque d'eau notée sur les relais vides (`LWT_Diagnosis`).
+- `LWT_WasherFix.lua` : tâche de l'horloge, serveur seulement : état des lave-linge servis par nos relais renvoyé aux
+  clients (arrêt à sec, raccord), option `WasherFix`.
 - `LWT_Power.lua` : seul adaptateur du courant. À `OnInitWorld`, si `LiveWire.API.revision >= 6`, inscrit chaque type
   qui a besoin de courant comme consommateur de Live Wire (`powerConsumption`, `display`, `summary` lus dans l'état
   recopié sur l'objet) ; `powered(part)` : `consumerPowered` de Live Wire, sinon la règle vanilla de la case.
@@ -110,7 +112,8 @@ seulement), `LWT_PartMenu.lua` (menu générique : les actions que les capacité
 porte) `LWT_PumpSounds.lua` (boucle sonore jouée localement sur un émetteur libre, à l'ordre du serveur, aucun abonnement
 par image) et `LWT_NoticeClient.lua` (affiche les notes `notice` du serveur), `LWT_BarrelMenu.lua` (raccorder, débrancher, mettre
 en réserve un baril, lu dans sa marque), `LWT_FixtureMenu.lua` (ligne « Pas d'eau : raison » d'un point d'eau sans eau), `LWT_CityWaterMenu.lua`
-(« Raccorder au réseau public »). Interface complète : E13.
+(« Raccorder au réseau public »), `LWT_WasherClient.lua` (état « raccordé » d'un lave-linge marqué par le serveur,
+appliqué à son menu et à son interrupteur). Interface complète : E13.
 
 ## Flux, persistance, extension
 

@@ -24,6 +24,10 @@ if isClient() then return end
 --   cityFixture(x, y, z)       LWT_WaterObjects.cityInfo of the fixture on the square, or nil
 --   connectCity(x, y, z)       the fixture takes the state of an original one (M01): its ModData
 --                              canBeWaterPiped goes, no outside source; sent to the clients
+--   washers(x, y, z)           washing machines fed by our relay on the square: { x, y, z,
+--                              activated, plain (IsoClothingWasher), marked (LiveWaterWasher) }
+--   sendWasherState(x, y, z)   sendObjectChange(WASHER_STATE) of the washer (E28)
+--   markWasher(x, y, z)        ModData LiveWaterWasher = { plumbed = true }, sent to the clients
 -- Never touches an object marked by another mod (Live Wire relays and barrels, D21).
 
 local WaterObjects = require "LiveWater/LWT_WaterObjects"
@@ -34,6 +38,7 @@ GamePlumbing.__index = GamePlumbing
 GamePlumbing.RELAY_KEY = WaterObjects.RELAY_KEY
 -- Reserved tile of the tileset, defined without an image (tuiles-contrat.md): invisible.
 GamePlumbing.RELAY_SPRITE = "batman_livewater_01_76"
+GamePlumbing.WASHER_KEY = WaterObjects.WASHER_KEY
 
 function GamePlumbing.new()
     return setmetatable({}, GamePlumbing)
@@ -118,8 +123,9 @@ local function relayObject(x, y, z)
     return nil, sq
 end
 
--- A plumbed fixture on the floor below (its square or the 8 around) draws from this relay.
-local function feeds(relay, x, y, z)
+-- Plumbed fixtures on the floor below (the relay's square and the 8 around) drawing from `relay`.
+local function fedBy(relay, x, y, z)
+    local out = {}
     for dx = -1, 1 do
         for dy = -1, 1 do
             local sq = squareAt(x + dx, y + dy, z - 1)
@@ -129,13 +135,17 @@ local function feeds(relay, x, y, z)
                     local obj = objects:get(i)
                     if WaterObjects.isFixture(obj) and obj:getUsesExternalWaterSource()
                         and IsoObject.FindExternalWaterSource(sq) == relay then
-                        return true
+                        out[#out + 1] = obj
                     end
                 end
             end
         end
     end
-    return false
+    return out
+end
+
+local function feeds(relay, x, y, z)
+    return #fedBy(relay, x, y, z) > 0
 end
 
 function GamePlumbing:relay(x, y, z)
@@ -231,6 +241,48 @@ function GamePlumbing:transfer(bx, by, bz, rx, ry, rz, litres)
         barrel:sync()
     end
     return moved
+end
+
+local function isWasher(obj)
+    return instanceof(obj, "IsoClothingWasher") or instanceof(obj, "IsoCombinationWasherDryer")
+end
+
+function GamePlumbing:washers(x, y, z)
+    local relay, out = relayObject(x, y, z), {}
+    if not relay then return out end
+    local fed = fedBy(relay, x, y, z)
+    for i = 1, #fed do
+        local obj = fed[i]
+        if isWasher(obj) then
+            local sq = obj:getSquare()
+            out[#out + 1] = { x = sq:getX(), y = sq:getY(), z = sq:getZ(), activated = obj:isActivated(),
+                plain = instanceof(obj, "IsoClothingWasher"),
+                marked = WaterObjects.mark(obj, GamePlumbing.WASHER_KEY) ~= nil }
+        end
+    end
+    return out
+end
+
+local function washerAt(x, y, z)
+    local sq = squareAt(x, y, z)
+    if not sq then return nil end
+    local objects = sq:getObjects()
+    for i = 0, objects:size() - 1 do
+        if isWasher(objects:get(i)) then return objects:get(i) end
+    end
+    return nil
+end
+
+function GamePlumbing:sendWasherState(x, y, z)
+    local obj = washerAt(x, y, z)
+    if obj then obj:sendObjectChange(IsoObjectChange.WASHER_STATE) end
+end
+
+function GamePlumbing:markWasher(x, y, z)
+    local obj = washerAt(x, y, z)
+    if not obj then return end
+    obj:getModData()[GamePlumbing.WASHER_KEY] = { plumbed = true }
+    obj:transmitModData()
 end
 
 function GamePlumbing:cityWaterRuns()

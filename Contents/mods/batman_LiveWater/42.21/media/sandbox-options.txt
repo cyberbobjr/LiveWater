@@ -29,3 +29,9 @@ option LiveWater.BaseRange
     type = integer, min = 1, max = 50, default = 12,
     page = LiveWater, translation = LWT_BaseRange,
 }
+
+option LiveWater.WasherFix
+{
+    type = boolean, default = true,
+    page = LiveWater, translation = LWT_WasherFix,
+}

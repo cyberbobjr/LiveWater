@@ -99,6 +99,7 @@ sorte qui n'est plus inscrite donne le réglage `quality` de la capacité.
 | `LiveWater.PumpWearMultiplier` | double 0-10, 1,0 | multiplie la perte de rendement en marche (`wear`) ; 0 = aucune usure |
 | `LiveWater.InletRange` | entier 1-100, 20 | portée (cercle, en cases) d'une arrivée d'eau dans le bâtiment qu'elle touche |
 | `LiveWater.BaseRange` | entier 1-50, 12 | portée d'une arrivée d'eau hors bâtiment de la carte (base du joueur, L11) |
+| `LiveWater.WasherFix` | booléen, vrai | correctif des lave-linge raccordés en multijoueur (L13, E28) |
 
 Traductions `Sandbox_LWT_<Option>` et `_tooltip` dans `Sandbox.json`, onglet `Sandbox_LiveWater`.
 
@@ -206,4 +207,11 @@ dix minutes, par sortie servie), `valveChanged`. La reconstruction au chargement
 - Client : au clic droit d'un point d'eau sans eau qui tire ou peut tirer sur une source extérieure, option grisée
   `ContextMenu_LWT_NoWater` (« Pas d'eau : %1 ») avec `IGUI_LWT_Why_NoInlet`, `_NotPlumbed`, `_Other`, `_<raison>` ou
   `_Waiting`.
+
+## Lave-linge raccordés en multijoueur (`LWT_WasherFix`, `LWT_WasherClient`, L13)
+
+- Serveur seulement, option `WasherFix` : pour chaque lave-linge (`IsoClothingWasher`, `IsoCombinationWasherDryer`)
+  servi par un relais de LiveWater : arrêté sur le serveur → `sendObjectChange(WASHER_STATE)` une fois par arrêt ;
+  lave-linge simple → ModData `LiveWaterWasher = { plumbed = true }` (`transmitModData`), une fois.
+- Client : un `IsoClothingWasher` marqué prend `setUsesExternalWaterSource(true)` à son menu et à son interrupteur.
 
