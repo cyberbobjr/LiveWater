@@ -26,7 +26,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 | E21 | Retrait propre du mod (P21) | À faire | E09, E11 | D03, D24 | S | — |
 | E23 | Baril raccordé à la maison : gravité, courant sur la case, réserve partagée, mise en réserve, baril gardé pour un liquide (L01-L03, L06, L07) | Terminée (2026-11-18) | E09 | D27, D28 | L | E24 |
 | E24 | Liquide choisi par point d'eau (L05) | Annulée (Q07 : eau seulement aux points d'eau) | — | D28 | — | — |
-| E25 | Conteneurs remplis par la réserve, liste sandbox et API (L08) | À faire | E20 | D26, D28 | S | E23 |
+| E25 | Conteneurs remplis par la réserve, liste sandbox et API (L08) | Terminée (2026-11-18) | E20 | D26, D28 | S | E23 |
 | E26 | Base du joueur (portée), diagnostic au point d'eau, réglages effacés au ramassage (L09, L11, L12) | Terminée (2026-11-18) | E09 | D28 | M | E25 |
 | E27 | Raccordement au réseau public (M01) : état d'un point d'eau d'origine (`isWaterInfinite`), contrôles serveur | Terminée (2026-11-18) | E09 | D27, D28 | M | E26 |
 | E28 | Correctif du lave-linge raccordé en MP (désactivable), `incompatible=\LGExtendedPlumbing,\LGMainsWater` (L13) | Terminée (2026-11-18) | E19 | D27, Q08, Q09 | S | — |
@@ -586,6 +586,32 @@ Choix faits sans l'utilisateur :
 - recette sans compétence : clé à tuyau gardée, 1 section de tuyau, 1 `Base.RubberHose`.
 Preuves :
 - `python -B -m unittest discover -s tests` → `Ran 255 tests` … `OK` ;
+- `python -B tools/check_mod.py` → `OK: 96 Lua file(s) checked`.
+Non testé en jeu.
+
+### E25 — Conteneurs remplis
+
+Clôture (2026-11-18). Fichiers : `shared/LiveWater/LWT_Containers.lua` (champ `clean`, conteneurs inscrits d'office
+`WaterDispenser`, `admits`, `cleanOnly`, `parseList`, définition d'un nom de la liste sandbox),
+`LWT_WaterObjects.lua` (`isVessel` : objet à `FluidContainer` utilisable ; `isBarrel` = `isVessel` de 20 L ou plus),
+`Capabilities/LWT_CapFitting.lua` (conteneur à eau propre : la sortie « Remplir » exige de l'eau propre),
+`LWT_API.lua` (révision 12 : champ `clean` de `registerContainer`) ; serveur `LWT_GameContainers.lua` (tout récipient
+admis par le registre ou la liste), `LWT_Fittings.lua` (forme et eau propre lues avec la liste), `LWT_Server.lua`
+(option lue à chaque pas) ; `sandbox-options.txt` (`FillContainers`, chaîne, `WaterDispenser` par défaut),
+traductions EN et FR ; tests `tests/test_containers.py`, `test_api.py` (révision 12).
+Vérifié dans le vanilla 42.22 (confirmé statiquement) : fontaine à eau = entité `WaterDispenser`, `FluidContainer` de
+15 L (`generated/entities/appliances/workstations/entity_waterdispenser.txt`), sous la limite de 20 L des barils : elle
+n'est donc servie que parce qu'elle est inscrite.
+Choix faits sans l'utilisateur :
+- L08 passe par le raccord de baril en « Remplir » (D28) : un conteneur inscrit se remplit quand un raccord est posé
+  contre lui ; aucun remplissage par les réservoirs invisibles de la maison ;
+- un conteneur est servi s'il a 20 L ou plus (barils, récupérateurs), ou si son sprite ou le nom de son entité est
+  inscrit par l'API ou listé dans l'option `FillContainers` (noms séparés par `;`) ;
+- fontaines à eau et noms listés : eau propre seulement (eau non filtrée refusée, « eau non filtrée »), pour ne pas
+  rendre une eau à boire croupie ; un conteneur inscrit par l'API choisit (`clean`) ;
+- l'option est relue à chaque pas (changement en cours de partie pris en compte).
+Preuves :
+- `python -B -m unittest discover -s tests` → `Ran 260 tests` … `OK` ;
 - `python -B tools/check_mod.py` → `OK: 96 Lua file(s) checked`.
 Non testé en jeu.
 

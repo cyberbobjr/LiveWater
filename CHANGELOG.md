@@ -52,4 +52,6 @@
   overflowing); "Pump": the pump draws the barrel instead of its pond. Its look follows the mode and the collector.
 - Gasoline: a fitting set to Pump on a gasoline barrel or a gas station pump makes a gasoline network, which only
   fills barrels through fittings set to Fill; houses and sprinklers get nothing and say so.
+- A barrel fitting set to Fill also fills a water cooler, with clean water only; more containers can be listed in the
+  sandbox options.
 - The house water inlet also serves the basement (fixtures under the house) and plumbed washing machines.

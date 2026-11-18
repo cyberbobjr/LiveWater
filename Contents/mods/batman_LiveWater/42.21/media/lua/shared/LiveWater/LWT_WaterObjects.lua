@@ -5,9 +5,10 @@
 --   FOREIGN_KEYS            marks of other mods' objects never taken (Live Wire relays, barrels)
 --   isFixture(obj)          a water fixture: its sprite carries the waterPiped flag
 --   mark(obj, key)          ModData table under `key`, or nil
---   isBarrel(obj)           a barrel or rain collector LiveWater may connect: a FluidContainer of
---                           MIN_BARREL_LITRES or more, neither a fixture, nor a relay, nor marked
---                           by another mod
+--   isVessel(obj)           an object holding a FluidContainer LiveWater may use: neither an item
+--                           on the floor, nor a fixture, nor a relay, nor marked by another mod
+--   isBarrel(obj)           a barrel or rain collector LiveWater may connect: a vessel of
+--                           MIN_BARREL_LITRES or more
 --   isWaterOnly(fc)         the container holds water (clean or tainted) only, or nothing
 --   cityWaterRuns()         the city water still runs (rule of IsoObject.isWaterInfinite, 42.22)
 --   cityInfo(obj)           what LWT_CityWater asks of a fixture
@@ -43,13 +44,16 @@ local function foreign(obj)
     return false
 end
 
-function WaterObjects.isBarrel(obj)
+function WaterObjects.isVessel(obj)
     if not obj or instanceof(obj, "IsoWorldInventoryObject") or WaterObjects.isFixture(obj) then return false end
     if obj:getUsesExternalWaterSource() or WaterObjects.mark(obj, WaterObjects.RELAY_KEY) or foreign(obj) then
         return false
     end
-    local fc = obj:getFluidContainer()
-    return fc ~= nil and fc:getCapacity() >= WaterObjects.MIN_BARREL_LITRES
+    return obj:getFluidContainer() ~= nil
+end
+
+function WaterObjects.isBarrel(obj)
+    return WaterObjects.isVessel(obj) and obj:getFluidContainer():getCapacity() >= WaterObjects.MIN_BARREL_LITRES
 end
 
 function WaterObjects.isWaterOnly(fc)

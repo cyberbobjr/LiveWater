@@ -53,3 +53,9 @@ option LiveWater.SprinklerTimerMax
     type = integer, min = 1, max = 168, default = 24,
     page = LiveWater, translation = LWT_SprinklerTimerMax,
 }
+
+option LiveWater.FillContainers
+{
+    type = string, default = WaterDispenser,
+    page = LiveWater, translation = LWT_FillContainers,
+}

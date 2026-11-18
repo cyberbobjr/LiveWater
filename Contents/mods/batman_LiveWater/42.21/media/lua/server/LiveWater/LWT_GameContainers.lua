@@ -1,9 +1,9 @@
 if isClient() then return end
 -- LiveWater: game adapter of the containers port of the barrel fittings (LWT_Fittings), authority
 -- only (ADR-001 D26, P02). Thin: the rules are in LWT_Fittings, LWT_Flow and LWT_WaterObjects.
---   at(x, y, z)                     the container on the square: a barrel or rain collector
---                                   (LWT_WaterObjects.isBarrel: FluidContainer of 20 L or more, not
---                                   a fixture, a relay nor another mod's), else a fuel pump of a gas
+--   at(x, y, z)                     the container on the square: a vessel (LWT_WaterObjects.isVessel)
+--                                   the fittings admit (LWT_Containers:admits: 20 L or more, or a
+--                                   registered or listed name, E25), else a fuel pump of a gas
 --                                   station (piped fuel, getPipedFuelAmount, Pump only); { fluid
 --                                   ("clean", "tainted", "fuel", "other", nil when empty), amount,
 --                                   free, sprite, entity } or nil
@@ -23,8 +23,9 @@ local EPSILON = WaterObjects.EPSILON
 -- Quality -> name of the fluid poured in.
 local FLUIDS = { clean = "Water", tainted = "TaintedWater", fuel = "Petrol" }
 
-function GameContainers.new()
-    return setmetatable({}, GameContainers)
+-- deps: { registry (LWT_Containers), listed (function() -> set of the names of the sandbox option) }.
+function GameContainers.new(deps)
+    return setmetatable({ registry = deps.registry, listed = deps.listed }, GameContainers)
 end
 
 local function squareAt(x, y, z)
@@ -52,10 +53,13 @@ end
 function GameContainers:objectAt(x, y, z)
     local sq = squareAt(x, y, z)
     if not sq then return nil end
-    local objects, pump = sq:getObjects(), nil
+    local objects, pump, listed = sq:getObjects(), nil, self.listed()
     for i = 0, objects:size() - 1 do
         local obj = objects:get(i)
-        if WaterObjects.isBarrel(obj) then return obj, "fluid" end
+        if WaterObjects.isVessel(obj)
+            and self.registry:admits(obj:getFluidContainer():getCapacity(), obj:getSpriteName(), entityName(obj), listed) then
+            return obj, "fluid"
+        end
         if not pump and obj:getPipedFuelAmount() > 0 then pump = obj end
     end
     if pump then return pump, "fuel" end

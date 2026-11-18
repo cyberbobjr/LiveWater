@@ -12,7 +12,8 @@ if isClient() then return end
 -- side that holds one. No game API here; dependencies are injected: { catalog, registry (active()),
 -- world (isLoaded, spriteOf), containers (port, LWT_GameContainers: at(x, y, z) -> { fluid, amount,
 -- free, sprite, entity } or nil; add(x, y, z, litres, quality); take(x, y, z, litres)), shapes
--- (LWT_Containers), publisher (optional: present(part)) }.
+-- (LWT_Containers: shape and clean water only), listed (optional: function() -> set of the names of
+-- the sandbox option FillContainers), publisher (optional: present(part)) }.
 
 local Fittings = {}
 Fittings.__index = Fittings
@@ -22,7 +23,8 @@ local BEHIND = { { 0, -1 }, { -1, 0 }, { 0, 1 }, { 1, 0 } }
 
 function Fittings.new(deps)
     return setmetatable({ catalog = deps.catalog, registry = deps.registry, world = deps.world,
-        containers = deps.containers, shapes = deps.shapes, publisher = deps.publisher }, Fittings)
+        containers = deps.containers, shapes = deps.shapes, listed = deps.listed, publisher = deps.publisher },
+        Fittings)
 end
 
 function Fittings:isFitting(part)
@@ -43,12 +45,14 @@ end
 -- What the container of a fitting holds now (the `sense` info).
 function Fittings:look(part)
     local list = self:candidates(part)
+    local listed = self.listed and self.listed() or {}
     for i = 1, #list do
         local x, y, z = part.x + list[i][1], part.y + list[i][2], part.z
         local c = self.containers:at(x, y, z)
         if c then
             return { found = true, fluid = c.fluid, amount = c.amount, free = c.free,
-                shape = self.shapes:shapeOf(c.sprite, c.entity), cx = x, cy = y, cz = z }
+                shape = self.shapes:shapeOf(c.sprite, c.entity, listed),
+                clean = self.shapes:cleanOnly(c.sprite, c.entity, listed), cx = x, cy = y, cz = z }
         end
     end
     return { found = false }

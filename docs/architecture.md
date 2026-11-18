@@ -26,7 +26,8 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
 - `Parts/LWT_Part<Nom>.lua` : un fichier par pièce de LiveWater, inscrite par l'API publique comme celle d'un autre
   mod (`LWT_PartPipe.lua` : `LiveWater:PipeGalvanized` ; `LWT_PartPondPump.lua` : `LiveWater:PondPump` ; `LWT_PartFlowMeter.lua` :
   `LiveWater:FlowMeter` ; `LWT_PartHouseInlet.lua` : `LiveWater:HouseInlet` ; `LWT_PartSprinkler.lua` : `LiveWater:Sprinkler` ; `LWT_PartSprinklerAuto.lua` : `LiveWater:SprinklerAuto` ; `LWT_PartBarrelFitting.lua` : `LiveWater:BarrelFitting`).
-  `LWT_Containers.lua` (pur) : registre des conteneurs d'un raccord de baril (forme par sprite ou entité). `LWT_Tiles.lua` : noms des sprites du
+  `LWT_Containers.lua` (pur) : registre des conteneurs d'un raccord de baril (forme, eau propre seulement, par
+  sprite ou entité ; conteneurs admis : 20 L ou plus, inscrits, ou listés dans l'option `FillContainers`). `LWT_Tiles.lua` : noms des sprites du
   tileset et `variants` d'une pièce dessinée par état et orientation.
 - `LWT_InletArea.lua` (pur) : cases servies par une arrivée d'eau (bâtiment de la carte touché, cercle de portée,
   jusqu'à 3 étages au-dessus, sous-sols jusqu'à 2 niveaux sous l'emprise du rez-de-chaussée ; hors bâtiment de la carte,

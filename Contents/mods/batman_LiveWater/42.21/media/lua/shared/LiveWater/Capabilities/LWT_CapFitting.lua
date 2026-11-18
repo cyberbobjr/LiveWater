@@ -7,9 +7,10 @@
 --          tap purifies) or fuel.
 --   rate   litres a step at most, both ways (default 50, a pond pump's flow)
 -- What the container holds is sensed by the authority before each step (server LWT_Fittings,
--- `sense` hook): { found, shape ("tall" or "low"), fluid ("clean", "tainted", "fuel", "other", nil
--- when empty), amount, free, cx, cy, cz }.
--- State: { mode, found, shape, fluid, amount, free, cx, cy, cz, state = what the last step did }.
+-- `sense` hook): { found, shape ("tall" or "low"), clean (a drinking container: clean water only,
+-- E25), fluid ("clean", "tainted", "fuel", "other", nil when empty), amount, free, cx, cy, cz }.
+-- State: { mode, found, shape, clean, fluid, amount, free, cx, cy, cz, state = what the last step
+-- did }.
 
 local Check = require "LiveWater/LWT_Check"
 
@@ -39,7 +40,7 @@ end
 -- (fourth result) the fluid its container takes.
 function Fitting.outlet(p, d)
     if mode(d) ~= "fill" then return nil end
-    return 1, false, "barrelFill", holds(d)
+    return 1, d ~= nil and d.clean == true, "barrelFill", holds(d)
 end
 
 -- Set to Pump: litres the pumps may draw from the container and their quality.
@@ -50,7 +51,7 @@ end
 
 function Fitting.sense(p, d, info)
     d.found = info.found == true
-    d.shape, d.fluid, d.amount, d.free = info.shape, info.fluid, info.amount, info.free
+    d.shape, d.clean, d.fluid, d.amount, d.free = info.shape, info.clean == true, info.fluid, info.amount, info.free
     d.cx, d.cy, d.cz = info.cx, info.cy, info.cz
 end
 

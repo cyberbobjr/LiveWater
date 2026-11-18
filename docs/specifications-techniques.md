@@ -14,7 +14,7 @@ Contrats précis du mod (objets, commandes réseau, ModData, options sandbox, tr
 | Table Lua globale | `LiveWater` |
 | Préfixes | fichiers `LWT_*.lua`, recettes `LWT`, traductions `*_LWT_*`, ids de pièces `"<Mod>:<Nom>"` |
 
-## API publique (`LiveWater.API`, révision 11)
+## API publique (`LiveWater.API`, révision 12)
 
 Inscription depuis un fichier `shared`, pendant le chargement, avant `OnInitGlobalModData` (ensuite :
 `registration_closed`). Tout refus rend `false` et une raison, et écrit un avertissement en anglais dans la console.
@@ -26,7 +26,7 @@ Inscription depuis un fichier `shared`, pendant le chargement, avant `OnInitGlob
 | `part(id)` | copie de la définition contrôlée, ou `nil` | — |
 | `registerSource(kind, definition)` | révision 6 : sorte de source d'eau `{ quality = "clean" ou "tainted", flag = drapeau IsoFlagType d'une case voisine, sprites = { sprite d'un objet voisin } }` (au moins `flag` ou `sprites`) ; `kind` nom simple ou `"<Mod>:<Nom>"` | `registration_closed`, `invalid_kind`, `duplicate_source`, `invalid_definition` |
 | `revision` | entier ; 2 : champ `variants`, crochets `look`, `attach`, `power`, `powered`, `stepped`, `output`, `lines` ; 3 : réglage `item` du filtre, crochets `cartridge`, `fit`, `unfit`, `actions` ; 4 : réglages d'entretien de la pompe, crochets `switchable`, `switch`, `repairable`, `repair`, `sound` ; 5 : capacité `meter`, réglage `ports` de `conduit`, qualité par pièce dans le bilan de `stepped` ; 6 : `registerSource`, qualité de l'eau d'une prise selon la sorte de source relevée ; 7 : type de sortie en troisième résultat du crochet `outlet`, `outcome.outlet` de `stepped` (ce que le pas a fait d'une sortie), gardé comme état de la sortie ; 8 : capacité `spray`, crochets `spray`, `jet`, `opened`, `open` ; événement `valveChanged` émis par la commande `switchValve` ; 9 : minuterie (`controller` `timer` : `every`, `watts`, `choices`), crochets `prepare`, `opens`, `timer`, `setTimer`, `Parts:closed`, `choices` des actions, `ctx.hours` ; 10 : crochet `status` (vue du réseau ; une sortie rend son état), commandes `showNetwork` et `network` ; 11 : capacité `fitting`, crochets `draw`, `sense`, `fittingMode`, `setFittingMode`, fluide accepté en quatrième résultat de `outlet`, événement `waterDrawn`, qualité `fuel`, `registerContainer` | — |
-| `registerContainer(name, definition)` | révision 11 : conteneur d'un raccord de baril, `name` = sprite de l'objet ou nom de son entité, `{ shape = "tall" ou "low" }` | `registration_closed`, `invalid_name`, `invalid_definition` |
+| `registerContainer(name, definition)` | révision 11 : conteneur d'un raccord de baril, `name` = sprite de l'objet ou nom de son entité, `{ shape = "tall" ou "low" }` ; révision 12 : `clean = true` (eau propre seulement) ; un conteneur inscrit est servi quelle que soit sa taille (`WaterDispenser` inscrit d'office) | `registration_closed`, `invalid_name`, `invalid_definition` |
 
 Définition d'une pièce (copiée champ par champ, le reste est ignoré) : `sprites` (`{ [masque] = sprite }`, masques
 0 à 15, redessinés selon les raccords), `variants` (révision 2 : `{ [clé] = { sprite S, E, N, O } }`, sprites
@@ -112,6 +112,7 @@ sorte qui n'est plus inscrite donne le réglage `quality` de la capacité.
 | `LiveWater.InletRange` | entier 1-100, 20 | portée (cercle, en cases) d'une arrivée d'eau dans le bâtiment qu'elle touche |
 | `LiveWater.BaseRange` | entier 1-50, 12 | portée d'une arrivée d'eau hors bâtiment de la carte (base du joueur, L11) |
 | `LiveWater.WasherFix` | booléen, vrai | correctif des lave-linge raccordés en multijoueur (L13, E28) |
+| `LiveWater.FillContainers` | chaîne, `WaterDispenser` | noms d'entités ou de sprites séparés par `;` : conteneurs qu'un raccord en « Remplir » sert quelle que soit leur taille, eau propre seulement (L08) |
 | `LiveWater.SprinklerTimerMin` | entier 1-168, 1 | intervalle le plus court d'une minuterie d'arroseur (heures) |
 | `LiveWater.SprinklerTimerMax` | entier 1-168, 24 | intervalle le plus long d'une minuterie d'arroseur (heures) |
 | `LiveWater.SprinklerRadiusMultiplier` | double 0,5-5, 1,0 | multiplie le rayon des arroseurs (2 cases, arrondi, 10 au plus) |

@@ -17,5 +17,7 @@
     "Sandbox_LWT_SprinklerTimerMin": "Minuterie d'arroseur : intervalle le plus court",
     "Sandbox_LWT_SprinklerTimerMin_tooltip": "Nombre d'heures minimal qu'un joueur peut régler entre deux arrosages d'un arroseur automatique.",
     "Sandbox_LWT_SprinklerTimerMax": "Minuterie d'arroseur : intervalle le plus long",
-    "Sandbox_LWT_SprinklerTimerMax_tooltip": "Nombre d'heures maximal qu'un joueur peut régler entre deux arrosages d'un arroseur automatique."
+    "Sandbox_LWT_SprinklerTimerMax_tooltip": "Nombre d'heures maximal qu'un joueur peut régler entre deux arrosages d'un arroseur automatique.",
+    "Sandbox_LWT_FillContainers": "Conteneurs qu'un raccord de baril peut remplir",
+    "Sandbox_LWT_FillContainers_tooltip": "Noms d'entités ou de sprites, séparés par ; (fontaines à eau : WaterDispenser). Ils se remplissent par un raccord de baril réglé sur Remplir, quelle que soit leur taille, avec de l'eau propre seulement. Les barils et récupérateurs d'eau de pluie marchent toujours."
 }

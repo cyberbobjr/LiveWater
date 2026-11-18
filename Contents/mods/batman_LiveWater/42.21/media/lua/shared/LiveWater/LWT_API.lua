@@ -71,7 +71,8 @@ LiveWater.Events = EventBus.new(EventBus.NAMES)
 -- Revision 11: capability "fitting" (barrel fitting, Fill or Pump), hooks draw, sense, fittingMode,
 -- setFittingMode, fourth result of `outlet` (fluid taken), event waterDrawn, fluid "fuel",
 -- registerContainer.
-local API = { revision = 11 }
+-- Revision 12: registerContainer field `clean`; registered containers of any size (E25).
+local API = { revision = 12 }
 LiveWater.API = API
 
 local function answer(call, id, ok, reason, detail)
@@ -100,7 +101,8 @@ function API.registerSource(kind, definition)
 end
 
 -- Container a barrel fitting works with (revision 11), see LWT_Containers.lua: `name` is the sprite
--- of its object or the name of its entity script; definition { shape = "tall" or "low" }:
+-- of its object or the name of its entity script; definition { shape = "tall" or "low", clean =
+-- true for a drinking container (revision 12) }; a registered container is used whatever its size:
 --   LiveWater.API.registerContainer("mymod_tanks_0", { shape = "low" })
 -- Returns true, or false and "registration_closed", "invalid_name", "invalid_definition".
 function API.registerContainer(name, definition)

@@ -17,5 +17,7 @@
     "Sandbox_LWT_SprinklerTimerMin": "Sprinkler timer: shortest interval",
     "Sandbox_LWT_SprinklerTimerMin_tooltip": "Fewest hours a player may set between two waterings of an automatic sprinkler.",
     "Sandbox_LWT_SprinklerTimerMax": "Sprinkler timer: longest interval",
-    "Sandbox_LWT_SprinklerTimerMax_tooltip": "Most hours a player may set between two waterings of an automatic sprinkler."
+    "Sandbox_LWT_SprinklerTimerMax_tooltip": "Most hours a player may set between two waterings of an automatic sprinkler.",
+    "Sandbox_LWT_FillContainers": "Containers a barrel fitting may fill",
+    "Sandbox_LWT_FillContainers_tooltip": "Names of entity scripts or sprites, separated by ; (water coolers: WaterDispenser). They are filled through a barrel fitting set to Fill, whatever their size, with clean water only. Barrels and rain collectors always work."
 }

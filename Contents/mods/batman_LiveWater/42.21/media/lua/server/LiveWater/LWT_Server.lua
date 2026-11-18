@@ -44,6 +44,7 @@ local GameVisuals = require "LiveWater/LWT_GameVisuals"
 local Broadcast = require "LiveWater/LWT_GameBroadcast"
 local Fittings = require "LiveWater/LWT_Fittings"
 local GameContainers = require "LiveWater/LWT_GameContainers"
+local Containers = require "LiveWater/LWT_Containers"
 local Checks = require "LiveWater/Commands/LWT_CmdChecks"
 local Reasons = require "LiveWater/LWT_Reasons"
 
@@ -123,8 +124,10 @@ local function build()
     local outlets = Outlets.new(catalog)
     outlets:register("houseInlet", relays)
     outlets:register("sprinkler", Plants.new({ catalog = catalog, farming = GameFarming.new(), scale = GameSettings.scale }))
+    local function listed() return Containers.parseList(GameSettings.scale("FillContainers")) end
     local fittings = Fittings.new({ catalog = catalog, registry = registry, world = world,
-        containers = GameContainers.new(), shapes = LiveWater.Containers, publisher = publisher })
+        containers = GameContainers.new({ registry = LiveWater.Containers, listed = listed }),
+        shapes = LiveWater.Containers, listed = listed, publisher = publisher })
     outlets:register("barrelFill", fittings)
     local function pumped(part) return hasPump(network, catalog, part) end
     local barrels = HouseBarrels.new({ store = store, plumbing = plumbing, world = world, relays = relays,
