@@ -29,6 +29,7 @@ local Reasons = {
         not_fixture = "IGUI_LWT_NotFixture",
         not_map_building = "IGUI_LWT_NotMapBuilding",
         no_city_water = "IGUI_LWT_NoCityWater",
+        not_valve = "IGUI_LWT_Invalid",
     },
     GENERIC = "IGUI_LWT_Refused",
 }

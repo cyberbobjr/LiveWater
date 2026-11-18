@@ -56,5 +56,13 @@
     "IGUI_LWT_Why_no_supply": "l'arrivée d'eau n'a ni pompe ni baril",
     "IGUI_LWT_NotFixture": "Seul un point d'eau que vous avez posé et pas raccordé peut aller sur l'eau de la ville.",
     "IGUI_LWT_NotMapBuilding": "Seulement dans une pièce d'un bâtiment de la carte.",
-    "IGUI_LWT_NoCityWater": "L'eau de la ville ne coule plus ici."
+    "IGUI_LWT_NoCityWater": "L'eau de la ville ne coule plus ici.",
+    "IGUI_LWT_Valve_Open": "Vanne : ouverte",
+    "IGUI_LWT_Valve_Closed": "Vanne : fermée",
+    "IGUI_LWT_Sprinkler_served": "Arrose les plantes",
+    "IGUI_LWT_Sprinkler_idle": "Les plantes autour n'ont pas besoin d'eau",
+    "IGUI_LWT_Sprinkler_no_water": "Pas d'eau dans les tuyaux",
+    "IGUI_LWT_Sprinkler_unfiltered": "Eau non filtrée",
+    "IGUI_LWT_Sprinkler_no_pressure": "Pression insuffisante",
+    "IGUI_LWT_Sprinkler_closed": "Vanne fermée : pas d'arrosage"
 }

@@ -43,6 +43,12 @@
 -- Revision 7 (house inlet): outlet(p, d) also gives the outlet type (third result); the outcome of
 --   stepped carries `outlet` = what the step did with an outlet ("served", "idle", "closed",
 --   "no_water", "unfiltered", "no_pressure"; nil for a part that is not one).
+-- Revision 8 (sprinklers, valves):
+--   spray(p, d, ctx)      a part that waters plants: radius (squares) and litres of a dose
+--   jet(p, d)             frames of the animated jet the clients draw: sprite prefix, first index,
+--                         frame count, and whether it sprays now (D08a)
+--   opened(p, d)          a valve: open now (true/false), else nil
+--   open(p, d, on)        open or close it (d created)
 -- ctx is the context of the step: { need, scale = function(optionName) -> multiplier,
 -- random = function() -> 0..1 (breakdowns; none without it), sources = registry of source kinds
 -- (revision 6, LWT_Sources) }.
@@ -51,7 +57,8 @@ local Check = require "LiveWater/LWT_Check"
 
 local HOOKS = { "define", "carries", "blocks", "pressurizes", "ports", "supply", "source", "outlet", "purifies",
     "wear", "layable", "look", "attach", "power", "powered", "stepped", "output", "lines",
-    "cartridge", "fit", "unfit", "actions", "switchable", "switch", "repairable", "repair", "sound" }
+    "cartridge", "fit", "unfit", "actions", "switchable", "switch", "repairable", "repair", "sound",
+    "spray", "jet", "opened", "open" }
 
 local Capabilities = {}
 Capabilities.__index = Capabilities

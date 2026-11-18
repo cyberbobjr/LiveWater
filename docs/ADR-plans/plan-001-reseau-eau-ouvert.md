@@ -14,7 +14,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 | E08 | Pompe d'étang et électricité : `registerConsumer` (`display`, `summary`), repli vanilla | Terminée (2026-11-18) | E07 | D16, D20 | M | E09 |
 | E09 | Arrivée d'eau de la maison : réservoirs invisibles `LiveWaterRelay`, cohabitation Live Wire | Terminée (2026-11-18) | E07 | D18, D21 | M | E08 |
 | E10 | Filtre : pièce, usure au volume, remplacement | Terminée (2026-11-18) | E08, E09, E06 | D17, D23 | S | E11 |
-| E11 | Arroseur manuel : vanne, rayon, doses de 200 ml | À faire | E07 | D19 | M | E10 |
+| E11 | Arroseur manuel : vanne, rayon, doses de 200 ml | Terminée (2026-11-18) | E07 | D19 | M | E10 |
 | E12 | Arroseur automatique : recette (niveau d'Électricité), minuterie consommatrice | À faire | E11, E08 | D19, D20 | M | — |
 | E13 | Interface : menus, vue du réseau en surbrillance persistante, états « sans pression » et « eau non filtrée » | À faire | E08-E12 | D11, D14, D17 | M | — |
 | E15 | Pompe : interrupteur, usure du rendement, pannes, réparation, fenêtre d'information, son (P03-P05, P08, P15) | Terminée (2026-11-18) | E08 | D24 | M | E16 |
@@ -322,6 +322,47 @@ Non testé en jeu.
 
 Fichiers : `shared/LiveWater/Parts/LWT_PartSprinkler.lua`, `server/LiveWater/LWT_Plants.lua`. Tests rouges : plantes du
 rayon qui ont besoin d'eau seulement ; doses de 200 ml retirées du réseau ; vanne fermée = rien.
+
+Clôture (2026-11-18). Fichiers : `Parts/LWT_PartSprinkler.lua` (`LiveWater:Sprinkler` : `outlet` `sprinkler`, `valve`
+posée fermée, `controller` `manual`, `spray` ; `variants` `off` 48-51 et `on` 52-55), nouvelle capacité
+`Capabilities/LWT_CapSpray.lua` (rayon 2, dose 0,2 L, images du jet ; crochets `spray`, `jet`, `stepped`, `look`),
+`LWT_CapValve.lua` (crochets `opened`, `open`, `actions`, `lines`), `LWT_CapOutlet.lua` (ligne d'état par type de
+sortie : `IGUI_LWT_Sprinkler_<état>`), `LWT_Capabilities.lua` et `LWT_API.lua` (révision 8), `LWT_Protocol.lua`
+(`switchValve`, `jet`), `LWT_Reasons.lua` (`not_valve`) ; serveur `LWT_Plants.lua` (gestionnaire de sortie
+`sprinkler` : besoin et doses), `LWT_GameFarming.lua` (adaptateur de l'agriculture vanilla),
+`Commands/LWT_CmdSwitchValve.lua`, `LWT_Publisher.lua` (port `visuals` : jet annoncé quand il démarre ou s'arrête),
+`LWT_GameBroadcast.lua` (envoi d'une commande serveur à tous ou à un joueur, solo par `triggerEvent`, repris par
+`LWT_GameSounds.lua`), `LWT_GameVisuals.lua`, `LWT_Commands.lua` (`events` dans le contexte), `LWT_Server.lua` ; client
+`LWT_SprinklerJet.lua` (jet animé, D08a) ; `tools/check_mod.py` (`Events.OnTick` permis dans ce seul fichier, liste
+`PER_FRAME_ALLOWED` qui cite D08a) ; `LWT_moveables.txt` (`Base.Mov_LiveWater_Sprinkler`), recette
+`LWTBuildSprinkler`, option `SprinklerRadiusMultiplier`, traductions EN et FR (dont `UI.json` : option de mod) ; tests
+`tests/test_sprinkler.py`, `test_api.py` (révision 8).
+Vérifié dans le vanilla 42.22 (confirmé statiquement) : `SFarmingSystem.instance:getLuaObjectAt(x, y, z)` donne la
+plante ; besoin = `waterNeeded` du stade (`farming_vegetableconf.calcWater` : la plante pousse quand `waterLvl >=
+waterNeeded`) ; `SPlantGlobalObject:water(nil, doses)` ajoute 10 par dose, note l'heure et sauvegarde
+(`SPlantGlobalObject.lua:501-518`, `saveData` → `transmitModData`) ; dose vanilla 200 ml
+(`ZomboidGlobals.farmingFluidContainerMillilitresPerUse`). Calque : `addAttachedAnimSpriteByName`,
+`RemoveAttachedAnim(i)`, `setAnimating` (`IsoObject.java:1855, 3210, 5919`) ; options de mod `PZAPI.ModOptions`
+(`client/PZAPI/ModOptions.lua`).
+Choix faits sans l'utilisateur :
+- rayon 2 (D19, champ `radius` de la définition) × option `SprinklerRadiusMultiplier` (0,5 à 5, arrondi, 10 cases au
+  plus) ; cercle `dx² + dy² <= r²`, même niveau ; P13 (5 cases) s'obtient avec l'option à 2,5 ;
+- une plante a besoin d'eau si elle est vivante, semée (pas un sillon), et `waterLvl < waterNeeded` ; elle reçoit
+  `ceil((waterNeeded - waterLvl) / 10)` doses, les plus proches d'abord ; le réseau ne sert que ces doses (0,2 L
+  chacune), une eau trop courte ne donne que des doses entières ; l'eau croupie convient (règle vanilla) ;
+- l'arroseur se pose fermé ; « Ouvrir la vanne » / « Fermer la vanne » au clic droit (menu générique), sans action
+  chronométrée (E13) ; `valveChanged` émis ; il est « en marche » (sprite 52-55, jet) quand il a arrosé au dernier
+  pas, sinon arrêté (rien à arroser, vanne fermée, pas d'eau, pression) ;
+- jet : images 80-103 attachées par le client (`addAttachedAnimSpriteByName`), 6 par seconde au plus (167 ms) ;
+  candidats suivis par `LoadGridsquare`, `ReuseGridsquare`, `OnObjectAdded` et l'ordre serveur `jet { x, y, z }`
+  (le client relit l'état recopié de la case) ; un jet resté sauvegardé en solo (sprite de tuile) est retiré au
+  chargement de la case ; option de mod « Jet des arroseurs animé » (`PZAPI.ModOptions`, cochée par défaut) : décochée,
+  jet fixe sans `OnTick` ;
+- recette sans compétence : clé à tuyau gardée, 2 sections de tuyau, 1 ferraille, 1 planche (le piquet).
+Preuves :
+- `python -B -m unittest discover -s tests` → `Ran 220 tests` … `OK` ;
+- `python -B tools/check_mod.py` → `OK: 85 Lua file(s) checked`.
+Non testé en jeu.
 
 ### E12 — Arroseur automatique
 

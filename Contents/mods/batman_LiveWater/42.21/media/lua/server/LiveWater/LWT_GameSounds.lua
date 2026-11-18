@@ -1,12 +1,12 @@
 if isClient() then return end
 -- LiveWater: game adapter of the sounds port (P15), authority only.
 --   loop(x, y, z, name)               tell the players to play the loop `name` at the part, or to
---                                     stop it (name nil): sendServerCommand to every client on a
---                                     server; in solo the client handler runs through the same
---                                     OnServerCommand event (sendServerCommand does nothing there)
+--                                     stop it (name nil): server command "sound" to every client
+--                                     (LWT_GameBroadcast)
 --   noise(x, y, z, radius, volume)    world sound zombies hear (addSound, no source object)
 
 local Protocol = require "LiveWater/LWT_Protocol"
+local Broadcast = require "LiveWater/LWT_GameBroadcast"
 
 local GameSounds = {}
 GameSounds.__index = GameSounds
@@ -16,12 +16,7 @@ function GameSounds.new()
 end
 
 function GameSounds:loop(x, y, z, name)
-    local args = { x = x, y = y, z = z, name = name }
-    if isServer() then
-        sendServerCommand(Protocol.MODULE, Protocol.SOUND, args)
-    else
-        triggerEvent("OnServerCommand", Protocol.MODULE, Protocol.SOUND, args)
-    end
+    Broadcast.all(Protocol.SOUND, { x = x, y = y, z = z, name = name })
 end
 
 function GameSounds:noise(x, y, z, radius, volume)

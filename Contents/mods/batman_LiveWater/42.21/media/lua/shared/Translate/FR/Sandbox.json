@@ -11,5 +11,7 @@
     "Sandbox_LWT_BaseRange": "Portée de l'arrivée d'eau d'une base",
     "Sandbox_LWT_BaseRange_tooltip": "Hors d'un bâtiment de la carte (base construite), distance (en cases) jusqu'à laquelle une arrivée d'eau dessert les points d'eau raccordés, jusqu'à 3 étages au-dessus d'elle.",
     "Sandbox_LWT_WasherFix": "Corriger les lave-linge raccordés (multijoueur)",
-    "Sandbox_LWT_WasherFix_tooltip": "Sur un serveur, les lave-linge alimentés par une arrivée d'eau montrent leur état réel aux joueurs : raccordés, et arrêtés quand ils n'ont plus d'eau."
+    "Sandbox_LWT_WasherFix_tooltip": "Sur un serveur, les lave-linge alimentés par une arrivée d'eau montrent leur état réel aux joueurs : raccordés, et arrêtés quand ils n'ont plus d'eau.",
+    "Sandbox_LWT_SprinklerRadiusMultiplier": "Portée des arroseurs",
+    "Sandbox_LWT_SprinklerRadiusMultiplier_tooltip": "Multiplie la distance à laquelle un arroseur arrose les plantes (2 cases à 1,0 ; 10 au plus)."
 }

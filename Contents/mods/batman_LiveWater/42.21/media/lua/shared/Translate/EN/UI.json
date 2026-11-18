@@ -1,0 +1,5 @@
+{
+    "UI_LWT_Options": "LiveWater",
+    "UI_LWT_AnimatedJet": "Animated sprinkler jet",
+    "UI_LWT_AnimatedJet_Tooltip": "Untick to show a still water jet on the sprinklers (lighter on slow computers)."
+}

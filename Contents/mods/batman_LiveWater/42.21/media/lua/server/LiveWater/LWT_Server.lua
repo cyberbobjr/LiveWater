@@ -8,7 +8,8 @@ if isClient() then return end
 --   EveryTenMinutes                           -> LWT_Clock (the only clock, ADR-001 D09)
 --   OnInitWorld                               -> LWT_Power:register (Live Wire consumers, D20)
 --   LiveWater.Events partAdded / partRemoved  -> LWT_Publisher (sprite by state, mirrored state)
---   LiveWater.Events waterDelivered / partRemoved -> LWT_Outlets (relay tanks of the house inlets)
+--   LiveWater.Events waterDelivered / partRemoved -> LWT_Outlets (relay tanks of the house inlets,
+--                                                plants of the sprinklers: LWT_Plants)
 -- No per-frame event (D08). Events before the first OnInitGlobalModData are ignored.
 -- LiveWater.Server holds the services of the current game (nil before), for later adapters.
 
@@ -35,6 +36,9 @@ local HouseBarrels = require "LiveWater/LWT_HouseBarrels"
 local WaterObjects = require "LiveWater/LWT_WaterObjects"
 local Diagnostics = require "LiveWater/LWT_Diagnostics"
 local WasherFix = require "LiveWater/LWT_WasherFix"
+local Plants = require "LiveWater/LWT_Plants"
+local GameFarming = require "LiveWater/LWT_GameFarming"
+local GameVisuals = require "LiveWater/LWT_GameVisuals"
 
 -- Command name -> handler file under LiveWater/Commands.
 local COMMANDS = {
@@ -48,6 +52,7 @@ local COMMANDS = {
     [Protocol.DISCONNECT_BARREL] = "LWT_CmdDisconnectBarrel",
     [Protocol.RESERVE_BARREL] = "LWT_CmdReserveBarrel",
     [Protocol.CITY_WATER] = "LWT_CmdCityWater",
+    [Protocol.SWITCH_VALVE] = "LWT_CmdSwitchValve",
 }
 
 local MODDATA_KEY = "LiveWater"
@@ -86,12 +91,14 @@ local function build()
     local sprites = Sprites.new(network, catalog, world)
     local topology = Topology.new({ registry = registry, network = network, catalog = catalog,
         events = LiveWater.Events, sprites = sprites, sites = world, log = log })
-    local publisher = Publisher.new({ catalog = catalog, sprites = sprites, mirror = world, sounds = GameSounds.new() })
+    local publisher = Publisher.new({ catalog = catalog, sprites = sprites, mirror = world, sounds = GameSounds.new(),
+        visuals = GameVisuals.new() })
     local plumbing = GamePlumbing.new()
     local relays = Relays.new({ store = store, plumbing = plumbing, world = world, now = gameHours,
         setting = GameSettings.scale, catalog = catalog, registry = registry, log = log })
     local outlets = Outlets.new(catalog)
     outlets:register("houseInlet", relays)
+    outlets:register("sprinkler", Plants.new({ catalog = catalog, farming = GameFarming.new(), scale = GameSettings.scale }))
     local function pumped(part) return hasPump(network, catalog, part) end
     local barrels = HouseBarrels.new({ store = store, plumbing = plumbing, world = world, relays = relays,
         lifted = pumped })
@@ -100,7 +107,7 @@ local function build()
         enabled = function() return GameSettings.scale("WasherFix") ~= false end })
     local commands = Commands.new({ topology = topology, catalog = catalog, world = world,
         players = GamePlayers.new(), publisher = publisher, scale = GameSettings.scale, barrels = barrels,
-        plumbing = plumbing })
+        plumbing = plumbing, events = LiveWater.Events })
     for name, file in pairs(COMMANDS) do
         commands:register(name, require("LiveWater/Commands/" .. file))
     end

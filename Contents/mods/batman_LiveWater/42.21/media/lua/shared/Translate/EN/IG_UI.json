@@ -56,5 +56,13 @@
     "IGUI_LWT_Why_no_supply": "the inlet has no pump and no barrel",
     "IGUI_LWT_NotFixture": "Only a fixture you set down and did not plumb can join the city water.",
     "IGUI_LWT_NotMapBuilding": "Only inside a room of a building of the map.",
-    "IGUI_LWT_NoCityWater": "The city water does not run here any more."
+    "IGUI_LWT_NoCityWater": "The city water does not run here any more.",
+    "IGUI_LWT_Valve_Open": "Valve: open",
+    "IGUI_LWT_Valve_Closed": "Valve: closed",
+    "IGUI_LWT_Sprinkler_served": "Watering the plants",
+    "IGUI_LWT_Sprinkler_idle": "The plants around need no water",
+    "IGUI_LWT_Sprinkler_no_water": "No water in the pipes",
+    "IGUI_LWT_Sprinkler_unfiltered": "Unfiltered water",
+    "IGUI_LWT_Sprinkler_no_pressure": "Not enough pressure",
+    "IGUI_LWT_Sprinkler_closed": "Valve closed: no watering"
 }

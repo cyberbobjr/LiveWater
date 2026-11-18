@@ -23,6 +23,7 @@ local STARTING_CAPABILITIES = {
     controller = "LWT_CapController",
     layable = "LWT_CapLayable",
     meter = "LWT_CapMeter",
+    spray = "LWT_CapSpray",
 }
 
 -- Starting source kinds (D16, D17): kind -> file under LiveWater/Sources.
@@ -59,7 +60,9 @@ LiveWater.Events = EventBus.new(EventBus.NAMES)
 -- Revision 6: registerSource; the intake reports the quality of the source kind it recorded.
 -- Revision 7: the `outlet` hook also gives the outlet type; outcome.outlet of `stepped` (what the
 -- step did with an outlet); the outlet keeps it as its state, its look and its information line.
-local API = { revision = 7 }
+-- Revision 8: capability "spray" (radius, dose, jet frames; hooks spray, jet), valve hooks opened,
+-- open, actions, lines; event valveChanged emitted when a player opens or closes a valve.
+local API = { revision = 8 }
 LiveWater.API = API
 
 local function answer(call, id, ok, reason, detail)

@@ -35,3 +35,9 @@ option LiveWater.WasherFix
     type = boolean, default = true,
     page = LiveWater, translation = LWT_WasherFix,
 }
+
+option LiveWater.SprinklerRadiusMultiplier
+{
+    type = double, min = 0.5, max = 5.0, default = 1.0,
+    page = LiveWater, translation = LWT_SprinklerRadiusMultiplier,
+}

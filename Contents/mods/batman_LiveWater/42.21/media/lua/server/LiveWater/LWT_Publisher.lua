@@ -7,9 +7,11 @@ if isClient() then return end
 --   its sound loop (`sound` hook, P15) starts or stops for the players when it changes; after a
 --   step (present(part, true)) a part that makes noise is heard by zombies and its loop is told
 --   again (players who came near since).
+--   a part with a jet (`jet` hook, sprinkler, D08a) tells the clients when it starts or stops
+--   spraying, after its state is mirrored: they read it again and animate the jet.
 -- No game API here; dependencies are injected: { catalog, sprites (LWT_Sprites), mirror (port:
 -- writeState(x, y, z, typeId, state)), sounds (optional port: loop(x, y, z, name or nil),
--- noise(x, y, z, radius, volume)) }.
+-- noise(x, y, z, radius, volume)), visuals (optional port: jet(x, y, z)) }.
 
 local Grid = require "LiveWater/LWT_Grid"
 
@@ -18,7 +20,7 @@ Publisher.__index = Publisher
 
 function Publisher.new(deps)
     return setmetatable({ catalog = deps.catalog, sprites = deps.sprites, mirror = deps.mirror, sounds = deps.sounds,
-        sent = {}, playing = {} }, Publisher)
+        visuals = deps.visuals, sent = {}, playing = {}, spraying = {} }, Publisher)
 end
 
 -- Text of a value with sorted keys: two equal states give the same text.
@@ -58,6 +60,17 @@ function Publisher:sound(part, key, stepped)
     end
 end
 
+-- The jet of the part started or stopped: the clients are told (after the mirror).
+function Publisher:jet(part, key)
+    if not self.visuals then return end
+    local sheet, _, _, on = self.catalog:first(part, "jet")
+    on = sheet ~= nil and on == true
+    if (self.spraying[key] == true) ~= on then
+        self.spraying[key] = on or nil
+        self.visuals:jet(part.x, part.y, part.z)
+    end
+end
+
 -- A part without state (a pipe) is never mirrored.
 function Publisher:present(part, stepped)
     local x, y, z = part.x, part.y, part.z
@@ -71,6 +84,7 @@ function Publisher:present(part, stepped)
     if self.sent[key] ~= sig and self.mirror:writeState(x, y, z, part.type, state) then
         self.sent[key] = sig
     end
+    self:jet(part, key)
 end
 
 -- The part left its square: the next one there is presented anew.
@@ -80,6 +94,10 @@ function Publisher:forget(part)
     if self.playing[key] then
         self.sounds:loop(part.x, part.y, part.z, nil)
         self.playing[key] = nil
+    end
+    if self.spraying[key] then
+        self.spraying[key] = nil
+        self.visuals:jet(part.x, part.y, part.z)
     end
 end
 

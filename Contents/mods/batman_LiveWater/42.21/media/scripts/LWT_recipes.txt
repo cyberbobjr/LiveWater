@@ -106,4 +106,25 @@ module LiveWater
             item 1 Base.Mov_LiveWater_HouseInlet,
         }
     }
+
+    /* Manual sprinkler (ADR-001 D19): a riser, an impact head and a ball valve on a stake; set
+       down with the furniture cursor and fed by a pipe. */
+    craftRecipe LWTBuildSprinkler
+    {
+        timedAction = Making,
+        time = 150,
+        Tags = AnySurfaceCraft,
+        category = Metalworking,
+        inputs
+        {
+            item 1 tags[base:pipewrench] mode:keep flags[MayDegradeLight],
+            item 2 [LiveWater.PipeSection],
+            item 1 [Base.ScrapMetal],
+            item 1 [Base.Plank],
+        }
+        outputs
+        {
+            item 1 Base.Mov_LiveWater_Sprinkler,
+        }
+    }
 }

@@ -9,11 +9,12 @@
 
 local Check = require "LiveWater/LWT_Check"
 
+-- `lines`: prefix of the translation key of the state line (key = prefix .. state).
 local TYPES = {
-    houseInlet = { pressureCost = 2, needsClean = true },
-    sprinkler = { pressureCost = 1, needsClean = false },
+    houseInlet = { pressureCost = 2, needsClean = true, lines = "IGUI_LWT_Outlet_" },
+    sprinkler = { pressureCost = 1, needsClean = false, lines = "IGUI_LWT_Sprinkler_" },
 }
-local GENERIC = { pressureCost = 1, needsClean = false }
+local GENERIC = { pressureCost = 1, needsClean = false, lines = "IGUI_LWT_Outlet_" }
 
 local Outlet = {}
 
@@ -43,10 +44,10 @@ function Outlet.look(p, d)
     return "filtered"
 end
 
--- State line: key "IGUI_LWT_Outlet_<state>".
+-- State line: key "<prefix of the type><state>" ("IGUI_LWT_Outlet_served", "IGUI_LWT_Sprinkler_idle").
 function Outlet.lines(p, d)
     if not (d and d.state) then return {} end
-    return { { "IGUI_LWT_Outlet_" .. d.state, rank = 10 } }
+    return { { (TYPES[p.type] or GENERIC).lines .. d.state, rank = 10 } }
 end
 
 return Outlet

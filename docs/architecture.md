@@ -22,10 +22,10 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
 - `LWT_Capabilities.lua` : registre des capacités (pattern strategy : chaque capacité est une table de crochets copiée
   par liste blanche).
 - `Capabilities/LWT_Cap<Nom>.lua` : un fichier par capacité (`conduit`, `intake`, `pump`, `valve`, `filter`,
-  `outlet`, `controller`, `layable`, `meter`), réglages et valeurs par défaut de la capacité.
+  `outlet`, `controller`, `layable`, `meter`, `spray`), réglages et valeurs par défaut de la capacité.
 - `Parts/LWT_Part<Nom>.lua` : un fichier par pièce de LiveWater, inscrite par l'API publique comme celle d'un autre
   mod (`LWT_PartPipe.lua` : `LiveWater:PipeGalvanized` ; `LWT_PartPondPump.lua` : `LiveWater:PondPump` ; `LWT_PartFlowMeter.lua` :
-  `LiveWater:FlowMeter` ; `LWT_PartHouseInlet.lua` : `LiveWater:HouseInlet`). `LWT_Tiles.lua` : noms des sprites du
+  `LiveWater:FlowMeter` ; `LWT_PartHouseInlet.lua` : `LiveWater:HouseInlet` ; `LWT_PartSprinkler.lua` : `LiveWater:Sprinkler`). `LWT_Tiles.lua` : noms des sprites du
   tileset et `variants` d'une pièce dessinée par état et orientation.
 - `LWT_InletArea.lua` (pur) : cases servies par une arrivée d'eau (bâtiment de la carte touché, cercle de portée,
   jusqu'à 3 étages au-dessus, sous-sols jusqu'à 2 niveaux sous l'emprise du rez-de-chaussée ; hors bâtiment de la carte,
@@ -89,6 +89,9 @@ commandes du filtre) ; un refus est dit au joueur par clé de traduction.
   du jeu (bâtiment, points d'eau, objets relais).
 - `LWT_HouseBarrels.lua` : barils raccordés à une arrivée d'eau (raccord, débranchement, mise en réserve, tâche de
   l'horloge après les relais : l'eau des barils remplit les relais selon `LWT_Reserve`).
+- `LWT_Plants.lua` : plantes d'un arroseur (gestionnaire `sprinkler` : besoin en doses des plantes du rayon qui ont
+  besoin d'eau, doses données les plus proches d'abord) ; `LWT_GameFarming.lua` : adaptateur de l'agriculture vanilla
+  (`SFarmingSystem.instance:getLuaObjectAt`, `SPlantGlobalObject:water`).
 - `LWT_Diagnostics.lua` : tâche de l'horloge, raison du manque d'eau notée sur les relais vides (`LWT_Diagnosis`).
 - `LWT_WasherFix.lua` : tâche de l'horloge, serveur seulement : état des lave-linge servis par nos relais renvoyé aux
   clients (arrêt à sec, raccord), option `WasherFix`.
@@ -98,8 +101,9 @@ commandes du filtre) ; un refus est dit au joueur par clé de traduction.
 - `LWT_Publisher.lua` : après un pas ou une action, sprite selon l'état (`Sprites:show`), état recopié sur l'objet
   seulement quand il change (rien pour une pièce sans état), boucle sonore annoncée aux joueurs quand elle change et
   répétée après chaque pas, bruit pour les zombies après chaque pas (port `sounds`, crochet `sound`).
-- `LWT_GameSounds.lua` : port des sons (ordre `sound` à tous les clients, ou au client local en solo par
-  `triggerEvent`, `addSound` pour les zombies).
+- `LWT_GameSounds.lua` : port des sons (ordre `sound` à tous les clients, `addSound` pour les zombies) ;
+  `LWT_GameVisuals.lua` : port `visuals` (ordre `jet` à tous les clients quand un arroseur démarre ou s'arrête) ;
+  `LWT_GameBroadcast.lua` : envoi d'une commande serveur à tous ou à un joueur (en solo, `triggerEvent`).
 - `LWT_GameSettings.lua` : lecture des options sandbox `LiveWater.*` (`getSandboxOptions`).
 - Adaptateurs du jeu, minces : `LWT_GameWorld.lua` (port monde : case chargée, case libre, objet d'une pièce par son
   sprite, `setSpriteFromName` + `transmitUpdatedSpriteToClients`, `transmitAddObjectToSquare`,
@@ -113,7 +117,9 @@ porte) `LWT_PumpSounds.lua` (boucle sonore jouée localement sur un émetteur li
 par image) et `LWT_NoticeClient.lua` (affiche les notes `notice` du serveur), `LWT_BarrelMenu.lua` (raccorder, débrancher, mettre
 en réserve un baril, lu dans sa marque), `LWT_FixtureMenu.lua` (ligne « Pas d'eau : raison » d'un point d'eau sans eau), `LWT_CityWaterMenu.lua`
 (« Raccorder au réseau public »), `LWT_WasherClient.lua` (état « raccordé » d'un lave-linge marqué par le serveur,
-appliqué à son menu et à son interrupteur). Interface complète : E13.
+appliqué à son menu et à son interrupteur), `LWT_SprinklerJet.lua` (jet animé des arroseurs, **seul abonnement par image
+du mod**, D08a : `OnTick` seulement tant qu'un arroseur en marche est chargé, 6 images par seconde au plus, option de
+mod pour un jet fixe ; jamais sur un serveur dédié). Interface complète : E13.
 
 ## Flux, persistance, extension
 
@@ -137,7 +143,9 @@ appliqué à son menu et à son interrupteur). Interface complète : E13.
   `Topology:add` avec l'état rapporté par l'objet (`movableData`) → `attach` (sorte de source relevée) → `partAdded` →
   `Publisher:present`.
 - Horloge : `EveryTenMinutes` → `Clock:tick` → par réseau éveillé : courant (`LWT_Power`), `Flow:step`, `stepped`,
-  `Publisher:present`, `waterDelivered`. Aucun abonnement par image (D08).
+  `Publisher:present`, `waterDelivered`. Aucun abonnement par image (D08), sauf le jet des arroseurs côté client (D08a).
+- Arroseur : `waterDelivered` → `LWT_Outlets` → `LWT_Plants:deliver` (doses de 0,2 L, `plant:water`) ;
+  `Publisher:present` → ordre `jet` → `LWT_SprinklerJet` relit l'état recopié de la case.
 - Live Wire (facultatif) : `OnInitWorld` → `Power:register` ; Live Wire appelle ensuite `powerConsumption`, `display`
   et `summary` sur l'autorité, qui lisent l'état recopié sur l'objet de la pompe.
 

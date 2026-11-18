@@ -6,7 +6,8 @@ Checks:
   2. every file loads in game order (shared, client, server; lower-case path) in a
      permissive stub environment, require resolving this mod's own modules once;
   3. every file in lua/server starts with the isClient() guard;
-  4. no subscription to a per-frame event (ADR-001 D08);
+  4. no subscription to a per-frame event (ADR-001 D08), except Events.OnTick in the one client
+     file of the animated sprinkler jet (ADR-001 D08a, PER_FRAME_ALLOWED);
   5. translations: EN and FR have the same files and keys, every other language
      uses EN keys only, and every getText key used in Lua exists in EN.
 Passing these checks proves nothing about in-game behaviour.
@@ -25,6 +26,9 @@ LUA = os.path.join(MEDIA, "lua")
 SIDES = ("shared", "client", "server")
 PER_FRAME = ("OnTick", "OnTickEvenPaused", "OnPlayerUpdate", "OnRenderTick", "OnPostRender",
              "OnPreUIDraw", "OnPostUIDraw", "OnFETick", "OnRenderUpdate")
+# ADR-001 D08a: the only per-frame subscription allowed, Events.OnTick in the client module of the
+# animated sprinkler jet (subscribed only while a sprinkler sprays nearby). Nowhere else.
+PER_FRAME_ALLOWED = {"client/LiveWater/LWT_SprinklerJet.lua": {"OnTick"}}
 FAILS = []
 
 
@@ -95,6 +99,8 @@ def check_lua():
         if os.sep + "server" + os.sep in p and not re.match(r"\s*if\s+isClient\(\)\s+then\s+return", text):
             fail("%s: server file without the isClient() guard on its first line" % rel(p))
         for ev in PER_FRAME:
+            if ev in PER_FRAME_ALLOWED.get(rel(p), ()):
+                continue
             if re.search(r"Events\.%s\b" % ev, text):
                 fail("%s: per-frame event %s (D08)" % (rel(p), ev))
     lua = lua51.LuaRuntime()

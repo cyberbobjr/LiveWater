@@ -3,5 +3,6 @@
     "LWTBuildPondPump": "Build Pond Pump",
     "LWTMakeWaterFilter": "Make Water Filter",
     "LWTBuildFlowMeter": "Build Water Meter",
-    "LWTBuildHouseInlet": "Build House Water Inlet"
+    "LWTBuildHouseInlet": "Build House Water Inlet",
+    "LWTBuildSprinkler": "Build Sprinkler"
 }

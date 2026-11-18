@@ -13,5 +13,7 @@
     "ContextMenu_LWT_ReserveBarrel": "Garder en réserve (pris en dernier)",
     "ContextMenu_LWT_UseBarrel": "Utiliser avec les autres barils",
     "ContextMenu_LWT_NoWater": "Pas d'eau : %1",
-    "ContextMenu_LWT_CityWater": "Raccorder au réseau public"
+    "ContextMenu_LWT_CityWater": "Raccorder au réseau public",
+    "ContextMenu_LWT_OpenValve": "Ouvrir la vanne",
+    "ContextMenu_LWT_CloseValve": "Fermer la vanne"
 }
