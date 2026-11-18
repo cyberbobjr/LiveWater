@@ -4,7 +4,7 @@
 
 # LiveWater
 
-**LiveWater** (mod id `batman_LiveWater`) is a Project Zomboid **Build 42.21+** mod (it runs on Build 42.22). The
+**LiveWater** (mod id `batman_LiveWater`) is a Project Zomboid **Build 42.22** mod. The
 taps run dry one day; LiveWater lets you bring the water back yourself: a pond pump next to a lake, a river or a well,
 pipes you lay on the ground, a house water inlet that feeds the sinks, showers, toilets and washing machines, barrels
 you connect to the house, and sprinklers that water the crops on their own.

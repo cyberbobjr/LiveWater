@@ -1,6 +1,6 @@
 [h1]LiveWater[/h1]
 
-[b]Build 42.21+ · Un jugador y multijugador (multijugador aún sin probar)[/b]
+[b]Build 42.22 · Un jugador y multijugador (multijugador aún sin probar)[/b]
 
 Un día los grifos dejan de dar agua. Tráela tú mismo: una bomba de estanque junto al río, tuberías cruzando el patio, agua corriente en casa y aspersores que riegan los cultivos solos.
 

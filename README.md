@@ -1,6 +1,6 @@
 # LiveWater
 
-Project Zomboid Build 42.21+ mod: a pond pump, visible pipes, running water for the house, barrels connected to the
+Project Zomboid Build 42.22 mod: a pond pump, visible pipes, running water for the house, barrels connected to the
 house, city water for the fixtures you set down, and sprinklers for the crops, on an open water network that other mods
 extend through a public API. Singleplayer and multiplayer (multiplayer checked by automated in-game runs only). Translated into 11 languages.
 
