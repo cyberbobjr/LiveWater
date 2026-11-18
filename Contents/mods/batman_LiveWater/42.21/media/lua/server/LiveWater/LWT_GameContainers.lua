@@ -95,7 +95,8 @@ function GameContainers:take(x, y, z, litres)
     if kind == "fuel" then
         local left = obj:getPipedFuelAmount()
         local n = math.min(litres, left)
-        obj:setPipedFuelAmount(math.floor(left - n + 0.5))
+        -- whole units only: a fraction drawn takes a whole unit (rounded up), never creates fuel
+        obj:setPipedFuelAmount(math.floor(left - n))
         return n
     end
     local fc = obj:getFluidContainer()

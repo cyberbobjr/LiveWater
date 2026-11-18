@@ -949,3 +949,8 @@ Relecture de tout le mod contre l'ADR (D04, D08-D10, MP, Kahlua) ; chaque défau
   par une table neuve, perdant les champs inconnus. Correction (`LWT_Relays.lua` `SCHEMA`, `keep` ;
   `LWT_HouseBarrels.lua` `SCHEMA` ; `LWT_GamePlumbing.lua` ; `LWT_Publisher.lua` `SCHEMA`) : `v = 1` partout, fiche
   existante gardée telle quelle. Tests : `test_persistence.py` (4).
+- **E20, essence tirée d'une pompe de station-service.** Défaut : la pompe tient des unités entières ; le retrait
+  arrondissait au plus proche (`math.floor(reste - n + 0.5)`), si bien qu'un tirage de 2,4 L par pas n'en ôtait que 2 :
+  0,4 L d'essence créé à chaque pas (4 L sur 10 pas dans le test). Correction (`LWT_GameContainers.lua` `take`) :
+  arrondi au-dessus de la quantité tirée, jamais d'essence créée. Test : `test_fitting.py`
+  `test_a_fractional_draw_takes_whole_units_rounded_up`.

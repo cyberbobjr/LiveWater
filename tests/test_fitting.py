@@ -192,6 +192,37 @@ function cmd(x) return CMDS:dispatch(P, "switchFitting", { x = x, y = 0, z = 0 }
 """
 
 
+GAS_PUMP = r"""
+STATION = { fuel = 100 }
+function STATION:getPipedFuelAmount() return self.fuel end
+function STATION:setPipedFuelAmount(units)
+    assert(units % 1 == 0, "whole units only")
+    self.fuel = math.max(0, units)
+end
+function STATION:getSprite() return nil end
+function STATION:getUsesExternalWaterSource() return false end
+function STATION:hasModData() return false end
+function STATION:getFluidContainer() return nil end
+function STATION:getSpriteName() return "location_shop_gas_01_0" end
+function instanceof() return false end
+local objects = { size = function() return 1 end, get = function() return STATION end }
+function getCell() return { getGridSquare = function() return { getObjects = function() return objects end } end } end
+GC = require("LiveWater/LWT_GameContainers").new({ registry = LiveWater.Containers, listed = function() return {} end })
+"""
+
+
+class GasPump(unittest.TestCase):
+    """E22 review: a gas station pump holds whole units of fuel; drawing a fraction never creates fuel."""
+
+    def test_a_fractional_draw_takes_whole_units_rounded_up(self):
+        lua = new_lua(API, "server/LiveWater/LWT_GameContainers.lua")
+        lua.execute(GAS_PUMP)
+        total = 0
+        for _ in range(10):
+            total += lua.eval("GC:take(0, 0, 0, 2.4)")
+        self.assertGreaterEqual(100 - lua.eval("STATION.fuel"), total - 1e-9)
+
+
 class SwitchCommand(unittest.TestCase):
     def test_fill_and_pump_alternate_and_refusals(self):
         lua = services(new_lua, FITTING)
