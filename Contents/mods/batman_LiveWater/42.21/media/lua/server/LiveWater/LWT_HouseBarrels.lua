@@ -25,6 +25,9 @@ local Reserve = require "LiveWater/LWT_Reserve"
 local HouseBarrels = {}
 HouseBarrels.__index = HouseBarrels
 
+-- Version of the persisted barrel records and of the mark on the barrel (D04).
+HouseBarrels.SCHEMA = 1
+
 function HouseBarrels.new(deps)
     local store = deps.store
     store.barrels = store.barrels or {}
@@ -68,7 +71,8 @@ function HouseBarrels:inletFor(x, y, z)
 end
 
 function HouseBarrels:write(inlet, x, y, z, record)
-    self.plumbing:markBarrel(x, y, z, record and { inlet = inlet, reserve = record.reserve } or nil)
+    self.plumbing:markBarrel(x, y, z,
+        record and { v = HouseBarrels.SCHEMA, inlet = inlet, reserve = record.reserve } or nil)
 end
 
 function HouseBarrels:connect(x, y, z)
@@ -79,7 +83,7 @@ function HouseBarrels:connect(x, y, z)
     local ikey = keyOf(inlet)
     local list = self.store.barrels[ikey] or {}
     self.store.barrels[ikey] = list
-    local record = { x = x, y = y, z = z, reserve = false }
+    local record = { v = HouseBarrels.SCHEMA, x = x, y = y, z = z, reserve = false }
     list[Grid.key(x, y, z)] = record
     self:write(ikey, x, y, z, record)
     return true

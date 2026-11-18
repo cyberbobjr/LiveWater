@@ -18,6 +18,9 @@ local Grid = require "LiveWater/LWT_Grid"
 local Publisher = {}
 Publisher.__index = Publisher
 
+-- Version of the state mirrored on the game object (D04, LWT_Mirror).
+Publisher.SCHEMA = 1
+
 function Publisher.new(deps)
     return setmetatable({ catalog = deps.catalog, sprites = deps.sprites, mirror = deps.mirror, sounds = deps.sounds,
         visuals = deps.visuals, sent = {}, playing = {}, spraying = {} }, Publisher)
@@ -79,7 +82,7 @@ function Publisher:present(part, stepped)
     self:sound(part, key, stepped)
     local data = part.data or {}
     if self.sent[key] == nil and isEmpty(data) then return end
-    local state = { type = part.type, data = data }
+    local state = { v = Publisher.SCHEMA, type = part.type, data = data }
     local sig = Publisher.signature(state)
     if self.sent[key] ~= sig and self.mirror:writeState(x, y, z, part.type, state) then
         self.sent[key] = sig

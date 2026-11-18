@@ -3,7 +3,7 @@
 -- and Live Wire read it. It lives in the object's movableData, which the vanilla furniture
 -- pickup copies into the item and the placement copies back (ISMoveableSpriteProps), so a pump
 -- carried elsewhere keeps its wear and its filter.
---   ModData.movableData.LiveWater = { type = part type id, data = { [kind] = state } }
+--   ModData.movableData.LiveWater = { v, type = part type id, data = { [kind] = state } }
 
 local Mirror = {}
 

@@ -29,6 +29,8 @@ local Relays = {}
 Relays.__index = Relays
 
 Relays.CAPACITY = 25
+-- Version of the persisted relay and orphan records (D04).
+Relays.SCHEMA = 1
 Relays.EPSILON = 0.001
 Relays.DEFAULT_RANGE = 20
 Relays.DEFAULT_BASE_RANGE = 12
@@ -66,7 +68,7 @@ function Relays:isInlet(part)
     return outletType == self.kind
 end
 
--- Relays recorded for an inlet key: { ["x,y,z"] = { x, y, z } }.
+-- Relays recorded for an inlet key: { ["x,y,z"] = { v, x, y, z } }.
 function Relays:own(key)
     local own = self.store.relays[key]
     if not own then
@@ -80,13 +82,23 @@ end
 function Relays:drop(owner, rkey, pos)
     self:own(owner)[rkey] = nil
     if not self.plumbing:removeRelay(pos.x, pos.y, pos.z, owner) then
-        self.store.orphans[rkey] = { x = pos.x, y = pos.y, z = pos.z, owner = owner }
+        self.store.orphans[rkey] = { v = Relays.SCHEMA, x = pos.x, y = pos.y, z = pos.z, owner = owner }
     end
 end
 
 -- Area of the inlet, or nil when it serves nothing.
 function Relays:areaOf(part)
     return InletArea.of(self.plumbing, part.x, part.y, part.z, self:ranges())
+end
+
+-- Record a relay of the inlet; a record already there is kept with its unknown fields (D04).
+local function keep(own, rkey, pos)
+    local record = own[rkey]
+    if record then
+        record.v = record.v or Relays.SCHEMA
+        return
+    end
+    own[rkey] = { v = Relays.SCHEMA, x = pos.x, y = pos.y, z = pos.z }
 end
 
 -- Place the relays the inlet wants, remove the ones it no longer wants. Scans the fixtures when
@@ -109,9 +121,9 @@ function Relays:refresh(part, force)
         local relay = self.plumbing:relay(pos.x, pos.y, pos.z)
         if not relay then
             self.plumbing:placeRelay(pos.x, pos.y, pos.z, key, Relays.CAPACITY)
-            own[keys[i]] = pos
+            keep(own, keys[i], pos)
         elseif relay.owner == key then
-            own[keys[i]] = pos
+            keep(own, keys[i], pos)
         end
     end
     keys = sortedKeys(own)

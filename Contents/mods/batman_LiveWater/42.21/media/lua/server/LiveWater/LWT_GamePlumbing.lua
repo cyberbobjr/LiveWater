@@ -177,7 +177,7 @@ function GamePlumbing:placeRelay(x, y, z, owner, litres)
     fc:setCapacity(litres)
     fc:setContainerName(GamePlumbing.RELAY_KEY)
     GameEntityFactory.AddComponent(relay, true, fc)
-    relay:getModData()[GamePlumbing.RELAY_KEY] = { inlet = owner }
+    relay:getModData()[GamePlumbing.RELAY_KEY] = { v = 1, inlet = owner }
     sq:transmitAddObjectToSquare(relay, -1)
     return true
 end
@@ -287,7 +287,7 @@ end
 function GamePlumbing:markWasher(x, y, z)
     local obj = washerAt(x, y, z)
     if not obj then return end
-    obj:getModData()[GamePlumbing.WASHER_KEY] = { plumbed = true }
+    obj:getModData()[GamePlumbing.WASHER_KEY] = { v = 1, plumbed = true }
     obj:transmitModData()
 end
 

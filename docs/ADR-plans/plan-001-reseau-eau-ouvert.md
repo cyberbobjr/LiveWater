@@ -943,3 +943,9 @@ Relecture de tout le mod contre l'ADR (D04, D08-D10, MP, Kahlua) ; chaque défau
   reste un simple décor que le joueur peut ramasser, avec un message ; posée au menu (tuyau), elle est refusée avant
   que l'objet soit pris. Le retrait ne nettoie donc que les pièces présentes à son lancement. Tests : `test_removal.py`
   `test_a_part_set_down_after_the_removal_is_refused_and_never_taken_away`, `test_the_refusal_is_translated`.
+- **D04, données versionnées.** Défaut : les fiches des réservoirs relais (`relays`, `orphans`), des barils raccordés
+  (`barrels`), les marques posées sur les objets (relais, baril, lave-linge) et l'état reflété sur l'objet
+  (`movableData.LiveWater`, emporté avec le meuble) n'avaient pas de `v` ; un relevé remplaçait la fiche d'un relais
+  par une table neuve, perdant les champs inconnus. Correction (`LWT_Relays.lua` `SCHEMA`, `keep` ;
+  `LWT_HouseBarrels.lua` `SCHEMA` ; `LWT_GamePlumbing.lua` ; `LWT_Publisher.lua` `SCHEMA`) : `v = 1` partout, fiche
+  existante gardée telle quelle. Tests : `test_persistence.py` (4).
