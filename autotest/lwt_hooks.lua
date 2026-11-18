@@ -122,8 +122,9 @@ local function hasWater(s)
     return s ~= nil and s:has(IsoFlagType.water)
 end
 
--- Free for a part (the rule of LWT_GameWorld:isFree), outdoors, nothing else standing there.
-local function free(s)
+-- Free for a part (the rule of LWT_GameWorld:isFree), outdoors, nothing else standing there. `wallOk`: a wall
+-- on the square's own edge is allowed (a house's south or east wall belongs to the outside square along it).
+local function free(s, wallOk)
     if not s or not s:getFloor() then return false end
     if s:has(IsoFlagType.water) or s:isSolid() or s:isSolidTrans() or s:HasTree() then return false end
     if not s:isOutside() or s:getBuilding() ~= nil then return false end
@@ -131,7 +132,16 @@ local function free(s)
     for i = 0, objects:size() - 1 do
         local obj = objects:get(i)
         local name = obj:getSpriteName() or ""
-        if obj ~= s:getFloor() and not (string.find(name, "^e_") or string.find(name, "^blends_")
+        local props = obj:getProperties()
+        -- a plain wall only: no door, garage door or window in it
+        local opening = instanceof(obj, "IsoDoor") or instanceof(obj, "IsoWindow") or instanceof(obj, "IsoWindowFrame")
+            or (props ~= nil and (props:has(IsoFlagType.DoorWallN) or props:has(IsoFlagType.DoorWallW)
+            or props:has(IsoFlagType.doorN) or props:has(IsoFlagType.doorW) or props:has(IsoFlagType.WindowN)
+            or props:has(IsoFlagType.WindowW) or props:has(IsoFlagType.windowN) or props:has(IsoFlagType.windowW)))
+            or string.find(string.lower(name), "garage", 1, true) ~= nil
+        local wall = wallOk and not opening and props ~= nil and (props:has(IsoFlagType.WallN)
+            or props:has(IsoFlagType.WallW) or props:has(IsoFlagType.WallNW))
+        if obj ~= s:getFloor() and not wall and not (string.find(name, "^e_") or string.find(name, "^blends_")
             or string.find(name, "^vegetation_") or string.find(name, "^d_plants") or string.find(name, "^floors_")) then
             return false
         end
@@ -188,8 +198,11 @@ local function scanFixtures(cx, cy, r)
     return out
 end
 
--- A free outdoor square orthogonally next to the building of `f`, within 15 squares of the fixture.
-local function inletTargets(fixtures, cx, cy, r)
+-- A free outdoor square orthogonally next to the building of `f`, within 15 squares of the fixture. `wallNorth`
+-- (visual captures): only a square whose building is north or west of it, the inlet then hangs on a wall face
+-- the camera sees (the camera always looks north-west): facing S (+0, backboard on its north edge) or E (+1).
+-- `turn` is the facing offset of the inlet tile.
+local function inletTargets(fixtures, cx, cy, r, wallNorth)
     local targets = {}
     for i = 1, #fixtures do
         local f = fixtures[i]
@@ -198,11 +211,13 @@ local function inletTargets(fixtures, cx, cy, r)
                 local dx, dy = x - f.x, y - f.y
                 if dx * dx + dy * dy <= 225 and math.abs(x - cx) <= r and math.abs(y - cy) <= r then
                     local s = sq(x, y, 0)
-                    if free(s) and not nearWater(x, y) then
+                    if free(s, wallNorth) and not nearWater(x, y) then
                         for j = 1, 4 do
                             local n = sq(x + SIDES[j][1], y + SIDES[j][2], 0)
-                            if n and mapBuilding(n) == f.def and not targets[key(x, y)] then
-                                targets[key(x, y)] = { x = x, y = y, fixture = f }
+                            local turn = (j == 1 and 0) or (j == 4 and 1) or nil
+                            if n and mapBuilding(n) == f.def and not targets[key(x, y)]
+                                and (not wallNorth or turn ~= nil) then
+                                targets[key(x, y)] = { x = x, y = y, fixture = f, turn = turn or 0 }
                             end
                         end
                     end
@@ -222,7 +237,8 @@ local function touchesAny(x, y, set, except)
 end
 
 -- Breadth-first search from every pump square to the nearest inlet square through free squares. `withMeter`
--- (visual captures) also takes a straight pipe square, away from the valve, for a flow meter (L.meter).
+-- (visual captures) also takes a straight pipe square, away from the valve, for a flow meter (L.meter), and
+-- keeps only inlet squares with their house to the north (inletTargets, wallNorth).
 local function findLayout(cx, cy, r, withMeter)
     local fixtures = scanFixtures(cx, cy, r)
     if #fixtures == 0 then return nil, "no fixture in map buildings" end
@@ -234,13 +250,24 @@ local function findLayout(cx, cy, r, withMeter)
         end
     end
     if #sinks > 0 then fixtures = sinks end
-    local targets = inletTargets(fixtures, cx, cy, r)
-    local queue, prev, head = {}, {}, 1
+    local targets = inletTargets(fixtures, cx, cy, r, withMeter)
+    -- pump squares; `withMeter` (visual captures): water on one side only counts, the pump is turned so that
+    -- its suction hose (south edge of the tile, facing S) dips into it, the line leaves on the opposite side
+    -- (WATER_TURN: side index of SIDES -> facing offset of the pump tile; OUT: side the line leaves by)
+    local WATER_TURN, OUT = { [3] = 0, [2] = 1, [1] = 2, [4] = 3 }, { [3] = 1, [2] = 4, [1] = 3, [4] = 2 }
+    local queue, prev, head, starts = {}, {}, 1, {}
     for x = cx - r, cx + r do
         for y = cy - r, cy + r do
             if free(sq(x, y, 0)) and nearWater(x, y) then
-                queue[#queue + 1] = { x = x, y = y }
-                prev[key(x, y)] = "start"
+                local side
+                for j = 1, 4 do
+                    if not side and hasWater(sq(x + SIDES[j][1], y + SIDES[j][2], 0)) then side = j end
+                end
+                if not withMeter or side then
+                    queue[#queue + 1] = { x = x, y = y }
+                    prev[key(x, y)] = "start"
+                    starts[key(x, y)] = side and { turn = WATER_TURN[side], out = OUT[side] } or { turn = 0 }
+                end
             end
         end
     end
@@ -256,10 +283,11 @@ local function findLayout(cx, cy, r, withMeter)
             while k ~= "start" do len = len + 1; k = prev[k.k] end
             if len >= 7 then goal = n; break end
         end
+        local start = prev[key(n.x, n.y)] == "start" and starts[key(n.x, n.y)]
         for j = 1, 4 do
             local x, y = n.x + SIDES[j][1], n.y + SIDES[j][2]
             local k = key(x, y)
-            if not prev[k] and math.abs(x - cx) <= r and math.abs(y - cy) <= r and free(sq(x, y, 0)) then
+            if (not withMeter or not start or start.out == j) and not prev[k] and math.abs(x - cx) <= r and math.abs(y - cy) <= r and (free(sq(x, y, 0)) or targets[k]) then
                 prev[k] = { k = key(n.x, n.y), x = n.x, y = n.y }
                 queue[#queue + 1] = { x = x, y = y }
             end
@@ -271,7 +299,9 @@ local function findLayout(cx, cy, r, withMeter)
         table.insert(chain, 1, { x = k.x, y = k.y })
         k = prev[k.k]
     end
-    local L = { pump = chain[1], inlet = chain[#chain], fixture = targets[key(goal.x, goal.y)].fixture, pipes = {} }
+    local target = targets[key(goal.x, goal.y)]
+    local L = { pump = chain[1], inlet = chain[#chain], fixture = target.fixture, inletTurn = target.turn,
+        pumpTurn = starts[key(chain[1].x, chain[1].y)].turn, pipes = {} }
     local used = {}
     for i = 1, #chain do used[key(chain[i].x, chain[i].y)] = true end
     for i = 2, #chain - 1 do L.pipes[#L.pipes + 1] = chain[i] end
@@ -394,14 +424,34 @@ local function giveItems(player, list)
     end
 end
 
--- Vanilla moveable placement (ISMoveablesAction:complete -> ISMoveableSpriteProps:placeMoveable).
-local function placeMoveable(player, spriteName, p)
+-- Vanilla moveable placement (ISMoveablesAction:complete -> ISMoveableSpriteProps:placeMoveable): the props of
+-- the facing set down (`spriteName`), the item found by its own sprite (`origName`, default the same), as a
+-- rotated cursor does.
+local function placeMoveable(player, spriteName, p, origName)
     local props = ISMoveableSpriteProps.new(getSprite(spriteName))
     local square = sq(p.x, p.y, 0)
-    local item = props:findInInventory(player, spriteName)
+    origName = origName or spriteName
+    -- brush and low plants refuse a moveable (ISMoveableSpriteProps:isFreeTile, IsLow): the vegetation that
+    -- `free` lets through is cleared first, as a player would
+    if square then
+        local objs = square:getObjects()
+        for i = objs:size() - 1, 0, -1 do
+            local o = objs:get(i)
+            local name = o:getSpriteName() or ""
+            if o ~= square:getFloor() and not string.find(name, "^vegetation_farming")
+                and (string.find(name, "^e_") or string.find(name, "^vegetation_") or string.find(name, "^d_plants")) then
+                square:transmitRemoveItemFromSquare(o)
+            end
+        end
+    end
+    -- nothing is set down under the player (vanilla refuses): step off the square first
+    if math.floor(player:getX()) == p.x and math.floor(player:getY()) == p.y then
+        player:teleportTo(p.x + 1.5, p.y + 1.5, 0)
+    end
+    local item = props:findInInventory(player, origName)
     if not item then return false, "moveable item not in inventory" end
     if not props:canPlaceMoveableInternal(player, square, item) then return false, "canPlaceMoveable refused" end
-    props:placeMoveable(player, square, spriteName)
+    props:placeMoveable(player, square, origName)
     return true
 end
 
@@ -709,7 +759,7 @@ local function shot(spec)
             hideWindows(spec.prepare == nil)
             local off = spec.offset or { 1, 1 }
             player():teleportTo(p.x + off[1] + 0.5, p.y + off[2] + 0.5, 0)
-            zoomTo(spec.zoom or 0.5)
+            zoomTo(spec.zoomOf and spec.zoomOf() or spec.zoom or 0.5)
             return false
         end
         player():setAlphaAndTarget(0)
@@ -886,8 +936,186 @@ local function fittingSteps()
         prepare = function() openMenu(S.F.low, { objectOf(S.F.low, FIT) }, getText("ContextMenu_LWT_Info")) end })
 end
 
--- The house inlet stands against the north wall of its house: the player waits outside, north-west of it.
-local OUTSIDE = { -1, -2 }
+-- Showcase (promotional picture, every part in one frame): on the working installation, a branch from one
+-- pipe to a barrel fitting on a vanilla rain collector (Fill), and an automatic sprinkler beside another pipe
+-- with its own crop, opened by hand (switchValve). Squares: free, touching no other part than their pipe.
+local FIT_FACING = { { 0, -1, 64 }, { -1, 0, 65 }, { 0, 1, 66 }, { 1, 0, 67 } }   -- branch direction -> fitting
+
+local function showcaseSquares(L)
+    local used = {}
+    local list = { L.pump, L.inlet, L.sprinkler, L.valve, L.crop, L.gen, L.meter }
+    for i = 1, #L.pipes do list[#list + 1] = L.pipes[i] end
+    for i = 1, #list do used[key(list[i].x, list[i].y)] = true end
+    local function ok(x, y, except)
+        return not used[key(x, y)] and free(sq(x, y, 0)) and not nearWater(x, y) and not touchesAny(x, y, used, except)
+    end
+    -- pipes from the middle of the line outwards, away from the other parts
+    local order, mid = {}, math.floor(#L.pipes / 2) + 1
+    for d = 0, #L.pipes do
+        for _, i in ipairs({ mid - d, mid + d }) do
+            local p = L.pipes[i]
+            if p and not order[key(p.x, p.y)] and not near(p, L.valve, 1) and not near(p, L.sprinkler, 1)
+                and not (L.meter and near(p, L.meter, 1)) and not near(p, L.inlet, 2) and not near(p, L.pump, 2) then
+                order[key(p.x, p.y)] = true
+                order[#order + 1] = p
+            end
+        end
+    end
+    -- the automatic sprinkler and its crop on natural ground (not a paved terrace)
+    local function soil(x, y)
+        local s = sq(x, y, 0)
+        local floor = s and s:getFloor()
+        return floor ~= nil and string.find(floor:getSpriteName() or "", "^blends_natural") ~= nil
+    end
+    local X = {}
+    -- the line's middle pipes first, then any pipe of the line
+    local all = {}
+    for i = 1, #order do all[#all + 1] = order[i] end
+    for i = 1, #L.pipes do all[#all + 1] = L.pipes[i] end
+    for i = 1, #all do
+        local p = all[i]
+        for f = 1, #FIT_FACING do
+            local dx, dy = FIT_FACING[f][1], FIT_FACING[f][2]
+            local b1, b2, b3 = { x = p.x + dx, y = p.y + dy }, { x = p.x + 2 * dx, y = p.y + 2 * dy },
+                { x = p.x + 3 * dx, y = p.y + 3 * dy }
+            -- the barrel is no part: only free and off the water
+            if not X.fitting and ok(b1.x, b1.y, key(p.x, p.y)) and ok(b2.x, b2.y, key(b1.x, b1.y))
+                and not used[key(b3.x, b3.y)] and free(sq(b3.x, b3.y, 0)) and not hasWater(sq(b3.x, b3.y, 0)) then
+                X.tee, X.pipe, X.fitting, X.barrel, X.fitSprite = p, b1, b2, b3, SHEET .. FIT_FACING[f][3]
+                used[key(b1.x, b1.y)], used[key(b2.x, b2.y)], used[key(b3.x, b3.y)] = true, true, true
+            end
+        end
+    end
+    if not X.fitting then return nil, "no square for the barrel branch" end
+    -- automatic sprinkler: beside any pipe of the line but the tee, or at the end of one more pipe; with a crop
+    -- square around it; on natural ground first, then anywhere free
+    local function cropAround(x, y, natural)
+        for dx = -1, 1 do
+            for dy = -1, 1 do
+                local qx, qy = x + dx, y + dy
+                if (dx ~= 0 or dy ~= 0) and not used[key(qx, qy)] and free(sq(qx, qy, 0))
+                    and (not natural or soil(qx, qy)) then
+                    return { x = qx, y = qy }
+                end
+            end
+        end
+        return nil
+    end
+    for pass = 1, 2 do
+        local natural = pass == 1
+        for reach = 1, 2 do
+            for i = 1, #L.pipes do
+                local p = L.pipes[i]
+                if not X.auto and not (p.x == X.tee.x and p.y == X.tee.y) then
+                    for j = 1, 4 do
+                        local dx, dy = SIDES[j][1], SIDES[j][2]
+                        local b1, b2 = { x = p.x + dx, y = p.y + dy }, { x = p.x + 2 * dx, y = p.y + 2 * dy }
+                        local spot, link = b1, nil
+                        if reach == 2 then spot, link = b2, b1 end
+                        local fits = not X.auto and (natural == false or soil(spot.x, spot.y))
+                        if fits and link then
+                            fits = ok(link.x, link.y, key(p.x, p.y)) and ok(spot.x, spot.y, key(link.x, link.y))
+                        elseif fits then
+                            fits = ok(spot.x, spot.y, key(p.x, p.y))
+                        end
+                        local crop = fits and cropAround(spot.x, spot.y, natural)
+                        if crop then X.auto, X.autoPipe, X.autoCrop = spot, link, crop end
+                    end
+                end
+            end
+        end
+    end
+    if not X.auto then return nil, "no square for the automatic sprinkler" end
+    return X
+end
+
+-- Square at the centre of every part of the showcase and the zoom that fits them in a 1280 x 720 picture
+-- (at zoom 1 a step along x - y is 32 px across, a step along x + y 16 px down; margins kept).
+local function showcaseFrame()
+    local L, X = S.L, S.X
+    local list = { L.pump, L.gen, L.inlet, L.sprinkler, L.valve, L.meter, X.barrel, X.fitting, X.auto }
+    local a1, a2, b1, b2
+    for i = 1, #list do
+        local p = list[i]
+        if p then
+            local a, b = p.x - p.y, p.x + p.y
+            a1, a2 = math.min(a1 or a, a), math.max(a2 or a, a)
+            b1, b2 = math.min(b1 or b, b), math.max(b2 or b, b)
+        end
+    end
+    -- the view centres a little above the player's square: one step further down the screen
+    local a, b = (a1 + a2) / 2, (b1 + b2) / 2 + 2
+    local x, y = math.floor((a + b) / 2 + 0.5), math.floor((b - a) / 2 + 0.5)
+    local zoom = math.max(0.75, (a2 - a1 + 6) * 32 / 1280, (b2 - b1 + 10) * 16 / 720)
+    return { x = x, y = y }, zoom
+end
+
+local function showcaseSteps()
+    local FIT, AUTO = "LiveWater:BarrelFitting", "LiveWater:SprinklerAuto"
+    addStep("showcase: barrel branch laid", function()
+        if not S.X then
+            local X, why = showcaseSquares(S.L)
+            if not X then
+                rec(false, "showcase squares found", why)
+                return "abort"
+            end
+            S.X = X
+            info("showcase: tee " .. key(X.tee.x, X.tee.y) .. " fitting " .. key(X.fitting.x, X.fitting.y)
+                .. " barrel " .. key(X.barrel.x, X.barrel.y) .. " auto sprinkler " .. key(X.auto.x, X.auto.y))
+            goNear(X.pipe)
+            send("lay", { x = X.pipe.x, y = X.pipe.y, z = 0, part = PIPE })
+            return false
+        end
+        local X = S.X
+        if not entryAt(X.pipe) then return false end
+        if not X.autoPipe then return true end
+        if not X.autoPipeSent then
+            X.autoPipeSent = true
+            goNear(X.autoPipe)
+            send("lay", { x = X.autoPipe.x, y = X.autoPipe.y, z = 0, part = PIPE })
+            return false
+        end
+        return entryAt(X.autoPipe) ~= nil
+    end, 30)
+    addStep("showcase: rain collector, fitting, automatic sprinkler, crop", function()
+        local X = S.X
+        if not X.placed then
+            X.placed = true
+            -- nearly full: the fitting takes a few litres, the pump's flow is left for the sprinklers
+            local barrel, hasFluid = makeCollector(X.barrel, "carpentry_02_122", 0)
+            local fc = barrel:getFluidContainer()
+            if fc then fc:addFluid(Fluid.Water, math.max(0, fc:getFreeCapacity() - 5)) end
+            goNear(X.fitting)
+            local ok1, why1 = placeMoveable(player(), X.fitSprite, X.fitting, FITTING_SPRITE)
+            goNear(X.auto)
+            local ok2, why2 = placeMoveable(player(), SHEET .. "56", X.auto)
+            local crop = plant(X.autoCrop)
+            if crop then
+                crop.waterLvl = 0
+                crop:saveData()
+            end
+            rec(hasFluid and ok1 and ok2 and crop ~= nil, "showcase parts set down (vanilla placement)",
+                tostring(why1 or "") .. " " .. tostring(why2 or ""))
+            send("switchValve", { x = X.auto.x, y = X.auto.y, z = 0 })
+            return false
+        end
+        local e = entryAt(X.auto)
+        return e ~= nil and e.data and e.data.valve and e.data.valve.open == true
+    end, 30)
+    addStep("one ten-minute step for the showcase", waitSteps(1), 120)
+    addStep("showcase: fitting filling, automatic sprinkler watering", function()
+        local X = S.X
+        local fit, auto = spriteOf(X.fitting, FIT), spriteOf(X.auto, AUTO)
+        local idx = auto and tonumber(string.sub(auto, #SHEET + 1)) or -1
+        rec(fit ~= nil and idx >= 60 and idx <= 63, "showcase: fitting drawn, automatic sprinkler watering",
+            "fitting " .. tostring(fit) .. ", automatic sprinkler " .. tostring(auto))
+        return true
+    end)
+end
+
+-- Visual captures: the house inlet hangs on the south wall of its house (house north of it, wallNorth): the
+-- player waits outside, south-east of it.
+local OUTSIDE = { 1, 1 }
 
 local function visualSteps(block)
     if block == "unfiltered" then
@@ -925,7 +1153,8 @@ local function visualSteps(block)
         shot({ name = "pump-filter-running", at = at("pump"), note = spriteNote("pump", "LiveWater:PondPump") })
         shot({ name = "inlet-filtered", at = at("inlet"), offset = OUTSIDE, note = spriteNote("inlet", "LiveWater:HouseInlet") })
         shot({ name = "network-filtered", at = at("valve"), zoom = 0.75 })
-        -- whole installation working (pump, filter, line, valve, meter, sprinkler spraying, house served), for
+        -- whole installation working (pump, filter, line, valve, meter, sprinkler spraying, house served, plus the
+        -- showcase: barrel branch and automatic sprinkler), for
         -- a promotional picture: the trees around it are removed from this copied world (their faded outlines
         -- would cover the parts).
         addStep("staging: trees around the installation removed", function()
@@ -948,8 +1177,62 @@ local function visualSteps(block)
             info("staging: " .. n .. " tree(s) removed")
             return true
         end)
+        showcaseSteps()
         shot({ name = "installation", at = middle, zoom = 1.0 })
         shot({ name = "installation-close", at = at("valve"), zoom = 0.75 })
+        addStep("showcase framed", function()
+            -- staging: the bushes on the parts' squares and on the squares in front of them (south, east) would
+            -- hide the pipes; removed from this copied world (crops kept)
+            local L, X, n = S.L, S.X, 0
+            local list = { L.pump, L.inlet, L.sprinkler, L.valve, L.meter, X.pipe, X.fitting, X.auto, X.autoPipe }
+            for i = 1, #L.pipes do list[#list + 1] = L.pipes[i] end
+            for i = 1, #list do
+                local p = list[i]
+                for _, d in ipairs({ { 0, 0 }, { 1, 0 }, { 0, 1 }, { 1, 1 } }) do
+                    local s = p and sq(p.x + d[1], p.y + d[2], 0)
+                    local objs = s and s:getObjects()
+                    for k = (objs and objs:size() or 0) - 1, 0, -1 do
+                        local o = objs:get(k)
+                        local name = o:getSpriteName() or ""
+                        if o ~= s:getFloor() and not string.find(name, "^vegetation_farming")
+                            and (string.find(name, "^vegetation_") or string.find(name, "^f_bushes")) then
+                            s:transmitRemoveItemFromSquare(o)
+                            n = n + 1
+                        end
+                    end
+                end
+            end
+            info("staging: " .. n .. " bush(es) removed")
+            local c, zoom = showcaseFrame()
+            S.showcaseAt, S.showcaseZoom = c, zoom
+            info("showcase frame " .. key(c.x, c.y) .. " zoom " .. zoom)
+            return true
+        end)
+        shot({ name = "showcase", at = function() return S.showcaseAt end, offset = { 0, 0 },
+            zoomOf = function() return S.showcaseZoom end })
+        -- the later phases are judged on the nominal network alone
+        addStep("showcase: branch pipe taken up and automatic sprinkler closed", function()
+            local X = S.X
+            if not X.undone then
+                X.undone = true
+                goNear(X.pipe)
+                send("dismantle", { x = X.pipe.x, y = X.pipe.y, z = 0 })
+                return false
+            end
+            if entryAt(X.pipe) then return false end
+            if not X.closing then
+                X.closing = true
+                goNear(X.auto)
+                send("switchValve", { x = X.auto.x, y = X.auto.y, z = 0 })
+                return false
+            end
+            local e = entryAt(X.auto)
+            if entryAt(X.pipe) or not (e and e.data and e.data.valve and e.data.valve.open == false) then
+                return false
+            end
+            rec(true, "showcase undone (branch pipe taken up, automatic sprinkler closed)")
+            return true
+        end, 30)
         stopDry()
     elseif block == "inline closed" then
         shot({ name = "valve-closed", at = at("valve"), note = spriteNote("valve", VALVE) })
@@ -984,7 +1267,8 @@ local function buildSteps(ctx)
             { "Base.Mov_LiveWater_PondPump", 1 }, { "Base.Mov_LiveWater_HouseInlet", 1 },
             { "Base.Mov_LiveWater_Sprinkler", 1 }, { "Base.Mov_LiveWater_Valve", 1 } })
         if visual then
-            giveItems(pl, { { "Base.Mov_LiveWater_FlowMeter", 1 }, { "Base.Mov_LiveWater_BarrelFitting", 2 } })
+            giveItems(pl, { { "Base.Mov_LiveWater_FlowMeter", 1 }, { "Base.Mov_LiveWater_BarrelFitting", 3 },
+                { "Base.Mov_LiveWater_SprinklerAuto", 1 } })
             getGameTime():setTimeOfDay(11)
             getClimateManager():stopWeatherAndThunder()
             info("visual fixtures: 11:00, weather stopped")
@@ -998,6 +1282,12 @@ local function buildSteps(ctx)
         if not S.center then
             S.centerIndex = S.centerIndex + 1
             S.center = centers[S.centerIndex]
+            if not S.center and S.best and not S.bestDone then
+                -- the last places had no layout: go back to the best one
+                S.bestDone = true
+                S.centerIndex = S.best.index
+                S.center = centers[S.centerIndex]
+            end
             if not S.center then
                 rec(false, "layout found near water", "no candidate place left")
                 return "abort"
@@ -1017,10 +1307,26 @@ local function buildSteps(ctx)
             S.center = nil
             return false
         end
+        -- visual captures: the shortest line of all the candidate places (the whole installation in one
+        -- picture); every place is tried, then the best one is searched again once loaded around the player
+        if visual and not S.bestDone then
+            info("layout around " .. key(c.x, c.y) .. ": " .. #L.pipes .. " pipes")
+            if not S.best or #L.pipes < S.best.n then S.best = { n = #L.pipes, index = S.centerIndex } end
+            if S.centerIndex < #centers then
+                S.center = nil
+                return false
+            end
+            S.bestDone = true
+            if S.best.index ~= S.centerIndex then
+                S.centerIndex = S.best.index - 1
+                S.center = nil
+                return false
+            end
+        end
         S.L = L
         rec(true, "layout found near water", "around " .. key(c.x, c.y) .. ": " .. describe(L))
         return true
-    end, 300)
+    end, 600)
 
     addStep("fixtures: generator, crop, plumbed fixture", function()
         local L = S.L
@@ -1036,7 +1342,7 @@ local function buildSteps(ctx)
 
     addStep("pond pump set down next to water (vanilla placement)", function()
         goNear(S.L.pump)
-        local ok, why = placeMoveable(player(), PUMP_SPRITE, S.L.pump)
+        local ok, why = placeMoveable(player(), SHEET .. (24 + (S.L.pumpTurn or 0)), S.L.pump, PUMP_SPRITE)
         local e = entryAt(S.L.pump)
         rec(ok and e ~= nil and e.type == "LiveWater:PondPump", "pond pump set down next to water (vanilla placement)",
             tostring(why or "") .. " entry " .. tostring(e and e.type) .. " source "
@@ -1063,7 +1369,7 @@ local function buildSteps(ctx)
     addStep("house inlet and sprinkler set down (vanilla placement)", function()
         local L = S.L
         goNear(L.inlet)
-        local ok1, why1 = placeMoveable(player(), INLET_SPRITE, L.inlet)
+        local ok1, why1 = placeMoveable(player(), SHEET .. (40 + (L.inletTurn or 0)), L.inlet, INLET_SPRITE)
         goNear(L.sprinkler)
         local ok2, why2 = placeMoveable(player(), SPRINKLER_SPRITE, L.sprinkler)
         goNear(L.valve)
@@ -1132,7 +1438,7 @@ local function buildSteps(ctx)
     addStep("checks without filter", function()
         local L, seen = S.L, S.seen
         info(seenText())
-        rec(seen.powered and seen.running and seen.pumpSprite[SHEET .. "28"] == true,
+        rec(seen.powered and seen.running and seen.pumpSprite[SHEET .. (28 + (L.pumpTurn or 0))] == true,
             "pump powered by the generator, running, sprite on")
         if P.livewire == "1" then
             rec(seen.consumer == true and (seen.watts or 0) > 0, "Live Wire knows the pump as a consumer and bills it",
@@ -1142,7 +1448,7 @@ local function buildSteps(ctx)
         local isprite = spriteOf(L.inlet, "LiveWater:HouseInlet")
         rec(seen.inlet.unfiltered and not seen.inlet.served and amount <= 0.001,
             "house inlet refuses unfiltered pond water", "relays " .. n .. " litres " .. amount)
-        rec(isprite == SHEET .. "44", "house inlet sprite amber (unfiltered)", tostring(isprite))
+        rec(isprite == SHEET .. (44 + (L.inletTurn or 0)), "house inlet sprite amber (unfiltered)", tostring(isprite))
         local pl = plantAt(L.crop)
         local level = pl and pl.waterLvl or -1
         rec(seen.sprinkler.served and level > S.levelBefore, "sprinkler waters the crop",
@@ -1175,13 +1481,13 @@ local function buildSteps(ctx)
         rec(seen.inlet.served and n > 0 and amount > 0, "house inlet served, relay tank filled",
             "relays " .. n .. " litres " .. amount)
         local isprite = spriteOf(L.inlet, "LiveWater:HouseInlet")
-        rec(isprite == SHEET .. "40", "house inlet sprite green (filtered)", tostring(isprite))
+        rec(isprite == SHEET .. (40 + (L.inletTurn or 0)), "house inlet sprite green (filtered)", tostring(isprite))
         local obj = L.fixture.obj
         local clean, tainted = relayFluids(L)
         rec(obj:getFluidAmount() > 0 and obj:hasWater() and clean > 0 and tainted <= 0.001,
             "the plumbed fixture gives clean water", "fixture litres " .. tostring(obj:getFluidAmount())
             .. ", tank clean " .. clean .. " tainted " .. tainted)
-        rec(seen.pumpSprite[SHEET .. "32"] == true, "pump sprite running with filter")
+        rec(seen.pumpSprite[SHEET .. (32 + (L.pumpTurn or 0))] == true, "pump sprite running with filter")
         return true
     end)
 
