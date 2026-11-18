@@ -3,7 +3,8 @@
 --       state       what the last network step did with the inlet (LWT_Flow), read only when a
 --                   pump is on its network (pumped)
 --       short       why its barrels left a relay short (LWT_Reserve: "gravity", "empty"), or nil
---     reasons: "unfiltered", "no_pressure", "no_water", "closed", "gravity", "empty", "no_supply"
+--     reasons: "unfiltered", "no_pressure", "no_water", "closed", "wrong_fluid", "gravity", "empty",
+--     "no_supply"
 --   fixture(info) -> translation key of the line shown at a fixture without water; info =
 --       { plumbed (uses an outside source), source = nil, "ours" (a LiveWater relay) or "other",
 --         why = reason noted on our relay }
@@ -11,7 +12,7 @@
 local Diagnosis = {}
 
 -- Network outcomes that leave the house without water.
-Diagnosis.NETWORK = { unfiltered = true, no_pressure = true, no_water = true, closed = true }
+Diagnosis.NETWORK = { unfiltered = true, no_pressure = true, no_water = true, closed = true, wrong_fluid = true }
 
 function Diagnosis.inlet(state, short, hasBarrels, pumped)
     if pumped and Diagnosis.NETWORK[state] then return state end

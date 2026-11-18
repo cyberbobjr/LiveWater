@@ -22,7 +22,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 | E17 | Puits comme source d'eau propre (P02) | Terminée (2026-11-18) | E08 | D24 | S | E16 |
 | E18 | Tuyaux d'un étage à l'autre (P10) | Annulée (Q06 : non repris, l'arrivée d'eau dessert les étages) | — | D24 | — | — |
 | E19 | Sous-sols et lave-linge desservis par l'arrivée d'eau (P16, P18) | Terminée (2026-11-18) | E09 | D18, D24 | S | E20 |
-| E20 | Raccord de baril « Remplir » ou « Pomper », réseau d'essence (P02, P17) | À faire | E07 | D24, D26 | M | E19 |
+| E20 | Raccord de baril « Remplir » ou « Pomper », réseau d'essence (P02, P17) | Terminée (2026-11-18) | E07 | D24, D26 | M | E19 |
 | E21 | Retrait propre du mod (P21) | À faire | E09, E11 | D03, D24 | S | — |
 | E23 | Baril raccordé à la maison : gravité, courant sur la case, réserve partagée, mise en réserve, baril gardé pour un liquide (L01-L03, L06, L07) | Terminée (2026-11-18) | E09 | D27, D28 | L | E24 |
 | E24 | Liquide choisi par point d'eau (L05) | Annulée (Q07 : eau seulement aux points d'eau) | — | D28 | — | — |
@@ -541,6 +541,52 @@ Choix faits sans l'utilisateur :
 Preuves :
 - `python -B -m unittest discover -s tests` → `Ran 167 tests` … `OK` ;
 - `python -B tools/check_mod.py` → `OK: 62 Lua file(s) checked`.
+Non testé en jeu.
+
+### E20 — Raccord de baril
+
+Clôture (2026-11-18). Fichiers : `Parts/LWT_PartBarrelFitting.lua` (`LiveWater:BarrelFitting` : `variants` `fill`
+64-67, `fill_low` 68-71, `pump` 72-75), nouvelle capacité `Capabilities/LWT_CapFitting.lua` (mode « Remplir » ou
+« Pomper », débit 50 L par pas ; crochets `outlet` (type `barrelFill`, fluide accepté en quatrième résultat), `draw`,
+`sense`, `fittingMode`, `setFittingMode`, `stepped`, `status`, `look`, `actions`, `lines`), `LWT_Containers.lua`
+(registre des conteneurs : forme par sprite ou nom d'entité, `low` pour les caisses bâchées, inconnu = `tall`),
+`LWT_Flow.lua` (pièces qui puisent : les pompes tirent le baril au lieu de leur prise, un fluide par réseau, famille
+`fuel` jamais purifiée, état `wrong_fluid`, `drawn` dans le bilan), `LWT_Events.lua` (`waterDrawn`),
+`LWT_Diagnosis.lua` (`wrong_fluid`), `LWT_Capabilities.lua` et `LWT_API.lua` (révision 11, `registerContainer`),
+`LWT_Protocol.lua` (`switchFitting`), `LWT_Reasons.lua` (`not_fitting`) ; serveur `LWT_Fittings.lua` (tâche de
+l'horloge : conteneur relevé derrière le raccord ; gestionnaire `barrelFill` ; litres puisés retirés),
+`LWT_GameContainers.lua` (adaptateur : baril ou récupérateur, pompe à essence d'une station), `LWT_Clock.lua`
+(`waterDrawn`), `Commands/LWT_CmdSwitchFitting.lua`, `LWT_Server.lua` ; client `LWT_NetworkView.lua` (couleur de
+`wrong_fluid`) ; `LWT_moveables.txt` (`Base.Mov_LiveWater_BarrelFitting`), recette `LWTBuildBarrelFitting`,
+traductions EN et FR ; tests `tests/test_fitting.py`, doublure `tests/lwt_fakes.py` (tous les événements du bus notés),
+`test_api.py` (révision 11).
+Vérifié dans le vanilla 42.22 (confirmé statiquement) : récupérateurs bas = caisses bâchées `carpentry_02_54`
+(`RainCollector`, 400 L) et `carpentry_02_120` (`RainCollector_Tarp`, 400 L), ronds `carpentry_02_122` à `_127`
+(600 L) (`generated/entities/outdoors/entity_raincollector*.txt`) ; `FluidContainer` : `addFluid(Fluid, litres)`,
+`removeFluid(litres)`, `getSpecificFluidAmount` (`FluidContainer.java:846, 880`) ; pompe à essence : propriété de tuile
+`fuelAmount`, `getPipedFuelAmount` (courant exigé sauf essence illimitée) et `setPipedFuelAmount`
+(`IsoObject.java:2461-2540`).
+Choix faits sans l'utilisateur :
+- le conteneur est sur la case derrière le raccord (à l'opposé de son orientation : orienté S, tuyau au sud, baril
+  au nord, comme dessiné), sinon sur le premier autre côté qui en porte un ; conteneur = baril raccordable
+  (`LWT_WaterObjects.isBarrel` : 20 L ou plus) ou pompe à essence d'une station (« Pomper » seulement) ;
+- « Remplir » : sortie de coût 1, au plus 50 L par pas et jamais plus que la place libre (aucune fuite) ; un baril
+  vide prend tout fluide, un baril d'eau seulement de l'eau, un baril d'essence seulement de l'essence, un baril d'un
+  autre liquide rien (`wrong_fluid`) ;
+- « Pomper » : quand un raccord en « Pomper » atteint par l'eau contient de l'eau ou de l'essence, les pompes du réseau
+  tirent ce baril au lieu de leur prise (au plus leur débit et 50 L par raccord, le plus proche d'abord) ; un fluide
+  par réseau : celui du raccord le plus proche, les autres ne donnent rien ce pas ; baril vide : la pompe reprend sa
+  prise ; l'eau du baril garde sa qualité (pluie croupie : le robinet la purifie, règle vanilla) ;
+- réseau d'essence : seuls les raccords en « Remplir » le servent ; arrivée d'eau et arroseurs disent « les tuyaux
+  transportent de l'essence » (`wrong_fluid`) ; un filtre ne change pas l'essence ; le compteur dit « essence » ;
+- sprite choisi par le serveur : `pump` en « Pomper », sinon `fill_low` pour un conteneur inscrit bas, `fill`
+  sinon ; forme par sprite ou nom d'entité, extensible par `LiveWater.API.registerContainer` ;
+- la cuve d'une station : il faut une pompe de LiveWater dans le réseau (posée près d'une eau ou d'un puits) : la pompe
+  d'étang tire alors l'essence de la pompe de la station par le raccord ; pas de pompe propre au raccord ;
+- recette sans compétence : clé à tuyau gardée, 1 section de tuyau, 1 `Base.RubberHose`.
+Preuves :
+- `python -B -m unittest discover -s tests` → `Ran 255 tests` … `OK` ;
+- `python -B tools/check_mod.py` → `OK: 96 Lua file(s) checked`.
 Non testé en jeu.
 
 ### E23 — Baril raccordé à la maison

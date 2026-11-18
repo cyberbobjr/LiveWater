@@ -48,4 +48,8 @@
 - Network view: right-click a part and choose "Show the Water Network" to highlight the whole network, coloured by
   state (green: water delivered, red: not enough pressure, amber: unfiltered water refused, grey: closed or dry,
   blue: pipes and pumps), until "Hide the Water Network".
+- Barrel fitting: set it between a pipe and a barrel or rain collector. "Fill": the pipes fill the barrel (never
+  overflowing); "Pump": the pump draws the barrel instead of its pond. Its look follows the mode and the collector.
+- Gasoline: a fitting set to Pump on a gasoline barrel or a gas station pump makes a gasoline network, which only
+  fills barrels through fittings set to Fill; houses and sprinklers get nothing and say so.
 - The house water inlet also serves the basement (fixtures under the house) and plumbed washing machines.

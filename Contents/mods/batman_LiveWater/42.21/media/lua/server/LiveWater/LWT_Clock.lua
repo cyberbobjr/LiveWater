@@ -7,7 +7,8 @@ if isClient() then return end
 --   2. the distribution (LWT_Flow);
 --   3. every member hears the outcome (`stepped` hook: litres through it), then is presented
 --      (sprite by state, mirrored state: publisher port);
---   4. each outlet served announces waterDelivered (part, litres, quality).
+--   4. each outlet served announces waterDelivered (part, litres, quality), each part drawn from
+--      announces waterDrawn (part, litres, quality).
 -- Before the networks, every chore (optional list of objects with tick()) does its own bounded
 -- ten-minute work on the same clock (relay tanks of the house inlets, LWT_Relays): no second clock.
 -- No game API here; dependencies are injected: { network, flow, catalog, world (port with
@@ -97,6 +98,9 @@ function Clock:tick()
                 if out.state == "served" then
                     self.events.emit("waterDelivered", out.part, out.litres, out.quality)
                 end
+            end
+            for _, d in pairs(result.drawn) do
+                if d.litres > 0 then self.events.emit("waterDrawn", d.part, d.litres, result.quality) end
             end
         end
     end

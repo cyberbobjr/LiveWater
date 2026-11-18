@@ -57,6 +57,15 @@
 --   actions may carry `choices` = { { key, arg, args } }: a submenu, args sent with the command
 -- Revision 10 (network view):
 --   status(p, d)          state token shown by the network view (an outlet: its last state), or nil
+-- Revision 11 (barrel fittings, fuel):
+--   outlet(p, d)          fourth result: the fluid the outlet takes (nil = water only, "any",
+--                         "water", "fuel", "other"); state "wrong_fluid" when the network carries
+--                         another one
+--   draw(p, d, ctx)       litres the pumps may draw from the part now and their quality
+--                         ("clean", "tainted", "fuel"), else nil
+--   sense(p, d, info)     the authority tells what the part's container holds (d created)
+--   fittingMode(p, d)     a barrel fitting: its mode ("fill", "pump") and its state
+--   setFittingMode(p, d, mode)
 -- ctx is the context of the step: { need, hours (revision 9: world age in hours), scale = function(optionName) -> multiplier,
 -- random = function() -> 0..1 (breakdowns; none without it), sources = registry of source kinds
 -- (revision 6, LWT_Sources) }.
@@ -67,7 +76,7 @@ local HOOKS = { "define", "carries", "blocks", "pressurizes", "ports", "supply",
     "wear", "layable", "look", "attach", "power", "powered", "stepped", "output", "lines",
     "cartridge", "fit", "unfit", "actions", "switchable", "switch", "repairable", "repair", "sound",
     "spray", "jet", "opened", "open", "prepare", "opens", "timer", "setTimer",
-    "status" }
+    "status", "draw", "sense", "fittingMode", "setFittingMode" }
 
 local Capabilities = {}
 Capabilities.__index = Capabilities

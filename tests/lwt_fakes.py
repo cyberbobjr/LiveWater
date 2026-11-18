@@ -122,7 +122,7 @@ function newPlayer(x, y, z, items, tools)
 end
 
 EMITTED = {}
-for _, name in ipairs({ "partAdded", "partRemoved", "networkChanged", "waterDelivered", "valveChanged" }) do
+for _, name in ipairs(require("LiveWater/LWT_Events").NAMES) do
     LiveWater.Events.on(name, function(...) table.insert(EMITTED, { name, ... }) end)
 end
 function emitted(name)

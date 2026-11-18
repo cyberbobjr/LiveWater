@@ -22,10 +22,11 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
 - `LWT_Capabilities.lua` : registre des capacités (pattern strategy : chaque capacité est une table de crochets copiée
   par liste blanche).
 - `Capabilities/LWT_Cap<Nom>.lua` : un fichier par capacité (`conduit`, `intake`, `pump`, `valve`, `filter`,
-  `outlet`, `controller`, `layable`, `meter`, `spray`), réglages et valeurs par défaut de la capacité.
+  `outlet`, `controller`, `layable`, `meter`, `spray`, `fitting`), réglages et valeurs par défaut de la capacité.
 - `Parts/LWT_Part<Nom>.lua` : un fichier par pièce de LiveWater, inscrite par l'API publique comme celle d'un autre
   mod (`LWT_PartPipe.lua` : `LiveWater:PipeGalvanized` ; `LWT_PartPondPump.lua` : `LiveWater:PondPump` ; `LWT_PartFlowMeter.lua` :
-  `LiveWater:FlowMeter` ; `LWT_PartHouseInlet.lua` : `LiveWater:HouseInlet` ; `LWT_PartSprinkler.lua` : `LiveWater:Sprinkler` ; `LWT_PartSprinklerAuto.lua` : `LiveWater:SprinklerAuto`). `LWT_Tiles.lua` : noms des sprites du
+  `LiveWater:FlowMeter` ; `LWT_PartHouseInlet.lua` : `LiveWater:HouseInlet` ; `LWT_PartSprinkler.lua` : `LiveWater:Sprinkler` ; `LWT_PartSprinklerAuto.lua` : `LiveWater:SprinklerAuto` ; `LWT_PartBarrelFitting.lua` : `LiveWater:BarrelFitting`).
+  `LWT_Containers.lua` (pur) : registre des conteneurs d'un raccord de baril (forme par sprite ou entité). `LWT_Tiles.lua` : noms des sprites du
   tileset et `variants` d'une pièce dessinée par état et orientation.
 - `LWT_InletArea.lua` (pur) : cases servies par une arrivée d'eau (bâtiment de la carte touché, cercle de portée,
   jusqu'à 3 étages au-dessus, sous-sols jusqu'à 2 niveaux sous l'emprise du rez-de-chaussée ; hors bâtiment de la carte,
@@ -62,6 +63,8 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
   qualité, sorties servies dans l'ordre de service selon leur besoin, réserve de pression, filtre sur le chemin et
   son usure ; litres et qualité de l'eau servie portés sur chaque pièce de son chemin (`through`, `qualityAt` ; part
   de chaque pompe). Crochets `supply`, `source`, `outlet`, `purifies`, `wear` ; le besoin vient des adaptateurs.
+  Révision 11 : pièces qui puisent (`draw`, raccord en « Pomper ») à la place des prises des pompes, un fluide par
+  réseau (eau ou essence), sortie qui refuse ce fluide (`wrong_fluid`), litres puisés (`drawn`).
 
 `server/LiveWater/` (chaque fichier commence par `if isClient() then return end`) :
 - `LWT_Server.lua` : racine de composition sur l'autorité. À `OnInitGlobalModData`, construit les services avec leurs
@@ -94,6 +97,9 @@ commandes du filtre) ; un refus est dit au joueur par clé de traduction.
 - `LWT_Plants.lua` : plantes d'un arroseur (gestionnaire `sprinkler` : besoin en doses des plantes du rayon qui ont
   besoin d'eau, doses données les plus proches d'abord) ; `LWT_GameFarming.lua` : adaptateur de l'agriculture vanilla
   (`SFarmingSystem.instance:getLuaObjectAt`, `SPlantGlobalObject:water`).
+- `LWT_Fittings.lua` : raccords de baril (tâche de l'horloge : conteneur relevé et présenté ; gestionnaire
+  `barrelFill` ; litres puisés retirés sur `waterDrawn`) ; `LWT_GameContainers.lua` : adaptateur (baril,
+  récupérateur, pompe à essence d'une station).
 - `LWT_Diagnostics.lua` : tâche de l'horloge, raison du manque d'eau notée sur les relais vides (`LWT_Diagnosis`).
 - `LWT_WasherFix.lua` : tâche de l'horloge, serveur seulement : état des lave-linge servis par nos relais renvoyé aux
   clients (arrêt à sec, raccord), option `WasherFix`.

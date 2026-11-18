@@ -19,5 +19,7 @@
     "ContextMenu_LWT_SetTimer": "Minuterie d'arrosage",
     "ContextMenu_LWT_EveryHours": "Toutes les %1 h",
     "ContextMenu_LWT_ShowNetwork": "Afficher le réseau d'eau",
-    "ContextMenu_LWT_HideNetwork": "Masquer le réseau d'eau"
+    "ContextMenu_LWT_HideNetwork": "Masquer le réseau d'eau",
+    "ContextMenu_LWT_FittingToPump": "Régler sur Pomper",
+    "ContextMenu_LWT_FittingToFill": "Régler sur Remplir"
 }

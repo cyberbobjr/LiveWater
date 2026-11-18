@@ -4,12 +4,14 @@
 -- Events, emitted on the authority only:
 --   partAdded (part)  partRemoved (part)  networkChanged (networkId)
 --   waterDelivered (part, litres, quality)  valveChanged (part, open)
+--   waterDrawn (part, litres, quality): litres the pumps took from a part that draws (a barrel
+--   fitting set to Pump, API revision 11)
 -- Subscribers run in subscription order; the same function subscribed twice runs once; emit
 -- does not catch errors. This is not the engine's Events table.
 
 local EventBus = {}
 
-EventBus.NAMES = { "partAdded", "partRemoved", "networkChanged", "waterDelivered", "valveChanged" }
+EventBus.NAMES = { "partAdded", "partRemoved", "networkChanged", "waterDelivered", "valveChanged", "waterDrawn" }
 
 -- New bus for the given list of event names. on/off return true, or false and
 -- "unknown_event" or "invalid_handler"; emit of an unknown name is a programming error.

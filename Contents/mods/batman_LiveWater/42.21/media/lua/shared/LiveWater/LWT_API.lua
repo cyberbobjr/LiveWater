@@ -11,6 +11,7 @@ local Capabilities = require "LiveWater/LWT_Capabilities"
 local Parts = require "LiveWater/LWT_Parts"
 local EventBus = require "LiveWater/LWT_Events"
 local Sources = require "LiveWater/LWT_Sources"
+local Containers = require "LiveWater/LWT_Containers"
 
 -- Starting capability kinds (D02): kind -> file under LiveWater/Capabilities.
 local STARTING_CAPABILITIES = {
@@ -24,6 +25,7 @@ local STARTING_CAPABILITIES = {
     layable = "LWT_CapLayable",
     meter = "LWT_CapMeter",
     spray = "LWT_CapSpray",
+    fitting = "LWT_CapFitting",
 }
 
 -- Starting source kinds (D16, D17): kind -> file under LiveWater/Sources.
@@ -48,6 +50,7 @@ end
 LiveWater.Capabilities = capabilities
 LiveWater.Parts = parts
 LiveWater.Sources = sources
+LiveWater.Containers = Containers.new()
 LiveWater.Events = EventBus.new(EventBus.NAMES)
 
 -- Revision 2: part definition field `variants`, capability hooks look, attach, power, powered,
@@ -65,7 +68,10 @@ LiveWater.Events = EventBus.new(EventBus.NAMES)
 -- Revision 9: controller timer (fields every, watts, choices; hooks prepare, opens, timer,
 -- setTimer), Parts:closed, action `choices`, ctx.hours of the step.
 -- Revision 10: hook status (network view), commands showNetwork and network.
-local API = { revision = 10 }
+-- Revision 11: capability "fitting" (barrel fitting, Fill or Pump), hooks draw, sense, fittingMode,
+-- setFittingMode, fourth result of `outlet` (fluid taken), event waterDrawn, fluid "fuel",
+-- registerContainer.
+local API = { revision = 11 }
 LiveWater.API = API
 
 local function answer(call, id, ok, reason, detail)
@@ -93,6 +99,14 @@ function API.registerSource(kind, definition)
     return answer("registerSource", kind, sources:register(kind, definition))
 end
 
+-- Container a barrel fitting works with (revision 11), see LWT_Containers.lua: `name` is the sprite
+-- of its object or the name of its entity script; definition { shape = "tall" or "low" }:
+--   LiveWater.API.registerContainer("mymod_tanks_0", { shape = "low" })
+-- Returns true, or false and "registration_closed", "invalid_name", "invalid_definition".
+function API.registerContainer(name, definition)
+    return answer("registerContainer", name, LiveWater.Containers:register(name, definition))
+end
+
 -- Copy of the checked definition of a part type, or nil.
 function API.part(id)
     return parts:describe(id)
@@ -102,6 +116,7 @@ Events.OnInitGlobalModData.Add(function()
     capabilities:seal()
     parts:seal()
     sources:seal()
+    LiveWater.Containers:seal()
 end)
 
 return API

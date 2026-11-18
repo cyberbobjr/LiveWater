@@ -6,7 +6,7 @@
 --                     CONNECT_BARREL, DISCONNECT_BARREL, RESERVE_BARREL { x, y, z }
 --                     CITY_WATER { x, y, z }
 --                     SWITCH_VALVE { x, y, z }  SET_TIMER { x, y, z, hours }
---                     SHOW_NETWORK { x, y, z }
+--                     SHOW_NETWORK { x, y, z }  SWITCH_FITTING { x, y, z }
 --   server -> client  NOTICE { key }          (translation key of a refusal)
 --                     SOUND { x, y, z, name } (sound loop of a part: name, or nil to stop)
 --                     NETWORK { parts = { { x, y, z } } } (squares of a network, to one player)
@@ -28,6 +28,7 @@ local Protocol = {
     SWITCH_VALVE = "switchValve",
     SET_TIMER = "setTimer",
     SHOW_NETWORK = "showNetwork",
+    SWITCH_FITTING = "switchFitting",
     NETWORK = "network",
     JET = "jet",
     SOUND = "sound",

@@ -21,6 +21,7 @@ View.COLOURS = {
     unfiltered = { 1.0, 0.7, 0.1, group = "unfiltered" },
     no_water = { 0.6, 0.6, 0.7, group = "other" },
     closed = { 0.6, 0.6, 0.7, group = "other" },
+    wrong_fluid = { 0.6, 0.6, 0.7, group = "other" },
 }
 View.DEFAULT = { 0.3, 0.6, 1.0 }
 View.GROUPS = { "served", "no_pressure", "unfiltered", "other" }

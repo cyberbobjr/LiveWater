@@ -48,4 +48,13 @@ module Base
         Weight = 3.5,
         WorldObjectSprite = batman_livewater_01_56,
     }
+
+    item Mov_LiveWater_BarrelFitting
+    {
+        DisplayCategory = Furniture,
+        ItemType = base:moveable,
+        Icon = default,
+        Weight = 1.5,
+        WorldObjectSprite = batman_livewater_01_64,
+    }
 }

@@ -9,7 +9,9 @@ if isClient() then return end
 --   OnInitWorld                               -> LWT_Power:register (Live Wire consumers, D20)
 --   LiveWater.Events partAdded / partRemoved  -> LWT_Publisher (sprite by state, mirrored state)
 --   LiveWater.Events waterDelivered / partRemoved -> LWT_Outlets (relay tanks of the house inlets,
---                                                plants of the sprinklers: LWT_Plants)
+--                                                plants of the sprinklers: LWT_Plants, barrels of
+--                                                the fittings set to Fill: LWT_Fittings)
+--   LiveWater.Events waterDrawn                   -> LWT_Fittings (barrels set to Pump)
 -- No per-frame event (D08). Events before the first OnInitGlobalModData are ignored.
 -- LiveWater.Server holds the services of the current game (nil before), for later adapters.
 
@@ -40,6 +42,8 @@ local Plants = require "LiveWater/LWT_Plants"
 local GameFarming = require "LiveWater/LWT_GameFarming"
 local GameVisuals = require "LiveWater/LWT_GameVisuals"
 local Broadcast = require "LiveWater/LWT_GameBroadcast"
+local Fittings = require "LiveWater/LWT_Fittings"
+local GameContainers = require "LiveWater/LWT_GameContainers"
 local Checks = require "LiveWater/Commands/LWT_CmdChecks"
 local Reasons = require "LiveWater/LWT_Reasons"
 
@@ -58,6 +62,7 @@ local COMMANDS = {
     [Protocol.SWITCH_VALVE] = "LWT_CmdSwitchValve",
     [Protocol.SET_TIMER] = "LWT_CmdSetTimer",
     [Protocol.SHOW_NETWORK] = "LWT_CmdShowNetwork",
+    [Protocol.SWITCH_FITTING] = "LWT_CmdSwitchFitting",
 }
 
 local MODDATA_KEY = "LiveWater"
@@ -118,6 +123,9 @@ local function build()
     local outlets = Outlets.new(catalog)
     outlets:register("houseInlet", relays)
     outlets:register("sprinkler", Plants.new({ catalog = catalog, farming = GameFarming.new(), scale = GameSettings.scale }))
+    local fittings = Fittings.new({ catalog = catalog, registry = registry, world = world,
+        containers = GameContainers.new(), shapes = LiveWater.Containers, publisher = publisher })
+    outlets:register("barrelFill", fittings)
     local function pumped(part) return hasPump(network, catalog, part) end
     local barrels = HouseBarrels.new({ store = store, plumbing = plumbing, world = world, relays = relays,
         lifted = pumped })
@@ -133,10 +141,11 @@ local function build()
     local server = {
         registry = registry, network = network, topology = topology, commands = commands,
         publisher = publisher, power = power, outlets = outlets, relays = relays, barrels = barrels,
+        fittings = fittings,
         placement = Placement.new(topology, catalog, log, world, notifier(players)),
         clock = Clock.new({ network = network, flow = Flow.new(catalog), catalog = catalog, world = world,
             events = LiveWater.Events, power = power, publisher = publisher, scale = GameSettings.scale,
-            random = randomShare, hours = gameHours, sources = LiveWater.Sources, chores = { relays, barrels, diagnostics, washerFix },
+            random = randomShare, hours = gameHours, sources = LiveWater.Sources, chores = { relays, barrels, diagnostics, washerFix, fittings },
             need = function(part) return outlets:need(part) end }),
     }
     local count = topology:rebuild()
@@ -209,6 +218,11 @@ local function onWaterDelivered(part, litres, quality)
     if server then server.outlets:deliver(part, litres, quality) end
 end
 
+local function onWaterDrawn(part, litres)
+    local server = LiveWater.Server
+    if server then server.fittings:drawn(part, litres) end
+end
+
 local function onTenMinutes()
     local server = LiveWater.Server
     if server then server.clock:tick() end
@@ -219,6 +233,7 @@ Events.OnInitGlobalModData.Add(onInit)
 LiveWater.Events.on("partAdded", onPartAdded)
 LiveWater.Events.on("partRemoved", onPartRemoved)
 LiveWater.Events.on("waterDelivered", onWaterDelivered)
+LiveWater.Events.on("waterDrawn", onWaterDrawn)
 Events.OnObjectAdded.Add(onObjectAdded)
 Events.OnObjectAboutToBeRemoved.Add(onObjectAboutToBeRemoved)
 Events.OnClientCommand.Add(onClientCommand)
