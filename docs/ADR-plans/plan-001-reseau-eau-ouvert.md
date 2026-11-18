@@ -774,3 +774,61 @@ Non testé en jeu (le défaut et le correctif ne se voient qu'en multijoueur : E
 
 Onze langues (comme Live Wire), wiki EN et FR, `autotest.json`. Tableau de parité P01-P23 rempli avec la preuve de
 chaque ligne. Passage automatique SP et MP avec code de sortie, `summary` et dossier `runs/...`.
+
+#### Parité
+
+Inventaires de l'ADR-001 (D24 : P01-P23, D27 : L01-L14, M01). Fonctionnalités `F..` de
+[specifications-fonctionnelles.md](../specifications-fonctionnelles.md) ; preuve = paragraphe de clôture de l'étape
+et fichier de tests hors jeu (`tests/`). Rien de cette table n'est encore vérifié en jeu.
+
+| # | Couverture LiveWater | Preuve |
+|---|---|---|
+| P01 | F02, F03 : pompe posée à côté d'une source, courant sur sa case (générateur, réseau public) ou Live Wire | E08, `test_pump.py` |
+| P02 | F12 (puits, eau propre), F27-F28 (baril et pompe de station-service en « Pomper », essence) ; F02 (eau naturelle croupie) | E17 `test_well.py`, E20 `test_fitting.py` |
+| P03 | F06 : interrupteur au clic droit, en plus de l'arrêt automatique | E15, `test_upkeep.py` |
+| P04 | F07 : usure du rendement, débit proportionnel, pannes sous 20 %, arrêt à 0 %, option sandbox | E15, `test_upkeep.py` |
+| P05 | F08 : réparation à l'arrêt, 2 ferrailles et une clé | E15, `test_upkeep.py` |
+| P06 | non repris (Q05) : panne seulement, aucun incendie | ADR Q05 |
+| P07 | F05 : cartouche filtrante usée au volume, option sandbox | E10, `test_filter.py` |
+| P08 | F09 (« Informations » de la pompe), F03 (`display`, `summary` de Live Wire) | E15 `test_upkeep.py`, E08 `test_pump.py` |
+| P09 | F01 : 16 formes raccordées seules | E03 `test_network.py`, E07 `test_sprites.py` |
+| P10 | non repris (Q06) : l'arrivée d'eau dessert étages et sous-sols (F13, F14) | ADR Q06, E18 annulée |
+| P11 | partiel : capacité `valve` (ouvrir, fermer, coupe l'aval) portée par les arroseurs (F21) ; la vanne d'arrêt posée sur un tuyau n'a pas de pièce (tuiles 16-19 dessinées, aucun type `LiveWater:Valve`, aucune recette) | E03 `test_network.py`, E11 `test_sprinkler.py` ; reste à faire |
+| P12 | F11 : compteur d'eau en ligne, litres et fluide | E16, `test_meter.py` |
+| P13 | F21 : arrose les plantes qui en ont besoin, rayon 2 × option (10 au plus) au lieu de 5 (choix d'E11, réglable) | E11, `test_sprinkler.py` |
+| P14 | partiel : F22 jet animé (D08a) ; aucun son propre à l'arroseur | E11, `test_sprinkler.py` |
+| P15 | F10 : boucle sonore de la pompe en marche, bruit entendu par les zombies | E15, `test_upkeep.py` |
+| P16 | F13, F14 : tous les points d'eau raccordés du bâtiment, lave-linge compris | E09 `test_inlet.py`, E19 `test_basement.py` |
+| P17 | F27 : raccord de baril « Remplir » | E20, `test_fitting.py` |
+| P18 | F14 : sous-sols jusqu'à 2 niveaux | E19, `test_basement.py` |
+| P19 | recettes de LiveWater (Électricité 2 pour la pompe et la minuterie, XP) à la place du menu de construction | E08, E09, E11, E12, E16, E20 (scripts `LWT_recipes.txt`, contrôlés par `tools/check_mod.py` pour les traductions) |
+| P20 | sandbox : `PumpFlowMultiplier` (F04), `FilterCapacityMultiplier` (F05), `PumpWearMultiplier` (F07), et 7 options de plus | E08, E10, E15 ; wiki `05-sandbox-options.md` |
+| P21 | F30 : retrait propre par un administrateur ; pièces de type inconnu conservées (D03) | E21 `test_removal.py`, E05 `test_registry.py` |
+| P22 | API publique `LiveWater.API` révision 12 (pièces, capacités, sources, conteneurs, événements) | E02 `test_api.py` ; wiki `06-for-modders.md` |
+| P23 | 11 langues (CN, DE, EN, ES, FR, JP, KO, PT, PTBR, RU, TR), parité des clés et des arguments contrôlée | E22 : `tools/check_mod.py` |
+| L01 | F15 : baril raccordé à la maison à la clé à tuyau, sans pompe | E23, `test_barrels.py` |
+| L02 | F15 : gravité, pompe ou courant sur la case pour monter | E23, `test_barrels.py` |
+| L03 | F15 : barils vidés ensemble ; le robinet montre l'eau de son réservoir relais (25 L au plus), pas le total (choix d'E09) | E23 `test_barrels.py`, E09 `test_inlet.py` |
+| L04 | F13 : plusieurs arrivées d'eau sur un même réseau partagent la pompe | E03 `test_network.py`, E09 `test_inlet.py` |
+| L05 | non repris (Q07) : les points d'eau ne donnent que de l'eau | ADR Q07, E24 annulée |
+| L06 | F15 : « Garder en réserve (pris en dernier) » | E23, `test_barrels.py` |
+| L07 | F15 adapté (Q07) : baril vide gardé dans la réserve, baril d'un autre liquide écarté | E23, `test_barrels.py` |
+| L08 | F29 : fontaines à eau et liste sandbox `FillContainers`, `registerContainer` | E25, `test_containers.py` |
+| L09 | F17 : diagnostic au clic droit d'un point d'eau | E26, `test_base.py` |
+| L10 | partiel : F26 vue du réseau en surbrillance ; pose depuis la vue non reprise ; tuyaux verticaux non repris (Q06) | E13, `test_interface.py` |
+| L11 | F16 : base du joueur, portée `BaseRange` (12) | E26, `test_base.py` |
+| L12 | F18 : baril emporté débranché, arrivée d'eau ramassée sans réservoirs | E26, `test_base.py` |
+| L13 | F20 : correctif du lave-linge raccordé en MP, désactivable ; robinet de boisson non concerné (Q07, Q08) | E28, `test_washer.py` |
+| L14 | F30 (désinstallation par l'administrateur), D03 (ajout en cours de partie sans risque), D07 (options) ; ni interrupteur général ni journal de débogage (non repris, aucune décision ne les demande) | E21 `test_removal.py`, E05 `test_registry.py` |
+| M01 | F19 : « Raccorder au réseau public », contrôles serveur | E27, `test_city.py` |
+
+Choix faits sans l'utilisateur (traductions, wiki, page Workshop) :
+- langues CN, DE, ES, JP, KO, PT, PTBR, RU, TR écrites directement en JSON (pas de générateur) ; `tools/check_mod.py`
+  exige pour chaque langue exactement les fichiers et clés de EN et les mêmes `%N` et `%%` ;
+- wiki en 8 pages par langue ; les captures manquent (lignes `> Capture à faire` / `> Screenshot to do`) ; seules les
+  deux planches de `docs/images/art/` sont utilisées ;
+- le wiki français nomme les outils comme le jeu en français (« clé anglaise » pour `Base.PipeWrench`, « clé à
+  molette » pour `Base.Wrench`), alors que les messages FR du mod disent « clé à tuyau » ;
+- page Workshop courte (moins de 4 000 octets en anglais) pour que chaque langue tienne sous 8 000 octets ; aucun lien
+  GitHub ni image externe (dépôt privé) ; « multijoueur pas encore testé » ; `workshop.txt` recopie `README.steam`,
+  visibilité `unlisted`.

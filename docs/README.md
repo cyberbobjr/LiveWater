@@ -12,5 +12,8 @@ et arrosage des cultures, sur un réseau ouvert aux ajouts.
 | [ameliorations-et-idees.md](ameliorations-et-idees.md) | Améliorations de code et idées |
 | [ADR/](ADR/README.md) | Décisions d'architecture et leur état |
 | [ADR-plans/](ADR-plans/) | Plans de chantier en cours |
-| [wiki/](wiki/en/Home.md) | Guides joueur (EN, FR) |
+| [wiki/](wiki/en/Home.md) | Guides joueur et moddeur : [anglais](wiki/en/Home.md), [français](wiki/fr/Home.md) (premiers pas, base du joueur, diagnostic, LiveWire, options sandbox, API publique, retrait du mod, multijoueur) |
+| [annexes/](annexes/) | Annexes de conception (`conception/tuiles-contrat.md` : index des tuiles) |
 | [images/](images/) | Planches et captures (`art/planche-tuiles-provisoires.png`, `art/planche-reseau-exemple.png`) |
+
+Page Workshop : `README.steam` (anglais) et `README.steam.<langue>` à la racine, recopiés dans `workshop.txt`.
