@@ -67,5 +67,10 @@
     "IGUI_LWT_Sprinkler_closed": "Vanne fermée : pas d'arrosage",
     "IGUI_LWT_Timer_Every": "Minuterie : arrose toutes les %1 h",
     "IGUI_LWT_Timer_NoPower": "Minuterie : pas de courant, elle n'ouvrira pas",
-    "IGUI_LWT_OutOfBounds": "Cet intervalle n'est pas permis sur ce serveur."
+    "IGUI_LWT_OutOfBounds": "Cet intervalle n'est pas permis sur ce serveur.",
+    "IGUI_LWT_View_Title": "Réseau d'eau :",
+    "IGUI_LWT_View_served": "Vert : sorties qui reçoivent de l'eau (%1)",
+    "IGUI_LWT_View_no_pressure": "Rouge : sorties sans pression (%1)",
+    "IGUI_LWT_View_unfiltered": "Ambre : eau non filtrée refusée (%1)",
+    "IGUI_LWT_View_other": "Gris : fermées ou sans eau dans les tuyaux (%1) ; bleu : tuyaux et pompes"
 }

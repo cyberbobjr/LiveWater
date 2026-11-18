@@ -80,6 +80,12 @@ function Topology:add(partType, x, y, z, data)
     return true, entry
 end
 
+-- Parts of the network of the part on a square (the view of the network, E13), or an empty list.
+function Topology:networkOf(x, y, z)
+    local id = self.network:networkAt(x, y, z)
+    return id and self.network:members(id) or {}
+end
+
 -- Squares linked to the part of a square: list of { x, y, z }.
 function Topology:linkedSquares(x, y, z)
     local part, out = self.network:part(x, y, z), {}

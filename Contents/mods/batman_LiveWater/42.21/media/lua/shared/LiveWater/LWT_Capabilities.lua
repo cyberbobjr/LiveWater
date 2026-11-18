@@ -55,6 +55,8 @@
 --   timer(p, d)           hours between two openings of a timer, else nil
 --   setTimer(p, d, hours) a player set them (d created)
 --   actions may carry `choices` = { { key, arg, args } }: a submenu, args sent with the command
+-- Revision 10 (network view):
+--   status(p, d)          state token shown by the network view (an outlet: its last state), or nil
 -- ctx is the context of the step: { need, hours (revision 9: world age in hours), scale = function(optionName) -> multiplier,
 -- random = function() -> 0..1 (breakdowns; none without it), sources = registry of source kinds
 -- (revision 6, LWT_Sources) }.
@@ -64,7 +66,8 @@ local Check = require "LiveWater/LWT_Check"
 local HOOKS = { "define", "carries", "blocks", "pressurizes", "ports", "supply", "source", "outlet", "purifies",
     "wear", "layable", "look", "attach", "power", "powered", "stepped", "output", "lines",
     "cartridge", "fit", "unfit", "actions", "switchable", "switch", "repairable", "repair", "sound",
-    "spray", "jet", "opened", "open", "prepare", "opens", "timer", "setTimer" }
+    "spray", "jet", "opened", "open", "prepare", "opens", "timer", "setTimer",
+    "status" }
 
 local Capabilities = {}
 Capabilities.__index = Capabilities

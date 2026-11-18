@@ -6,8 +6,10 @@
 --                     CONNECT_BARREL, DISCONNECT_BARREL, RESERVE_BARREL { x, y, z }
 --                     CITY_WATER { x, y, z }
 --                     SWITCH_VALVE { x, y, z }  SET_TIMER { x, y, z, hours }
+--                     SHOW_NETWORK { x, y, z }
 --   server -> client  NOTICE { key }          (translation key of a refusal)
 --                     SOUND { x, y, z, name } (sound loop of a part: name, or nil to stop)
+--                     NETWORK { parts = { { x, y, z } } } (squares of a network, to one player)
 --                     JET { x, y, z }         (a sprinkler there started or stopped spraying:
 --                                              the clients look at its mirrored state again)
 
@@ -25,6 +27,8 @@ local Protocol = {
     CITY_WATER = "cityWater",
     SWITCH_VALVE = "switchValve",
     SET_TIMER = "setTimer",
+    SHOW_NETWORK = "showNetwork",
+    NETWORK = "network",
     JET = "jet",
     SOUND = "sound",
     NOTICE = "notice",

@@ -16,7 +16,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 | E10 | Filtre : pièce, usure au volume, remplacement | Terminée (2026-11-18) | E08, E09, E06 | D17, D23 | S | E11 |
 | E11 | Arroseur manuel : vanne, rayon, doses de 200 ml | Terminée (2026-11-18) | E07 | D19 | M | E10 |
 | E12 | Arroseur automatique : recette (niveau d'Électricité), minuterie consommatrice | Terminée (2026-11-18) | E11, E08 | D19, D20 | M | — |
-| E13 | Interface : menus, vue du réseau en surbrillance persistante, états « sans pression » et « eau non filtrée » | À faire | E08-E12 | D11, D14, D17 | M | — |
+| E13 | Interface : menus, vue du réseau en surbrillance persistante, états « sans pression » et « eau non filtrée » | Terminée (2026-11-18) | E08-E12 | D11, D14, D17 | M | — |
 | E15 | Pompe : interrupteur, usure du rendement, pannes, réparation, fenêtre d'information, son (P03-P05, P08, P15) | Terminée (2026-11-18) | E08 | D24 | M | E16 |
 | E16 | Débitmètre (P12) | Terminée (2026-11-18) | E07 | D24 | S | E15 |
 | E17 | Puits comme source d'eau propre (P02) | Terminée (2026-11-18) | E08 | D24 | S | E16 |
@@ -405,6 +405,40 @@ Non testé en jeu.
 
 Fichiers : `client/LiveWater/LWT_ContextMenu.lua`, `LWT_NetworkView.lua`. Surbrillance persistante posée et retirée,
 aucun abonnement par image.
+
+Clôture (2026-11-18). Fichiers : client `LWT_PartAction.lua` (action chronométrée des menus : marche jusqu'à la case,
+`faceLocation`, animation, commande envoyée à la fin), `LWT_PartMenu.lua` (`send` passe par l'action : toutes les
+actions des pièces, des barils et du réseau public), `LWT_PipeMenu.lua` (poser, démonter : action de 150),
+`LWT_NetworkView.lua` (vue du réseau) ; `shared/LiveWater/LWT_PlaceRules.lua` (curseur : case qui porte déjà une pièce
+refusée, ligne rouge), `Capabilities/LWT_CapOutlet.lua` (crochet `status`), `LWT_Capabilities.lua` et `LWT_API.lua`
+(révision 10), `LWT_Protocol.lua` (`showNetwork`, `network`) ; serveur `LWT_Placement.lua` (port `notify` : un meuble que
+le réseau refuse est dit aux joueurs proches), `LWT_Topology.lua` (`networkOf`), `Commands/LWT_CmdShowNetwork.lua`,
+`LWT_GamePlayers.lua` (`all`), `LWT_Commands.lua` (port `replies`), `LWT_Server.lua` ; traductions EN et FR ; tests
+`tests/test_interface.py`, banc `tests/lwt_harness.py` (actions chronométrées exécutées aussitôt, marche notée),
+`test_api.py` (révision 10). `LWT_ContextMenu.lua` de la fiche n'est pas créé : les menus existants (`LWT_PartMenu`,
+`LWT_PipeMenu`) en tiennent lieu.
+Vérifié dans Java 42.22 (confirmé statiquement) : une action Lua sans `complete` n'est pas confiée au serveur en
+multijoueur (`LuaTimedActionNew` : `useCustomRemoteTimedActionSync`, `LuaTimedActionNew.java:47-48, 126-130`) ;
+`perform` s'exécute sur le client (`IsoGameCharacter.java:8476-8479`) ; `IsoObject.setHighlighted(bool, renderOnce)`
+et `setHighlightColor(r, g, b, a)` (`IsoObject.java:4684, 4742`).
+Choix faits sans l'utilisateur :
+- toute action d'un menu de LiveWater (vanne, minuterie, filtre, pompe, baril, réseau public) fait marcher le joueur
+  à côté de la case puis dure 60 ; poser ou démonter un tuyau dure 150 ; l'action n'envoie la commande qu'à la fin,
+  l'autorité contrôle tout de nouveau ;
+- pas de curseur de construction pour les tuyaux : une section par case cliquée, la forme suit les voisins (le
+  curseur vanilla n'apporte rien pour une pièce d'une case sans orientation) ;
+- refus à la pose (D14) : au curseur, une case qui porte déjà une pièce de LiveWater (ligne rouge « occupée ») ; ce
+  que seul le réseau sait (ports pleins, source) est dit, à la pose, aux joueurs à 3 cases de la pièce par une note ;
+  la pièce reste un décor (E07) ;
+- vue du réseau : « Afficher le réseau d'eau » sur une pièce ; le serveur renvoie les cases de son réseau (500 au
+  plus) ; chaque pièce est mise en surbrillance persistante (`setHighlighted(true, false)`) : vert = sortie servie ou
+  pleine, rouge = sans pression, ambre = eau non filtrée refusée, gris = fermée ou sans eau, bleu = tuyaux et pompes ;
+  « Masquer le réseau d'eau » l'efface, et son infobulle compte les sorties de chaque état ; une nouvelle vue remplace
+  l'ancienne ; les états « sans pression » et « eau non filtrée » se lisent aussi dans « Informations » de chaque sortie.
+Preuves :
+- `python -B -m unittest discover -s tests` → `Ran 242 tests` … `OK` ;
+- `python -B tools/check_mod.py` → `OK: 90 Lua file(s) checked`.
+Non testé en jeu.
 
 ### E15 à E21 — Parité avec Water Pipes
 

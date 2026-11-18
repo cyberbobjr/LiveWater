@@ -64,7 +64,8 @@ LiveWater.Events = EventBus.new(EventBus.NAMES)
 -- open, actions, lines; event valveChanged emitted when a player opens or closes a valve.
 -- Revision 9: controller timer (fields every, watts, choices; hooks prepare, opens, timer,
 -- setTimer), Parts:closed, action `choices`, ctx.hours of the step.
-local API = { revision = 9 }
+-- Revision 10: hook status (network view), commands showNetwork and network.
+local API = { revision = 10 }
 LiveWater.API = API
 
 local function answer(call, id, ok, reason, detail)

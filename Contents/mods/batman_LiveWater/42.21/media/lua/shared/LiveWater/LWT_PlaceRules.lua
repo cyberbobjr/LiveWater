@@ -1,5 +1,7 @@
 -- LiveWater: placement rules of the parts set down with the vanilla furniture cursor (a pond
--- pump must stand next to a water source, ADR-001 D16). A tile is ours when its sprite belongs
+-- pump must stand next to a water source, ADR-001 D16; one part per square, D14: the line of the
+-- cursor says so, E13; what only the network knows, such as full ports, is told by the authority
+-- when the part is set down, LWT_Placement). A tile is ours when its sprite belongs
 -- to a part type; the part's capabilities decide through Parts:attach on the place (LWT_GameSite).
 -- Shared: the cursor asks on the client, the authority again when the place action completes
 -- (ISMoveablesAction:complete -> placeMoveable -> canPlaceMoveableInternal, server in MP).
@@ -12,10 +14,21 @@ local Reasons = require "LiveWater/LWT_Reasons"
 
 local Rules = {}
 
+-- Does the square already hold a LiveWater part?
+local function holdsPart(square)
+    local objects = square:getObjects()
+    for i = 0, objects:size() - 1 do
+        local name = objects:get(i):getSpriteName()
+        if name and LiveWater.Parts:typeOfSprite(name) then return true end
+    end
+    return false
+end
+
 -- true, or false and the translation key of the refusal, for a sprite set down on `square`.
 function Rules.check(spriteName, square)
     local partType = spriteName and LiveWater.Parts:typeOfSprite(spriteName)
     if not partType or not square then return true end
+    if holdsPart(square) then return false, Reasons.key("occupied") end
     local site = GameSite.new(LiveWater.Sources, square:getX(), square:getY(), square:getZ())
     local ok, reason = LiveWater.Parts:attach({ type = partType }, site)
     if ok then return true end

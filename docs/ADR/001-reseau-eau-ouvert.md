@@ -5,7 +5,7 @@
 | Identifiant | `ADR-001-RESEAU-EAU-OUVERT` |
 | Date de création et de mise à jour | 2026-11-13, 2026-11-17 |
 | Statut | Accepté (2026-11-17) |
-| Avancement | E01-E12, E15-E17, E19, E23, E26-E28 terminées ; voir le [plan 001](../ADR-plans/plan-001-reseau-eau-ouvert.md) |
+| Avancement | E01-E13, E15-E17, E19, E23, E26-E28 terminées ; voir le [plan 001](../ADR-plans/plan-001-reseau-eau-ouvert.md) |
 | Décideur | l'utilisateur |
 | Portée | nouveau mod `batman_LiveWater` (Lua `shared`, `server`, `client`, scripts, tuiles, traductions) ; aucune modification de `batman_LiveWire` |
 | Documents liés | [plan 001](../ADR-plans/plan-001-reseau-eau-ouvert.md), [contraintes de développement](../developpement.md) ; Live Wire : ADR-002 (API des consommateurs, révision 6, `display` D07, `summary` D08), `docs/wiki/fr/07-pompe-a-eau.md`, idées I16, I25, I26 de `docs/ameliorations-et-idees.md` |

@@ -17,5 +17,7 @@
     "ContextMenu_LWT_OpenValve": "Open the Valve",
     "ContextMenu_LWT_CloseValve": "Close the Valve",
     "ContextMenu_LWT_SetTimer": "Watering Timer",
-    "ContextMenu_LWT_EveryHours": "Every %1 h"
+    "ContextMenu_LWT_EveryHours": "Every %1 h",
+    "ContextMenu_LWT_ShowNetwork": "Show the Water Network",
+    "ContextMenu_LWT_HideNetwork": "Hide the Water Network"
 }

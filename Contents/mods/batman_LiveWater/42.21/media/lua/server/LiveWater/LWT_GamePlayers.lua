@@ -11,6 +11,8 @@ if isClient() then return end
 --   hasTool(player, tag)      item with that tag ("base:pipewrench") in the inventory
 --   tell(player, key)         show a translated note: sent to the client on a server, shown
 --                             directly in solo (sendServerCommand does nothing in solo)
+--   all()                     the players of the game (online players on a server, local ones
+--                             in solo)
 
 local Notice = require "LiveWater/LWT_Notice"
 local Protocol = require "LiveWater/LWT_Protocol"
@@ -62,6 +64,20 @@ end
 function GamePlayers:hasTool(player, tag)
     local itemTag = ItemTag.get(ResourceLocation.of(tag))
     return itemTag ~= nil and player:getInventory():containsTagRecurse(itemTag)
+end
+
+function GamePlayers:all()
+    local out = {}
+    if isServer() then
+        local list = getOnlinePlayers()
+        for i = 0, list:size() - 1 do out[#out + 1] = list:get(i) end
+    else
+        for i = 0, getNumActivePlayers() - 1 do
+            local p = getSpecificPlayer(i)
+            if p then out[#out + 1] = p end
+        end
+    end
+    return out
 end
 
 function GamePlayers:tell(player, key)

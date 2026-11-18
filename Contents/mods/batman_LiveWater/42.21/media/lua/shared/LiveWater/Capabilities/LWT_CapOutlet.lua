@@ -38,6 +38,11 @@ function Outlet.stepped(p, d, outcome)
     d.state = outcome.outlet
 end
 
+-- State of the last step (network view, E13), or nil.
+function Outlet.status(p, d)
+    return d and d.state or nil
+end
+
 function Outlet.look(p, d)
     if not p.needsClean then return nil end
     if d and d.state == "unfiltered" then return "unfiltered" end

@@ -14,7 +14,7 @@ Contrats précis du mod (objets, commandes réseau, ModData, options sandbox, tr
 | Table Lua globale | `LiveWater` |
 | Préfixes | fichiers `LWT_*.lua`, recettes `LWT`, traductions `*_LWT_*`, ids de pièces `"<Mod>:<Nom>"` |
 
-## API publique (`LiveWater.API`, révision 9)
+## API publique (`LiveWater.API`, révision 10)
 
 Inscription depuis un fichier `shared`, pendant le chargement, avant `OnInitGlobalModData` (ensuite :
 `registration_closed`). Tout refus rend `false` et une raison, et écrit un avertissement en anglais dans la console.
@@ -25,7 +25,7 @@ Inscription depuis un fichier `shared`, pendant le chargement, avant `OnInitGlob
 | `registerCapability(kind, implementation)` | nouvelle capacité ; `kind` nom simple ou `"<Mod>:<nom>"` ; `implementation.define(params)` obligatoire | `invalid_kind`, `duplicate_capability`, `invalid_implementation` |
 | `part(id)` | copie de la définition contrôlée, ou `nil` | — |
 | `registerSource(kind, definition)` | révision 6 : sorte de source d'eau `{ quality = "clean" ou "tainted", flag = drapeau IsoFlagType d'une case voisine, sprites = { sprite d'un objet voisin } }` (au moins `flag` ou `sprites`) ; `kind` nom simple ou `"<Mod>:<Nom>"` | `registration_closed`, `invalid_kind`, `duplicate_source`, `invalid_definition` |
-| `revision` | entier ; 2 : champ `variants`, crochets `look`, `attach`, `power`, `powered`, `stepped`, `output`, `lines` ; 3 : réglage `item` du filtre, crochets `cartridge`, `fit`, `unfit`, `actions` ; 4 : réglages d'entretien de la pompe, crochets `switchable`, `switch`, `repairable`, `repair`, `sound` ; 5 : capacité `meter`, réglage `ports` de `conduit`, qualité par pièce dans le bilan de `stepped` ; 6 : `registerSource`, qualité de l'eau d'une prise selon la sorte de source relevée ; 7 : type de sortie en troisième résultat du crochet `outlet`, `outcome.outlet` de `stepped` (ce que le pas a fait d'une sortie), gardé comme état de la sortie ; 8 : capacité `spray`, crochets `spray`, `jet`, `opened`, `open` ; événement `valveChanged` émis par la commande `switchValve` ; 9 : minuterie (`controller` `timer` : `every`, `watts`, `choices`), crochets `prepare`, `opens`, `timer`, `setTimer`, `Parts:closed`, `choices` des actions, `ctx.hours` | — |
+| `revision` | entier ; 2 : champ `variants`, crochets `look`, `attach`, `power`, `powered`, `stepped`, `output`, `lines` ; 3 : réglage `item` du filtre, crochets `cartridge`, `fit`, `unfit`, `actions` ; 4 : réglages d'entretien de la pompe, crochets `switchable`, `switch`, `repairable`, `repair`, `sound` ; 5 : capacité `meter`, réglage `ports` de `conduit`, qualité par pièce dans le bilan de `stepped` ; 6 : `registerSource`, qualité de l'eau d'une prise selon la sorte de source relevée ; 7 : type de sortie en troisième résultat du crochet `outlet`, `outcome.outlet` de `stepped` (ce que le pas a fait d'une sortie), gardé comme état de la sortie ; 8 : capacité `spray`, crochets `spray`, `jet`, `opened`, `open` ; événement `valveChanged` émis par la commande `switchValve` ; 9 : minuterie (`controller` `timer` : `every`, `watts`, `choices`), crochets `prepare`, `opens`, `timer`, `setTimer`, `Parts:closed`, `choices` des actions, `ctx.hours` ; 10 : crochet `status` (vue du réseau ; une sortie rend son état), commandes `showNetwork` et `network` | — |
 
 Définition d'une pièce (copiée champ par champ, le reste est ignoré) : `sprites` (`{ [masque] = sprite }`, masques
 0 à 15, redessinés selon les raccords), `variants` (révision 2 : `{ [clé] = { sprite S, E, N, O } }`, sprites
@@ -148,6 +148,8 @@ Tout argument est recontrôlé sur l'autorité. Portée : 3 cases (Tchebychev) s
 | client → serveur | `cityWater` | `x`, `y`, `z` entiers | arguments, point d'eau posé par un joueur et pas raccordé (`not_fixture`), portée, pièce d'un bâtiment de la carte (`not_map_building`), eau de la ville qui coule et case sans `isNoWater` (`no_city_water`) | ModData `canBeWaterPiped` effacée, `setUsesExternalWaterSource(false)`, `transmitModData` : point d'eau d'origine (M01) |
 | client → serveur | `switchValve` | `x`, `y`, `z` entiers | arguments, pièce, vanne (`not_valve`), portée | vanne ouverte ou fermée, `valveChanged` |
 | client → serveur | `setTimer` | `x`, `y`, `z`, `hours` entiers | arguments (`invalid`), pièce, minuterie (`not_timer`), bornes sandbox (`out_of_bounds`), portée | intervalle de la minuterie |
+| client → serveur | `showNetwork` | `x`, `y`, `z` entiers | arguments, pièce (`nothing_here`), portée | réponse `network` au seul joueur |
+| serveur → client | `network` | `parts` = liste de `{ x, y, z }` (500 au plus) | — | surbrillance persistante des pièces de ces cases (`LWT_NetworkView`) |
 | serveur → client | `jet` | `x`, `y`, `z` | — | le client relit l'état recopié des pièces de la case et anime ou arrête le jet (D08a) |
 | serveur → client | `sound` | `x`, `y`, `z`, `name` (absent = arrêt) | — | boucle jouée ou arrêtée localement (en solo, par `triggerEvent`) |
 | serveur → client | `notice` | `key` (clé de traduction) | — | note au-dessus du joueur (en solo, affichée directement) |

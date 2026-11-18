@@ -30,6 +30,26 @@ end
 function isClient() return false end
 function isServer() return false end
 LWT_LOADED = {}
+-- Timed actions of the client menus: queued actions run at once (walk and duration not simulated).
+ISBaseTimedAction = { Type = "ISBaseTimedAction" }
+ISBaseTimedAction.__index = ISBaseTimedAction
+function ISBaseTimedAction:derive(name)
+    local o = setmetatable({}, self)
+    self.__index = self
+    o.Type = name
+    return o
+end
+function ISBaseTimedAction.new(self, character)
+    local o = setmetatable({}, self)
+    self.__index = self
+    o.character = character
+    return o
+end
+function ISBaseTimedAction:perform() end
+function ISBaseTimedAction:setActionAnim() end
+QUEUED, WALKED = {}, {}
+ISTimedActionQueue = { add = function(action) table.insert(QUEUED, action) action:perform() return action end }
+luautils = { walkAdj = function(player, sq) table.insert(WALKED, sq) return true end }
 function require(path)
     if string.sub(path, -4) == ".lua" then path = string.sub(path, 1, -5) end
     if LWT_LOADED[path] ~= nil then return LWT_LOADED[path] end

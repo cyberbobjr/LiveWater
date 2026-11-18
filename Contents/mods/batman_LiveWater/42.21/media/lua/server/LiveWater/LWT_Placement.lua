@@ -5,13 +5,15 @@ if isClient() then return end
 -- placement, ISMoveableSpriteProps:placeMoveableInternal, solo and server) and
 -- OnObjectAboutToBeRemoved (pickup, removal of a square object). No game API here; the optional
 -- `states` port (stateOf(x, y, z, typeId) -> { type, data } mirrored on the object, LWT_GameWorld)
--- gives back the state a moveable carried while it was picked up (wear, filter).
+-- gives back the state a moveable carried while it was picked up (wear, filter); the optional
+-- `notify(x, y, z, reason)` tells the players near why a part stays a decoration (D14, E13).
 
 local Placement = {}
 Placement.__index = Placement
 
-function Placement.new(topology, catalog, log, states)
-    return setmetatable({ topology = topology, catalog = catalog, log = log or print, states = states }, Placement)
+function Placement.new(topology, catalog, log, states, notify)
+    return setmetatable({ topology = topology, catalog = catalog, log = log or print, states = states,
+        notify = notify }, Placement)
 end
 
 -- A tile with this sprite appeared on a square. Returns true (added, or already known), or
@@ -27,6 +29,7 @@ function Placement:added(spriteName, x, y, z)
     if not ok then
         self.log("LiveWater: " .. partType .. " placed at " .. x .. "," .. y .. "," .. z
             .. " is not connected: " .. tostring(reason))
+        if self.notify then self.notify(x, y, z, reason) end
         return false, reason
     end
     return true

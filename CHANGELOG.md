@@ -42,4 +42,10 @@
 - Automatic sprinkler: add a timer to a sprinkler (Electrical 2). It opens on its own every 6 hours (choose 1 to 24 h
   from its right-click menu, limits in the sandbox options) to water the plants, then closes. The timer needs a
   little power (generator, grid or Live Wire); without power it does nothing, but you can still open the valve by hand.
+- Right-click actions on the water parts now walk you to the part and take a moment (laying or dismantling a pipe a
+  little longer).
+- A part set down where the network cannot take it (square already used, no free outlet on the pump) now says why.
+- Network view: right-click a part and choose "Show the Water Network" to highlight the whole network, coloured by
+  state (green: water delivered, red: not enough pressure, amber: unfiltered water refused, grey: closed or dry,
+  blue: pipes and pumps), until "Hide the Water Network".
 - The house water inlet also serves the basement (fixtures under the house) and plumbed washing machines.

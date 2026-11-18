@@ -112,8 +112,8 @@ commandes du filtre) ; un refus est dit au joueur par clé de traduction.
   `transmitRemoveItemFromSquare`, place (`LWT_GameSite`), courant vanilla, état recopié + `transmitModData`) et `LWT_GamePlayers.lua` (port joueurs : position, inventaire, outil par étiquette,
   note). Les services ne reçoivent que ces ports ; les tests les remplacent par des doublures (`tests/lwt_fakes.py`).
 
-`client/LiveWater/` : `LWT_PipeMenu.lua` (menu minimal : poser ou démonter une pièce `layable`, envoi de la commande
-seulement), `LWT_PartMenu.lua` (menu générique : les actions que les capacités d'une pièce proposent, crochet
+`client/LiveWater/` : `LWT_PartAction.lua` (action chronométrée des menus : marche, durée, puis commande ; sans
+`complete`, donc jamais confiée au serveur), `LWT_PipeMenu.lua` (poser ou démonter une pièce `layable`, par l'action), `LWT_PartMenu.lua` (menu générique : les actions que les capacités d'une pièce proposent, crochet
 `actions`, lues dans l'état recopié sur l'objet ; une action qui demande un objet n'apparaît que si le joueur le
 porte) `LWT_PumpSounds.lua` (boucle sonore jouée localement sur un émetteur libre, à l'ordre du serveur, aucun abonnement
 par image) et `LWT_NoticeClient.lua` (affiche les notes `notice` du serveur), `LWT_BarrelMenu.lua` (raccorder, débrancher, mettre
@@ -121,7 +121,8 @@ en réserve un baril, lu dans sa marque), `LWT_FixtureMenu.lua` (ligne « Pas d'
 (« Raccorder au réseau public »), `LWT_WasherClient.lua` (état « raccordé » d'un lave-linge marqué par le serveur,
 appliqué à son menu et à son interrupteur), `LWT_SprinklerJet.lua` (jet animé des arroseurs, **seul abonnement par image
 du mod**, D08a : `OnTick` seulement tant qu'un arroseur en marche est chargé, 6 images par seconde au plus, option de
-mod pour un jet fixe ; jamais sur un serveur dédié). Interface complète : E13.
+mod pour un jet fixe ; jamais sur un serveur dédié), `LWT_NetworkView.lua` (vue du réseau : cases demandées au
+serveur, surbrillance persistante colorée par le crochet `status`, retirée à la fermeture, aucun abonnement par image).
 
 ## Flux, persistance, extension
 
@@ -140,8 +141,8 @@ mod pour un jet fixe ; jamais sur un serveur dédié). Interface complète : E13
   `Commands:dispatch` → `LWT_CmdLay` (tous les contrôles, section retirée, tuile créée, `Topology:add`).
   `dismantle { x, y, z }` → `LWT_CmdDismantle` (clé à tuyau, `Topology:remove`, tuile retirée, section rendue).
   Refus → note traduite (solo : directement ; serveur : `sendServerCommand("LiveWater", "notice", { key })`).
-- Pose d'un meuble de LiveWater (pompe) : le curseur vanilla demande `LWT_PlaceRules` (refus loin de l'eau, ligne
-  rouge du panneau) ; l'autorité refait le contrôle à la fin de l'action, puis `OnObjectAdded` → `Placement:added` →
+- Pose d'un meuble de LiveWater (pompe) : le curseur vanilla demande `LWT_PlaceRules` (refus loin de l'eau ou sur une
+  case qui porte déjà une pièce, ligne rouge du panneau ; ports pleins dits aux joueurs proches par `LWT_Placement`) ; l'autorité refait le contrôle à la fin de l'action, puis `OnObjectAdded` → `Placement:added` →
   `Topology:add` avec l'état rapporté par l'objet (`movableData`) → `attach` (sorte de source relevée) → `partAdded` →
   `Publisher:present`.
 - Horloge : `EveryTenMinutes` → `Clock:tick` → par réseau éveillé : courant (`LWT_Power`), `Flow:step`, `stepped`,

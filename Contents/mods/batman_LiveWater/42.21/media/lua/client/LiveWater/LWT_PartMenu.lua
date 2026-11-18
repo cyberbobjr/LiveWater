@@ -1,15 +1,16 @@
 -- LiveWater: right-click menu of the parts that have actions (fit or remove a filter, switch or
 -- repair a pump...) or information lines (state, power, source, efficiency, filter: P08). It
 -- reads the state mirrored on the object (LWT_Mirror, synced by the server), asks the part's
--- capabilities for their actions (`actions` hook) and lines (`lines` hook), and only sends the
--- command; the server checks everything and answers a refusal with a note (LWT_NoticeClient).
+-- capabilities for their actions (`actions` hook) and lines (`lines` hook); a chosen action walks the
+-- player to the square and runs a short timed action that sends the command (LWT_PartAction, E13);
+-- the server checks everything and answers a refusal with a note (LWT_NoticeClient).
 -- An action that needs an item is offered only when the player carries one; an action with
 -- `choices` (a timer's hours) opens a submenu whose choice sends its args with the command. The
 -- information is the tooltip of an "Information" option: nothing is drawn per frame by LiveWater.
 
 require "LiveWater/LWT_API"
-local Protocol = require "LiveWater/LWT_Protocol"
 local Mirror = require "LiveWater/LWT_Mirror"
+require "LiveWater/LWT_PartAction"
 
 local PartMenu = {}
 
@@ -68,12 +69,10 @@ local function addInformation(context, catalog, part)
     option.toolTip = tooltip
 end
 
--- Send a command about a square to the authority (shared with the other LiveWater menus); `extra`
--- (optional) adds arguments.
+-- Act on a square (shared with the other LiveWater menus): walk there, a short timed action, then the
+-- command to the authority; `extra` (optional) adds arguments.
 function PartMenu.send(player, command, sq, extra)
-    local args = { x = sq:getX(), y = sq:getY(), z = sq:getZ() }
-    for k, v in pairs(extra or {}) do args[k] = v end
-    sendClientCommand(player, Protocol.MODULE, command, args)
+    LWT_PartAction.queue(player, sq, command, extra)
 end
 local send = PartMenu.send
 

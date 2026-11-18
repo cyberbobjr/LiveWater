@@ -1,12 +1,17 @@
--- LiveWater: minimal right-click menu to lay and dismantle the parts laid with an item
--- (capability "layable", e.g. pipes and LiveWater.PipeSection). It only sends the command;
--- the server checks everything and answers a refusal with a note (LWT_NoticeClient). The full
--- interface (timed actions, network view) comes with plan step E13.
+-- LiveWater: right-click menu to lay and dismantle the parts laid with an item (capability
+-- "layable", e.g. pipes and LiveWater.PipeSection). The player walks to the square and works for a
+-- few seconds (timed action LWT_PartAction, LAY_TIME), then the command goes to the authority, which
+-- checks everything and answers a refusal with a note (LWT_NoticeClient). Laid on the clicked
+-- square: no build cursor (one section per square, the shape follows the neighbours).
 
 require "LiveWater/LWT_API"
 local Protocol = require "LiveWater/LWT_Protocol"
+require "LiveWater/LWT_PartAction"
 
 local PipeMenu = {}
+
+-- Action ticks to lay or dismantle one pipe.
+PipeMenu.LAY_TIME = 150
 
 -- Part types laid with an item: list of { id, item }, sorted by id.
 function PipeMenu.layables(catalog)
@@ -38,7 +43,7 @@ local function laidTypeOn(sq, catalog)
 end
 
 local function send(player, command, sq, part)
-    sendClientCommand(player, Protocol.MODULE, command, { x = sq:getX(), y = sq:getY(), z = sq:getZ(), part = part })
+    LWT_PartAction.queue(player, sq, command, { part = part }, PipeMenu.LAY_TIME)
 end
 
 function PipeMenu.fill(playerNum, context, worldobjects, test)

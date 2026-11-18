@@ -39,6 +39,9 @@ local WasherFix = require "LiveWater/LWT_WasherFix"
 local Plants = require "LiveWater/LWT_Plants"
 local GameFarming = require "LiveWater/LWT_GameFarming"
 local GameVisuals = require "LiveWater/LWT_GameVisuals"
+local Broadcast = require "LiveWater/LWT_GameBroadcast"
+local Checks = require "LiveWater/Commands/LWT_CmdChecks"
+local Reasons = require "LiveWater/LWT_Reasons"
 
 -- Command name -> handler file under LiveWater/Commands.
 local COMMANDS = {
@@ -54,6 +57,7 @@ local COMMANDS = {
     [Protocol.CITY_WATER] = "LWT_CmdCityWater",
     [Protocol.SWITCH_VALVE] = "LWT_CmdSwitchValve",
     [Protocol.SET_TIMER] = "LWT_CmdSetTimer",
+    [Protocol.SHOW_NETWORK] = "LWT_CmdShowNetwork",
 }
 
 local MODDATA_KEY = "LiveWater"
@@ -84,8 +88,22 @@ local function hasPump(network, catalog, part)
     return false
 end
 
+-- Replies of the commands to one player (network view).
+local replies = { to = function(_, player, command, args) Broadcast.to(player, command, args) end }
+
+-- A part set down that the network refuses: the players near are told why (D14).
+local function notifier(players)
+    return function(x, y, z, reason)
+        local list = players:all()
+        for i = 1, #list do
+            if Checks.near(players, list[i], x, y, z) then players:tell(list[i], Reasons.key(reason)) end
+        end
+    end
+end
+
 local function build()
     local catalog = LiveWater.Parts
+    local players = GamePlayers.new()
     local store = ModData.getOrCreate(MODDATA_KEY)
     local registry = Registry.new(store, catalog)
     local network = Network.new(catalog)
@@ -107,15 +125,15 @@ local function build()
     local washerFix = WasherFix.new({ relays = relays, plumbing = plumbing, multiplayer = isServer,
         enabled = function() return GameSettings.scale("WasherFix") ~= false end })
     local commands = Commands.new({ topology = topology, catalog = catalog, world = world,
-        players = GamePlayers.new(), publisher = publisher, scale = GameSettings.scale, barrels = barrels,
-        plumbing = plumbing, events = LiveWater.Events })
+        players = players, publisher = publisher, scale = GameSettings.scale, barrels = barrels,
+        plumbing = plumbing, events = LiveWater.Events, replies = replies })
     for name, file in pairs(COMMANDS) do
         commands:register(name, require("LiveWater/Commands/" .. file))
     end
     local server = {
         registry = registry, network = network, topology = topology, commands = commands,
         publisher = publisher, power = power, outlets = outlets, relays = relays, barrels = barrels,
-        placement = Placement.new(topology, catalog, log, world),
+        placement = Placement.new(topology, catalog, log, world, notifier(players)),
         clock = Clock.new({ network = network, flow = Flow.new(catalog), catalog = catalog, world = world,
             events = LiveWater.Events, power = power, publisher = publisher, scale = GameSettings.scale,
             random = randomShare, hours = gameHours, sources = LiveWater.Sources, chores = { relays, barrels, diagnostics, washerFix },

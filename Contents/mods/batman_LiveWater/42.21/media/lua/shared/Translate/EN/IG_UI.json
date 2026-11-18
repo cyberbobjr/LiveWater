@@ -67,5 +67,10 @@
     "IGUI_LWT_Sprinkler_closed": "Valve closed: no watering",
     "IGUI_LWT_Timer_Every": "Timer: waters every %1 h",
     "IGUI_LWT_Timer_NoPower": "Timer: no power, it will not open",
-    "IGUI_LWT_OutOfBounds": "This interval is not allowed on this server."
+    "IGUI_LWT_OutOfBounds": "This interval is not allowed on this server.",
+    "IGUI_LWT_View_Title": "Water network:",
+    "IGUI_LWT_View_served": "Green: outlets that get water (%1)",
+    "IGUI_LWT_View_no_pressure": "Red: outlets without pressure (%1)",
+    "IGUI_LWT_View_unfiltered": "Amber: unfiltered water refused (%1)",
+    "IGUI_LWT_View_other": "Grey: closed or no water in the pipes (%1); blue: pipes and pumps"
 }
