@@ -2,6 +2,7 @@
     "LWTCutPipeSections": "Couper des sections de tuyau",
     "LWTBuildPondPump": "Fabriquer une pompe d'étang",
     "LWTMakeWaterFilter": "Fabriquer une cartouche filtrante",
+    "LWTBuildValve": "Fabriquer une vanne d'arrêt",
     "LWTBuildFlowMeter": "Fabriquer un compteur d'eau",
     "LWTBuildHouseInlet": "Fabriquer une arrivée d'eau de maison",
     "LWTBuildSprinkler": "Fabriquer un arroseur",

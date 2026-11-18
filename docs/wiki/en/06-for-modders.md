@@ -62,6 +62,7 @@ A part whose mod is removed stays inert in the save and comes back with its type
 | 10 | hook `status` (network view); commands `showNetwork` and `network` |
 | 11 | capability `fitting`; hooks `draw`, `sense`, `fittingMode`, `setFittingMode`; accepted fluid as fourth result of `outlet`; event `waterDrawn`; quality `fuel`; `registerContainer` |
 | 12 | `clean = true` in `registerContainer` |
+| 13 | part field `facings` (variant facing by side mask: an inline part turned along its pipe); valve setting `look` (drawn by the valve state, variants `open` / `closed`) |
 
 Changes are additive only: a function or field never changes meaning in a later revision.
 

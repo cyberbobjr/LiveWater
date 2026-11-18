@@ -14,6 +14,8 @@
 - Pond pump upkeep: turn it on or off from its right-click menu; its efficiency drops while it runs (and the flow
   with it), below 20% it may break down; repair a stopped pump with 2 scrap metal and a wrench. "Information" in its
   menu shows its state, flow, efficiency, filter and source. A running pump hums and draws zombies.
+- Shut-off valve: build it from a pipe section and scrap metal with a pipe wrench, set it down between two pipes and
+  close it from its right-click menu to cut the water to everything after it (the house, sprinklers further on).
 - Water meter: build it and set it inline on a pipe; its "Information" shows the litres that went through it in the
   last 10 minutes and whether the water is clean or unfiltered.
 - Wells: a pond pump set down next to a well draws clean water, which reaches the house without a filter.

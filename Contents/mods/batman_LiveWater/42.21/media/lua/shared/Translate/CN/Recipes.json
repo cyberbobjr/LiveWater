@@ -2,6 +2,7 @@
     "LWTCutPipeSections": "切割管段",
     "LWTBuildPondPump": "制作池塘水泵",
     "LWTMakeWaterFilter": "制作净水滤芯",
+    "LWTBuildValve": "制作截止阀",
     "LWTBuildFlowMeter": "制作水表",
     "LWTBuildHouseInlet": "制作房屋进水口",
     "LWTBuildSprinkler": "制作喷灌器",

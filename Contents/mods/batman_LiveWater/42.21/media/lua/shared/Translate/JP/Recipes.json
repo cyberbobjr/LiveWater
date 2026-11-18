@@ -2,6 +2,7 @@
     "LWTCutPipeSections": "配管の部品を切断する",
     "LWTBuildPondPump": "池のポンプを作る",
     "LWTMakeWaterFilter": "浄水カートリッジを作る",
+    "LWTBuildValve": "止水バルブを作る",
     "LWTBuildFlowMeter": "水道メーターを作る",
     "LWTBuildHouseInlet": "家の給水口を作る",
     "LWTBuildSprinkler": "スプリンクラーを作る",

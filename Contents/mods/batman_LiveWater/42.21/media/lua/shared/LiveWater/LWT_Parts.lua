@@ -6,6 +6,9 @@
 --                 state of the part: key = the look of the part (Parts:look, e.g. "on",
 --                 "filter_off"), list index = facing 1..4 (S, E, N, W). Never redrawn by the mask.
 --                 A sprite belongs to one part type only (sprites and variants together).
+--   facings       optional (API revision 13): { [mask] = facing 1..4 } the variant facing drawn
+--                 for a side mask (an inline part turned along its pipe: a valve); a mask without
+--                 one keeps the facing the part shows
 --   sides         optional: mask of the sides the part may connect by (default 15)
 --   capabilities  required: { kind = params or true }, every kind registered, params checked
 --                 by the kind's define hook
@@ -61,6 +64,18 @@ local function copyVariants(src)
     return out, count
 end
 
+-- Copy of the facings by mask ({} when absent), or nil when invalid.
+local function copyFacings(src)
+    if src == nil then return {} end
+    if type(src) ~= "table" then return nil end
+    local out = {}
+    for mask, facing in pairs(src) do
+        if not Check.isInteger(mask, 0, Grid.ALL) or not Check.isInteger(facing, 1, Parts.MAX_FACINGS) then return nil end
+        out[mask] = facing
+    end
+    return out
+end
+
 -- Every sprite name of a definition: list of { name, facing or nil }.
 local function allSprites(sprites, variants)
     local list = {}
@@ -90,7 +105,7 @@ end
 
 -- Returns true, or false, a reason and sometimes a detail: "registration_closed",
 -- "invalid_id", "duplicate_part", "invalid_definition", "invalid_sprites", "invalid_variants",
--- "duplicate_sprite", "invalid_sides", "invalid_capabilities", "unknown_capability", "invalid_field".
+-- "duplicate_sprite", "invalid_facings", "invalid_sides", "invalid_capabilities", "unknown_capability", "invalid_field".
 function Parts:register(id, def)
     if self.sealed then return false, "registration_closed" end
     if not Check.isNamespaced(id) then return false, "invalid_id" end
@@ -107,12 +122,14 @@ function Parts:register(id, def)
     for i = 1, #names do
         if self.bySprite[names[i][1]] then return false, "duplicate_sprite", names[i][1] end
     end
+    local facings = copyFacings(def.facings)
+    if not facings then return false, "invalid_facings" end
     local sides = def.sides
     if sides == nil then sides = Grid.ALL end
     if not Check.isInteger(sides, 0, Grid.ALL) then return false, "invalid_sides" end
     local caps, reason, detail = self:copyCapabilities(def.capabilities)
     if not caps then return false, reason, detail end
-    self.defs[id] = { sprites = sprites, variants = variants, sides = sides, caps = caps }
+    self.defs[id] = { sprites = sprites, variants = variants, facings = facings, sides = sides, caps = caps }
     for i = 1, #names do
         self.bySprite[names[i][1]] = id
         if names[i][2] then self.facing[names[i][1]] = names[i][2] end
@@ -166,6 +183,12 @@ end
 -- Facing (1..4) of a variant sprite, or nil.
 function Parts:facingOf(name)
     return self.facing[name]
+end
+
+-- Variant facing the type draws for a side mask (field `facings`), or nil.
+function Parts:facingFor(id, mask)
+    local def = self.defs[id]
+    return def and def.facings[mask] or nil
 end
 
 -- Sprite of the variant `key` of a type for a facing (the first facing when it has fewer), or nil.
@@ -354,7 +377,8 @@ function Parts:describe(id)
     if not def then return nil end
     local caps = {}
     for i = 1, #def.caps do caps[def.caps[i].kind] = deepCopy(def.caps[i].params) end
-    return { sprites = deepCopy(def.sprites), variants = deepCopy(def.variants), sides = def.sides, capabilities = caps }
+    return { sprites = deepCopy(def.sprites), variants = deepCopy(def.variants),
+        facings = deepCopy(def.facings), sides = def.sides, capabilities = caps }
 end
 
 return Parts

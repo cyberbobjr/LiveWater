@@ -25,7 +25,7 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
   `outlet`, `controller`, `layable`, `meter`, `spray`, `fitting`), réglages et valeurs par défaut de la capacité.
 - `Parts/LWT_Part<Nom>.lua` : un fichier par pièce de LiveWater, inscrite par l'API publique comme celle d'un autre
   mod (`LWT_PartPipe.lua` : `LiveWater:PipeGalvanized` ; `LWT_PartPondPump.lua` : `LiveWater:PondPump` ; `LWT_PartFlowMeter.lua` :
-  `LiveWater:FlowMeter` ; `LWT_PartHouseInlet.lua` : `LiveWater:HouseInlet` ; `LWT_PartSprinkler.lua` : `LiveWater:Sprinkler` ; `LWT_PartSprinklerAuto.lua` : `LiveWater:SprinklerAuto` ; `LWT_PartBarrelFitting.lua` : `LiveWater:BarrelFitting`).
+  `LiveWater:FlowMeter` ; `LWT_PartHouseInlet.lua` : `LiveWater:HouseInlet` ; `LWT_PartSprinkler.lua` : `LiveWater:Sprinkler` ; `LWT_PartSprinklerAuto.lua` : `LiveWater:SprinklerAuto` ; `LWT_PartBarrelFitting.lua` : `LiveWater:BarrelFitting` ; `LWT_PartValve.lua` : `LiveWater:Valve`).
   `LWT_Containers.lua` (pur) : registre des conteneurs d'un raccord de baril (forme, eau propre seulement, par
   sprite ou entité ; conteneurs admis : 20 L ou plus, inscrits, ou listés dans l'option `FillContainers`). `LWT_Tiles.lua` : noms des sprites du
   tileset et `variants` d'une pièce dessinée par état et orientation.
@@ -79,7 +79,9 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
 - `LWT_Placement.lua` : une tuile apparue ou retirée est une pièce si son sprite appartient à un type inscrit
   (`Parts:typeOfSprite`) ; idempotent.
 - `LWT_Sprites.lua` : la pièce et ses quatre voisins prennent le sprite de leur masque, appliqué seulement s'il change ;
-  un type sans sprite pour ce masque garde celui de sa pose (orientation d'un meuble).
+  un type sans sprite pour ce masque garde celui de sa pose (orientation d'un meuble) ; un type dessiné par état
+  qui donne une orientation pour ce masque (`facings`, vanne d'arrêt) prend la variante de son état tournée selon
+  son tuyau.
 - `LWT_Commands.lua` : répartiteur, table de gestionnaires par nom (un fichier par commande sous `Commands/`, plus
   `LWT_CmdChecks.lua` pour les contrôles d'arguments et de portée, `LWT_CmdCartridge.lua` pour ce que partagent les
 commandes du filtre) ; un refus est dit au joueur par clé de traduction.

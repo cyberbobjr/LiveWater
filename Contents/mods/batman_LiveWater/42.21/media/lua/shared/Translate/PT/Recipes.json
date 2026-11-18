@@ -2,6 +2,7 @@
     "LWTCutPipeSections": "Cortar Secções de Tubo",
     "LWTBuildPondPump": "Construir Bomba de Lagoa",
     "LWTMakeWaterFilter": "Fabricar Cartucho Filtrante",
+    "LWTBuildValve": "Construir Válvula de Corte",
     "LWTBuildFlowMeter": "Construir Contador de Água",
     "LWTBuildHouseInlet": "Construir Entrada de Água da Casa",
     "LWTBuildSprinkler": "Construir Aspersor",

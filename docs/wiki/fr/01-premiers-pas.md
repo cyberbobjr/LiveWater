@@ -58,8 +58,15 @@ tuyau du jeu). La section vous est rendue.
 
 ## 4. Vannes
 
-Chaque arroseur a sa vanne (**Ouvrir la vanne** / **Fermer la vanne**). Une vanne fermée ne laisse passer aucune eau,
-et le diagnostic le dit (*une vanne est fermée*). Les arroseurs se posent fermés.
+**Vanne d'arrêt.** Recette **Fabriquer une vanne d'arrêt** : 1 section de tuyau, 1 ferraille, avec une clé anglaise
+(gardée). Posez-la au curseur de meuble sur une case vide entre deux tuyaux d'une ligne droite (elle prend la place
+d'une section de tuyau : démontez d'abord cette section) ; elle se tourne seule dans le sens du tuyau. Elle se pose
+ouverte. Clic droit dessus : **Fermer la vanne** coupe l'eau de tout ce qui est après elle (la maison, les arroseurs
+plus loin), **Ouvrir la vanne** la laisse repasser ; son volant montre l'état, et **Informations** le dit aussi. Elle
+se ramasse à la clé comme les autres pièces.
+
+Chaque arroseur a aussi sa vanne (**Ouvrir la vanne** / **Fermer la vanne**). Une vanne fermée ne laisse passer aucune
+eau, et le diagnostic le dit (*une vanne est fermée*). Les arroseurs se posent fermés.
 
 ## 5. Arrivée d'eau de la maison
 

@@ -1,11 +1,13 @@
 -- LiveWater capability "valve": open or closed; closed, it cuts everything after it (D02).
 --   open  state of a newly placed part (default true)
+--   look  optional (API revision 13): true when the part is drawn by the valve state, variant
+--         keys "open" and "closed" (an inline valve; a sprinkler is drawn by its spray instead)
 -- State: { open = set by a player (nil: as placed) }.
 -- Revision 8: hooks opened (position), open (set it: command switchValve), actions, lines.
 
 local Check = require "LiveWater/LWT_Check"
 
-local SPEC = { open = Check.boolean(true) }
+local SPEC = { open = Check.boolean(true), look = Check.boolean(false) }
 
 local Valve = {}
 
@@ -25,6 +27,17 @@ end
 
 function Valve.blocks(p, d)
     return not Valve.opened(p, d)
+end
+
+function Valve.look(p, d)
+    if not p.look then return nil end
+    return Valve.opened(p, d) and "open" or "closed"
+end
+
+-- Network view (E13): a closed valve is shown closed; an outlet's own state comes first (kind order).
+function Valve.status(p, d)
+    if Valve.opened(p, d) then return nil end
+    return "closed"
 end
 
 function Valve.actions(p, d)

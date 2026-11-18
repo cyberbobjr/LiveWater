@@ -72,7 +72,9 @@ LiveWater.Events = EventBus.new(EventBus.NAMES)
 -- setFittingMode, fourth result of `outlet` (fluid taken), event waterDrawn, fluid "fuel",
 -- registerContainer.
 -- Revision 12: registerContainer field `clean`; registered containers of any size (E25).
-local API = { revision = 12 }
+-- Revision 13: part definition field `facings` (variant facing by side mask, Parts:facingFor),
+-- valve field `look` (drawn by the valve state: variants "open", "closed").
+local API = { revision = 13 }
 LiveWater.API = API
 
 local function answer(call, id, ok, reason, detail)

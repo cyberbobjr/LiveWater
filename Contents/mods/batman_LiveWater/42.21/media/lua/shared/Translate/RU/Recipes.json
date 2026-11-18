@@ -2,6 +2,7 @@
     "LWTCutPipeSections": "Нарезать отрезки трубы",
     "LWTBuildPondPump": "Собрать насос для пруда",
     "LWTMakeWaterFilter": "Сделать фильтрующий картридж",
+    "LWTBuildValve": "Собрать запорный вентиль",
     "LWTBuildFlowMeter": "Собрать счётчик воды",
     "LWTBuildHouseInlet": "Собрать ввод воды в дом",
     "LWTBuildSprinkler": "Собрать дождеватель",

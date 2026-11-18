@@ -55,8 +55,15 @@ To take a pipe back: right-click it, **Dismantle Pipe Section**, with a **pipe w
 
 ## 4. Valves
 
-Every sprinkler has its own valve (**Open the Valve** / **Close the Valve**). A closed valve lets no water through,
-and the diagnostics say so (*a valve is closed*). Sprinklers are set down closed.
+**Shut-off valve.** Recipe **Build Shut-off Valve**: 1 pipe section, 1 scrap metal, with a pipe wrench (kept). Set it
+down with the furniture cursor on an empty square between two pipes of a straight run (it takes the place of one pipe
+section: dismantle that section first); it turns along the pipe on its own. It is set down open. Right-click it:
+**Close the Valve** cuts the water to everything after it (the house, the sprinklers further on), **Open the Valve**
+lets it through again; its handwheel shows the state, and **Information** says it too. Pick it up with a wrench like
+the other parts.
+
+Every sprinkler also has its own valve (**Open the Valve** / **Close the Valve**). A closed valve lets no water
+through, and the diagnostics say so (*a valve is closed*). Sprinklers are set down closed.
 
 ## 5. House water inlet
 

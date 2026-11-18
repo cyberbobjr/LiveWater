@@ -14,23 +14,25 @@ Contrats précis du mod (objets, commandes réseau, ModData, options sandbox, tr
 | Table Lua globale | `LiveWater` |
 | Préfixes | fichiers `LWT_*.lua`, recettes `LWT`, traductions `*_LWT_*`, ids de pièces `"<Mod>:<Nom>"` |
 
-## API publique (`LiveWater.API`, révision 12)
+## API publique (`LiveWater.API`, révision 13)
 
 Inscription depuis un fichier `shared`, pendant le chargement, avant `OnInitGlobalModData` (ensuite :
 `registration_closed`). Tout refus rend `false` et une raison, et écrit un avertissement en anglais dans la console.
 
 | Fonction | Rôle | Raisons de refus |
 |---|---|---|
-| `registerPart(id, definition)` | type de pièce `"<Mod>:<Nom>"` | `invalid_id`, `duplicate_part`, `invalid_definition`, `invalid_sprites`, `duplicate_sprite`, `invalid_sides`, `invalid_capabilities`, `unknown_capability`, `invalid_field` |
+| `registerPart(id, definition)` | type de pièce `"<Mod>:<Nom>"` | `invalid_id`, `duplicate_part`, `invalid_definition`, `invalid_sprites`, `duplicate_sprite`, `invalid_facings`, `invalid_sides`, `invalid_capabilities`, `unknown_capability`, `invalid_field` |
 | `registerCapability(kind, implementation)` | nouvelle capacité ; `kind` nom simple ou `"<Mod>:<nom>"` ; `implementation.define(params)` obligatoire | `invalid_kind`, `duplicate_capability`, `invalid_implementation` |
 | `part(id)` | copie de la définition contrôlée, ou `nil` | — |
 | `registerSource(kind, definition)` | révision 6 : sorte de source d'eau `{ quality = "clean" ou "tainted", flag = drapeau IsoFlagType d'une case voisine, sprites = { sprite d'un objet voisin } }` (au moins `flag` ou `sprites`) ; `kind` nom simple ou `"<Mod>:<Nom>"` | `registration_closed`, `invalid_kind`, `duplicate_source`, `invalid_definition` |
-| `revision` | entier ; 2 : champ `variants`, crochets `look`, `attach`, `power`, `powered`, `stepped`, `output`, `lines` ; 3 : réglage `item` du filtre, crochets `cartridge`, `fit`, `unfit`, `actions` ; 4 : réglages d'entretien de la pompe, crochets `switchable`, `switch`, `repairable`, `repair`, `sound` ; 5 : capacité `meter`, réglage `ports` de `conduit`, qualité par pièce dans le bilan de `stepped` ; 6 : `registerSource`, qualité de l'eau d'une prise selon la sorte de source relevée ; 7 : type de sortie en troisième résultat du crochet `outlet`, `outcome.outlet` de `stepped` (ce que le pas a fait d'une sortie), gardé comme état de la sortie ; 8 : capacité `spray`, crochets `spray`, `jet`, `opened`, `open` ; événement `valveChanged` émis par la commande `switchValve` ; 9 : minuterie (`controller` `timer` : `every`, `watts`, `choices`), crochets `prepare`, `opens`, `timer`, `setTimer`, `Parts:closed`, `choices` des actions, `ctx.hours` ; 10 : crochet `status` (vue du réseau ; une sortie rend son état), commandes `showNetwork` et `network` ; 11 : capacité `fitting`, crochets `draw`, `sense`, `fittingMode`, `setFittingMode`, fluide accepté en quatrième résultat de `outlet`, événement `waterDrawn`, qualité `fuel`, `registerContainer` | — |
+| `revision` | entier ; 2 : champ `variants`, crochets `look`, `attach`, `power`, `powered`, `stepped`, `output`, `lines` ; 3 : réglage `item` du filtre, crochets `cartridge`, `fit`, `unfit`, `actions` ; 4 : réglages d'entretien de la pompe, crochets `switchable`, `switch`, `repairable`, `repair`, `sound` ; 5 : capacité `meter`, réglage `ports` de `conduit`, qualité par pièce dans le bilan de `stepped` ; 6 : `registerSource`, qualité de l'eau d'une prise selon la sorte de source relevée ; 7 : type de sortie en troisième résultat du crochet `outlet`, `outcome.outlet` de `stepped` (ce que le pas a fait d'une sortie), gardé comme état de la sortie ; 8 : capacité `spray`, crochets `spray`, `jet`, `opened`, `open` ; événement `valveChanged` émis par la commande `switchValve` ; 9 : minuterie (`controller` `timer` : `every`, `watts`, `choices`), crochets `prepare`, `opens`, `timer`, `setTimer`, `Parts:closed`, `choices` des actions, `ctx.hours` ; 10 : crochet `status` (vue du réseau ; une sortie rend son état), commandes `showNetwork` et `network` ; 11 : capacité `fitting`, crochets `draw`, `sense`, `fittingMode`, `setFittingMode`, fluide accepté en quatrième résultat de `outlet`, événement `waterDrawn`, qualité `fuel`, `registerContainer` ; 12 : `clean` de `registerContainer` ; 13 : champ `facings` de la définition, réglage `look` de `valve` | — |
 | `registerContainer(name, definition)` | révision 11 : conteneur d'un raccord de baril, `name` = sprite de l'objet ou nom de son entité, `{ shape = "tall" ou "low" }` ; révision 12 : `clean = true` (eau propre seulement) ; un conteneur inscrit est servi quelle que soit sa taille (`WaterDispenser` inscrit d'office) | `registration_closed`, `invalid_name`, `invalid_definition` |
 
 Définition d'une pièce (copiée champ par champ, le reste est ignoré) : `sprites` (`{ [masque] = sprite }`, masques
 0 à 15, redessinés selon les raccords), `variants` (révision 2 : `{ [clé] = { sprite S, E, N, O } }`, sprites
-choisis par l'état de la pièce, jamais par le masque ; `sprites` devient facultatif), `sides` (masque des côtés
+choisis par l'état de la pièce ; `sprites` devient facultatif), `facings` (révision 13 : `{ [masque] = orientation 1-4 }`,
+l'orientation de la variante dessinée pour un masque : une pièce en ligne tournée selon son tuyau ; un masque sans
+orientation garde celle affichée), `sides` (masque des côtés
 raccordables, 15 par défaut), `capabilities` (`{ kind = réglages ou true }`). Un sprite n'appartient qu'à un type
 (formes et variantes). La variante affichée est la clé formée des jetons `look` des capacités dans l'ordre des noms
 de capacité, joints par `_` (filtre `filter` + pompe `on` → `filter_on`). Refus ajouté : `invalid_variants`.
@@ -41,7 +43,7 @@ de capacité, joints par `_` (filtre `filter` + pompe `on` → `filter_on`). Ref
 | `meter` | aucun (révision 5) ; état `{ litres, quality }` du dernier pas |
 | `intake` | `quality` : `"tainted"` (défaut) ou `"clean"` ; ne se pose qu'à côté d'une source (`attach`, refus `no_source`), dont la sorte est relevée dans son état (`source`) |
 | `pump` | `ports` 1-4 (4), `pressure` (6), `flow` litres par pas de dix minutes à plein rendement (50, × rendement, × option `PumpFlowMultiplier`), `watts` en marche (250 ; 0 = sans courant) ; révision 4 : `wear` points de rendement perdus par minute de marche (0,01, × option `PumpWearMultiplier`), `breakdownBelow` (20), `breakdownChance` par pas de marche (0,02), `repairItem` (`Base.ScrapMetal`), `repairCount` (2), `repairTool` étiquette facultative, `sound` boucle en marche (`GeneratorLoop`), `noiseRadius` et `noiseVolume` (20, 20) |
-| `valve` | `open` à la pose (`true`) ; état `{ open }` ; révision 8 : `opened`, `open`, actions « Ouvrir la vanne » / « Fermer la vanne », ligne `IGUI_LWT_Valve_Open`/`_Closed` |
+| `valve` | `open` à la pose (`true`) ; état `{ open }` ; révision 8 : `opened`, `open`, actions « Ouvrir la vanne » / « Fermer la vanne », ligne `IGUI_LWT_Valve_Open`/`_Closed` ; révision 13 : `look` (`false`) : pièce dessinée par l'état de la vanne, variantes `open` / `closed` ; crochet `status` : `closed` pour la vue du réseau |
 | `spray` | révision 8 : `radius` (2, × option `SprinklerRadiusMultiplier`, arrondi, 10 au plus), `dose` litres (0,2), `jetSheet`, `jetFirst`, `jetFrames` (6) : image f, orientation k = `jetSheet .. (jetFirst + 4 f + k)` ; état `{ on }` (a arrosé au dernier pas) ; `look` `on`/`off` |
 | `filter` | `capacity` litres par cartouche (500, × option `FilterCapacityMultiplier`, notée à la pose de la cartouche) ; `item` (révision 3) : type complet d'une cartouche amovible, le filtre n'agit que cartouche montée |
 | `outlet` | `type` obligatoire ; `pressureCost` et `needsClean` : `houseInlet` 2 et vrai, `sprinkler` 1 et faux, autre type 1 et faux ; état (révision 7) `{ state }` du dernier pas ; `look` `filtered` ou `unfiltered` pour une sortie qui exige de l'eau propre ; ligne `IGUI_LWT_Outlet_<état>` (`IGUI_LWT_Sprinkler_<état>` pour un arroseur) |
@@ -75,6 +77,7 @@ sorte qui n'est plus inscrite donne le réglage `quality` de la capacité.
 |---|---|---|
 | `LiveWater:PipeGalvanized` | `batman_livewater_01_<masque>`, masques 0 à 15 | `conduit`, `layable` (`LiveWater.PipeSection`, `base:pipewrench`) |
 | `LiveWater:FlowMeter` | `sprites` : 20 (masques 2, 8, 10), 21 (masques 1, 4, 5) ; seul ou en coude, garde le sprite de sa pose | `conduit` (2 ports), `meter` |
+| `LiveWater:Valve` | `variants` : `open` 17 (S, `ns`), 16 (E, `ew`), `closed` 19, 18 ; `facings` : masques 2, 8, 10 → E, 1, 4, 5 → S ; seule ou en coude, garde l'axe affiché | `conduit` (2 ports), `valve` (ouverte à la pose, `look`), `controller` (`manual`) |
 | `LiveWater:HouseInlet` | `variants` : `filtered` 40-43, `unfiltered` 44-47 (S, E, N, O) | `outlet` (`houseInlet`) |
 | `LiveWater:Sprinkler` | `variants` : `off` 48-51, `on` 52-55 (S, E, N, O) ; jet 80-103 dessiné par le client | `outlet` (`sprinkler`), `valve` (fermée à la pose), `controller` (`manual`), `spray` (rayon 2, 0,2 L) |
 | `LiveWater:SprinklerAuto` | `variants` : `off` 56-59, `on` 60-63 (S, E, N, O) ; jet 80-103 | comme `LiveWater:Sprinkler`, `controller` `timer` (6 h, 5 W) |
@@ -90,6 +93,8 @@ sorte qui n'est plus inscrite donne le réglage `quality` de la capacité.
 | `LiveWater.WaterFilter` | `base:normal`, 0,5 kg, icône `Item_LWT_WaterFilter`, `ConditionMax = 100` : l'état est la part restante (100 neuve) ; infobulle `Tooltip_LWT_WaterFilter` |
 | `LWTMakeWaterFilter` | action `Making`, 2 `tags[base:charcoal]`, 2 `Base.RippedSheets` → 1 `LiveWater.WaterFilter` |
 | `Base.Mov_LiveWater_FlowMeter` | `base:moveable`, `WorldObjectSprite = batman_livewater_01_20` (objet `CustomItem` des tuiles 20-21) |
+| `Base.Mov_LiveWater_Valve` | `base:moveable`, `WorldObjectSprite = batman_livewater_01_16` (objet `CustomItem` des tuiles 16-19) |
+| `LWTBuildValve` | action `Making` : clé anglaise gardée, 1 `LiveWater.PipeSection`, 1 `Base.ScrapMetal` → 1 `Base.Mov_LiveWater_Valve` |
 | `LWTBuildFlowMeter` | action `Making` : tournevis gardé, 1 `LiveWater.PipeSection`, 1 `Base.SmallSheetMetal`, 2 `Base.Screws` → 1 `Base.Mov_LiveWater_FlowMeter` |
 | `Base.Mov_LiveWater_HouseInlet` | `base:moveable`, `WorldObjectSprite = batman_livewater_01_40` (objet `CustomItem` des tuiles 40-47) |
 | `LWTBuildHouseInlet` | action `Making` : clé à tuyau gardée, 2 `LiveWater.PipeSection`, 1 `Base.SmallSheetMetal`, 4 `Base.Screws` → 1 `Base.Mov_LiveWater_HouseInlet` |

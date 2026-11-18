@@ -793,7 +793,7 @@ et fichier de tests hors jeu (`tests/`). Rien de cette table n'est encore vérif
 | P08 | F09 (« Informations » de la pompe), F03 (`display`, `summary` de Live Wire) | E15 `test_upkeep.py`, E08 `test_pump.py` |
 | P09 | F01 : 16 formes raccordées seules | E03 `test_network.py`, E07 `test_sprites.py` |
 | P10 | non repris (Q06) : l'arrivée d'eau dessert étages et sous-sols (F13, F14) | ADR Q06, E18 annulée |
-| P11 | partiel : capacité `valve` (ouvrir, fermer, coupe l'aval) portée par les arroseurs (F21) ; la vanne d'arrêt posée sur un tuyau n'a pas de pièce (tuiles 16-19 dessinées, aucun type `LiveWater:Valve`, aucune recette) | E03 `test_network.py`, E11 `test_sprinkler.py` ; reste à faire |
+| P11 | F31 : vanne d'arrêt `LiveWater:Valve` posée entre deux tuyaux, ouverte ou fermée au clic droit, coupe l'aval ; aussi la vanne de chaque arroseur (F21) | E22 `test_valve.py` (ajout du 2026-11-18), E03 `test_network.py`, E11 `test_sprinkler.py` |
 | P12 | F11 : compteur d'eau en ligne, litres et fluide | E16, `test_meter.py` |
 | P13 | F21 : arrose les plantes qui en ont besoin, rayon 2 × option (10 au plus) au lieu de 5 (choix d'E11, réglable) | E11, `test_sprinkler.py` |
 | P14 | partiel : F22 jet animé (D08a) ; aucun son propre à l'arroseur | E11, `test_sprinkler.py` |
@@ -804,7 +804,7 @@ et fichier de tests hors jeu (`tests/`). Rien de cette table n'est encore vérif
 | P19 | recettes de LiveWater (Électricité 2 pour la pompe et la minuterie, XP) à la place du menu de construction | E08, E09, E11, E12, E16, E20 (scripts `LWT_recipes.txt`, contrôlés par `tools/check_mod.py` pour les traductions) |
 | P20 | sandbox : `PumpFlowMultiplier` (F04), `FilterCapacityMultiplier` (F05), `PumpWearMultiplier` (F07), et 7 options de plus | E08, E10, E15 ; wiki `05-sandbox-options.md` |
 | P21 | F30 : retrait propre par un administrateur ; pièces de type inconnu conservées (D03) | E21 `test_removal.py`, E05 `test_registry.py` |
-| P22 | API publique `LiveWater.API` révision 12 (pièces, capacités, sources, conteneurs, événements) | E02 `test_api.py` ; wiki `06-for-modders.md` |
+| P22 | API publique `LiveWater.API` révision 13 (pièces, capacités, sources, conteneurs, événements) | E02 `test_api.py` ; wiki `06-for-modders.md` |
 | P23 | 11 langues (CN, DE, EN, ES, FR, JP, KO, PT, PTBR, RU, TR), parité des clés et des arguments contrôlée | E22 : `tools/check_mod.py` |
 | L01 | F15 : baril raccordé à la maison à la clé à tuyau, sans pompe | E23, `test_barrels.py` |
 | L02 | F15 : gravité, pompe ou courant sur la case pour monter | E23, `test_barrels.py` |
@@ -821,6 +821,33 @@ et fichier de tests hors jeu (`tests/`). Rien de cette table n'est encore vérif
 | L13 | F20 : correctif du lave-linge raccordé en MP, désactivable ; robinet de boisson non concerné (Q07, Q08) | E28, `test_washer.py` |
 | L14 | F30 (désinstallation par l'administrateur), D03 (ajout en cours de partie sans risque), D07 (options) ; ni interrupteur général ni journal de débogage (non repris, aucune décision ne les demande) | E21 `test_removal.py`, E05 `test_registry.py` |
 | M01 | F19 : « Raccorder au réseau public », contrôles serveur | E27, `test_city.py` |
+
+#### Vanne d'arrêt (ajout du 2026-11-18)
+
+Pièce `LiveWater:Valve` (`shared/LiveWater/Parts/LWT_PartValve.lua`) : `conduit` (2 ports), `valve` (ouverte à la
+pose, `look = true`), `controller` `manual`. Meuble `Base.Mov_LiveWater_Valve` (`WorldObjectSprite` 16, `CustomItem`
+des tuiles 16-19), recette `LWTBuildValve` (clé anglaise gardée, 1 `LiveWater.PipeSection`, 1 `Base.ScrapMetal`),
+clé `LWTBuildValve` dans les 11 langues. Ouverture et fermeture par le menu générique des pièces, l'action minutée
+d'E13 et la commande `switchValve` existantes ; la vue du réseau la montre, grise une fois fermée (crochet `status` de `valve` : `closed`, après
+l'état propre d'une sortie).
+Dessin : variantes `open` (17 `ns`, 16 `ew`) et `closed` (19, 18) dont l'orientation 1 = S et 2 = E suit la propriété
+`Facing` des tuiles ; nouveau champ de définition `facings` (`{ [masque] = orientation }`, API révision 13,
+`Parts:facingFor`) : `LWT_Sprites` la tourne selon son tuyau (masques 2, 8, 10 → `ew` ; 1, 4, 5 → `ns`), seule ou
+en coude elle garde l'axe affiché ; réglage `look` de `valve` (révision 13) pour que les arroseurs, déjà dessinés
+par leur jet, ne changent pas.
+
+Choix faits sans l'utilisateur :
+- pose sur une **case vide entre deux tuyaux**, comme le compteur d'eau : le registre garde une pièce par case
+  (D14, refus `occupied` au curseur) ; remplacer une section posée aurait demandé un nouveau chemin de pose. Le
+  joueur démonte d'abord la section (rendue par la clé anglaise) puis pose la vanne dans le trou ;
+- posée ouverte (une vanne de ligne ne doit pas couper l'eau à la pose) ; recette sans compétence, catégorie
+  Métallurgie ;
+- en coude ou seule, la vanne garde son dernier axe (pas de tuile de coude).
+
+Fichiers : `LWT_PartValve.lua`, `LWT_Parts.lua`, `LWT_CapValve.lua`, `LWT_Sprites.lua`, `LWT_API.lua`,
+`LWT_moveables.txt`, `LWT_recipes.txt`, `Translate/*/Recipes.json`, `tests/test_valve.py`, `tests/test_api.py`.
+Contrôles : `python -B -m unittest discover -s tests` → `Ran 277 tests` … `OK` ; `python -B tools/check_mod.py` →
+`OK: 100 Lua file(s) checked`. Rien de vérifié en jeu.
 
 Choix faits sans l'utilisateur (traductions, wiki, page Workshop) :
 - langues CN, DE, ES, JP, KO, PT, PTBR, RU, TR écrites directement en JSON (pas de générateur) ; `tools/check_mod.py`
