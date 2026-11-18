@@ -26,4 +26,9 @@
   it to the house water inlet with a pipe wrench, no pipe nor pump needed. It feeds its own floor and the floors below,
   or every floor when a pump is on the inlet's network or the barrel has power. All the barrels drain together; keep
   one in reserve to have it used last. A barrel holding anything but water gives nothing.
+- Player bases: an inlet set down away from a map building serves the plumbed fixtures around it (12 squares by
+  default, sandbox option), up to 3 floors above.
+- A sink, shower or toilet without water says why in its right-click menu (not plumbed, no inlet, unfiltered water,
+  low pressure, closed valve, barrels too low or empty...).
+- A barrel carried away is no longer connected to its old house.
 - The house water inlet also serves the basement (fixtures under the house) and plumbed washing machines.

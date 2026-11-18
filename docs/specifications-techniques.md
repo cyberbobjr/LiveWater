@@ -98,6 +98,7 @@ sorte qui n'est plus inscrite donne le réglage `quality` de la capacité.
 | `LiveWater.FilterCapacityMultiplier` | double 0,1-10, 1,0 | multiplie les litres d'une cartouche (`capacity`) |
 | `LiveWater.PumpWearMultiplier` | double 0-10, 1,0 | multiplie la perte de rendement en marche (`wear`) ; 0 = aucune usure |
 | `LiveWater.InletRange` | entier 1-100, 20 | portée (cercle, en cases) d'une arrivée d'eau dans le bâtiment qu'elle touche |
+| `LiveWater.BaseRange` | entier 1-50, 12 | portée d'une arrivée d'eau hors bâtiment de la carte (base du joueur, L11) |
 
 Traductions `Sandbox_LWT_<Option>` et `_tooltip` dans `Sandbox.json`, onglet `Sandbox_LiveWater`.
 
@@ -194,4 +195,14 @@ dix minutes, par sortie servie), `valveChanged`. La reconstruction au chargement
   gravité (un baril sert son niveau et ceux du dessous), levée par une pompe du réseau de l'arrivée d'eau ou le
   courant de la case du baril ; prorata de l'eau des barils, ceux en réserve en dernier ; un baril qui contient autre
   chose que de l'eau ne donne rien. Le réseau complète ensuite. Fluides gardés en proportion (`FluidContainer.Transfer`).
+
+## Diagnostic d'un point d'eau (`LWT_Diagnosis`, `LWT_Diagnostics`, L09)
+
+- Serveur, chaque pas, après les relais et les barils : une raison par arrivée d'eau, notée dans `LiveWaterRelay.why`
+  de ses relais vides (effacée sur un relais qui a de l'eau) : `unfiltered`, `no_pressure`, `no_water`, `closed`
+  (dernier pas du réseau, si une pompe est dans le réseau), `gravity`, `empty` (barils), `no_supply` (ni pompe ni
+  baril).
+- Client : au clic droit d'un point d'eau sans eau qui tire ou peut tirer sur une source extérieure, option grisée
+  `ContextMenu_LWT_NoWater` (« Pas d'eau : %1 ») avec `IGUI_LWT_Why_NoInlet`, `_NotPlumbed`, `_Other`, `_<raison>` ou
+  `_Waiting`.
 

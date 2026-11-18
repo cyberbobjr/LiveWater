@@ -27,7 +27,7 @@ ADR : [ADR-001](../ADR/001-reseau-eau-ouvert.md) (Accepté le 2026-11-17).
 | E23 | Baril raccordé à la maison : gravité, courant sur la case, réserve partagée, mise en réserve, baril gardé pour un liquide (L01-L03, L06, L07) | Terminée (2026-11-18) | E09 | D27, D28 | L | E24 |
 | E24 | Liquide choisi par point d'eau (L05) | Annulée (Q07 : eau seulement aux points d'eau) | — | D28 | — | — |
 | E25 | Conteneurs remplis par la réserve, liste sandbox et API (L08) | À faire | E20 | D26, D28 | S | E23 |
-| E26 | Base du joueur (portée), diagnostic au point d'eau, réglages effacés au ramassage (L09, L11, L12) | À faire | E09 | D28 | M | E25 |
+| E26 | Base du joueur (portée), diagnostic au point d'eau, réglages effacés au ramassage (L09, L11, L12) | Terminée (2026-11-18) | E09 | D28 | M | E25 |
 | E27 | Raccordement au réseau public (M01) : état d'un point d'eau d'origine (`isWaterInfinite`), contrôles serveur | À faire | E09 | D27, D28 | M | E26 |
 | E28 | Correctif du lave-linge raccordé en MP (désactivable), `incompatible=\LGExtendedPlumbing,\LGMainsWater` (L13) | À faire | E19 | D27, Q08, Q09 | S | — |
 | E22 | Traductions (11 langues), wiki EN/FR, contrôle de parité P01-P23 et L01-M01, passage automatique en jeu SP et MP | À faire | E13-E21, E23-E28 | toutes | L | — |
@@ -472,6 +472,32 @@ Choix faits sans l'utilisateur :
 Preuves :
 - `python -B -m unittest discover -s tests` → `Ran 180 tests` … `OK` ;
 - `python -B tools/check_mod.py` → `OK: 69 Lua file(s) checked`.
+Non testé en jeu.
+
+### E26 — Base du joueur, diagnostic, ramassage
+
+Clôture (2026-11-18). Fichiers : `shared/LiveWater/LWT_InletArea.lua` (mode `base` : hors bâtiment de la carte, cercle
+de portée, niveau de l'arrivée d'eau et 3 étages au-dessus), `LWT_Diagnosis.lua` (pur : raison d'une arrivée d'eau,
+ligne d'un point d'eau) ; serveur `LWT_Diagnostics.lua` (tâche de l'horloge après les relais et les barils : raison
+notée sur les relais vides), `LWT_Relays.lua` (`mark`, portée `BaseRange`), `LWT_HouseBarrels.lua` (`placed`, `has`),
+`LWT_Server.lua` (tâche, baril reposé) ; client `LWT_FixtureMenu.lua` (ligne « Pas d'eau : raison ») ; option
+`BaseRange`, traductions EN et FR ; tests `tests/test_base.py`.
+Choix faits sans l'utilisateur :
+- base du joueur = arrivée d'eau qui ne touche aucun bâtiment de la carte (un bâtiment construit par les joueurs,
+  `BuildingDef:isUserDefined`, compte comme une base) ; portée `LiveWater.BaseRange` 12 par défaut ; niveaux : celui
+  de l'arrivée d'eau et 3 au-dessus ; barils raccordables dans ce cercle, jusqu'au niveau au-dessus ; le menu vanilla
+  « Raccorder » n'existe que dans une pièce (`isInARoom`, pièces de joueur comprises), règle du jeu gardée ;
+- diagnostic : une ligne grisée « Pas d'eau : raison » au clic droit d'un point d'eau sans eau qui tire, ou peut tirer,
+  sur une source extérieure ; raisons dans l'ordre : aucune source au-dessus (« aucune arrivée d'eau ne le dessert »),
+  pas raccordé, réservoir d'autre chose vide, puis la raison notée par le serveur sur le relais (eau non filtrée,
+  pression, pas d'eau dans les tuyaux, vanne fermée, gravité, barils vides, ni pompe ni baril), sinon « l'eau arrive » ;
+  la raison est celle du dernier pas (10 minutes au plus) et n'est notée que sur les relais vides ;
+- ramassage (L12) : l'arrivée d'eau emporte ses relais et débranche ses barils (E09, E23) ; un baril emporté est
+  débranché, et un baril reposé qui porterait encore une marque de raccord l'oublie ; un point d'eau reposé est remis
+  « à raccorder » par le vanilla (`canBeWaterPiped`), ce qui efface aussi un raccord à l'eau de la ville (E27).
+Preuves :
+- `python -B -m unittest discover -s tests` → `Ran 191 tests` … `OK` ;
+- `python -B tools/check_mod.py` → `OK: 72 Lua file(s) checked`.
 Non testé en jeu.
 
 ### E22 — Traductions, parité, passage en jeu

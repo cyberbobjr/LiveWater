@@ -8,6 +8,9 @@ if isClient() then return end
 --   disconnect(x, y, z)    -> true, or false and "not_connected"
 --   toggleReserve(x, y, z) -> true, or false and "not_connected"
 --   forget(part)           an inlet left: its barrels are disconnected
+--   placed(x, y, z)        an object was set down there: a barrel carrying the mark of a connection
+--                          it no longer has (picked up elsewhere) forgets it (L12)
+--   has(part)              the inlet has connected barrels
 --   shortOf(part)          why the inlet's relays stayed short after the last chore, or nil
 --   tick()
 -- The connection lives in the persistent store (barrels by inlet key) and is mirrored on the
@@ -144,6 +147,19 @@ function HouseBarrels:supply(inlet, list)
         if reasons[i] then return reasons[i] end
     end
     return nil
+end
+
+function HouseBarrels:placed(x, y, z)
+    if self:recordAt(x, y, z) then return end
+    local info = self.plumbing:barrel(x, y, z)
+    if info and info.mark then self.plumbing:markBarrel(x, y, z, nil) end
+end
+
+function HouseBarrels:has(part)
+    local list = self.store.barrels[keyOf(part)]
+    if not list then return false end
+    for _ in pairs(list) do return true end
+    return false
 end
 
 function HouseBarrels:shortOf(part)

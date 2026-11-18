@@ -2,8 +2,8 @@ if isClient() then return end
 -- LiveWater: composition root on the authority (solo game or server). Builds the services with
 -- their game adapters at OnInitGlobalModData (the global ModData is reloaded just before it:
 -- never keep a table of an earlier game) and wires the game events, each once:
---   OnObjectAdded / OnObjectAboutToBeRemoved  -> LWT_Placement (and a connected barrel taken away:
---                                                LWT_HouseBarrels)
+--   OnObjectAdded / OnObjectAboutToBeRemoved  -> LWT_Placement (and a barrel connected, taken away
+--                                                or set down again: LWT_HouseBarrels, L12)
 --   OnClientCommand (module LiveWater)        -> LWT_Commands
 --   EveryTenMinutes                           -> LWT_Clock (the only clock, ADR-001 D09)
 --   OnInitWorld                               -> LWT_Power:register (Live Wire consumers, D20)
@@ -33,6 +33,7 @@ local Relays = require "LiveWater/LWT_Relays"
 local GamePlumbing = require "LiveWater/LWT_GamePlumbing"
 local HouseBarrels = require "LiveWater/LWT_HouseBarrels"
 local WaterObjects = require "LiveWater/LWT_WaterObjects"
+local Diagnostics = require "LiveWater/LWT_Diagnostics"
 
 -- Command name -> handler file under LiveWater/Commands.
 local COMMANDS = {
@@ -89,8 +90,10 @@ local function build()
         setting = GameSettings.scale, catalog = catalog, registry = registry, log = log })
     local outlets = Outlets.new(catalog)
     outlets:register("houseInlet", relays)
+    local function pumped(part) return hasPump(network, catalog, part) end
     local barrels = HouseBarrels.new({ store = store, plumbing = plumbing, world = world, relays = relays,
-        lifted = function(part) return hasPump(network, catalog, part) end })
+        lifted = pumped })
+    local diagnostics = Diagnostics.new({ relays = relays, barrels = barrels, pumped = pumped })
     local commands = Commands.new({ topology = topology, catalog = catalog, world = world,
         players = GamePlayers.new(), publisher = publisher, scale = GameSettings.scale, barrels = barrels })
     for name, file in pairs(COMMANDS) do
@@ -102,7 +105,7 @@ local function build()
         placement = Placement.new(topology, catalog, log, world),
         clock = Clock.new({ network = network, flow = Flow.new(catalog), catalog = catalog, world = world,
             events = LiveWater.Events, power = power, publisher = publisher, scale = GameSettings.scale,
-            random = randomShare, sources = LiveWater.Sources, chores = { relays, barrels },
+            random = randomShare, sources = LiveWater.Sources, chores = { relays, barrels, diagnostics },
             need = function(part) return outlets:need(part) end }),
     }
     local count = topology:rebuild()
@@ -126,7 +129,9 @@ local function onObjectAdded(obj)
     local server = LiveWater.Server
     if not server then return end
     local name, x, y, z = whereIs(obj)
-    if name then server.placement:added(name, x, y, z) end
+    if not name then return end
+    server.placement:added(name, x, y, z)
+    if WaterObjects.mark(obj, WaterObjects.BARREL_KEY) then server.barrels:placed(x, y, z) end
 end
 
 local function onObjectAboutToBeRemoved(obj)

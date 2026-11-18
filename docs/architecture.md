@@ -28,7 +28,8 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
   `LiveWater:FlowMeter` ; `LWT_PartHouseInlet.lua` : `LiveWater:HouseInlet`). `LWT_Tiles.lua` : noms des sprites du
   tileset et `variants` d'une pièce dessinée par état et orientation.
 - `LWT_InletArea.lua` (pur) : cases servies par une arrivée d'eau (bâtiment de la carte touché, cercle de portée,
-  jusqu'à 3 étages au-dessus, sous-sols jusqu'à 2 niveaux sous l'emprise du rez-de-chaussée), lues par une sonde injectée ; `LWT_RelayPlan.lua` (pur) : relais voulus au-dessus des
+  jusqu'à 3 étages au-dessus, sous-sols jusqu'à 2 niveaux sous l'emprise du rez-de-chaussée ; hors bâtiment de la carte,
+  base du joueur : cercle de portée), lues par une sonde injectée ; `LWT_RelayPlan.lua` (pur) : relais voulus au-dessus des
   points d'eau (partage 3 × 3, sources d'autrui laissées).
 - `LWT_Sources.lua` (pur) : registre des sortes de source d'eau (données : qualité, drapeau d'une case voisine ou
   sprites d'un objet voisin) ; `Sources/LWT_Source<Nom>.lua` : une sorte par fichier (`water` : eau naturelle,
@@ -42,6 +43,7 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
 - `LWT_Reserve.lua` (pur) : réserve partagée d'une maison (barils qui se vident ensemble, mis en réserve, gravité,
   raison d'un manque). `LWT_WaterObjects.lua` (adaptateur partagé) : règles des objets d'eau (point d'eau, baril
   raccordable, marques `LiveWaterRelay` et `LiveWaterBarrel`, marques d'autres mods jamais touchées, eau de la ville).
+- `LWT_Diagnosis.lua` (pur) : raison du manque d'eau d'une arrivée d'eau et ligne d'un point d'eau sans eau.
 - `LWT_Protocol.lua` : noms du module et des commandes réseau partagés par client et serveur ; `LWT_Notice.lua` : note
   traduite au-dessus du joueur (refus d'une commande).
 - `LWT_Parts.lua` : registre des types de pièce, copie par liste blanche, unicité des sprites (formes et
@@ -86,6 +88,7 @@ commandes du filtre) ; un refus est dit au joueur par clé de traduction.
   du jeu (bâtiment, points d'eau, objets relais).
 - `LWT_HouseBarrels.lua` : barils raccordés à une arrivée d'eau (raccord, débranchement, mise en réserve, tâche de
   l'horloge après les relais : l'eau des barils remplit les relais selon `LWT_Reserve`).
+- `LWT_Diagnostics.lua` : tâche de l'horloge, raison du manque d'eau notée sur les relais vides (`LWT_Diagnosis`).
 - `LWT_Power.lua` : seul adaptateur du courant. À `OnInitWorld`, si `LiveWire.API.revision >= 6`, inscrit chaque type
   qui a besoin de courant comme consommateur de Live Wire (`powerConsumption`, `display`, `summary` lus dans l'état
   recopié sur l'objet) ; `powered(part)` : `consumerPowered` de Live Wire, sinon la règle vanilla de la case.
@@ -105,7 +108,7 @@ seulement), `LWT_PartMenu.lua` (menu générique : les actions que les capacité
 `actions`, lues dans l'état recopié sur l'objet ; une action qui demande un objet n'apparaît que si le joueur le
 porte) `LWT_PumpSounds.lua` (boucle sonore jouée localement sur un émetteur libre, à l'ordre du serveur, aucun abonnement
 par image) et `LWT_NoticeClient.lua` (affiche les notes `notice` du serveur), `LWT_BarrelMenu.lua` (raccorder, débrancher, mettre
-en réserve un baril, lu dans sa marque). Interface complète : E13.
+en réserve un baril, lu dans sa marque), `LWT_FixtureMenu.lua` (ligne « Pas d'eau : raison » d'un point d'eau sans eau). Interface complète : E13.
 
 ## Flux, persistance, extension
 

@@ -7,6 +7,7 @@ if isClient() then return end
 --   need(part)             litres missing in the inlet's relays that feed a plumbed fixture
 --   deliver(part, litres)  fills those relays
 --   release(part)          the inlet left: its relays are removed
+--   mark(part, why)        the inlet's empty relays carry the reason (LWT_Diagnosis), the others none
 -- A relay is an invisible 25 L tank one level above a fixture (LWT_RelayPlan), marked with the
 -- ModData key LiveWaterRelay and its inlet; relays of Live Wire (LiveWireRelay) or of anything
 -- else are never placed over, filled nor removed (D21).
@@ -26,6 +27,7 @@ Relays.CAPACITY = 25
 Relays.REFRESH_HOURS = 1
 Relays.EPSILON = 0.001
 Relays.DEFAULT_RANGE = 20
+Relays.DEFAULT_BASE_RANGE = 12
 
 function Relays.new(deps)
     local store = deps.store
@@ -51,7 +53,8 @@ function Relays:option(name, default)
 end
 
 function Relays:ranges()
-    return { building = self:option("InletRange", Relays.DEFAULT_RANGE) }
+    return { building = self:option("InletRange", Relays.DEFAULT_RANGE),
+        base = self:option("BaseRange", Relays.DEFAULT_BASE_RANGE) }
 end
 
 function Relays:isInlet(part)
@@ -146,6 +149,19 @@ function Relays:release(part)
     for i = 1, #keys do self:drop(key, keys[i], own[keys[i]]) end
     self.store.relays[key] = nil
     self.seen[key] = nil
+end
+
+function Relays:mark(part, why)
+    local key = Grid.key(part.x, part.y, part.z)
+    local own = self:own(key)
+    local keys = sortedKeys(own)
+    for i = 1, #keys do
+        local pos = own[keys[i]]
+        local relay = self.plumbing:relay(pos.x, pos.y, pos.z)
+        if relay and relay.owner == key then
+            self.plumbing:markRelay(pos.x, pos.y, pos.z, relay.amount <= Relays.EPSILON and why or nil)
+        end
+    end
 end
 
 -- Inlets of the registry on a loaded square.

@@ -11,5 +11,6 @@
     "ContextMenu_LWT_ConnectBarrel": "Raccorder à l'arrivée d'eau de la maison",
     "ContextMenu_LWT_DisconnectBarrel": "Débrancher de l'arrivée d'eau de la maison",
     "ContextMenu_LWT_ReserveBarrel": "Garder en réserve (pris en dernier)",
-    "ContextMenu_LWT_UseBarrel": "Utiliser avec les autres barils"
+    "ContextMenu_LWT_UseBarrel": "Utiliser avec les autres barils",
+    "ContextMenu_LWT_NoWater": "Pas d'eau : %1"
 }

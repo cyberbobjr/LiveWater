@@ -7,6 +7,8 @@
 -- circle), from its lowest level up to LEVELS_UP floors above the inlet; below ground, down to
 -- BASEMENT_LEVELS, every square under its ground floor footprint (P18: a basement belongs to the
 -- building above it, part of it or not).
+-- Base mode (L11), when the inlet touches no map building (a base the players built): every square
+-- within `ranges.base` squares, from the inlet's level up to LEVELS_UP floors above.
 -- An area: { mode, x, y, z, range, minX, maxX, minY, maxY, minZ, maxZ, topZ, contains(self, x, y, z),
 -- reaches(self, x, y, z) }. reaches: a barrel there may join the reserve of the inlet (ADR-001 D28,
 -- L01): in the circle, inside the area or right above it (on the roof), up to topZ.
@@ -49,11 +51,22 @@ function InletArea.building(b, x, y, z, range)
     return area
 end
 
--- Area served by an inlet at (x, y, z). ranges = { building = squares }.
+-- Area of a player's base around an inlet at (x, y, z).
+function InletArea.base(x, y, z, range)
+    local area = new({ mode = "base", x = x, y = y, z = z, range = range,
+        minX = x - range, maxX = x + range, minY = y - range, maxY = y + range,
+        minZ = z, maxZ = z + InletArea.LEVELS_UP, topZ = z + InletArea.LEVELS_UP + 1 })
+    function area:holds()
+        return true
+    end
+    return area
+end
+
+-- Area served by an inlet at (x, y, z). ranges = { building = squares, base = squares }.
 function InletArea.of(probe, x, y, z, ranges)
     local b = probe:building(x, y, z)
     if b then return InletArea.building(b, x, y, z, ranges.building) end
-    return nil
+    return InletArea.base(x, y, z, ranges.base)
 end
 
 return InletArea

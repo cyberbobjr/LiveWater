@@ -7,5 +7,7 @@
     "Sandbox_LWT_PumpWearMultiplier": "Usure des pompes",
     "Sandbox_LWT_PumpWearMultiplier_tooltip": "Multiplie le rendement qu'une pompe perd en marche (environ une semaine de marche de 100 %% à 0 %% à 1,0 ; 0 = aucune usure). Sous 20 %% elle peut tomber en panne.",
     "Sandbox_LWT_InletRange": "Portée de l'arrivée d'eau",
-    "Sandbox_LWT_InletRange_tooltip": "Distance (en cases) jusqu'à laquelle les points d'eau raccordés du bâtiment reçoivent l'eau d'une arrivée d'eau, jusqu'à 3 étages au-dessus d'elle."
+    "Sandbox_LWT_InletRange_tooltip": "Distance (en cases) jusqu'à laquelle les points d'eau raccordés du bâtiment reçoivent l'eau d'une arrivée d'eau, jusqu'à 3 étages au-dessus d'elle.",
+    "Sandbox_LWT_BaseRange": "Portée de l'arrivée d'eau d'une base",
+    "Sandbox_LWT_BaseRange_tooltip": "Hors d'un bâtiment de la carte (base construite), distance (en cases) jusqu'à laquelle une arrivée d'eau dessert les points d'eau raccordés, jusqu'à 3 étages au-dessus d'elle."
 }

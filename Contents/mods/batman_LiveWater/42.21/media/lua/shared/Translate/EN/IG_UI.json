@@ -42,5 +42,16 @@
     "IGUI_LWT_Outlet_closed": "Water: shut off",
     "IGUI_LWT_NotBarrel": "There is no barrel here that can be connected.",
     "IGUI_LWT_NoInlet": "No house water inlet serves this place: set one against the outside wall of this building.",
-    "IGUI_LWT_NotConnected": "This barrel is not connected."
+    "IGUI_LWT_NotConnected": "This barrel is not connected.",
+    "IGUI_LWT_Why_NotPlumbed": "not plumbed yet: use a pipe wrench on it",
+    "IGUI_LWT_Why_NoInlet": "no house water inlet serves it (too far, wrong floor, or none)",
+    "IGUI_LWT_Why_Other": "its tank belongs to something else, and it is empty",
+    "IGUI_LWT_Why_Waiting": "the water is on its way (within 10 minutes)",
+    "IGUI_LWT_Why_unfiltered": "the pump's water is unfiltered: fit a filter",
+    "IGUI_LWT_Why_no_pressure": "not enough pressure in the pipes",
+    "IGUI_LWT_Why_no_water": "no water in the pipes (pump off, broken or without power)",
+    "IGUI_LWT_Why_closed": "a valve is closed",
+    "IGUI_LWT_Why_gravity": "the barrels stand lower than this fixture: a pump or power lifts the water",
+    "IGUI_LWT_Why_empty": "the barrels are empty or hold something other than water",
+    "IGUI_LWT_Why_no_supply": "the inlet has no pump and no barrel"
 }
