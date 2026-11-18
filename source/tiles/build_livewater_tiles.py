@@ -4,8 +4,8 @@ Board validated by the user on 2026-11-17 (ADR-001 D23), packed into the mod sin
 The sprinkler jet is a separate 6-frame overlay (indices 80-103) that the client swaps
 itself (ADR-001 D08a): the engine never advances the frames of a tile overlay.
 
-Look: 1990s rural hardware drawn like vanilla tile art. Galvanised pipe with thin
-couplings, brass gate valve with a red handwheel, bronze water meter, electric
+Look: 1990s rural hardware drawn like vanilla tile art. Galvanised pipe of one colour
+end to end, brass gate valve with a red handwheel, bronze water meter, electric
 centrifugal pump on a wooden skid, wall-mounted inlet box, impact sprinkler on a
 riser, garden hose to a rain barrel. Every part uses a textured pz-sprite-forge
 material class (wear streaks, rust or patina accents), and every group goes
@@ -78,7 +78,8 @@ def _same(p):
 
 #: key -> (class, paint, extra forge_material options); "tex" picks the detail map.
 PAINTS = {
-    "galv": ("metal", (0.40, 0.41, 0.40), {"tex": "metal", "accent": (0.30, 0.25, 0.20), "accent_position": 0.08}),
+    # pipe work: flat paint, no wear map (its streaks drew dark patches that changed from tile to tile)
+    "galv": ("metal", (0.40, 0.41, 0.40), {}),
     "galv_dark": ("metal", (0.22, 0.23, 0.22), {"tex": "metal", "accent": (0.22, 0.16, 0.11),
                                                 "accent_position": 0.08}),
     "iron": ("metal", (0.17, 0.17, 0.16), {"tex": "metal", "accent": (0.17, 0.10, 0.06), "accent_position": 0.10}),
@@ -174,8 +175,11 @@ class Kit:
         me.from_pydata([tuple(v) for v in verts], [], faces)
         me.update()
         if smooth:
+            # smooth=n: only the first n faces (a cylinder's wall, not its flat ends, whose normals
+            # would darken the wall towards each end)
+            count = len(me.polygons) if smooth is True else smooth
             for poly in me.polygons:
-                poly.use_smooth = True
+                poly.use_smooth = poly.index < count
         obj = bpy.data.objects.new(name, me)
         bpy.context.scene.collection.objects.link(obj)
         obj.data.materials.append(self.mats[mat])
@@ -195,7 +199,7 @@ class Kit:
                  for z, rr in ((-depth / 2, r), (depth / 2, r2)) for j in range(segs)]
         faces = [(j, (j + 1) % segs, segs + (j + 1) % segs, segs + j) for j in range(segs)]
         faces += [tuple(reversed(range(segs))), tuple(range(segs, 2 * segs))]
-        return self.mesh(name, verts, faces, mat, c, rot or AXIS_ROT[axis], smooth=segs > 8)
+        return self.mesh(name, verts, faces, mat, c, rot or AXIS_ROT[axis], smooth=segs if segs > 8 else False)
 
     def rod(self, name, p0, p1, r, mat, segs=12):
         a, b = Vector(p0), Vector(p1)
@@ -294,19 +298,18 @@ def _along(side, d, z=PIPE_Z):
 
 
 def arm(k: Kit, side, start=0.0, tag=""):
-    """Galvanised pipe from `start` metres off the centre to the tile edge on `side`, ending in
-    half a coupling: two neighbouring tiles draw one whole coupling on their shared edge."""
+    """Galvanised pipe from `start` metres off the centre to the tile edge on `side`. No coupling
+    on the edge: a run of tiles reads as one pipe of one colour, end to end."""
     axis = "x" if DIRS[side][0] else "y"
     length = 0.5 - start
     k.cyl(f"pipe{side}{tag}", _along(side, start + length / 2), PIPE_R, length, "galv", axis)
-    k.cyl(f"coupling{side}{tag}", _along(side, 0.482), COUP_R, 0.036, "galv_dark", axis)
 
 
 def fitting(k: Kit, sides, name="fitting"):
     """Malleable iron elbow / tee / cross at the centre: a hub and one short socket per side."""
-    k.ball(f"{name}_hub", (0, 0, PIPE_Z), COUP_R * 1.02, "galv_dark", 12)
+    k.ball(f"{name}_hub", (0, 0, PIPE_Z), COUP_R * 1.02, "galv", 12)
     for s in sides:
-        k.cyl(f"{name}_socket{s}", _along(s, 0.045), COUP_R, 0.05, "galv_dark", "x" if DIRS[s][0] else "y")
+        k.cyl(f"{name}_socket{s}", _along(s, 0.045), COUP_R, 0.05, "galv", "x" if DIRS[s][0] else "y")
 
 
 def build_pipe(k: Kit, mask):
@@ -315,13 +318,13 @@ def build_pipe(k: Kit, mask):
         # Loose nipple, capped both ends.
         k.cyl("pipe", (0, 0, PIPE_Z), PIPE_R, 0.34, "galv", "y")
         for y in (-0.18, 0.18):
-            k.cyl(f"cap{y}", (0, y, PIPE_Z), COUP_R, 0.04, "galv_dark", "y")
+            k.cyl(f"cap{y}", (0, y, PIPE_Z), COUP_R, 0.04, "galv", "y")
         return
     for s in sides:
         arm(k, s)
     if len(sides) == 1:
         dx, dy = DIRS[sides[0]]
-        k.cyl("cap", (0, 0, PIPE_Z), COUP_R, 0.04, "galv_dark", "x" if dx else "y")
+        k.cyl("cap", (0, 0, PIPE_Z), COUP_R, 0.04, "galv", "x" if dx else "y")
     elif mask not in (N | S, E | W):
         fitting(k, sides)
 
@@ -415,11 +418,11 @@ def build_pump(k: Kit, with_filter=False):
     # Discharge: up off the volute, along +Y, down to pipe height, out over the N edge.
     top = z + 0.135
     k.cyl("discharge_nipple", (0, 0.035, top - 0.01), PIPE_R, 0.06, "galv", segs=12)
-    k.ball("discharge_elbow", (0, 0.035, top + 0.03), COUP_R, "galv_dark")
+    k.ball("discharge_elbow", (0, 0.035, top + 0.03), COUP_R, "galv")
     k.cyl("discharge_run", (0, 0.22, top + 0.03), PIPE_R, 0.33, "galv", "y")
-    k.ball("discharge_elbow2", (0, 0.40, top + 0.03), COUP_R, "galv_dark")
+    k.ball("discharge_elbow2", (0, 0.40, top + 0.03), COUP_R, "galv")
     k.cyl("discharge_drop", (0, 0.40, (top + 0.03 + PIPE_Z) / 2), PIPE_R, top + 0.03 - PIPE_Z, "galv")
-    k.ball("discharge_elbow3", (0, 0.40, PIPE_Z), COUP_R, "galv_dark")
+    k.ball("discharge_elbow3", (0, 0.40, PIPE_Z), COUP_R, "galv")
     arm(k, N, start=0.40, tag="_out")
     if with_filter:
         fz = top + 0.03
@@ -448,10 +451,9 @@ def build_house_inlet(k: Kit):
     k.box("backboard", (0, WALL_Y - 0.01, 0.52), (0.36, 0.02, 0.62), "board")
     py = INLET_Y - 0.03
     k.cyl("feed", (0, (-0.5 + py) / 2, PIPE_Z), PIPE_R, 0.5 + py, "galv", "y")
-    k.cyl("feed_coupling", (0, -0.482, PIPE_Z), COUP_R, 0.036, "galv_dark", "y")
-    k.ball("feed_elbow", (0, py, PIPE_Z), COUP_R, "galv_dark")
+    k.ball("feed_elbow", (0, py, PIPE_Z), COUP_R, "galv")
     k.cyl("riser", (0, py, (PIPE_Z + 0.50) / 2), PIPE_R, 0.50 - PIPE_Z, "galv")
-    k.cyl("bib_tee", (0, py, 0.30), COUP_R, 0.07, "galv_dark")
+    k.cyl("bib_tee", (0, py, 0.30), COUP_R, 0.07, "galv")
     k.cyl("bib_body", (0, py - 0.06, 0.30), 0.03, 0.09, "brass", "y", 12)
     k.cyl("bib_spout", (0, py - 0.10, 0.275), 0.018, 0.05, "brass", segs=10)
     k.torus("bib_wheel", (0, py - 0.065, 0.355), 0.03, 0.007, "red", 12, 5)
@@ -465,7 +467,7 @@ def build_house_inlet(k: Kit):
     k.cyl("lamp_ring", (INLET_LAMP[0], INLET_LAMP[1] + 0.004, INLET_LAMP[2]), 0.024, 0.01, "iron", "y", 12)
     k.cyl("lamp", INLET_LAMP, 0.018, 0.008, "lamp", "y", 12)
     k.cyl("to_wall_nipple", (0, py, 0.83), PIPE_R, 0.08, "galv")
-    k.ball("to_wall_elbow", (0, py, 0.87), COUP_R, "galv_dark")
+    k.ball("to_wall_elbow", (0, py, 0.87), COUP_R, "galv")
     k.cyl("to_wall", (0, (py + 0.5) / 2, 0.87), PIPE_R, 0.5 - py, "galv", "y")
 
 
@@ -489,7 +491,7 @@ def build_sprinkler(k: Kit, active, automatic):
     """Fed over the S edge: ball valve (manual) or hose timer (automatic) on the feed,
     elbow up, 1/2 in riser tied to a stake, brass impact head."""
     arm(k, S, start=0.0)
-    k.ball("elbow", (0, 0, PIPE_Z), COUP_R, "galv_dark")
+    k.ball("elbow", (0, 0, PIPE_Z), COUP_R, "galv")
     k.cyl("riser", (0, 0, (PIPE_Z + SPR_TOP) / 2), 0.022, SPR_TOP - PIPE_Z, "galv", segs=10)
     k.box("stake", (0.05, 0.035, 0.23), (0.032, 0.032, 0.46), "wood")
     for zt in (0.16, 0.36):
