@@ -9,6 +9,8 @@ if isClient() then return end
 --   tick()    chore of the clock: once started, the parts whose square is now loaded go too; nil
 --             when not started.
 --   done()    nothing of a registered type is left.
+--   started() the removal was started: the topology refuses every new part from then on (a part
+--             set down stays a decoration the player can pick up again, never taken away).
 -- Parts of a type no longer registered stay in the registry untouched (D03). The flag lives in the
 -- persistent store (store.removal), so the removal goes on after a restart. No game API here;
 -- dependencies are injected: { store, registry (active()), topology (remove), world (isLoaded,
@@ -46,6 +48,10 @@ function Removal:tick()
         end
     end
     return removed, waiting
+end
+
+function Removal:started()
+    return self.store.removal ~= nil
 end
 
 function Removal:done()

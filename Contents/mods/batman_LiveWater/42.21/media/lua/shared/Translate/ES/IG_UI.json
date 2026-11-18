@@ -94,5 +94,6 @@
     "IGUI_LWT_Why_wrong_fluid": "las tuberías llevan gasolina, no agua",
     "IGUI_LWT_RemoveConfirm": "¿Quitar de este mundo todas las tuberías, bombas, aspersores, entradas y conexiones de LiveWater, con sus depósitos ocultos? Hazlo antes de darte de baja del mod. No se puede deshacer.",
     "IGUI_LWT_Removing": "Se está quitando LiveWater. Las piezas de zonas no cargadas se quitan cuando la zona se carga. Después, guarda y date de baja.",
-    "IGUI_LWT_NotAdmin": "Solo un administrador puede hacer eso."
+    "IGUI_LWT_NotAdmin": "Solo un administrador puede hacer eso.",
+    "IGUI_LWT_RemovedFromWorld": "LiveWater se ha retirado de este mundo: esta pieza queda como simple decoración."
 }

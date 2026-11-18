@@ -94,5 +94,6 @@
     "IGUI_LWT_Why_wrong_fluid": "borularda su değil benzin var",
     "IGUI_LWT_RemoveConfirm": "Bu dünyadaki tüm LiveWater boruları, pompaları, yağmurlayıcıları, girişleri ve tesisatları gizli tanklarıyla birlikte kaldırılsın mı? Modun aboneliğinden çıkmadan önce yapın. Geri alınamaz.",
     "IGUI_LWT_Removing": "LiveWater kaldırılıyor. Yüklenmemiş alanlardaki parçalar alan yüklenince kaldırılır. Sonra kaydedin ve aboneliği iptal edin.",
-    "IGUI_LWT_NotAdmin": "Bunu yalnızca bir admin yapabilir."
+    "IGUI_LWT_NotAdmin": "Bunu yalnızca bir admin yapabilir.",
+    "IGUI_LWT_RemovedFromWorld": "LiveWater bu dünyadan kaldırıldı: bu parça yalnızca süs olarak kalır."
 }

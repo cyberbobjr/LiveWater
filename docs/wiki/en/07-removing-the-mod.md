@@ -11,8 +11,8 @@ Unsubscribing in the middle of a game would leave LiveWater tiles and hidden tan
    through the places where you built networks if you want them cleaned at once.
 4. **Save**, quit, then **unsubscribe** from LiveWater (and remove it from the server's mod list).
 
-Nothing is given back: the items would vanish with the mod anyway. A part set down after the removal is removed at the
-next 10-minute step.
+Nothing is given back: the items would vanish with the mod anyway. A part set down after the removal does not join any
+network: it stays a plain decoration (you are told so) that you can pick up again.
 
 Only an admin can do it on a server; the server checks it (*Only an admin can do that.*).
 

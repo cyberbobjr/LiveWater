@@ -94,5 +94,6 @@
     "IGUI_LWT_Why_wrong_fluid": "配管が運んでいるのは水ではなくガソリンです",
     "IGUI_LWT_RemoveConfirm": "この世界から、LiveWaterのパイプ、ポンプ、スプリンクラー、給水口、取り付け部をすべて、隠しタンクごと取り除きますか？ MODの購読を解除する前に行ってください。元に戻せません。",
     "IGUI_LWT_Removing": "LiveWaterを取り除いています。読み込まれていないエリアの部品は、そのエリアが読み込まれたときに消えます。その後保存して、購読を解除してください。",
-    "IGUI_LWT_NotAdmin": "管理者だけができます。"
+    "IGUI_LWT_NotAdmin": "管理者だけができます。",
+    "IGUI_LWT_RemovedFromWorld": "LiveWater はこのワールドから削除されました。この部品はただの飾りになります。"
 }

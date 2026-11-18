@@ -21,6 +21,7 @@ def call(lua, expr):
 BENCH = r"""
 REMOVAL = require("LiveWater/LWT_Removal").new({ store = STORE, registry = REG, topology = TOPO, world = WORLD,
     log = function() end })
+TOPO.closed = function() return REMOVAL:started() end
 place("Test:Pump", 0, 0) place("Test:Pipe", 1, 0) place("Test:Pipe", 5, 5)
 STORE.parts["9,9,0"] = { v = 1, type = "Gone:Part", x = 9, y = 9, z = 0, order = 99, data = {} }
 WORLD.unloaded["5,5,0"] = true
@@ -51,6 +52,23 @@ class Service(unittest.TestCase):
         lua = bench()
         lua.execute('WORLD.unloaded["5,5,0"] = nil REMOVAL:start()')
         self.assertEqual(lua.eval('STORE.parts["9,9,0"].type'), "Gone:Part")
+
+    def test_a_part_set_down_after_the_removal_is_refused_and_never_taken_away(self):
+        # No item may vanish: the tile stays a decoration the player can pick up again.
+        lua = bench()
+        lua.execute('WORLD.unloaded["5,5,0"] = nil REMOVAL:start()')
+        self.assertEqual(call(lua, 'place("Test:Pipe", 3, 3)'), (False, "removed"))
+        lua.execute("REMOVAL:tick()")
+        self.assertIsNone(lua.eval("REG:at(3, 3, 0)"))
+        self.assertIsNotNone(lua.eval("WORLD:sprite(3, 3, 0)"))
+
+    def test_the_refusal_is_translated(self):
+        lua = bench()
+        self.assertEqual(lua.eval('require("LiveWater/LWT_Reasons").key("removed")'), "IGUI_LWT_RemovedFromWorld")
+        tr = os.path.join(MEDIA, "lua", "shared", "Translate")
+        for lang in os.listdir(tr):
+            with open(os.path.join(tr, lang, "IG_UI.json"), encoding="utf-8") as f:
+                self.assertIn("IGUI_LWT_RemovedFromWorld", json.load(f), lang)
 
     def test_nothing_happens_before_an_admin_starts_it(self):
         lua = bench()

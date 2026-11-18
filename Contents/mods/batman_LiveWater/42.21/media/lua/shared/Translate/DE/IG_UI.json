@@ -94,5 +94,6 @@
     "IGUI_LWT_Why_wrong_fluid": "die Leitungen führen Benzin, nicht Wasser",
     "IGUI_LWT_RemoveConfirm": "Alle LiveWater-Rohre, Pumpen, Sprinkler, Einlässe und Armaturen samt ihren verborgenen Tanks aus dieser Welt entfernen? Vor dem Abbestellen des Mods tun. Das lässt sich nicht rückgängig machen.",
     "IGUI_LWT_Removing": "LiveWater wird entfernt. Teile in nicht geladenen Bereichen verschwinden, sobald der Bereich geladen wird. Danach speichern und abbestellen.",
-    "IGUI_LWT_NotAdmin": "Das kann nur ein Admin tun."
+    "IGUI_LWT_NotAdmin": "Das kann nur ein Admin tun.",
+    "IGUI_LWT_RemovedFromWorld": "LiveWater wurde aus dieser Welt entfernt: Dieses Teil bleibt reine Dekoration."
 }

@@ -118,8 +118,10 @@ local function build()
     local registry = Registry.new(store, catalog)
     local network = Network.new(catalog)
     local sprites = Sprites.new(network, catalog, world)
+    local removal
     local topology = Topology.new({ registry = registry, network = network, catalog = catalog,
-        events = LiveWater.Events, sprites = sprites, sites = world, log = log })
+        events = LiveWater.Events, sprites = sprites, sites = world, log = log,
+        closed = function() return removal ~= nil and removal:started() end })
     local publisher = Publisher.new({ catalog = catalog, sprites = sprites, mirror = world, sounds = GameSounds.new(),
         visuals = GameVisuals.new() })
     local plumbing = GamePlumbing.new()
@@ -139,7 +141,7 @@ local function build()
     local diagnostics = Diagnostics.new({ relays = relays, barrels = barrels, pumped = pumped })
     local washerFix = WasherFix.new({ relays = relays, plumbing = plumbing, multiplayer = isServer,
         enabled = function() return GameSettings.scale("WasherFix") ~= false end })
-    local removal = Removal.new({ store = store, registry = registry, topology = topology, world = world, log = log })
+    removal = Removal.new({ store = store, registry = registry, topology = topology, world = world, log = log })
     local commands = Commands.new({ topology = topology, catalog = catalog, world = world,
         players = players, publisher = publisher, scale = GameSettings.scale, barrels = barrels,
         plumbing = plumbing, events = LiveWater.Events, replies = replies, removal = removal })

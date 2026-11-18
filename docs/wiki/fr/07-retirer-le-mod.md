@@ -12,8 +12,8 @@ d'abord :
    Passez dans les endroits où vous avez construit des réseaux si vous voulez qu'ils soient nettoyés tout de suite.
 4. **Sauvegardez**, quittez, puis **désabonnez-vous** de LiveWater (et retirez-le de la liste des mods du serveur).
 
-Rien n'est rendu : les objets disparaîtraient de toute façon avec le mod. Une pièce posée après le retrait est retirée
-au pas de 10 minutes suivant.
+Rien n'est rendu : les objets disparaîtraient de toute façon avec le mod. Une pièce posée après le retrait ne rejoint aucun
+réseau : elle reste un simple décor (un message le dit), que vous pouvez ramasser.
 
 Sur un serveur, seul un administrateur peut le faire ; le serveur le vérifie (*Seul un administrateur peut faire
 cela.*).

@@ -935,3 +935,11 @@ Relecture de tout le mod contre l'ADR (D04, D08-D10, MP, Kahlua) ; chaque défau
   un bâtiment construit par les joueurs) restent servis. Tests : `test_base.py`
   `test_the_original_fixtures_of_a_map_house_in_range_are_left_alone`,
   `test_a_map_house_fixture_already_fed_by_this_base_keeps_its_relay`.
+- **E21, pièce posée après le retrait.** Défaut : le retrait restait actif pour le monde et sa tâche retirait au pas
+  suivant toute pièce posée après coup, tuile comprise : l'objet du joueur disparaissait sans un mot. Correction
+  (`LWT_Topology.lua` `canAdd` → refus `removed` par le crochet injecté `closed`, `LWT_Removal.lua` `started`,
+  `LWT_Server.lua`, `LWT_Reasons.lua`, clé `IGUI_LWT_RemovedFromWorld` dans les 11 langues, wiki EN et FR
+  « Retirer le mod ») : une fois le retrait lancé, aucune pièce ne rejoint plus le réseau ; posée au curseur, elle
+  reste un simple décor que le joueur peut ramasser, avec un message ; posée au menu (tuyau), elle est refusée avant
+  que l'objet soit pris. Le retrait ne nettoie donc que les pièces présentes à son lancement. Tests : `test_removal.py`
+  `test_a_part_set_down_after_the_removal_is_refused_and_never_taken_away`, `test_the_refusal_is_translated`.

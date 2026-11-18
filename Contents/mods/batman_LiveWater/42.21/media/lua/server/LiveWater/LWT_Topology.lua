@@ -4,7 +4,9 @@ if isClient() then return end
 -- together, sprites follow (LWT_Sprites) and the public events are emitted:
 --   partAdded (entry), partRemoved (entry), networkChanged (network id).
 -- No game API here; dependencies are injected: { registry, network, catalog, events, sprites,
--- sites (port: site(x, y, z) -> the place a part asks, see LWT_GameSite), log = function(message) }.
+-- sites (port: site(x, y, z) -> the place a part asks, see LWT_GameSite), log = function(message),
+-- closed (optional function -> true once LiveWater was removed from the world: no part joins any
+-- more, E21) }.
 -- A part joins only where its capabilities accept the place (Parts:attach, e.g. an intake next
 -- to a water source); what they find is recorded in the part's state.
 
@@ -17,6 +19,7 @@ function Topology.new(deps)
     return setmetatable({
         registry = deps.registry, network = deps.network, catalog = deps.catalog,
         events = deps.events, sprites = deps.sprites, sites = deps.sites, log = deps.log or print,
+        closed = deps.closed,
     }, Topology)
 end
 
@@ -47,9 +50,10 @@ function Topology:siteAt(x, y, z)
 end
 
 -- Could a part of type `partType` join this square? Returns true, or false and
--- "unknown_part", "occupied", "ports_full", or the refusal of a capability (attach, e.g.
--- "no_source"). Changes nothing.
+-- "unknown_part", "removed" (LiveWater removed from the world), "occupied", "ports_full", or the
+-- refusal of a capability (attach, e.g. "no_source"). Changes nothing.
 function Topology:canAdd(partType, x, y, z)
+    if self.closed and self.closed() then return false, "removed" end
     if not self.catalog:has(partType) then return false, "unknown_part" end
     if self.registry:at(x, y, z) then return false, "occupied" end
     local ok, reason = self.network:canAdd({ type = partType, x = x, y = y, z = z })

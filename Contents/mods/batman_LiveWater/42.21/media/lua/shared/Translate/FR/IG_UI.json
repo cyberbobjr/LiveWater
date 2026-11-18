@@ -94,5 +94,6 @@
     "IGUI_LWT_Why_wrong_fluid": "les tuyaux transportent de l'essence, pas de l'eau",
     "IGUI_LWT_RemoveConfirm": "Retirer de ce monde tous les tuyaux, pompes, arroseurs, arrivées d'eau et raccords de LiveWater, avec leurs réservoirs cachés ? À faire avant de se désabonner du mod. C'est définitif.",
     "IGUI_LWT_Removing": "LiveWater est en cours de retrait. Les pièces des zones non chargées partent quand la zone se charge. Ensuite, sauvegardez et désabonnez-vous.",
-    "IGUI_LWT_NotAdmin": "Seul un administrateur peut faire cela."
+    "IGUI_LWT_NotAdmin": "Seul un administrateur peut faire cela.",
+    "IGUI_LWT_RemovedFromWorld": "LiveWater a été retiré de ce monde : cette pièce reste un simple décor."
 }

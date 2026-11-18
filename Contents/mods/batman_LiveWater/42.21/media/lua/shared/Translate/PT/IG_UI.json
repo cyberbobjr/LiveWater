@@ -94,5 +94,6 @@
     "IGUI_LWT_Why_wrong_fluid": "os canos transportam gasolina, não água",
     "IGUI_LWT_RemoveConfirm": "Remover todos os canos, bombas, aspersores, entradas e acessórios do LiveWater deste mundo, com os seus depósitos ocultos? Faça-o antes de cancelar a subscrição do mod. Não pode ser desfeito.",
     "IGUI_LWT_Removing": "O LiveWater está a ser removido. As peças em zonas não carregadas saem quando a zona for carregada. Depois grave e cancele a subscrição.",
-    "IGUI_LWT_NotAdmin": "Só um administrador pode fazer isso."
+    "IGUI_LWT_NotAdmin": "Só um administrador pode fazer isso.",
+    "IGUI_LWT_RemovedFromWorld": "O LiveWater foi retirado deste mundo: esta peça fica apenas como decoração."
 }
