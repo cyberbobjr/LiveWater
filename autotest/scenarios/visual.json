@@ -1,0 +1,23 @@
+// LiveWater visual checks and wiki screenshots (E22): the solo nominal path of autotest/lwt_hooks.lua plus a flow
+// meter on the line, native captures of every part (lwt-<name>.png in runs/...), the right-click menus, the
+// network view, the jet frames read over real time, and two barrel fittings next to vanilla rain collectors
+// (round barrel and crate) checked by their sprite (-P shots=1). Menu language: PZAT_OPTIONS=language=EN or FR.
+//   python PZDevKit/pzdev.py sp LiveWater/autotest/scenarios/visual.json --wait-idle 3600
+{
+  "name": "LiveWater-Visual",
+  "gameVersion": "42.22",
+  "mods": [
+    {"path": "../../Contents/mods/batman_LiveWater"}
+  ],
+  "hooks": "../lwt_hooks.lua",
+  "runsDir": "../../runs",
+  "params": {"centers": "6640,5310;6670,5395;6625,5395;6575,5210;6290,5300", "radius": "40", "stepSec": "90",
+    "shots": "1"},
+  "sp": {
+    "save": "2026-10-17_17-50-04",
+    "gameMode": "Sandbox",
+    "saveMods": "replace",
+    "timeoutSec": 1800,
+    "startDelaySec": 5
+  }
+}

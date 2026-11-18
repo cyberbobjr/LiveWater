@@ -954,3 +954,48 @@ Relecture de tout le mod contre l'ADR (D04, D08-D10, MP, Kahlua) ; chaque défau
   0,4 L d'essence créé à chaque pas (4 L sur 10 pas dans le test). Correction (`LWT_GameContainers.lua` `take`) :
   arrondi au-dessus de la quantité tirée, jamais d'essence créée. Test : `test_fitting.py`
   `test_a_fractional_draw_takes_whole_units_rounded_up`.
+
+#### Contrôle visuel en jeu (2026-11-18)
+
+Variante `autotest/scenarios/visual.json` (paramètre `shots=1` de `autotest/lwt_hooks.lua`, sans effet sur le chemin
+nominal) : même scène que le passage nominal, plus un compteur d'eau sur la ligne et deux récupérateurs d'eau vanilla
+(tonneau rond `carpentry_02_122`, caisse basse `carpentry_02_54`) raccordés ; captures natives `takeScreenshot`, menus
+au clic droit ouverts par `ISWorldObjectContextMenu.createMenu` ; langue choisie par `PZAT_OPTIONS=language=EN|FR`.
+Lancement : `python PZDevKit/pzdev.py sp LiveWater/autotest/scenarios/visual.json --wait-idle 3600`.
+
+| Passage | Code | `summary` | Dossier |
+|---|---|---|---|
+| 1 EN | 1 | `36/37 PASS` (jet capturé arroseur fermé : défaut du test, corrigé) | `runs/20261118-025827-sp-a350c4a152d5` |
+| 2 EN | 0 | `37/37 PASS` (joueur dans le champ) | `runs/20261118-031120-sp-73abbd0d750f` |
+| 3 EN | 1 | `20/21 PASS` (`showNetwork` refusé `too_far` : joueur trop loin, test corrigé) | `runs/20261118-032522-sp-d8d74a0a1602` |
+| 4 EN | 2 | aucun (`NullPointerException` vanilla dans `BloodClothingType.addHole`, retour au menu) | `runs/20261118-032930-sp-fb5b9295ca6a` |
+| 5 EN | 0 | `37/37 PASS` | `runs/20261118-033141-sp-1fdfaa5b811a` |
+| 6 FR | 0 | `37/37 PASS` | `runs/20261118-034552-sp-9ade135662a4` |
+| 7 EN | 0 | `37/37 PASS` (après le correctif de la vanne, ci-dessous) | `runs/20261118-035949-sp-93587c10aa63` |
+
+Confirmé en jeu (captures ouvertes) :
+- jet animé (D08a) : `sprinkler jet changes frames over real time - ticking true count 1: _96@0ms swaps 316,
+  _84@500ms swaps 319, _96@1016ms swaps 322` ; deux captures à 250 ms montrent deux images différentes ; l'arc part
+  du haut de la colonne de l'arroseur ; arroseur fermé : `jet module unsubscribed once the sprinkler stops - count 0
+  ticking false frame nil` ;
+- raccords de baril dessinés selon le récipient (remarque de l'utilisateur) : `round barrel _64, crate _68`, le tuyau
+  atteint le bord des deux ;
+- pompe en marche `_28`, avec filtre `_32` ; arrivée d'eau ambre `_44` puis verte `_40` ; vanne ouverte `_17`, fermée
+  `_19` ; compteur `_21` ; réseau surligné (17 pièces) et sa légende ; menus de la pompe, de la vanne, du raccord et de
+  l'évier sec en anglais et en français ; aucune coupure de profondeur ; le relais 76 reste invisible.
+
+Défaut trouvé et corrigé : derrière une vanne de ligne fermée, l'évier disait « l'eau arrive » au lieu de « une vanne
+est fermée » (le pas du réseau n'atteignait pas l'arrivée d'eau, état `nil`). Correction (`LWT_Network.lua`
+`behindClosed`, `LWT_Flow.lua` `step`) : toute sortie qu'une pièce fermée prive d'eau prend l'état `closed`. Test :
+`test_valve.py` `test_an_outlet_behind_a_closed_valve_says_closed` ; `python -B -m unittest discover -s tests` →
+`Ran 296 tests`, `OK` ; `python -B tools/check_mod.py` → `OK: 100 Lua file(s) checked` ; confirmé en jeu au passage 7
+(menu de l'évier : `No water: a valve is closed`).
+
+Captures du wiki : `docs/images/screenshots/` (JPEG), tirées des passages 5 (EN), 6 (FR) et 7 (arrivée d'eau, évier sec).
+Restent en « Capture à faire » : recette des sections de tuyau, pompe contre un puits, cabane du joueur, menu de l'évier
+sec en français.
+
+Remarques laissées à l'utilisateur : la vanne ouverte ou fermée ne se distingue que par la tige, peu lisible au zoom
+normal (conforme à la planche validée) ; l'herbe haute vanilla couvre en partie les tuyaux posés au sol ; les contours
+pointillés visibles près des arbres sont la transparence vanilla des arbres. Non prouvé : sons (passages en
+`-nosound`), aspect en multijoueur.

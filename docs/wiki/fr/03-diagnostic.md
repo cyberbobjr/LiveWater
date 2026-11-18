@@ -15,7 +15,9 @@ Tout le réseau reste en surbrillance jusqu'à **Masquer le réseau d'eau** :
 
 L'infobulle de *Masquer le réseau d'eau* compte les sorties de chaque état.
 
-> Capture à faire : un réseau en surbrillance avec une arrivée d'eau verte et un arroseur rouge.
+![Un réseau en surbrillance : tuyaux et pompe en bleu, sorties selon leur état](../../images/screenshots/network-view.jpg)
+
+![L'infobulle de Masquer le réseau d'eau](../../images/screenshots/legend-fr.jpg)
 
 ## Informations
 

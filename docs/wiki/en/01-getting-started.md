@@ -41,7 +41,9 @@ metal** and a **wrench**: efficiency back to 100%.
 A pump has 4 connections: up to 4 pipes can leave it. Its pressure is enough for **one house and four sprinklers**
 (a house inlet counts 2, a sprinkler or a filling barrel counts 1).
 
-> Screenshot to do: a pond pump on a river bank, running, with its Information lines.
+![A pond pump running on a river bank, on its generator](../../images/screenshots/pump-running.jpg)
+
+![The Information lines of a running pump](../../images/screenshots/pump-info-en.jpg)
 
 ## 3. Lay the pipes
 
@@ -51,7 +53,7 @@ the house inlet carries the water to the upper floors and the basement.
 
 To take a pipe back: right-click it, **Dismantle Pipe Section**, with a **pipe wrench**. You get the section back.
 
-> Screenshot to do: a pipe line from the pump with an elbow and a T.
+![A pipe line from the pump to a house, with a water meter and a valve](../../images/screenshots/pipe-line.jpg)
 
 ## 4. Valves
 
@@ -81,7 +83,7 @@ Its light tells you what it does:
 
 A fixture already fed by something else (a LiveWire pump, a barrel above it) is left alone.
 
-> Screenshot to do: the house water inlet against a wall, green light, and a sink with running water.
+![The house water inlet against the wall, green light, fed through a water meter](../../images/screenshots/inlet-filtered.jpg)
 
 ## 6. Water filter
 
@@ -105,7 +107,7 @@ then closes. Change the interval from its right-click menu, **Watering Timer**, 
 options). The timer needs a little power (5 W: generator, grid or LiveWire); without power it does nothing, but you
 can still open the valve by hand.
 
-> Screenshot to do: an automatic sprinkler watering a garden, jet visible.
+![A sprinkler watering, jet visible (manual sprinkler shown; the automatic one sprays the same way)](../../images/screenshots/sprinkler-jet.jpg)
 
 ## 8. Barrel fitting: Fill or Pump
 
@@ -121,6 +123,8 @@ Its look follows the mode and the shape of the collector. **Information** shows 
 **Gasoline.** A fitting set to Pump on a gasoline barrel or a gas station pump makes a gasoline network. It only fills
 barrels (empty, or already holding gasoline) through fittings set to Fill. House inlets and sprinklers get nothing and
 say so.
+
+![Two barrel fittings on vanilla rain collectors: a round barrel and a low crate; the hose reaches each rim](../../images/screenshots/barrel-fittings.jpg)
 
 ## 9. Barrels connected to the house
 

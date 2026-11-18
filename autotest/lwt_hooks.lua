@@ -35,6 +35,7 @@ local SHEET = "batman_livewater_01_"
 local PIPE = "LiveWater:PipeGalvanized"
 local PUMP_SPRITE, INLET_SPRITE, SPRINKLER_SPRITE = SHEET .. "24", SHEET .. "40", SHEET .. "48"
 local VALVE_SPRITE, VALVE = SHEET .. "16", "LiveWater:Valve"
+local METER_SPRITE, FITTING_SPRITE = SHEET .. "20", SHEET .. "64"
 local SIDES = { { 0, -1, 1 }, { 1, 0, 2 }, { 0, 1, 4 }, { -1, 0, 8 } }
 
 -- ------------------------------------------------------------------ report
@@ -102,6 +103,10 @@ end
 
 local function key(x, y)
     return x .. "," .. y
+end
+
+local function near(p, q, d)
+    return math.abs(p.x - q.x) <= d and math.abs(p.y - q.y) <= d
 end
 
 local function clearZombies()
@@ -216,8 +221,9 @@ local function touchesAny(x, y, set, except)
     return false
 end
 
--- Breadth-first search from every pump square to the nearest inlet square through free squares.
-local function findLayout(cx, cy, r)
+-- Breadth-first search from every pump square to the nearest inlet square through free squares. `withMeter`
+-- (visual captures) also takes a straight pipe square, away from the valve, for a flow meter (L.meter).
+local function findLayout(cx, cy, r, withMeter)
     local fixtures = scanFixtures(cx, cy, r)
     if #fixtures == 0 then return nil, "no fixture in map buildings" end
     -- a sink when there is one (the brief's plumbed sink), else any water fixture
@@ -304,6 +310,20 @@ local function findLayout(cx, cy, r)
         end
     end
     if not L.valve then return nil, "no square for the inline valve" end
+    if withMeter then
+        for v = #L.pipes - 1, 2, -1 do
+            local p = L.pipes[v]
+            local links = 0
+            for j = 1, 4 do
+                if used[key(p.x + SIDES[j][1], p.y + SIDES[j][2])] then links = links + 1 end
+            end
+            if not L.meter and links == 2 and not near(p, L.valve, 1) and not near(p, L.sprinkler, 1) then
+                L.meter = p
+                table.remove(L.pipes, v)
+            end
+        end
+        if not L.meter then return nil, "no square for the flow meter" end
+    end
     used[key(L.crop.x, L.crop.y)] = true
     for d = 2, 6 do
         for dx = -d, d do
@@ -322,7 +342,7 @@ end
 local function describe(L)
     local f = L.fixture
     return "pump " .. key(L.pump.x, L.pump.y) .. " inlet " .. key(L.inlet.x, L.inlet.y) .. " pipes " .. #L.pipes
-        .. " valve " .. key(L.valve.x, L.valve.y)
+        .. " valve " .. key(L.valve.x, L.valve.y) .. (L.meter and (" meter " .. key(L.meter.x, L.meter.y)) or "")
         .. " sprinkler " .. key(L.sprinkler.x, L.sprinkler.y) .. " crop " .. key(L.crop.x, L.crop.y)
         .. " generator " .. key(L.gen.x, L.gen.y) .. " fixture " .. key(f.x, f.y) .. " "
         .. tostring(f.obj:getSpriteName())
@@ -428,6 +448,7 @@ local function expectedMask(L, p)
     set[key(L.inlet.x, L.inlet.y)] = true
     set[key(L.sprinkler.x, L.sprinkler.y)] = true
     set[key(L.valve.x, L.valve.y)] = true
+    if L.meter then set[key(L.meter.x, L.meter.y)] = true end
     for i = 1, #L.pipes do set[key(L.pipes[i].x, L.pipes[i].y)] = true end
     local mask = 0
     for j = 1, 4 do
@@ -514,10 +535,6 @@ local function centersOf(text)
     return out
 end
 
-local function near(p, q, d)
-    return math.abs(p.x - q.x) <= d and math.abs(p.y - q.y) <= d
-end
-
 local function goNear(p)
     local pl = player()
     if near({ x = math.floor(pl:getX()), y = math.floor(pl:getY()) }, p, 2) and math.floor(pl:getZ()) == 0 then
@@ -592,11 +609,346 @@ local function waitSteps(n)
     end
 end
 
+-- ------------------------------------------------------------------ visual captures (param shots=1, E22)
+-- Native screenshots for the wiki and the visual checks (autotest/scenarios/visual.json). The camera follows
+-- the player (invisible), so a capture teleports the player onto the square to show, sets the zoom through
+-- the public zoom controls, waits for the render, then calls takeScreenshot ("lwt-<name>.png", written to
+-- the cache's Screenshots folder and copied into runs/... by pzdev). Right-click menus are opened with the
+-- vanilla ISWorldObjectContextMenu.createMenu at the part's screen position (direct call, not a mouse
+-- click); a hovered option is the menu's mouseOver index (its tooltip is then drawn by ISContextMenu).
+-- Fixtures: noon and clear weather, the crop dried again before a capture block (so the sprinkler keeps
+-- spraying), two vanilla rain collectors created as MORainCollectorBarrel does.
+
+local function zoomTo(target)
+    local core = getCore()
+    core:setAutoZoom(0, false)
+    local current = core:getNextZoom(0, 0)
+    for _ = 1, 24 do
+        local dir = target > current and 1 or -1
+        local nextLevel = core:getNextZoom(0, dir)
+        if math.abs(nextLevel - target) >= math.abs(current - target) then break end
+        core:doZoomScroll(0, dir)
+        current = nextLevel
+    end
+end
+
+-- Hide the open windows (character panel, debug console...) for a capture; a scene capture also hides the HUD
+-- (UIManager.setVisibleAllUI, what the vanilla "hide UI" key does), a menu capture keeps the UI layer for its menu.
+local function hideWindows(scene)
+    S.hiddenUI = {}
+    local ui = UIManager.getUI()
+    for i = 0, ui:size() - 1 do
+        local w = ui:get(i)
+        if w:isVisible() then
+            S.hiddenUI[#S.hiddenUI + 1] = w
+            w:setVisible(false)
+        end
+    end
+    if scene then UIManager.setVisibleAllUI(false) end
+end
+
+local function restoreWindows()
+    UIManager.setVisibleAllUI(true)
+    for i = 1, #(S.hiddenUI or {}) do S.hiddenUI[i]:setVisible(true) end
+    S.hiddenUI = nil
+end
+
+local function closeMenu()
+    if S.menu then
+        S.menu:hideToolTip()
+        S.menu:closeAll()
+        S.menu = nil
+    end
+end
+
+-- Vanilla world menu of the objects on a square; `hover` (option text, optional) is shown hovered.
+local function openMenu(p, objects, hover)
+    local pn = player():getPlayerNum()
+    local sx = isoToScreenX(pn, p.x + 0.5, p.y + 0.5, 0)
+    local sy = isoToScreenY(pn, p.x + 0.5, p.y + 0.5, 0)
+    local menu = ISWorldObjectContextMenu.createMenu(pn, objects, sx, sy)
+    S.menu = menu
+    if not (menu and hover) then return menu end
+    for i = 1, #menu.options do
+        if menu.options[i].name == hover then menu.mouseOver = i end
+    end
+    return menu
+end
+
+local function partMenu(p, typeId, hover)
+    return function() openMenu(p(), { objectOf(p(), typeId) }, hover and getText(hover)) end
+end
+
+-- Attached jet frame of the sprinkler object (sprite name), or nil.
+local function jetFrame(obj)
+    local list = obj and obj:getAttachedAnimSprite()
+    for i = 0, (list and list:size() or 0) - 1 do
+        local sprite = list:get(i):getParentSprite()
+        local name = sprite and sprite:getName()
+        local index = name and tonumber(string.match(name, "^" .. SHEET .. "(%d+)$"))
+        if index and index >= 80 and index <= 103 then return name end
+    end
+    return nil
+end
+
+local function jetModule()
+    return require "LiveWater/LWT_SprinklerJet"
+end
+
+-- One capture: { name, at = function() -> {x, y}, zoom, prepare (after the camera settled), after, note,
+-- again (optional: name of a second capture 250 ms later, two jet frames), offset (optional { dx, dy } of the
+-- player, default { 1, 1 }) }. The player stands one square
+-- south-east of the target (in front of it: the engine fades what stands in front of the player) and is drawn
+-- fully transparent during the capture (alpha set at every poll).
+local function shot(spec)
+    addStep("screenshot " .. spec.name, function()
+        local st = S.shot
+        if not st or st.name ~= spec.name then
+            S.shot = { name = spec.name, phase = 1, t = nowMs() }
+            local p = spec.at()
+            hideWindows(spec.prepare == nil)
+            local off = spec.offset or { 1, 1 }
+            player():teleportTo(p.x + off[1] + 0.5, p.y + off[2] + 0.5, 0)
+            zoomTo(spec.zoom or 0.5)
+            return false
+        end
+        player():setAlphaAndTarget(0)
+        if st.phase == 1 and nowMs() - st.t >= 3000 then
+            if spec.prepare then spec.prepare() end
+            st.phase, st.t = 2, nowMs()
+        elseif st.phase == 2 and nowMs() - st.t >= 1500 then
+            takeScreenshot("lwt-" .. spec.name .. ".png")
+            info("screenshot lwt-" .. spec.name .. ".png" .. (spec.note and (" (" .. spec.note() .. ")") or ""))
+            st.phase, st.t = spec.again and 25 or 3, nowMs()
+        elseif st.phase == 25 and nowMs() - st.t >= 250 then
+            takeScreenshot("lwt-" .. spec.again .. ".png")
+            info("screenshot lwt-" .. spec.again .. ".png" .. (spec.note and (" (" .. spec.note() .. ")") or ""))
+            st.phase, st.t = 3, nowMs()
+        elseif st.phase == 3 and nowMs() - st.t >= 1000 then
+            closeMenu()
+            restoreWindows()
+            player():setAlphaAndTarget(1)
+            if spec.after then spec.after() end
+            S.shot = nil
+            return true
+        end
+        return false
+    end, 30)
+end
+
+-- Fixture of a capture block: the crop is kept dry at every poll (the sprinkler keeps spraying and the pump
+-- keeps running), from one ten-minute step before the captures until the end of the block.
+local function keepDry()
+    local pl = S.keepDry and S.L and plantAt(S.L.crop)
+    if pl and pl.waterLvl > 0 then
+        pl.waterLvl = 0
+        pl:saveData()
+    end
+end
+
+local function dryCrop()
+    addStep("crop kept dry (fixture: the sprinkler keeps spraying)", function()
+        S.keepDry = true
+        keepDry()
+        return true
+    end)
+    addStep("one ten-minute step with the crop dry", waitSteps(1), 120)
+end
+
+local function stopDry()
+    addStep("crop no longer kept dry", function()
+        S.keepDry = nil
+        return true
+    end)
+end
+
+local function at(field)
+    return function() return S.L[field] end
+end
+
+local function middle()
+    local L = S.L
+    return L.pipes[math.floor(#L.pipes / 2) + 1]
+end
+
+local function spriteNote(field, typeId)
+    return function() return tostring(spriteOf(S.L[field], typeId)) end
+end
+
+-- Jet frames read over real time (D08a): three reads about half a second apart, the module subscribed.
+local function jetSteps()
+    addStep("sprinkler jet changes frames over real time", function()
+        local J = jetModule()
+        local obj = objectOf(S.L.sprinkler, "LiveWater:Sprinkler")
+        S.jet = S.jet or { reads = {} }
+        local r = S.jet.reads
+        local last = r[#r]
+        if not last or nowMs() - last.t >= 500 then
+            r[#r + 1] = { t = nowMs(), frame = jetFrame(obj), swaps = J.swaps }
+        end
+        if #r < 3 then return false end
+        local changed = r[1].frame ~= r[2].frame and r[2].frame ~= r[3].frame
+        local text = {}
+        for i = 1, #r do text[i] = tostring(r[i].frame) .. "@" .. (r[i].t - r[1].t) .. "ms swaps " .. r[i].swaps end
+        rec(J.ticking and J.count >= 1 and r[1].frame ~= nil and changed and r[3].swaps > r[1].swaps,
+            "sprinkler jet changes frames over real time (OnTick subscribed)",
+            "ticking " .. tostring(J.ticking) .. " count " .. J.count .. ": " .. table.concat(text, ", "))
+        return true
+    end, 10)
+end
+
+-- Vanilla rain collector entity on a square (as MORainCollectorBarrel creates one), with some water.
+local function makeCollector(p, spriteName, litres)
+    local s = sq(p.x, p.y, 0)
+    local obj = IsoThumpable.new(getCell(), s, spriteName, false, {})
+    obj:setBlockAllTheSquare(true)
+    obj:setIsThumpable(true)
+    local infoOf = SpriteConfigManager.getObjectInfoFromSprite(spriteName)
+    if infoOf and infoOf:getScript() and infoOf:getScript():getParent() then
+        GameEntityFactory.CreateIsoObjectEntity(obj, infoOf:getScript():getParent(), true)
+    end
+    s:AddSpecialObject(obj)
+    local fc = obj:getFluidContainer()
+    if fc then fc:addFluid(Fluid.Water, litres) end
+    return obj, fc ~= nil
+end
+
+-- A free 3 x 3 block near the pump touching none of the layout's squares: two barrels on its first row,
+-- two fittings (facing S: barrel behind them, pipe in front) on the second, three pipes on the third.
+local function fittingArea(L)
+    local used = {}
+    local list = { L.pump, L.inlet, L.sprinkler, L.valve, L.crop, L.gen, L.meter }
+    for i = 1, #L.pipes do list[#list + 1] = L.pipes[i] end
+    for i = 1, #list do used[key(list[i].x, list[i].y)] = true end
+    for d = 2, 12 do
+        for dx = -d, d do
+            for dy = -d, d do
+                local x0, y0 = L.pump.x + dx, L.pump.y + dy
+                local ok = true
+                for i = 0, 2 do
+                    for j = 0, 2 do
+                        local x, y = x0 + i, y0 + j
+                        if ok and (used[key(x, y)] or touchesAny(x, y, used) or not free(sq(x, y, 0))
+                            or nearWater(x, y)) then ok = false end
+                    end
+                end
+                if ok then return { x = x0, y = y0 } end
+            end
+        end
+    end
+    return nil
+end
+
+local function fittingSteps()
+    local FIT = "LiveWater:BarrelFitting"
+    addStep("barrel fittings: area, rain collectors, pipes, fittings", function()
+        local F = S.F
+        if not F then
+            local a = fittingArea(S.L)
+            if not a then
+                rec(false, "barrel fitting area found near the pump")
+                return "abort"
+            end
+            local _, tall = makeCollector({ x = a.x, y = a.y }, "carpentry_02_122", 120)
+            local _, low = makeCollector({ x = a.x + 2, y = a.y }, "carpentry_02_54", 80)
+            rec(tall and low, "vanilla rain collectors set (fixture)", "round barrel " .. key(a.x, a.y)
+                .. ", crate " .. key(a.x + 2, a.y))
+            S.F = { a = a, tall = { x = a.x, y = a.y + 1 }, low = { x = a.x + 2, y = a.y + 1 }, i = 0,
+                pipes = { { x = a.x, y = a.y + 2 }, { x = a.x + 1, y = a.y + 2 }, { x = a.x + 2, y = a.y + 2 } } }
+            return false
+        end
+        local p = F.pipes[F.i]
+        if p and not entryAt(p) then return false end
+        F.i = F.i + 1
+        local nextPipe = F.pipes[F.i]
+        if nextPipe then
+            goNear(nextPipe)
+            send("lay", { x = nextPipe.x, y = nextPipe.y, z = 0, part = PIPE })
+            return false
+        end
+        goNear(F.tall)
+        local ok1, why1 = placeMoveable(player(), FITTING_SPRITE, F.tall)
+        local ok2, why2 = placeMoveable(player(), FITTING_SPRITE, F.low)
+        rec(ok1 and ok2 and entryAt(F.tall) ~= nil and entryAt(F.low) ~= nil,
+            "two barrel fittings set down (vanilla placement)", tostring(why1 or "") .. " " .. tostring(why2 or ""))
+        return true
+    end, 60)
+    addStep("one ten-minute step for the fittings", waitSteps(1), 120)
+    addStep("fitting drawn by its container's shape", function()
+        local F = S.F
+        local tall, low = spriteOf(F.tall, FIT), spriteOf(F.low, FIT)
+        rec(tall == SHEET .. "64" and low == SHEET .. "68", "fitting drawn by its container's shape (Fill)",
+            "round barrel " .. tostring(tall) .. ", crate " .. tostring(low))
+        return true
+    end)
+    shot({ name = "barrel-fittings", at = function() return { x = S.F.a.x + 1, y = S.F.a.y + 1 } end })
+    shot({ name = "menu-fitting-info", at = function() return S.F.low end,
+        prepare = function() openMenu(S.F.low, { objectOf(S.F.low, FIT) }, getText("ContextMenu_LWT_Info")) end })
+end
+
+-- The house inlet stands against the north wall of its house: the player waits outside, north-west of it.
+local OUTSIDE = { -1, -2 }
+
+local function visualSteps(block)
+    if block == "unfiltered" then
+        dryCrop()
+        shot({ name = "network-unfiltered", at = at("valve"), zoom = 0.75 })
+        shot({ name = "pump-running", at = at("pump"), note = spriteNote("pump", "LiveWater:PondPump") })
+        shot({ name = "inlet-unfiltered", at = at("inlet"), offset = OUTSIDE, note = spriteNote("inlet", "LiveWater:HouseInlet") })
+        jetSteps()
+        local jetNote = function() return tostring(jetFrame(objectOf(S.L.sprinkler, "LiveWater:Sprinkler"))) end
+        shot({ name = "sprinkler-jet-a", again = "sprinkler-jet-b", at = at("sprinkler"), note = jetNote })
+        shot({ name = "valve-open", at = at("valve"), note = spriteNote("valve", VALVE) })
+        shot({ name = "flow-meter", at = at("meter"), note = spriteNote("meter", "LiveWater:FlowMeter") })
+        shot({ name = "menu-pump-info", at = at("pump"),
+            prepare = partMenu(at("pump"), "LiveWater:PondPump", "ContextMenu_LWT_Info") })
+        shot({ name = "menu-valve", at = at("valve"), prepare = partMenu(at("valve"), VALVE) })
+        addStep("network view asked (showNetwork)", function()
+            local View = require "LiveWater/LWT_NetworkView"
+            if not S.viewSent then
+                S.viewSent = true
+                goNear(S.L.pump)
+                send("showNetwork", { x = S.L.pump.x, y = S.L.pump.y, z = 0 })
+                return false
+            end
+            if #View.shown == 0 then return false end
+            rec(true, "network view highlights the parts", #View.shown .. " parts")
+            return true
+        end, 20)
+        shot({ name = "network-view", at = middle, zoom = 1.0 })
+        shot({ name = "menu-network-legend", at = at("inlet"), offset = OUTSIDE,
+            prepare = partMenu(at("inlet"), "LiveWater:HouseInlet", "ContextMenu_LWT_HideNetwork"),
+            after = function() (require "LiveWater/LWT_NetworkView").clear() end })
+        stopDry()
+    elseif block == "filtered" then
+        dryCrop()
+        shot({ name = "pump-filter-running", at = at("pump"), note = spriteNote("pump", "LiveWater:PondPump") })
+        shot({ name = "inlet-filtered", at = at("inlet"), offset = OUTSIDE, note = spriteNote("inlet", "LiveWater:HouseInlet") })
+        shot({ name = "network-filtered", at = at("valve"), zoom = 0.75 })
+        stopDry()
+    elseif block == "inline closed" then
+        shot({ name = "valve-closed", at = at("valve"), note = spriteNote("valve", VALVE) })
+        shot({ name = "menu-sink-dry", at = function() return S.L.fixture end,
+            prepare = function() openMenu(S.L.fixture, { S.L.fixture.obj }) end })
+    elseif block == "sprinkler closed" then
+        addStep("jet stopped and unsubscribed with the sprinkler closed", function()
+            local J = jetModule()
+            local frame = jetFrame(objectOf(S.L.sprinkler, "LiveWater:Sprinkler"))
+            rec(J.count == 0 and not J.ticking and frame == nil, "jet module unsubscribed once the sprinkler stops",
+                "count " .. J.count .. " ticking " .. tostring(J.ticking) .. " frame " .. tostring(frame))
+            return true
+        end)
+        shot({ name = "sprinkler-closed", at = at("sprinkler"), note = spriteNote("sprinkler", "LiveWater:Sprinkler") })
+        fittingSteps()
+    end
+end
+
 local function buildSteps(ctx)
     local P = ctx.params or {}
     local radius = tonumber(P.radius) or 40
     local stepSec = tonumber(P.stepSec) or 90
     local centers = centersOf(P.centers)
+    local visual = P.shots == "1"
     S.centerIndex = 0
 
     addStep("player untouchable and items given", function()
@@ -606,6 +958,12 @@ local function buildSteps(ctx)
         giveItems(pl, { { "LiveWater.PipeSection", 80 }, { "LiveWater.WaterFilter", 1 }, { "Base.PipeWrench", 1 },
             { "Base.Mov_LiveWater_PondPump", 1 }, { "Base.Mov_LiveWater_HouseInlet", 1 },
             { "Base.Mov_LiveWater_Sprinkler", 1 }, { "Base.Mov_LiveWater_Valve", 1 } })
+        if visual then
+            giveItems(pl, { { "Base.Mov_LiveWater_FlowMeter", 1 }, { "Base.Mov_LiveWater_BarrelFitting", 2 } })
+            getGameTime():setTimeOfDay(11)
+            getClimateManager():stopWeatherAndThunder()
+            info("visual fixtures: 11:00, weather stopped")
+        end
         rec(server() ~= nil, "LiveWater authority built (LiveWater.Server)")
         Events.EveryTenMinutes.Add(onTen)
         return true
@@ -628,7 +986,7 @@ local function buildSteps(ctx)
         if not (sq(c.x - radius, c.y - radius, 0) and sq(c.x + radius, c.y + radius, 0)) then
             if nowMs() - S.teleportedAt < 40000 then return false end
         end
-        local L, why = findLayout(c.x, c.y, radius)
+        local L, why = findLayout(c.x, c.y, radius, visual)
         if not L then
             info("no layout around " .. key(c.x, c.y) .. ": " .. tostring(why))
             S.center = nil
@@ -685,6 +1043,13 @@ local function buildSteps(ctx)
         local ok2, why2 = placeMoveable(player(), SPRINKLER_SPRITE, L.sprinkler)
         goNear(L.valve)
         local ok3, why3 = placeMoveable(player(), VALVE_SPRITE, L.valve)
+        if L.meter then
+            goNear(L.meter)
+            local ok4, why4 = placeMoveable(player(), METER_SPRITE, L.meter)
+            local e4 = entryAt(L.meter)
+            rec(ok4 and e4 ~= nil, "flow meter set down between two pipes", tostring(why4 or "") .. " "
+                .. tostring(e4 and e4.type))
+        end
         local e3 = entryAt(L.valve)
         rec(ok3 and e3 ~= nil and e3.type == VALVE, "inline valve set down between two pipes",
             tostring(why3 or "") .. " " .. tostring(e3 and e3.type))
@@ -699,7 +1064,7 @@ local function buildSteps(ctx)
     addStep("network built with sprites by side mask", function()
         local L, s = S.L, server()
         local id = s.network:networkAt(L.pump.x, L.pump.y, 0)
-        local all = { L.inlet, L.sprinkler, L.valve }
+        local all = { L.inlet, L.sprinkler, L.valve, L.meter }
         for i = 1, #L.pipes do all[#all + 1] = L.pipes[i] end
         local apart = 0
         for i = 1, #all do
@@ -760,6 +1125,8 @@ local function buildSteps(ctx)
         return true
     end)
 
+    if visual then visualSteps("unfiltered") end
+
     addStep("filter fitted (fitFilter)", function()
         local pump = entryAt(S.L.pump)
         if not S.filterSent then
@@ -792,6 +1159,8 @@ local function buildSteps(ctx)
         rec(seen.pumpSprite[SHEET .. "32"] == true, "pump sprite running with filter")
         return true
     end)
+
+    if visual then visualSteps("filtered") end
 
     addStep("inline valve closed (switchValve)", function()
         local e = entryAt(S.L.valve)
@@ -827,6 +1196,8 @@ local function buildSteps(ctx)
         return true
     end)
 
+    if visual then visualSteps("inline closed") end
+
     addStep("sprinkler valve closed (switchValve)", function()
         local e = entryAt(S.L.sprinkler)
         if not S.closeSent then
@@ -858,6 +1229,8 @@ local function buildSteps(ctx)
             "closed valve stops the sprinkler branch", "state " .. tostring(sstate) .. " water level " .. tostring(level))
         return true
     end)
+
+    if visual then visualSteps("sprinkler closed") end
 
     addStep("no Lua error recorded", function()
         local n = getLuaDebuggerErrorCount and getLuaDebuggerErrorCount() or 0
@@ -1313,6 +1686,7 @@ function H.client.done(ctx)
         return finished
     end
     clearZombies()
+    keepDry()
     local finished = runSteps()
     if finished then
         Events.EveryTenMinutes.Remove(onTen)

@@ -43,7 +43,9 @@ avec **2 ferrailles** et une **clé à molette** : rendement remis à 100 %.
 Une pompe a 4 départs : jusqu'à 4 tuyaux peuvent en partir. Sa pression suffit pour **une maison et quatre arroseurs**
 (une arrivée d'eau compte 2, un arroseur ou un baril à remplir compte 1).
 
-> Capture à faire : une pompe d'étang en marche au bord d'une rivière, avec ses informations.
+![Une pompe d'étang en marche au bord d'une rivière, sur son groupe électrogène](../../images/screenshots/pump-running.jpg)
+
+![Les informations d'une pompe en marche](../../images/screenshots/pump-info-fr.jpg)
 
 ## 3. Poser les tuyaux
 
@@ -54,7 +56,7 @@ Les tuyaux restent sur un seul niveau : l'arrivée d'eau porte l'eau aux étages
 Pour reprendre un tuyau : clic droit dessus, **Démonter : Section de tuyau**, avec une **clé anglaise** (la clé à
 tuyau du jeu). La section vous est rendue.
 
-> Capture à faire : une ligne de tuyaux depuis la pompe, avec un coude et un T.
+![Une ligne de tuyaux de la pompe à une maison, avec un compteur d'eau et une vanne](../../images/screenshots/pipe-line.jpg)
 
 ## 4. Vannes
 
@@ -86,7 +88,7 @@ Son voyant dit ce qu'elle fait :
 
 Un point d'eau déjà alimenté par autre chose (une pompe de LiveWire, un baril au-dessus) est laissé tel quel.
 
-> Capture à faire : l'arrivée d'eau contre un mur, voyant vert, et un évier où l'eau coule.
+![L'arrivée d'eau contre le mur, voyant vert, alimentée par un compteur d'eau](../../images/screenshots/inlet-filtered.jpg)
 
 ## 6. Cartouche filtrante
 
@@ -112,7 +114,7 @@ l'entend arroser.
 24 heures (bornes dans les options sandbox). La minuterie a besoin d'un peu de courant (5 W : générateur, réseau public
 ou LiveWire) ; sans courant elle ne fait rien, mais vous pouvez toujours ouvrir la vanne à la main.
 
-> Capture à faire : un arroseur automatique qui arrose un potager, jet visible.
+![Un arroseur qui arrose, jet visible (arroseur manuel ; l'automatique arrose de la même façon)](../../images/screenshots/sprinkler-jet.jpg)
 
 ## 8. Raccord de baril : Remplir ou Pomper
 
@@ -128,6 +130,8 @@ Son dessin suit le mode et la forme du récupérateur. **Informations** montre l
 **Essence.** Un raccord réglé sur Pomper contre un baril d'essence ou une pompe de station-service fait un réseau
 d'essence. Il ne remplit que des barils (vides, ou contenant déjà de l'essence) par des raccords réglés sur Remplir.
 Arrivées d'eau et arroseurs ne reçoivent rien et le disent.
+
+![Deux raccords sur des récupérateurs d'eau vanilla : un tonneau rond et une caisse basse ; le tuyau atteint chaque bord](../../images/screenshots/barrel-fittings.jpg)
 
 ## 9. Barils raccordés à la maison
 

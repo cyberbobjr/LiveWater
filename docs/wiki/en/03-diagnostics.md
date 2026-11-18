@@ -15,7 +15,9 @@ network is highlighted until you choose **Hide the Water Network**:
 
 The tooltip of *Hide the Water Network* counts the outlets in each state.
 
-> Screenshot to do: a highlighted network with a green inlet and a red sprinkler.
+![A highlighted network: pipes and pump in blue, outlets by state](../../images/screenshots/network-view.jpg)
+
+![The tooltip of Hide the Water Network](../../images/screenshots/legend-en.jpg)
 
 ## Information lines
 
@@ -48,6 +50,6 @@ Right-click a sink, bathtub, shower, toilet or washing machine that has no water
 | the inlet has no pump and no barrel | pipe a pump to it or connect a barrel |
 | the pipes carry gasoline | this network moves gasoline, not water |
 
-> Screenshot to do: the right-click menu of a dry sink with its "No water" line.
+![The right-click menu of a dry sink: "No water: a valve is closed"](../../images/screenshots/sink-dry-en.jpg)
 
 Next: [LiveWire](04-livewire.md)
