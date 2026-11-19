@@ -16,8 +16,6 @@
     "ContextMenu_LWT_HideNetwork": "Hide the Water Network",
     "ContextMenu_LWT_ShowAllAreas": "Show All Watered Areas",
     "ContextMenu_LWT_HideArea": "Hide the Watered Area",
-    "ContextMenu_LWT_FittingToPump": "Set to Pump",
-    "ContextMenu_LWT_FittingToFill": "Set to Fill",
     "ContextMenu_LWT_RemoveMod": "Remove LiveWater From This World (admin)",
     "ContextMenu_LWT_Debug": "LiveWater (debug)",
     "ContextMenu_LWT_DebugKit": "Give the Test Kit",

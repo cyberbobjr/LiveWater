@@ -2,7 +2,7 @@
 -- game API. A container is named by the sprite of its object ("carpentry_02_54") or by the name of
 -- its entity script ("RainCollector"); its definition is data:
 --   shape  "tall" (round barrel, drum, default) or "low" (wide crate collector): picks the sprite
---          of the fitting set to Fill (barrel_fill or barrel_fill_low, tuiles-contrat.md)
+--          of the fitting (barrel_fill or barrel_fill_low, tuiles-contrat.md)
 -- Every container takes the network's water like a barrel, tainted (ADR-005 D07); another field of a
 -- definition (`clean` of revision 12) is ignored.
 -- A fitting works with (admits) any object holding a FluidContainer of MIN_LITRES or more (barrels,

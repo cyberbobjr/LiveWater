@@ -4,8 +4,8 @@
 -- Events, emitted on the authority only:
 --   partAdded (part)  partRemoved (part)  networkChanged (networkId)
 --   waterDelivered (part, litres, quality)  valveChanged (part, open)
---   waterDrawn (part, litres, quality): litres the pumps took from a part that draws (a barrel
---   fitting set to Pump, API revision 11)
+--   waterDrawn (part, litres, quality): litres a pump took from the barrel it stands against
+--   (API revision 11; revision 22: capability "vessel", ADR-011)
 -- Subscribers run in subscription order; the same function subscribed twice runs once; emit
 -- does not catch errors. This is not the engine's Events table.
 

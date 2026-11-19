@@ -13,6 +13,8 @@ if isClient() then return end
 --                          player's return, ADR-006 D06)
 --   deliver(part, litres)  fills those relays
 --   release(part)          the inlet left: its relays are removed
+--   cut(part)              a valve kept the inlet from the water: its relays are emptied at once,
+--                          the taps of the house stop (ADR-010 D04)
 --   mark(part, why)        the inlet's empty relays carry the reason (LWT_Diagnosis), the others none
 --   positions(part)        squares of the inlet's relays, sorted: list of { x, y, z }
 --   fixtureStates(part)    fixtures of the inlet's area and how they get water (network view,
@@ -180,6 +182,17 @@ function Relays:release(part)
     self.store.relays[key] = nil
     self.seen[key] = nil
     self.dirty[key] = nil
+end
+
+function Relays:cut(part)
+    local key = Grid.key(part.x, part.y, part.z)
+    local own = self:own(key)
+    local keys = sortedKeys(own)
+    for i = 1, #keys do
+        local pos = own[keys[i]]
+        local relay = self.plumbing:relay(pos.x, pos.y, pos.z)
+        if relay and relay.owner == key then self.plumbing:emptyRelay(pos.x, pos.y, pos.z) end
+    end
 end
 
 function Relays:mark(part, why)

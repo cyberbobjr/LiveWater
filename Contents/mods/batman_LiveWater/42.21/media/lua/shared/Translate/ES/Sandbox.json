@@ -1,7 +1,7 @@
 {
     "Sandbox_LiveWater": "LiveWater",
     "Sandbox_LWT_PumpFlowMultiplier": "Caudal de las bombas",
-    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "Multiplica los litros que da una bomba cada 10 minutos (50 L para una bomba de estanque con 1,0).",
+    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "Multiplica los litros que da una bomba cada 10 minutos (50 L para una bomba de agua con 1,0).",
     "Sandbox_LWT_FilterCapacityMultiplier": "Duración de los cartuchos filtrantes",
     "Sandbox_LWT_FilterCapacityMultiplier_tooltip": "Multiplica los litros que limpia un cartucho filtrante antes de gastarse (500 L con 1,0).",
     "Sandbox_LWT_PumpWearMultiplier": "Desgaste de las bombas",
@@ -22,6 +22,6 @@
     "Sandbox_LWT_SprinklerTimerMin_tooltip": "Las horas mínimas que un jugador puede poner entre dos riegos de un aspersor automático.",
     "Sandbox_LWT_SprinklerTimerMax": "Temporizador de aspersor: intervalo más largo",
     "Sandbox_LWT_SprinklerTimerMax_tooltip": "Las horas máximas que un jugador puede poner entre dos riegos de un aspersor automático.",
-    "Sandbox_LWT_FillContainers": "Recipientes que puede llenar una conexión de barril",
-    "Sandbox_LWT_FillContainers_tooltip": "Nombres de scripts de entidad o sprites, separados por ; (dispensadores de agua: WaterDispenser). Se llenan con una conexión de barril en Llenar, sea cual sea su tamaño, con agua contaminada, como un barril. Los barriles y los recolectores de lluvia siempre funcionan."
+    "Sandbox_LWT_FillContainers": "Recipientes que puede llenar un racor de llenado",
+    "Sandbox_LWT_FillContainers_tooltip": "Nombres de scripts de entidad o sprites, separados por ; (dispensadores de agua: WaterDispenser). Se llenan con un racor de llenado, sea cual sea su tamaño, con agua contaminada, como un barril. Los barriles, los recolectores de lluvia y los comederos siempre funcionan."
 }

@@ -16,6 +16,7 @@ if isClient() then return end
 --   placeRelay(x, y, z, owner, litres)   invisible tank (IsoThumpable + FluidContainer)
 --   removeRelay(x, y, z, owner)          true when done or nothing to do, false when not loaded
 --   fillRelay(x, y, z, litres, quality)  litres added (clean water, or tainted water)
+--   emptyRelay(x, y, z)        the relay's water is thrown away (a valve cut the house, ADR-010 D04)
 --   markRelay(x, y, z, why)    note the reason the relay stays empty (diagnostic, L09)
 --   cityWaterRuns()            the city water still runs
 --   cityFixture(x, y, z)       LWT_WaterObjects.cityInfo of the fixture on the square, or nil
@@ -197,6 +198,14 @@ function GamePlumbing:fillRelay(x, y, z, litres, quality)
     fc:addFluid(quality == "tainted" and Fluid.TaintedWater or Fluid.Water, n)
     obj:sync()
     return n
+end
+
+function GamePlumbing:emptyRelay(x, y, z)
+    local obj = relayObject(x, y, z)
+    local fc = obj and obj:getFluidContainer()
+    if not fc or fc:getAmount() <= 0 then return end
+    fc:Empty()
+    obj:sync()
 end
 
 function GamePlumbing:markRelay(x, y, z, why)

@@ -16,8 +16,6 @@
     "ContextMenu_LWT_HideNetwork": "Wassernetz ausblenden",
     "ContextMenu_LWT_ShowAllAreas": "Alle bewässerten Bereiche anzeigen",
     "ContextMenu_LWT_HideArea": "Bewässerten Bereich ausblenden",
-    "ContextMenu_LWT_FittingToPump": "Auf Pumpen stellen",
-    "ContextMenu_LWT_FittingToFill": "Auf Befüllen stellen",
     "ContextMenu_LWT_RemoveMod": "LiveWater aus dieser Welt entfernen (Admin)",
     "ContextMenu_LWT_Debug": "LiveWater (Debug)",
     "ContextMenu_LWT_DebugKit": "Testausrüstung geben",

@@ -16,8 +16,6 @@
     "ContextMenu_LWT_HideNetwork": "수도 배관 숨기기",
     "ContextMenu_LWT_ShowAllAreas": "모든 물 주는 범위 보기",
     "ContextMenu_LWT_HideArea": "물 주는 범위 숨기기",
-    "ContextMenu_LWT_FittingToPump": "펌프로 설정",
-    "ContextMenu_LWT_FittingToFill": "채우기로 설정",
     "ContextMenu_LWT_RemoveMod": "이 월드에서 LiveWater 제거 (관리자)",
     "ContextMenu_LWT_Debug": "LiveWater (디버그)",
     "ContextMenu_LWT_DebugKit": "테스트 키트 지급",

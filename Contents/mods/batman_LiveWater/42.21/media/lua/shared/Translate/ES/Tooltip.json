@@ -1,3 +1,4 @@
 {
-    "Tooltip_LWT_WaterFilter": "Cartucho de carbón para la entrada de agua de la casa: deja limpios unos 500 L de agua de estanque o río para la casa. Su estado indica lo que queda."
+    "Tooltip_LWT_WaterFilter": "Cartucho de carbón para la entrada de agua de la casa: deja limpios unos 500 L de agua de estanque o río para la casa. Su estado indica lo que queda.",
+    "Tooltip_LWT_FillFitting": "Se coloca entre una tubería y un barril, un recolector de lluvia o un comedero: la red lo llena."
 }

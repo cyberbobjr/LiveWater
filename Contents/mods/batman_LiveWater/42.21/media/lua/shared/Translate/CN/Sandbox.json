@@ -1,7 +1,7 @@
 {
     "Sandbox_LiveWater": "LiveWater",
     "Sandbox_LWT_PumpFlowMultiplier": "水泵流量",
-    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "乘以水泵每10分钟输出的升数（池塘水泵在1.0时为50升）。",
+    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "乘以水泵每10分钟输出的升数（水泵在1.0时为50升）。",
     "Sandbox_LWT_FilterCapacityMultiplier": "滤芯寿命",
     "Sandbox_LWT_FilterCapacityMultiplier_tooltip": "乘以滤芯磨损前能净化的升数（1.0时为500升）。",
     "Sandbox_LWT_PumpWearMultiplier": "水泵磨损",
@@ -22,6 +22,6 @@
     "Sandbox_LWT_SprinklerTimerMin_tooltip": "玩家可为自动喷灌器设置的两次浇水之间的最少小时数。",
     "Sandbox_LWT_SprinklerTimerMax": "喷灌定时器：最长间隔",
     "Sandbox_LWT_SprinklerTimerMax_tooltip": "玩家可为自动喷灌器设置的两次浇水之间的最多小时数。",
-    "Sandbox_LWT_FillContainers": "水桶接头可注满的容器",
-    "Sandbox_LWT_FillContainers_tooltip": "实体脚本或贴图的名称，用 ; 分隔（饮水机：WaterDispenser）。通过设为注入的水桶接头注满它们，无论大小，都像水桶一样注入受污染的水。水桶和雨水收集桶始终有效。"
+    "Sandbox_LWT_FillContainers": "注水接头可注满的容器",
+    "Sandbox_LWT_FillContainers_tooltip": "实体脚本或贴图的名称，用 ; 分隔（饮水机：WaterDispenser）。通过注水接头注满它们，无论大小，都像水桶一样注入受污染的水。水桶、雨水收集桶和喂食槽始终有效。"
 }

@@ -90,6 +90,64 @@ class Water(unittest.TestCase):
         self.assertEqual(lua.eval("REG:at(2, 0, 0).data.outlet.state"), "closed")
 
 
+SWITCH = r"""
+function switch(open)
+    LiveWater.Parts:call(VALVE, "open", open)
+    EMITTED = {}
+    CUT = CLOCK:switched(VALVE, open)
+    return #emitted("waterDelivered")
+end
+function tick() EMITTED = {} CLOCK:tick() return #emitted("waterDelivered") end
+"""
+
+
+class Immediate(unittest.TestCase):
+    """ADR-010 D02, D03: a valve switched acts at once; the step is brought forward, never added."""
+
+    def bench(self):
+        lua = bench()
+        lua.execute(SWITCH)
+        lua.execute('NEED["2,0"] = 10')
+        return lua
+
+    def test_closing_stops_the_water_at_once_and_names_the_parts_cut(self):
+        lua = self.bench()
+        self.assertEqual(lua.eval("tick()"), 1)
+        lua.execute("switch(false)")
+        self.assertEqual(lua.eval("REG:at(2, 0, 0).data.outlet.state"), "closed")
+        self.assertEqual(lua.eval("#CUT"), 1)
+        self.assertEqual(lua.eval("CUT[1].x"), 2)
+
+    def test_opening_lets_the_water_through_at_once_and_the_next_clock_step_is_skipped(self):
+        lua = self.bench()
+        lua.execute('LiveWater.Parts:call(VALVE, "open", false) tick()')
+        self.assertEqual(lua.eval("switch(true)"), 1)
+        self.assertEqual(lua.eval("REG:at(2, 0, 0).data.outlet.state"), "served")
+        self.assertEqual(lua.eval("#CUT"), 0)
+        self.assertEqual(lua.eval("tick()"), 0)
+        self.assertEqual(lua.eval("tick()"), 1)
+
+    def test_each_switch_brings_one_more_step_forward_and_the_clock_skips_as_many(self):
+        lua = self.bench()
+        lua.execute("tick()")
+        self.assertEqual(lua.eval("switch(false)"), 0)
+        self.assertEqual(lua.eval("switch(true)"), 1)
+        self.assertEqual(lua.eval("REG:at(2, 0, 0).data.outlet.state"), "served")
+        self.assertEqual([lua.eval("tick()") for _ in range(3)], [0, 0, 1])
+
+    def test_past_an_hour_ahead_a_switch_cuts_without_giving_water(self):
+        lua = self.bench()
+        ahead = lua.eval("require('LiveWater/LWT_Clock').MAX_AHEAD")
+        self.assertEqual(ahead, 6)
+        got = [lua.eval("switch(%s)" % ("false" if i % 2 == 0 else "true")) for i in range(ahead)]
+        self.assertEqual(got, [0, 1, 0, 1, 0, 1])
+        self.assertEqual(lua.eval("switch(false)"), 0)
+        self.assertEqual(lua.eval("REG:at(2, 0, 0).data.outlet.state"), "closed")
+        self.assertEqual(lua.eval("#CUT"), 1)
+        self.assertEqual(lua.eval("switch(true)"), 0)
+        self.assertEqual([lua.eval("tick()") for _ in range(ahead + 1)], [0] * ahead + [1])
+
+
 class Facings(unittest.TestCase):
     def test_invalid_facings_are_refused(self):
         lua = new_lua("shared/LiveWater/LWT_API.lua")

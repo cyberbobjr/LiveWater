@@ -16,8 +16,6 @@
     "ContextMenu_LWT_HideNetwork": "Скрыть водопроводную сеть",
     "ContextMenu_LWT_ShowAllAreas": "Показать все зоны полива",
     "ContextMenu_LWT_HideArea": "Скрыть зону полива",
-    "ContextMenu_LWT_FittingToPump": "Врезка: откачка",
-    "ContextMenu_LWT_FittingToFill": "Врезка: наполнение",
     "ContextMenu_LWT_RemoveMod": "Убрать LiveWater из этого мира (админ)",
     "ContextMenu_LWT_Debug": "LiveWater (отладка)",
     "ContextMenu_LWT_DebugKit": "Выдать тестовый набор",

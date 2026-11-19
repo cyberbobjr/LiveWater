@@ -6,7 +6,7 @@ tout appareil du jeu.
 Avec **LiveWire** activé (révision 6 ou plus de son API), LiveWater inscrit ses pièces électriques comme consommateurs
 de LiveWire :
 
-- la **pompe d'étang** tire **250 W** en marche, de l'onduleur LiveWire qui alimente sa case ; un disjoncteur de
+- la **pompe à eau** tire **250 W** en marche, de l'onduleur LiveWire qui alimente sa case ; un disjoncteur de
   LiveWire peut la couper ;
 - la **minuterie d'un arroseur automatique** tire **5 W** ;
 - le logiciel de gestion de LiveWire montre chaque pompe (état, débit) et le total des pompes (*pompes à eau en

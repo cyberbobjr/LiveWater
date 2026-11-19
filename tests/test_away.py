@@ -147,6 +147,8 @@ function unloadAll()
 end
 function tick() EMITTED = {} CLOCK:tick() end
 function fitting() return REG:at(2, 0, 0).data.fitting end
+-- The pond pump at (0,0) draws a barrel set at (0,-1) before its pond (ADR-011).
+function vessel() return REG:at(0, 0, 0).data.vessel end
 function delivered()
     local d = emitted("waterDelivered")
     return d[1] and d[1][3] or 0, d[1] and d[1][4]
@@ -160,36 +162,34 @@ class Barrels(unittest.TestCase):
         lua.execute(BARREL_BENCH)
         return lua
 
-    def test_set_to_pump_an_unloaded_barrel_gives_its_recorded_content_never_below_zero(self):
+    def test_a_pump_against_an_unloaded_barrel_gives_its_recorded_content_never_below_zero(self):
         lua = self.bench()
         lua.execute(r"""
         place("Test:Spr", 1, 1) NEED["1,1"] = 20
-        CONT["2,-1"] = { amount = 30, capacity = 600, fluid = "clean" }
-        LiveWater.Parts:call(FIT, "setFittingMode", "pump")
+        CONT["0,-1"] = { amount = 30, capacity = 600, fluid = "clean" }
         FITTINGS:tick()
         unloadAll()
         tick()
         """)
         self.assertEqual(tuple(lua.eval("{ delivered() }").values()), (20, "clean"))
-        self.assertEqual(lua.eval("fitting().amount"), 10)
+        self.assertEqual(lua.eval("vessel().amount"), 10)
         lua.execute("tick()")
         self.assertEqual(tuple(lua.eval("{ delivered() }").values()), (10, "clean"))
-        self.assertEqual(lua.eval("fitting().amount"), 0)
+        self.assertEqual(lua.eval("vessel().amount"), 0)
         lua.execute("tick()")
         # the barrel is empty: the pump is back on its own intake
         self.assertEqual(tuple(lua.eval("{ delivered() }").values()), (20, "tainted"))
-        self.assertEqual(lua.eval("fitting().amount"), 0)
-        self.assertEqual(lua.eval("fitting().free"), 600)
+        self.assertEqual(lua.eval("vessel().amount"), 0)
+        self.assertEqual(lua.eval("vessel().free"), 600)
         # the real container was never touched while away
-        self.assertEqual(lua.eval('CONT["2,-1"].amount'), 30)
+        self.assertEqual(lua.eval('CONT["0,-1"].amount'), 30)
         self.assertEqual(lua.eval("CALLS.take"), 0)
 
     def test_the_count_reaches_the_real_barrel_once_when_its_chunk_loads(self):
         lua = self.bench()
         lua.execute(r"""
         place("Test:Spr", 1, 1) NEED["1,1"] = 20
-        CONT["2,-1"] = { amount = 30, capacity = 600, fluid = "clean" }
-        LiveWater.Parts:call(FIT, "setFittingMode", "pump")
+        CONT["0,-1"] = { amount = 30, capacity = 600, fluid = "clean" }
         FITTINGS:tick()
         unloadAll()
         tick()
@@ -197,24 +197,23 @@ class Barrels(unittest.TestCase):
         FITTINGS:chunkLoaded(0, -8, 8)
         FITTINGS:chunkLoaded(0, 0, 8)
         """)
-        self.assertEqual(lua.eval('CONT["2,-1"].amount'), 10)
+        self.assertEqual(lua.eval('CONT["0,-1"].amount'), 10)
         self.assertEqual(lua.eval("CALLS.take"), 1)
         lua.execute("FITTINGS:chunkLoaded(0, 0, 8) NEED['1,1'] = 0 tick()")
         self.assertEqual(lua.eval("CALLS.take"), 1)
-        self.assertEqual(lua.eval('CONT["2,-1"].amount'), 10)
-        self.assertEqual(lua.eval("fitting().amount"), 10)
+        self.assertEqual(lua.eval('CONT["0,-1"].amount'), 10)
+        self.assertEqual(lua.eval("vessel().amount"), 10)
 
     def test_without_the_chunk_event_the_first_loaded_step_settles_the_count(self):
         lua = self.bench()
         lua.execute(r"""
         place("Test:Spr", 1, 1) NEED["1,1"] = 20
-        CONT["2,-1"] = { amount = 30, capacity = 600, fluid = "clean" }
-        LiveWater.Parts:call(FIT, "setFittingMode", "pump")
+        CONT["0,-1"] = { amount = 30, capacity = 600, fluid = "clean" }
         FITTINGS:tick()
         unloadAll() tick()
         WORLD.unloaded = {} NEED["1,1"] = 0 tick()
         """)
-        self.assertEqual(lua.eval('CONT["2,-1"].amount'), 10)
+        self.assertEqual(lua.eval('CONT["0,-1"].amount'), 10)
         self.assertEqual(lua.eval("CALLS.take"), 1)
 
     def test_set_to_fill_an_unloaded_barrel_takes_at_most_its_recorded_room(self):

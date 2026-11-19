@@ -1,6 +1,6 @@
 {
     "Base.Mov_LiveWater_Pipe": "Tubo de Água",
-    "Base.Mov_LiveWater_PondPump": "Bomba de Lagoa",
+    "Base.Mov_LiveWater_PondPump": "Bomba de Água",
     "LiveWater.WaterFilter": "Cartucho Filtrante de Água",
     "LiveWater.WaterFilterSpent": "Cartucho Filtrante de Água Usado",
     "Base.Mov_LiveWater_FlowMeter": "Contador de Água",
@@ -9,5 +9,5 @@
     "Base.Mov_LiveWater_HouseInlet": "Entrada de Água da Casa",
     "Base.Mov_LiveWater_Sprinkler": "Aspersor",
     "Base.Mov_LiveWater_SprinklerAuto": "Aspersor Automático",
-    "Base.Mov_LiveWater_BarrelFitting": "Acessório de Barril"
+    "Base.Mov_LiveWater_BarrelFitting": "Conexão de enchimento"
 }

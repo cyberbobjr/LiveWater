@@ -4,7 +4,7 @@
 --                     SWITCH_PUMP { x, y, z } REPAIR_PUMP { x, y, z }
 --                     CITY_WATER { x, y, z }
 --                     SWITCH_VALVE { x, y, z }  SET_TIMER { x, y, z, hours }
---                     SHOW_NETWORK { x, y, z }  SWITCH_FITTING { x, y, z }
+--                     SHOW_NETWORK { x, y, z }
 --                     REMOVE_ALL {} (admin: remove LiveWater from the world)
 --   server -> client  NOTICE { key }          (translation key of a refusal)
 --                     SOUND { x, y, z, name, once } (sound loop of a part: name, or nil to stop;
@@ -24,7 +24,6 @@ local Protocol = {
     SWITCH_VALVE = "switchValve",
     SET_TIMER = "setTimer",
     SHOW_NETWORK = "showNetwork",
-    SWITCH_FITTING = "switchFitting",
     REMOVE_ALL = "removeLiveWater",
     NETWORK = "network",
     JET = "jet",

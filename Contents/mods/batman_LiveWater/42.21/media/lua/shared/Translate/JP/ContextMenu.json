@@ -16,8 +16,6 @@
     "ContextMenu_LWT_HideNetwork": "水道網を非表示にする",
     "ContextMenu_LWT_ShowAllAreas": "すべての散水範囲を表示する",
     "ContextMenu_LWT_HideArea": "散水範囲を非表示にする",
-    "ContextMenu_LWT_FittingToPump": "汲み上げに設定",
-    "ContextMenu_LWT_FittingToFill": "満たすに設定",
     "ContextMenu_LWT_RemoveMod": "この世界からLiveWaterを取り除く（管理者）",
     "ContextMenu_LWT_Debug": "LiveWater（デバッグ）",
     "ContextMenu_LWT_DebugKit": "テストキットを受け取る",

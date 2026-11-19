@@ -1,7 +1,8 @@
 # LiveWater — architecture
 
 Décisions de référence : [ADR-001](ADR/termines/001-reseau-eau-ouvert.md) ; débit des sorties d'arrosage :
-[ADR-006](ADR/termines/006-vision-debit.md). Ce document décrit l'état réel du code ; il suit
+[ADR-006](ADR/termines/006-vision-debit.md) ; pompe à eau, producteurs et consommateurs, raccord de remplissage :
+[ADR-010](ADR/010-pompe-a-eau-et-vanne-immediate.md) à [ADR-014](ADR/014-essence-dans-les-tuyaux.md). Ce document décrit l'état réel du code ; il suit
 le [plan 001](ADR-plans/termines/plan-001-reseau-eau-ouvert.md) étape par étape.
 
 ## Vue d'ensemble
@@ -17,17 +18,20 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
 ## Modules Lua
 
 `shared/LiveWater/` :
-- `LWT_API.lua` : façade publique `LiveWater.API` et racine de composition : crée le registre des capacités (y
-  inscrit les capacités de départ listées en données), le registre des pièces, le bus `LiveWater.Events`, et scelle
+- `LWT_API.lua` : façade publique `LiveWater.API` (révision 23, historique dans le fichier) et racine de composition :
+  crée le registre des capacités (y inscrit les capacités de départ listées en données), le registre des pièces, le
+  registre des types de sortie (`registerOutlet`, consommateurs d'autres mods), le bus `LiveWater.Events`, et scelle
   les registres à `OnInitGlobalModData`. `LiveWater.Parts` et `LiveWater.Capabilities` sont internes.
 - `LWT_Capabilities.lua` : registre des capacités (pattern strategy : chaque capacité est une table de crochets copiée
   par liste blanche).
 - `Capabilities/LWT_Cap<Nom>.lua` : un fichier par capacité (`conduit`, `intake`, `pump`, `valve`, `filter`,
-  `outlet`, `controller`, `meter`, `spray`, `fitting`, `drip`), réglages et valeurs par défaut de la capacité.
+  `outlet`, `controller`, `meter`, `spray`, `fitting`, `vessel`, `drip`), réglages et valeurs par défaut de la capacité.
+  `fitting` : raccord de remplissage (consommateur, sortie `barrelFill`) ; `vessel` : puisage dans un baril posé contre
+  la pièce (pompe, ADR-011).
 - `Parts/LWT_Part<Nom>.lua` : un fichier par pièce de LiveWater, inscrite par l'API publique comme celle d'un autre
   mod (`LWT_PartPipe.lua` : `LiveWater:PipeGalvanized` ; `LWT_PartPondPump.lua` : `LiveWater:PondPump` ; `LWT_PartFlowMeter.lua` :
   `LiveWater:FlowMeter` ; `LWT_PartHouseInlet.lua` : `LiveWater:HouseInlet` ; `LWT_PartSprinkler.lua` : `LiveWater:Sprinkler` ; `LWT_PartSprinklerAuto.lua` : `LiveWater:SprinklerAuto` ; `LWT_PartBarrelFitting.lua` : `LiveWater:BarrelFitting` ; `LWT_PartValve.lua` : `LiveWater:Valve` ; `LWT_PartDripLine.lua` : `LiveWater:DripLine`, ADR-004).
-  `LWT_Containers.lua` (pur) : registre des conteneurs d'un raccord de baril (forme, par sprite ou entité ; tout
+  `LWT_Containers.lua` (pur) : registre des conteneurs d'un raccord de remplissage et d'une pompe contre un baril (forme, par sprite ou entité ; tout
   conteneur reçoit l'eau croupie comme un baril, ADR-005 D07 ; conteneurs admis : 20 L ou plus, inscrits, ou listés dans l'option `FillContainers`). `LWT_Tiles.lua` : noms des sprites du
   tileset et `variants` d'une pièce dessinée par état et orientation.
 - `LWT_InletArea.lua` (pur) : cases servies par une arrivée d'eau (bâtiment de la carte touché, cercle de portée,
@@ -41,7 +45,7 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
 - `LWT_Settings.lua` (pur) : options sandbox lues dans le contexte d'un pas (`ctx.scale`) : multiplicateurs
   (`scale`) et valeurs (`value`, débits `SprinklerFlow` et `DripFlow`, ADR-006 D02).
 - Adaptateurs partagés (client et autorité) : `LWT_GameSite.lua` (les 8 cases voisines d'une place : drapeau, sprite,
-  source trouvée), `LWT_PlaceRules.lua` (règles de pose au curseur de meuble vanilla : enveloppe
+  source trouvée ; `hasVessel()` : un baril posé sur l'un des 4 côtés), `LWT_PlaceRules.lua` (règles de pose au curseur de meuble vanilla : enveloppe
   `canPlaceMoveableInternal` et le panneau d'information, refus seulement pour nos tuiles), `LWT_Mirror.lua` (état
   d'une pièce recopié dans `movableData` de son objet), `LWT_Reasons.lua` (raison de refus → clé de traduction).
 - `LWT_WaterObjects.lua` (adaptateur partagé) : règles des objets d'eau (point d'eau, réservoir utilisable, marque
@@ -53,7 +57,8 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
 - `LWT_Parts.lua` : registre des types de pièce, copie par liste blanche, unicité des sprites (formes et
   `variants`) ; requêtes du catalogue : `look` (variante d'après les jetons des capacités), `attach` (la place
   convient-elle ?), `lines` (lignes d'information), `hasHook`, `spritesOf`.
-- `LWT_Events.lua` : bus d'événements public (D06).
+- `LWT_Events.lua` : bus d'événements public (D06) : `partAdded`, `partRemoved`, `networkChanged`, `waterDelivered`,
+  `valveChanged`, `waterDrawn`.
 - `LWT_Check.lua` : contrôles de valeurs et copie de champs par règles ; `LWT_Grid.lua` : côtés, masque de 4 bits,
   clé de case `"x,y,z"`, `edgeOf` (case qui porte le bord d'un côté : une case ne porte que ses bords N et O, ADR-002).
 - `LWT_Network.lua` (domaine pur) : graphe d'une case par pièce, liens entre voisins qui s'offrent le côté commun,
@@ -69,14 +74,14 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
   qualité, sorties servies dans l'ordre de service selon leur besoin, réserve de pression, filtre sur le chemin et
   son usure ; litres et qualité de l'eau servie portés sur chaque pièce de son chemin (`through`, `qualityAt` ; part
   de chaque pompe). Crochets `supply`, `source`, `outlet`, `purifies`, `wear` ; le besoin vient des adaptateurs.
-  Révision 11 : pièces qui puisent (`draw`, raccord en « Pomper ») à la place des prises des pompes, un fluide par
-  réseau (eau ou essence), sortie qui refuse ce fluide (`wrong_fluid`), litres puisés (`drawn`). ADR-005 : famille
+  Révision 11 : `draw` (pièce qui puise dans son conteneur) ; révision 21 : une pompe contre un baril (capacité
+  `vessel`) puise d'abord ce baril (`draw`), puis sa source (`supply`), un fluide par réseau (eau ou
+  essence), sortie qui refuse ce fluide (`wrong_fluid`), litres puisés (`drawn`). Révision 23 (ADR-014 D02) : `LWT_Flow:supply` retient la famille de la première pompe de chaque zone, dans l'ordre de pose ; une pompe d'une autre famille ne donne rien ce pas (`outcome.otherFluid`). La capacité `vessel` tire aussi l'essence d'une station-service (D01). ADR-005 : famille
   `other` pour toute qualité qui n'est ni eau (`clean`, `tainted`) ni essence, jamais vue comme de l'eau ; le filtre
   porté par la sortie elle-même (arrivée d'eau) compte, puisque la recherche du filtre part de la sortie incluse.
   Révision 15 (ADR-004) : sorties d'un même groupe de coût (`costGroup`, goutte-à-goutte) qui paient leur pression une
-  fois par pas ; réseau sans pompe : les pièces qui donnent une pression de gravité (`gravity`, raccord en « Pomper »)
-  sont le départ de l'eau (`Network:reach(id, "gravity")`), seules les sorties qui marchent par gravité (`byGravity`) la
-  prennent.
+  fois par pas. Seule une pompe met l'eau dans le réseau (ADR-012 D01) : un réseau sans pompe ne donne rien, la
+  gravité n'existe plus (révision 22).
 - `LWT_SprayArea.lua` (pur, ADR-003 D01) : cases arrosées par un arroseur (carré de `radius` cases sur chaque axe,
   rayon 2 → 5 × 5) ; `squares` est partagé par l'autorité et le client (surlignage), `reach` est la stratégie de zone
   de `LWT_Plants` pour l'arroseur (rayon mis à l'échelle, dose, part perdue en l'air, débit).
@@ -107,15 +112,19 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
   `LWT_CmdChecks.lua` pour les contrôles d'arguments et de portée, `LWT_CmdCartridge.lua` pour ce que partagent les
 commandes du filtre) ; un refus est dit au joueur par clé de traduction.
 - `LWT_Clock.lua` : tâches injectées (`chores`, travail borné du même pas), puis pas de dix minutes de chaque réseau
-  qui a un départ d'eau (une pièce sous pression, sinon une pièce qui donne une pression de gravité), chargé ou non
+  qui a une pompe (une pièce sous pression, ADR-012 D03), chargé ou non
   (ADR-006 D06 : coût, une distribution par réseau toutes les dix minutes de jeu, bornée par le registre ; ce qu'une
   pièce peut faire hors chargement est décidé par les ports et adaptateurs, jamais par l'horloge) :
   courant de chaque pièce qui en a besoin (port `power`, crochet `powered`), préparation (`prepare` : une minuterie
   d'arroseur tient sa vanne ouverte `duration` pas, 30 minutes, ADR-006 D03, `ctx.hours`), distribution, crochet `stepped` de chaque
   membre (litres passés), présentation (port `publisher`), `waterDelivered` pour chaque sortie servie ; besoin des
   sorties injecté (0 par défaut), multiplicateurs sandbox par `scale`. `settle(id)` (sur `networkChanged`) : un
-  réseau resté sans départ d'eau reçoit un bilan vide une fois (aucune sortie ne reste servie).
-- `LWT_Outlets.lua` : où va l'eau d'une sortie, par type de sortie (gestionnaire : `need`, `deliver`, `release`) ;
+  réseau resté sans pompe reçoit un bilan vide une fois (aucune sortie ne reste servie). `switched(part, open)` (sur une
+  manœuvre de vanne, ADR-010 D02) : le réseau fait son pas tout de suite, en avance sur l'horloge, au plus
+  `Clock.MAX_AHEAD` pas (six, une heure) ; au-delà, les parties privées d'eau s'arrêtent sans en donner.
+- `LWT_Outlets.lua` : où va l'eau d'une sortie, par type de sortie (gestionnaire : `need`, `deliver`, `release`, `cut`) ;
+  les types de LiveWater (`houseInlet`, `sprinkler`, `drip`, `barrelFill`) passent par la même porte que ceux d'un autre
+  mod (`registerOutlet`, révision 22, ADR-012 D04) ;
   besoin injecté dans l'horloge, `waterDelivered` et `partRemoved` relayés par la racine de composition.
 - `LWT_Relays.lua` : réservoirs relais des arrivées d'eau (gestionnaire `houseInlet` et tâche de l'horloge) : pose,
   retrait, besoin, remplissage, relais en attente d'une case chargée (`orphans`) ; `LWT_GamePlumbing.lua` : adaptateur
@@ -125,11 +134,13 @@ commandes du filtre) ; un refus est dit au joueur par clé de traduction.
   ADR-006 D01 ; l'eau reçue moins la part perdue en l'air donne des doses entières aux plantes qui ont besoin d'eau, les
   plus proches d'abord, le reste est perdu) ; `LWT_GameFarming.lua` : adaptateur de l'agriculture vanilla
   (`SFarmingSystem.instance:getLuaObjectAt`, `SPlantGlobalObject:water`).
-- `LWT_Fittings.lua` : raccords de baril (tâche de l'horloge : conteneur relevé et présenté ; gestionnaire
-  `barrelFill` ; litres puisés retirés sur `waterDrawn`, conteneurs relevés à nouveau ; deux raccords d'un même baril
-  se partagent son contenu en « Pomper » et sa place libre en « Remplir » ; hors chargement, décompte dans l'état
-  relevé, écrit une fois dans le vrai conteneur au `LoadChunk` ou au premier pas chargé, ADR-006 D06) ; `LWT_GameContainers.lua` : adaptateur (baril,
-  récupérateur, pompe à essence d'une station).
+- `LWT_Fittings.lua` : conteneurs posés contre une pièce (tâche de l'horloge : conteneur relevé et présenté ; gestionnaire
+  `barrelFill` du raccord de remplissage, qui ne fait que remplir ; `container` = `fill` ou `draw` selon la pièce ;
+  litres puisés retirés sur `waterDrawn` pour une pompe, conteneurs relevés à nouveau ; deux pièces d'un même baril se
+  partagent sa place libre (remplissage) ou son contenu (pompe) ; hors chargement, décompte dans l'état
+  relevé, écrit une fois dans le vrai conteneur au `LoadChunk` ou au premier pas chargé, ADR-006 D06) ;
+  `LWT_GameContainers.lua` : adaptateur (baril, récupérateur, pompe à essence d'une station, mangeoire vanilla : son
+  réservoir d'eau est sur sa case maîtresse, ADR-013 D03-D04).
 - `LWT_Removal.lua` : retrait de LiveWater d'un monde (P21) : pièces des cases chargées retirées, les autres au
   chargement de leur zone (tâche de l'horloge, drapeau persistant), relais par `partRemoved`.
 - `LWT_Diagnostics.lua` : tâche de l'horloge, raison du manque d'eau notée sur les relais vides (`LWT_Diagnosis` ;
@@ -174,7 +185,9 @@ de LiveWater, 20 tuyaux, une clé à tuyau ; solo : ajout à l'inventaire, serve
 ## Flux, persistance, extension
 
 - Extension : un autre mod inscrit des types de pièce et des capacités par `LiveWater.API` (fichier `shared`, avant
-  `OnInitGlobalModData`) et suit `LiveWater.Events`.
+  `OnInitGlobalModData`) et suit `LiveWater.Events`. Producteurs (pompe, pièce d'un autre mod) : `registerPart`,
+  `registerSource`, `registerContainer`, `registerCapability`. Consommateurs (sorties, ADR-012 D04) : `registerOutlet`
+  (`need`, `deliver` obligatoires ; `release`, `cut` facultatifs), appelé sur l'autorité.
 - Persistance : une entrée par pièce posée, indexée par `"x,y,z"`, versionnée (`v`), jamais recopiée ; une pièce de
   type absent reste inerte dans le registre (`active()` l'écarte) et revient avec son type. Le graphe
   (`LWT_Network`) se construit à partir des entrées actives, gardées par référence : l'état d'une capacité (vanne,
@@ -194,11 +207,16 @@ de LiveWater, 20 tuyaux, une clé à tuyau ; solo : ajout à l'inventaire, serve
   case qui porte déjà une pièce, ligne rouge du panneau ; ports pleins dits aux joueurs proches par `LWT_Placement`) ; l'autorité refait le contrôle à la fin de l'action, puis `OnObjectAdded` → `Placement:added` →
   `Topology:add` avec l'état rapporté par l'objet (`movableData`) → `attach` (sorte de source relevée) → `partAdded` →
   `Publisher:present`.
-- Horloge : `EveryTenMinutes` → `Clock:tick` → par réseau qui a un départ d'eau, chargé ou non : courant
+- Eau d'un baril : pompe posée contre un baril (`intake.orVessel`, capacité `vessel`) → `Fittings:senseAll` relève le
+  baril (`container` = `draw`) → `Flow:supply` (`draw`, avant la source) → `drawn` (`waterDrawn`) retire les litres.
+  Un raccord de remplissage (`container` = `fill`) est une sortie `barrelFill` : `Outlets` → `Fittings:deliver`.
+- Consommateurs : `Outlets` route chaque sortie par son type (`need` pour le besoin du pas, `deliver` pour les litres
+  servis, `release` au retrait, `cut` quand une vanne la coupe) ; seul un producteur met l'eau dans le réseau.
+- Horloge : `EveryTenMinutes` → `Clock:tick` → par réseau qui a une pompe, chargé ou non : courant
   (`LWT_Power`), `Flow:step`, `stepped`, `Publisher:present`, `waterDelivered`. Aucun abonnement par image (D08), sauf
   le jet des arroseurs côté client (D08a).
 - Hors chargement (ADR-006 D06-D08), chaque adaptateur décide par le port monde `isLoaded` : prise d'eau = sorte de
-  source notée à la pose (aucune lecture du monde) ; raccord de baril = contenu relevé décompté, rapproché au
+  source notée à la pose (aucune lecture du monde) ; baril d'une pompe ou raccord de remplissage = contenu relevé décompté, rapproché au
   `LoadChunk` (`Fittings:chunkLoaded`) ou au premier pas chargé ; plantes = objet global vanilla
   (`SFarmingSystem.instance:getLuaObjectAt`, `SPlantGlobalObject:water`, sans case) ; arrivée d'eau = besoin 0 ;
   `Publisher` = rien n'est écrit (image, état recopié, son, bruit, jet), la pièce attend dans `away` puis se montre au

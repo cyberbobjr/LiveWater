@@ -5,7 +5,7 @@ appliance of the game.
 
 With **LiveWire** enabled (API revision 6 or later), LiveWater registers its powered parts as LiveWire consumers:
 
-- the **pond pump** draws **250 W** while it runs, from the LiveWire inverter that powers its square; a LiveWire
+- the **water pump** draws **250 W** while it runs, from the LiveWire inverter that powers its square; a LiveWire
   breaker can cut it;
 - the **timer of an automatic sprinkler** draws **5 W**;
 - the LiveWire management software shows each pump (state, flow) and the total of the pumps (*Water pumps running*,

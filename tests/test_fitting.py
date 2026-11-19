@@ -1,7 +1,6 @@
-"""E20: barrel fitting (ADR-001 D26, P02, P17): part LiveWater:BarrelFitting set between a pipe and a barrel, "Fill"
-(outlet: the network fills the barrel, no leak) or "Pump" (source: the pumps draw the barrel's content instead of
-their intake); sprite by mode and by the shape of the container (data table, extendable through the API, unknown =
-tall); one fluid per network: a fuel network serves only fittings set to Fill whose barrel is empty or holds fuel."""
+"""E20: barrel fitting (ADR-001 D26, P02, P17; Fill only, ADR-012 D02): part LiveWater:BarrelFitting set between a
+pipe and a barrel, an outlet: the network fills the barrel, no leak; sprite by the shape of the container (data table,
+extendable through the API, unknown = tall)."""
 import json
 import os
 import sys
@@ -26,19 +25,17 @@ class FittingPart(unittest.TestCase):
     def test_definition_follows_the_tile_contract(self):
         lua = new_lua(API, FITTING)
         d = lua.eval('LiveWater.API.part("LiveWater:BarrelFitting")')
-        for key, base in (("fill", 64), ("fill_low", 68), ("pump", 72)):
+        for key, base in (("fill", 64), ("fill_low", 68)):
             self.assertEqual([d.variants[key][i] for i in range(1, 5)], [TILE + str(base + k) for k in range(4)], key)
         self.assertEqual(d.capabilities.fitting.rate, 50)
         self.assertGreaterEqual(lua.eval("LiveWater.API.revision"), 11)
 
-    def test_the_look_follows_the_mode_and_the_shape(self):
+    def test_the_look_follows_the_shape(self):
         lua = new_lua(API, FITTING)
         lua.execute('P = { type = "LiveWater:BarrelFitting", data = {} }')
         self.assertEqual(lua.eval("LiveWater.Parts:look(P)"), "fill")
         lua.execute('LiveWater.Parts:call(P, "sense", { found = true, shape = "low", amount = 0, free = 400 })')
         self.assertEqual(lua.eval("LiveWater.Parts:look(P)"), "fill_low")
-        lua.execute('LiveWater.Parts:call(P, "setFittingMode", "pump")')
-        self.assertEqual(lua.eval("LiveWater.Parts:look(P)"), "pump")
 
 
 class Shapes(unittest.TestCase):
@@ -108,122 +105,6 @@ class Fill(unittest.TestCase):
         self.assertIn("IGUI_LWT_Fitting_NoBarrel", lines)
 
 
-class Pump(unittest.TestCase):
-    def test_the_pumps_draw_the_barrel_instead_of_their_intake(self):
-        lua = bench()
-        lua.execute(r"""
-        place("Test:Spr", 1, 1) NEED["1,1"] = 20
-        CONT["2,-1"] = { amount = 30, capacity = 600, fluid = "clean" }
-        LiveWater.Parts:call(FIT, "setFittingMode", "pump")
-        tick()
-        """)
-        d = lua.eval('emitted("waterDelivered")')
-        self.assertEqual((d[1][3], d[1][4]), (20, "clean"))
-        self.assertEqual(lua.eval('CONT["2,-1"].amount'), 10)
-        self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "204")
-        self.assertTrue(lua.eval("REG:at(0, 0, 0).data.pump.running"))
-        self.assertEqual(lua.eval('#emitted("waterDrawn")'), 1)
-
-    def test_an_empty_barrel_leaves_the_pump_on_its_intake(self):
-        lua = bench()
-        lua.execute(r"""
-        place("Test:Spr", 1, 1) NEED["1,1"] = 20
-        CONT["2,-1"] = { amount = 0, capacity = 600 }
-        LiveWater.Parts:call(FIT, "setFittingMode", "pump") tick()
-        """)
-        d = lua.eval('emitted("waterDelivered")')
-        self.assertEqual((d[1][3], d[1][4]), (20, "tainted"))
-
-
-FUEL = r"""
-LiveWater.Parts:call(FIT, "setFittingMode", "pump")
-CONT["2,-1"] = { amount = 100, capacity = 600, fluid = "fuel" }
-place("LiveWater:BarrelFitting", 1, 1, "batman_livewater_01_66")
-CONT["1,2"] = { amount = 0, capacity = 400 }
-place("Test:Spr", 0, 1) NEED["0,1"] = 10
-"""
-
-
-class Fuel(unittest.TestCase):
-    def test_a_fuel_network_fills_only_the_fittings_set_to_fill(self):
-        lua = bench()
-        lua.execute(FUEL)
-        lua.execute("tick()")
-        self.assertEqual(lua.eval('state(1, 1)'), "served")
-        self.assertEqual(lua.eval('CONT["1,2"].fluid'), "fuel")
-        self.assertEqual(lua.eval('CONT["1,2"].amount'), 50)
-        self.assertEqual(lua.eval('CONT["2,-1"].amount'), 50)
-        self.assertEqual(lua.eval('REG:at(0, 1, 0).data.outlet.state'), "wrong_fluid")
-
-    def test_a_barrel_holding_water_refuses_fuel(self):
-        lua = bench()
-        lua.execute(FUEL)
-        lua.execute('CONT["1,2"] = { amount = 10, capacity = 400, fluid = "clean" } tick()')
-        self.assertEqual(lua.eval('state(1, 1)'), "wrong_fluid")
-        self.assertEqual(lua.eval('CONT["1,2"].amount'), 10)
-
-
-COMMAND = r"""
-Commands = require("LiveWater/LWT_Commands")
-CMDS = Commands.new({ topology = TOPO, catalog = LiveWater.Parts, world = WORLD, players = PLAYERS,
-    publisher = { present = function() end } })
-CMDS:register("switchFitting", require("LiveWater/Commands/LWT_CmdSwitchFitting"))
-P = newPlayer(2, 1, 0)
-place("LiveWater:BarrelFitting", 2, 0, "batman_livewater_01_64")
-place("Test:Pipe", 3, 0)
-function cmd(x) return CMDS:dispatch(P, "switchFitting", { x = x, y = 0, z = 0 }) end
-"""
-
-
-GAS_PUMP = r"""
-STATION = { fuel = 100 }
-function STATION:getPipedFuelAmount() return self.fuel end
-function STATION:setPipedFuelAmount(units)
-    assert(units % 1 == 0, "whole units only")
-    self.fuel = math.max(0, units)
-end
-function STATION:getSprite() return nil end
-function STATION:getUsesExternalWaterSource() return false end
-function STATION:hasModData() return false end
-function STATION:getFluidContainer() return nil end
-function STATION:getSpriteName() return "location_shop_gas_01_0" end
-function instanceof() return false end
-local objects = { size = function() return 1 end, get = function() return STATION end }
-function getCell() return { getGridSquare = function() return { getObjects = function() return objects end } end } end
-GC = require("LiveWater/LWT_GameContainers").new({ registry = LiveWater.Containers, listed = function() return {} end })
-"""
-
-
-class GasPump(unittest.TestCase):
-    """E22 review: a gas station pump holds whole units of fuel; drawing a fraction never creates fuel."""
-
-    def test_a_fractional_draw_takes_whole_units_rounded_up(self):
-        lua = new_lua(API, "server/LiveWater/LWT_GameContainers.lua")
-        lua.execute(GAS_PUMP)
-        total = 0
-        for _ in range(10):
-            total += lua.eval("GC:take(0, 0, 0, 2.4)")
-        self.assertGreaterEqual(100 - lua.eval("STATION.fuel"), total - 1e-9)
-
-
-class SwitchCommand(unittest.TestCase):
-    def test_fill_and_pump_alternate_and_refusals(self):
-        lua = services(new_lua, FITTING)
-        lua.execute(COMMAND)
-        self.assertTrue(lua.eval("cmd(2)"))
-        self.assertEqual(lua.eval("REG:at(2, 0, 0).data.fitting.mode"), "pump")
-        self.assertTrue(lua.eval("cmd(2)"))
-        self.assertEqual(lua.eval("REG:at(2, 0, 0).data.fitting.mode"), "fill")
-        self.assertEqual(call(lua, "cmd(3)"), (False, "not_fitting"))
-        lua.execute("P.x = 9")
-        self.assertEqual(call(lua, "cmd(2)"), (False, "too_far"))
-
-    def test_the_menu_action_follows_the_mode(self):
-        lua = new_lua(API, FITTING)
-        a = lua.eval('LiveWater.Parts:actions({ type = "LiveWater:BarrelFitting", data = {} })')
-        self.assertEqual((a[1].command, a[1].key), ("switchFitting", "ContextMenu_LWT_FittingToPump"))
-
-
 class Texts(unittest.TestCase):
     def test_scripts_and_translations(self):
         with open(os.path.join(MEDIA, "scripts", "LWT_moveables.txt"), encoding="ascii") as f:
@@ -235,10 +116,8 @@ class Texts(unittest.TestCase):
             def load(name):
                 with open(os.path.join(tr, lang, name), encoding="utf-8") as f:
                     return json.load(f)
-            menu, ui = load("ContextMenu.json"), load("IG_UI.json")
-            for key in ("ContextMenu_LWT_FittingToPump", "ContextMenu_LWT_FittingToFill"):
-                self.assertIn(key, menu, lang)
-            for key in ("IGUI_LWT_Fitting_fill", "IGUI_LWT_Fitting_pump", "IGUI_LWT_Fitting_NoBarrel",
+            ui = load("IG_UI.json")
+            for key in ("IGUI_LWT_Fitting_NoBarrel",
                         "IGUI_LWT_Fitting_wrong_fluid", "IGUI_LWT_Outlet_wrong_fluid", "IGUI_LWT_Sprinkler_wrong_fluid",
                         "IGUI_LWT_Fluid_fuel", "IGUI_LWT_Fitting_Content"):
                 self.assertIn(key, ui, lang)
@@ -251,9 +130,8 @@ SHAPES = {2: "bend1", 8: "bend3", 10: "tee", 3: "front1", 9: "front3", 11: "cros
 FIRST = {
     "fill": {"bend1": 184, "bend3": 188, "tee": 208, "front1": 212, "front3": 216, "cross": 220},
     "fill_low": {"bend1": 192, "bend3": 196, "tee": 224, "front1": 228, "front3": 232, "cross": 236},
-    "pump": {"bend1": 200, "bend3": 204, "tee": 240, "front1": 244, "front3": 248, "cross": 252},
 }
-STRAIGHT = {"fill": 64, "fill_low": 68, "pump": 72}
+STRAIGHT = {"fill": 64, "fill_low": 68}
 #: Offset of the square on each facing 1..4 (S, E, N, W).
 OFFSET = {1: (0, 1), 2: (1, 0), 3: (0, -1), 4: (-1, 0)}
 
@@ -312,15 +190,6 @@ class Branches(unittest.TestCase):
         lua.execute("TOPO:remove(1, 0, 0) WORLD:removePart(1, 0, 0, 'Test:Pipe')")
         self.assertEqual(lua.eval("WORLD:sprite(0, 0, 0)"), TILE + "64")
 
-    def test_the_shape_follows_the_mode(self):
-        lua = lone_fitting(2)
-        lua.execute('place("Test:Pipe", 0, 1)'
-                    ' FIT = REG:at(0, 0, 0) LiveWater.Parts:call(FIT, "setFittingMode", "pump") SPRITES:show(0, 0, 0)')
-        self.assertEqual(lua.eval("WORLD:sprite(0, 0, 0)"), TILE + "205")
-        lua.execute('place("Test:Pipe", 0, -1)')
-        self.assertEqual(lua.eval("WORLD:sprite(0, 0, 0)"), TILE + "241")
-        self.assertEqual(lua.eval('LiveWater.Parts:facingOf(WORLD:sprite(0, 0, 0))'), 2)
-
     def test_the_part_and_the_tile_recipe_agree(self):
         sys.path.insert(0, os.path.join(ROOT, "source", "tiles"))
         try:
@@ -346,7 +215,7 @@ class Branches(unittest.TestCase):
 
 
 class Through(unittest.TestCase):
-    """D01b: the water goes through the fitting from one pipe to the next, the fitting still fills or gives."""
+    """D01b: the water goes through the fitting from one pipe to the next, the fitting still fills."""
 
     def test_water_goes_through_a_fitting_set_to_fill_to_a_sprinkler_downstream(self):
         lua = bench()
@@ -356,20 +225,6 @@ class Through(unittest.TestCase):
         self.assertEqual(lua.eval('CONT["2,-1"].amount'), 400)
         self.assertEqual(lua.eval('REG:at(4, 0, 0).data.outlet.state'), "served")
         self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "208")
-
-    def test_a_fitting_set_to_pump_in_line_gives_its_barrel_to_the_outlets_beyond_it(self):
-        lua = bench()
-        lua.execute(r"""
-        place("Test:Pipe", 3, 0) place("Test:Spr", 4, 0) NEED["4,0"] = 20
-        CONT["2,-1"] = { amount = 30, capacity = 600, fluid = "clean" }
-        LiveWater.Parts:call(FIT, "setFittingMode", "pump")
-        tick()
-        """)
-        self.assertEqual(lua.eval('REG:at(4, 0, 0).data.outlet.state'), "served")
-        d = lua.eval('emitted("waterDelivered")')
-        self.assertEqual((d[1][3], d[1][4]), (20, "clean"))
-        self.assertEqual(lua.eval('CONT["2,-1"].amount'), 10)
-
 
 if __name__ == "__main__":
     unittest.main()

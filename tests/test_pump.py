@@ -282,6 +282,18 @@ class LiveWirePower(unittest.TestCase):
         self.assertFalse(lua.eval("POW:powered(PART)"))
         lua.execute('WORLD:object(0, 0, 0, "LiveWater:PondPump").lw = true')
         self.assertTrue(lua.eval("POW:powered(PART)"))
+
+    def test_a_pump_against_a_barrel_is_a_live_wire_consumer_too(self):
+        # ADR-012 D05: whatever its source (pond, well, barrel), the pump takes its current from Live Wire
+        lua = self.lw()
+        lua.execute('WORLD.dry["0,0,0"] = true WORLD.vessels["0,0,0"] = true')
+        self.assertTrue(lua.eval('place("LiveWater:PondPump", 0, 0)'))
+        self.assertIsNone(lua.eval("REG:at(0, 0, 0).data.intake.source"))
+        lua.execute("PART = REG:at(0, 0, 0)")
+        self.assertEqual(lua.eval("newPower(fakeLiveWire(6))"), 2)
+        self.assertFalse(lua.eval("POW:powered(PART)"))
+        lua.execute('WORLD:object(0, 0, 0, "LiveWater:PondPump").lw = true')
+        self.assertTrue(lua.eval("POW:powered(PART)"))
 
 
 class Wiring(unittest.TestCase):

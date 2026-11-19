@@ -1,8 +1,10 @@
 # Premiers pas
 
-Un réseau LiveWater a toujours la même forme : une **source** (une pompe d'étang au bord de l'eau, ou un baril), des
-**tuyaux** posés au sol, et des **sorties** au bout (une arrivée d'eau de maison, des arroseurs, des lignes de
-goutte-à-goutte, des barils à remplir). L'eau avance toutes les 10 minutes de jeu.
+Un réseau LiveWater a toujours la même forme : un **producteur**, une **pompe à eau** posée au bord d'une eau naturelle
+(lac, étang, rivière, puits) ou contre un baril ; des **tuyaux** posés au sol ; et des **sorties** au bout (une arrivée
+d'eau de maison, des arroseurs, des lignes de goutte-à-goutte, et les **raccords de remplissage** qui remplissent un
+baril, un récupérateur d'eau de pluie ou une mangeoire). Seule une pompe met de l'eau dans le réseau. L'eau avance
+toutes les 10 minutes de jeu.
 
 ![Les tuiles provisoires de LiveWater](../../images/art/planche-tuiles-provisoires.png)
 
@@ -16,15 +18,31 @@ métaux (gardée), donne **4 tuyaux d'eau**.
 
 > Capture à faire : la recette « Couper des sections de tuyau » dans la fenêtre d'artisanat.
 
-## 2. Fabriquer la pompe d'étang
+## 2. Fabriquer la pompe à eau
 
-Recette **Fabriquer une pompe d'étang** (Électricité 2) : 1 tuyau en métal, 2 petites plaques en métal, 3 pièces
-électroniques, 2 fils électriques, 4 vis, avec un tournevis et une clé à molette (gardés). Elle donne une pompe d'étang
+Recette **Fabriquer une pompe à eau** (Électricité 2) : 1 tuyau en métal, 2 petites plaques en métal, 3 pièces
+électroniques, 2 fils électriques, 4 vis, avec un tournevis et une clé à molette (gardés). Elle donne une pompe à eau
 (15 kg) et 15 XP d'Électricité.
 
 Posez-la comme un meuble (clic droit dans l'inventaire, Placer) **juste au bord d'une eau naturelle** : lac, étang,
-rivière, ou contre un puits (voir [Puits](#12-puits)). Ailleurs, le curseur passe au rouge : *Doit être posée au bord
-d'une eau naturelle*.
+rivière, ou contre un puits (voir [Puits](#12-puits)) ; ou **contre un baril** ou **une pompe de station-service** (voir ci-dessous). Ailleurs, le curseur
+passe au rouge : *Doit être posée au bord d'une eau naturelle (lac, étang, rivière), contre un puits, un baril ou une pompe de station-service.*
+
+**Contre un baril.** La pompe peut aussi se poser contre un baril, sur l'un de ses quatre côtés : un baril ou un
+récupérateur d'eau de pluie d'au moins 20 L, un refroidisseur d'eau, un conteneur listé dans les options sandbox, ou un
+mangeoire. Elle pompe alors l'eau du baril dans les tuyaux, jusqu'à son débit (50 L toutes les 10 minutes). Elle ne
+pompe que de l'eau, jamais de carburant, et l'eau garde sa qualité : une eau souillée passe, et la maison demande le
+filtre de son arrivée d'eau. Un baril vide ne donne rien.
+
+Deux pompes d'un même liquide sur un même réseau additionnent leurs débits (100 L toutes les 10 minutes pour deux), et chacune ne puise
+que sa propre source : une pompe au bord d'un étang ne vide jamais le baril d'une pompe posée contre un baril. Une pompe
+qui touche à la fois un baril et un étang vide d'abord le baril, puis prend l'étang.
+
+**Contre une pompe de station-service.** La pompe peut aussi se poser contre une pompe à essence de station-service (les pompes vanilla Fossoil et Gas-2-Go). Elle pompe alors l'essence de la station dans les tuyaux, jusqu'à son débit (50 L toutes les 10 minutes), avec du courant comme toujours ; le carburant stocké de la station diminue. Une station vide ne donne rien.
+
+**Un seul liquide par réseau.** Un réseau transporte un seul liquide à la fois : la première pompe posée impose le liquide (eau propre ou souillée, ou essence). Une pompe d'un autre liquide ne donne rien, et son information dit *Pompe : un autre liquide est dans les tuyaux*. Pour avoir les deux, faites deux réseaux, ou fermez une vanne entre les pompes : chaque côté a sa propre première pompe.
+
+Les consommateurs ne prennent que ce qu'ils acceptent. L'arrivée d'eau de la maison, les arroseurs et les lignes de goutte-à-goutte ne prennent que de l'eau : avec de l'essence dans les tuyaux, ils ne prennent rien et disent *Ce n'est pas de l'eau*. Le raccord de remplissage ne mélange jamais : il remplit un récipient vide avec ce que transportent les tuyaux, un récipient d'eau avec de l'eau seulement, un récipient d'essence avec de l'essence seulement. Il ne remplit jamais une mangeoire avec autre chose que de l'eau, ni une pompe de station-service.
 
 La pompe a besoin de **courant** : un générateur ou le réseau public sur sa case, ou LiveWire (voir
 [LiveWire](04-livewire.md)). Elle donne **50 L toutes les 10 minutes** tant qu'une sortie a besoin d'eau, et s'arrête
@@ -34,8 +52,8 @@ Son menu au clic droit :
 
 - **Allumer la pompe** / **Éteindre la pompe** : l'interrupteur, en plus de l'arrêt automatique.
 - **Informations** : un écran LCD rétroéclairé : état (en marche, en attente, éteinte, sans courant, en panne), débit
-  possible, débit des 10 dernières minutes, total pompé depuis la pose, rendement, source. L'écran se met à jour
-  pendant qu'il est ouvert.
+  possible, débit des 10 dernières minutes, total pompé depuis la pose, rendement, source. Quand un baril est posé
+  contre elle, une ligne **Baril : N L** indique les litres qu'il contient. L'écran se met à jour pendant qu'il est ouvert.
 - **Réparer la pompe** : voir plus bas.
 
 **Usure.** Son rendement baisse quand elle tourne (environ une semaine de marche de 100 % à 0 % avec les réglages par
@@ -43,17 +61,17 @@ défaut), et le débit suit. Sous 20 %, elle peut tomber en panne ; à 0 %, elle
 avec **2 ferrailles** et une **clé à molette** : rendement remis à 100 %.
 
 Une pompe a 4 départs : jusqu'à 4 tuyaux peuvent en partir. Sa pression suffit pour **une maison et quatre arroseurs**
-(une arrivée d'eau compte 2, un arroseur ou un baril à remplir compte 1, toutes les lignes de goutte-à-goutte du
+(une arrivée d'eau compte 2, un arroseur ou un raccord de remplissage compte 1, toutes les lignes de goutte-à-goutte du
 réseau comptent 1 ensemble).
 
 **Pendant votre absence.** Votre réseau d'eau continue de tourner quand vous vous éloignez : la pompe puise toujours
-dans sa mare ou son puits, les arroseurs ouverts et les lignes de goutte-à-goutte arrosent toujours les cultures, et
-les barils en Remplir ou Pomper continuent de se remplir ou de se vider (vous retrouvez la bonne quantité au retour).
-L'arrivée d'eau de la maison attend votre retour. Le courant pendant l'absence : avec LiveWire, le réseau qui alimente
-la case de la pompe ; sinon le réseau public jusqu'au jour de sa coupure, et un groupe électrogène compte comme au
-moment de votre départ (il ne brûle rien entre-temps et reprend sa consommation à votre retour).
+dans sa mare, son puits ou son baril, les arroseurs ouverts et les lignes de goutte-à-goutte arrosent toujours les
+cultures, et les barils remplis par un raccord de remplissage continuent de se remplir (vous retrouvez la bonne
+quantité au retour). L'arrivée d'eau de la maison attend votre retour. Le courant pendant l'absence : avec LiveWire, le
+réseau qui alimente la case de la pompe ; sinon le réseau public jusqu'au jour de sa coupure, et un groupe électrogène
+compte comme au moment de votre départ (il ne brûle rien entre-temps et reprend sa consommation à votre retour).
 
-![Une pompe d'étang en marche au bord d'une rivière, sur son groupe électrogène](../../images/screenshots/pump-running.jpg)
+![Une pompe à eau en marche au bord d'une rivière, sur son groupe électrogène](../../images/screenshots/pump-running.jpg)
 
 ![L'écran LCD d'une pompe en marche](../../images/screenshots/pump-info-fr.jpg)
 
@@ -83,8 +101,10 @@ Pour reprendre un tuyau, ramassez-le comme les autres pièces, avec une **clé**
 (gardée). Posez-la au curseur de meuble sur une case vide entre deux tuyaux d'une ligne droite (elle prend la place
 d'un tuyau : ramassez d'abord ce tuyau) ; elle se tourne seule dans le sens du tuyau. Elle se pose
 ouverte. Clic droit dessus : **Fermer la vanne** coupe l'eau de tout ce qui est après elle (la maison, les arroseurs
-plus loin), **Ouvrir la vanne** la laisse repasser ; son volant montre l'état, et **Informations** le dit aussi. Elle
-se ramasse à la clé comme les autres pièces.
+plus loin), **Ouvrir la vanne** la laisse repasser ; son volant montre l'état, et **Informations** le dit aussi.
+L'effet est immédiat, pour cette vanne comme pour celle d'un arroseur : l'eau s'arrête ou repart tout de suite, et les
+robinets d'une maison coupée se vident (l'eau restée dans les tuyaux est perdue). Elle se ramasse à la clé comme les
+autres pièces.
 
 Chaque arroseur a aussi sa vanne (**Ouvrir la vanne** / **Fermer la vanne**). Une vanne fermée ne laisse passer aucune
 eau, et le diagnostic le dit (*une vanne est fermée*). Les arroseurs se posent fermés.
@@ -123,14 +143,14 @@ et 2 tissus déchirés donnent une **cartouche filtrante**. Elle nettoie environ
 Le filtre se monte dans l'**arrivée d'eau de la maison** : clic droit dessus, **Monter la cartouche filtrante**,
 **Remplacer la cartouche filtrante** ou **Retirer la cartouche filtrante**. Une cartouche retirée garde son usure. Une
 cartouche usée revient sous le nom de **cartouche filtrante usée** : rechargez-la avec 2 charbons de bois et 1 tissu déchiré (recette **Recharger une cartouche filtrante**), ou démontez-la pour son tissu. L'arrivée d'eau montre le boîtier du filtre sous son coffret. Il ne nettoie que l'eau qui
-entre dans la maison : arroseurs, lignes de goutte-à-goutte et barils prennent l'eau du réseau telle quelle et n'usent
-jamais la cartouche.
+entre dans la maison : arroseurs, lignes de goutte-à-goutte et raccords de remplissage prennent l'eau du réseau telle
+quelle et n'usent jamais la cartouche.
 
 ## 7. Arroseurs
 
 **Arroseur manuel.** Recette **Fabriquer un arroseur** : 2 tuyaux d'eau, 1 ferraille, 1 planche, avec une clé
 anglaise (gardée). Posez-le comme un meuble et alimentez-le par un tuyau. Clic droit : **Ouvrir la vanne**. Sa manette se lit d'un coup d'œil : le long du tuyau quand
-il est ouvert, en travers quand il est fermé. Tant que
+elle est ouverte, en travers quand elle est fermée. Tant que
 sa vanne est ouverte, il arrose **10 L toutes les 10 minutes**, que les plantes aient soif ou non. Les plantes vivantes
 qui ont besoin d'eau dans le **carré de 5 × 5 cases** autour de lui (2 cases de chaque côté ; l'option sandbox change
 cette portée) en prennent des doses de 200 ml, les plus proches d'abord ; le reste est perdu. Toute eau convient,
@@ -143,7 +163,7 @@ toutes les 10 minutes (et, pour un arroseur, combien arrivent aux plantes).
 
 Un arroseur qui arrose montre un jet d'eau animé qui fait tout le tour (option du mod *Jet des arroseurs animé* :
 décochez-la pour un jet fixe sur un ordinateur lent). Un quart de son eau se perd en l'air : sur 10 L, 7,5 L peuvent
-aller aux plantes. Une pompe d'étang (50 L toutes les 10 minutes) alimente au plus cinq arroseurs ouverts à plein
+aller aux plantes. Une pompe à eau (50 L toutes les 10 minutes) alimente au plus cinq arroseurs ouverts à plein
 débit ; les suivants reçoivent le reste, puis rien. Il n'est pas discret non plus : on l'entend arroser, et **les
 zombies l'entendent** toutes les 10 minutes tant qu'il arrose. Pour un potager silencieux et économe en eau, prenez des
 [lignes de goutte-à-goutte](#8-lignes-de-goutte-à-goutte).
@@ -179,33 +199,34 @@ pression reste à sec.
 
 - **N'importe quelle eau.** Propre ou non, sans filtre. L'essence et tout autre fluide sont refusés.
 - **Peu de pression.** Toutes les lignes d'un réseau comptent **1** ensemble, quel que soit leur nombre.
-- **Pas besoin de pompe.** Raccordez un baril par un [raccord de baril](#9-raccord-de-baril--remplir-ou-pomper) réglé
-  sur **Pomper** : sans pompe sur le réseau, le poids du baril pousse son eau dans les lignes, eau de pluie ou
-  d'étang. Cette faible pression ne suffit qu'aux lignes de goutte-à-goutte : un arroseur ou une arrivée d'eau sur
-  ce réseau ne reçoivent rien.
+- **Une pompe.** Comme toute sortie, une ligne de goutte-à-goutte ne reçoit de l'eau que d'une [pompe à eau](#2-fabriquer-la-pompe-à-eau)
+  de son réseau. Un réseau sans pompe ne lui donne rien.
 
 Une ligne de goutte-à-goutte ne fait aucun bruit.
 
-## 9. Raccord de baril : Remplir ou Pomper
+## 9. Raccord de remplissage
 
-Recette **Fabriquer un raccord de baril** : 1 tuyau d'eau, 1 tuyau en caoutchouc, avec une clé anglaise (gardée).
-Posez-le entre le bout d'un tuyau et un baril ou un récupérateur d'eau de pluie, ou au milieu d'une ligne de tuyaux : il
-laisse alors passer l'eau d'un tuyau à l'autre. Son dessin suit les tuyaux voisins (droit, coudé, en té ou en croix) ; le
-baril, quand il y en a un, reste derrière lui. Clic droit :
+Recette **Fabriquer un raccord de remplissage** : 1 tuyau d'eau, 1 tuyau en caoutchouc, avec une clé anglaise (gardée).
+Posez-le entre le bout d'un tuyau et un baril, un récupérateur d'eau de pluie, un refroidisseur d'eau ou une mangeoire, ou
+au milieu d'une ligne de tuyaux : il laisse alors passer l'eau d'un tuyau à l'autre. Son dessin suit les tuyaux voisins
+(droit, coudé, en té ou en croix) ; le contenant, quand il y en a un, reste derrière lui. Clic droit dessus :
+**Informations** montre ce qu'il fait.
 
-- **Régler sur Remplir** : les tuyaux remplissent le baril, jusqu'à 50 L toutes les 10 minutes, sans jamais déborder.
-  Le baril reçoit toujours de l'**eau croupie**, même depuis un puits : les tuyaux transportent de l'eau non traitée,
-  seule l'arrivée d'eau de la maison donne de l'eau propre. Une fontaine à eau se remplit de la même façon.
-- **Régler sur Pomper** : la pompe du réseau tire le contenu du baril au lieu de son étang. Sans pompe sur le réseau,
-  le baril alimente les [lignes de goutte-à-goutte](#8-lignes-de-goutte-à-goutte) par son propre poids.
+Le raccord de remplissage ne fait que **remplir**. Le réseau remplit le contenant posé à côté, jusqu'à 50 L toutes les
+10 minutes, sans jamais dépasser sa contenance. L'eau y entre **souillée**, même depuis un puits : les tuyaux transportent
+de l'eau non traitée, seule l'arrivée d'eau de la maison donne de l'eau propre. Les animaux peuvent la boire (vérifié
+dans le code du jeu, pas encore testé en jeu).
 
-Son dessin suit le mode, la forme du récupérateur et les tuyaux voisins. **Informations** montre le mode et les litres du baril.
+Une mangeoire qui contient de la nourriture n'a pas de réservoir d'eau (une règle du jeu) : le raccord ne lui donne rien, et
+ses informations disent *La mangeoire contient de la nourriture*. Le remplissage reprend une fois la nourriture finie. Une
+longue mangeoire (2 à 4 cases) reçoit son eau dans son réservoir, et le raccord peut se poser contre n'importe laquelle de
+ses cases.
 
-Un baril n'atteint le réseau que par un raccord de baril, jamais directement la maison : sans pompe, seules les lignes de goutte-à-goutte reçoivent son eau.
+Le raccord ne donne de l'eau au réseau que si une pompe l'y met : un raccord de remplissage ne fait jamais sortir l'eau
+d'un contenant. Pour envoyer l'eau d'un baril dans les tuyaux, posez une [pompe à eau](#2-fabriquer-la-pompe-à-eau) contre lui.
 
-**Essence.** Un raccord réglé sur Pomper contre un baril d'essence ou une pompe de station-service fait un réseau
-d'essence. Il ne remplit que des barils (vides, ou contenant déjà de l'essence) par des raccords réglés sur Remplir.
-Arrivées d'eau et arroseurs ne reçoivent rien et le disent.
+Ses informations disent ce qu'il fait : remplir le baril, baril plein (ou absent), aucun baril à côté, un autre fluide
+dans le baril, ou *La mangeoire contient de la nourriture*.
 
 ![Deux raccords sur des récupérateurs d'eau vanilla : un tonneau rond entre deux tuyaux (té) et une caisse au croisement de trois tuyaux (croix)](../../images/screenshots/barrel-fittings.jpg)
 
@@ -222,23 +243,23 @@ Recette **Fabriquer un compteur d'eau** : 1 tuyau d'eau, 1 petite plaque en mét
 
 **Informations** ouvre une fenêtre de compteur d'eau, à la manière d'un compteur américain : un totalisateur à rouleaux
 (les litres passés depuis la pose), une aiguille de balayage (un tour toutes les 10 litres), les litres des 10 dernières
-minutes et la qualité de l'eau (propre, non filtrée ou essence). Le total est gardé quand on ramasse le compteur et qu'on
+minutes et la qualité de l'eau (propre ou non filtrée). Le total est gardé quand on ramasse le compteur et qu'on
 le repose ; il n'y a pas de remise à zéro.
 
 ![La fenêtre du compteur d'eau : rouleaux, aiguille, total et dernières minutes](../../images/screenshots/meter-window-fr.jpg)
 
 ## 12. Puits
 
-La même pompe d'étang posée contre un **puits** tire de l'**eau propre** : la maison la reçoit sans filtre. Ses
+La même pompe à eau posée contre un **puits** tire de l'**eau propre** : la maison la reçoit sans filtre. Ses
 informations disent *Source : puits (eau propre)*.
 
-> Capture à faire : une pompe d'étang contre un puits.
+> Capture à faire : une pompe à eau contre un puits.
 
 ## 13. Démonter une pièce
 
 Chaque pièce LiveWater se démonte dans l'inventaire, par une recette **Démonter ...** (fenêtre d'artisanat,
 Assemblage ou Électricité) : une clé à tuyau ou une clé pour les pièces de plomberie (tuyau, vanne, compteur, arrivée
-d'eau, arroseur, raccord de baril), un tournevis pour la pompe d'étang et l'arroseur automatique, un couteau pour une
+d'eau, arroseur, raccord de remplissage), un tournevis pour la pompe à eau et l'arroseur automatique, un couteau pour une
 ligne de goutte-à-goutte ou une cartouche filtrante. On ne récupère jamais plus que ce que la pièce a coûté, et
 seulement des débris : morceaux de fer, ferraille, vis, ferraille électronique, fil. Une cartouche filtrante, neuve ou usée, rend un
 morceau de tissu, une ligne de goutte-à-goutte un élastique.
@@ -249,9 +270,9 @@ comme si vous l'aviez ramassée. Une ligne de goutte-à-goutte se ramasse à la 
 
 ## 14. Trouver des pièces
 
-Certaines pièces se trouvent au lieu de se fabriquer, rarement : tuyaux d'eau, vannes d'arrêt et raccords de baril
+Certaines pièces se trouvent au lieu de se fabriquer, rarement : tuyaux d'eau, vannes d'arrêt et raccords de remplissage
 dans les fournitures de plomberie et les caisses à outils ; arroseurs, lignes de goutte-à-goutte et cartouches
-filtrantes dans les jardineries et le matériel agricole. La pompe d'étang, l'arrivée d'eau, le compteur et l'arroseur
+filtrantes dans les jardineries et le matériel agricole. La pompe à eau, l'arrivée d'eau, le compteur et l'arroseur
 automatique ne se trouvent jamais : on les fabrique.
 
 Suite : [Base du joueur](02-base-du-joueur.md) · [Diagnostic](03-diagnostic.md)

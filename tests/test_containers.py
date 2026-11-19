@@ -77,14 +77,14 @@ class FilledWaterIsTainted(unittest.TestCase):
         self.assertEqual(lua.eval('CONT["2,-1"].fluid'), "tainted")
 
     def test_a_barrel_of_fuel_still_receives_fuel(self):
+        # fuel only comes from a third-party pump: the fitting is handed it directly
         lua = services(new_lua, POND, FITTING)
         lua.execute(BENCH)
         lua.execute(r"""
-        LiveWater.Parts:call(FIT, "setFittingMode", "pump")
-        CONT["2,-1"] = { amount = 100, capacity = 600, fluid = "fuel" }
         place("LiveWater:BarrelFitting", 1, 1, "batman_livewater_01_66")
         CONT["1,2"] = { amount = 0, capacity = 400 }
-        tick()
+        FITTINGS:tick()
+        FITTINGS:deliver(REG:at(1, 1, 0), 50, "fuel")
         """)
         self.assertEqual(lua.eval('CONT["1,2"].fluid'), "fuel")
 

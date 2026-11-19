@@ -12,6 +12,7 @@ local Parts = require "LiveWater/LWT_Parts"
 local EventBus = require "LiveWater/LWT_Events"
 local Sources = require "LiveWater/LWT_Sources"
 local Containers = require "LiveWater/LWT_Containers"
+local OutletTypes = require "LiveWater/LWT_OutletTypes"
 
 -- Starting capability kinds (D02): kind -> file under LiveWater/Capabilities.
 local STARTING_CAPABILITIES = {
@@ -26,6 +27,7 @@ local STARTING_CAPABILITIES = {
     spray = "LWT_CapSpray",
     fitting = "LWT_CapFitting",
     drip = "LWT_CapDrip",
+    vessel = "LWT_CapVessel",
 }
 
 -- Starting source kinds (D16, D17): kind -> file under LiveWater/Sources.
@@ -51,6 +53,7 @@ LiveWater.Capabilities = capabilities
 LiveWater.Parts = parts
 LiveWater.Sources = sources
 LiveWater.Containers = Containers.new()
+LiveWater.OutletTypes = OutletTypes.new()
 LiveWater.Events = EventBus.new(EventBus.NAMES)
 
 -- Revision 2: part definition field `variants`, capability hooks look, attach, power, powered,
@@ -92,7 +95,19 @@ LiveWater.Events = EventBus.new(EventBus.NAMES)
 -- the facing of the sprite it was set down with, recorded on the part: Parts:sidesOf).
 -- Revision 20 (ADR-009 D01): filter field `spent` (item a worn-out cartridge comes back as), fourth
 -- result of the `cartridge` hook.
-local API = { revision = 20 }
+-- Revision 21 (ADR-011): capability "vessel" (the part draws water from the barrel set against it:
+-- hooks sense, fittingMode, draw, lines; field rate), intake field `orVessel` (the part may stand
+-- against a barrel without any source), GameSite:hasVessel(); a pump that draws itself gives its
+-- own barrel's water before its source, never another pump's (LWT_Flow:supply).
+-- Revision 22 (ADR-012): registerOutlet (consumers of other mods; an outlet type may be "<Mod>:<Name>");
+-- the barrel fitting only fills (no Pump mode: hooks setFittingMode, actions of the fitting and its
+-- field gravity removed; hook `container` in place of fittingMode); no gravity flow (hooks gravity
+-- and byGravity, outlet field byGravity removed): only a pump puts water in a network.
+-- Revision 23 (ADR-014): outlet field `takes` ("water" default, "fuel", "other", "any": the fluid a
+-- consumer takes, fourth result of the `outlet` hook); capability "vessel" also draws fuel (a pump
+-- against a gas station fuel pump, GameSite:hasVessel); one fluid family per network zone and step,
+-- set by the first pump in placement order (outcome.otherFluid of the pumps that gave nothing).
+local API = { revision = 23 }
 LiveWater.API = API
 
 local function answer(call, id, ok, reason, detail)
@@ -130,6 +145,16 @@ function API.registerContainer(name, definition)
     return answer("registerContainer", name, LiveWater.Containers:register(name, definition))
 end
 
+-- Consumer of another mod (revision 22, ADR-012 D04): where the water of its outlet type goes, see
+-- LWT_OutletTypes.lua. The handler is an object called with ":" on the authority:
+--   LiveWater.API.registerOutlet("MyMod:Trough", { need = function(self, part) return 20 end,
+--       deliver = function(self, part, litres, quality) end })
+-- optional release(self, part) and cut(self, part). Returns true, or false and
+-- "registration_closed", "invalid_type", "invalid_handler", "duplicate_outlet".
+function API.registerOutlet(outletType, handler)
+    return answer("registerOutlet", outletType, LiveWater.OutletTypes:register(outletType, handler))
+end
+
 -- Copy of the checked definition of a part type, or nil.
 function API.part(id)
     return parts:describe(id)
@@ -140,6 +165,7 @@ Events.OnInitGlobalModData.Add(function()
     parts:seal()
     sources:seal()
     LiveWater.Containers:seal()
+    LiveWater.OutletTypes:seal()
 end)
 
 return API

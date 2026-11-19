@@ -36,17 +36,20 @@ FakeWorld = {}
 FakeWorld.__index = FakeWorld
 function FakeWorld.new(catalog)
     return setmetatable({ catalog = catalog, unloaded = {}, objects = {}, sets = 0, dry = {}, near = {},
-        unpowered = {}, generators = {}, gridOff = false, states = {}, writes = 0, things = {}, edges = {} }, FakeWorld)
+        unpowered = {}, generators = {}, gridOff = false, states = {}, writes = 0, things = {}, edges = {},
+        vessels = {} }, FakeWorld)
 end
 -- Edges port (ADR-002 D04): kind of the N (north = true) or W edge of a square, "wall", "fence" or nil.
 function FakeWorld:setEdge(x, y, z, north, kind) self.edges[k(x, y, z) .. (north and "N" or "W")] = kind end
 function FakeWorld:edge(x, y, z, north) return self.edges[k(x, y, z) .. (north and "N" or "W")] end
--- Neighbourhood probe of a square: natural water everywhere unless dry[key]; near[key] = set of sprites around.
+-- Neighbourhood probe of a square: natural water everywhere unless dry[key]; near[key] = set of sprites around;
+-- vessels[key]: a barrel stands on one of its four sides (GameSite:hasVessel).
 function FakeWorld:site(x, y, z)
     local world, key = self, k(x, y, z)
     local probe = {
         hasFlag = function(_, name) return name == "water" and not world.dry[key] end,
         hasSprite = function(_, name) return (world.near[key] or {})[name] == true end,
+        hasVessel = function() return world.vessels[key] == true end,
     }
     function probe:source() return LiveWater.Sources:find(self) end
     return probe

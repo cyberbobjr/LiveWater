@@ -15,7 +15,7 @@ Page **LiveWater** des options sandbox (noms `LiveWater.<Option>` dans les `Sand
 | Débit du goutte-à-goutte (`DripFlow`) | 0,5 | 0 à 10 | litres que prélève chaque case de ligne toutes les 10 minutes quand le réseau lui donne de l'eau ; les plantes voisines prennent ce qu'il leur faut, le reste est perdu |
 | Minuterie d'arroseur : intervalle le plus court (`SprinklerTimerMin`) | 1 | 1 à 168 | heures minimales qu'un joueur peut régler entre deux arrosages |
 | Minuterie d'arroseur : intervalle le plus long (`SprinklerTimerMax`) | 24 | 1 à 168 | heures maximales qu'un joueur peut régler entre deux arrosages |
-| Conteneurs qu'un raccord de baril peut remplir (`FillContainers`) | `WaterDispenser` | texte | noms de scripts d'entité ou de sprites séparés par `;`, remplis d'eau croupie comme un baril, quelle que soit leur taille ; barils et récupérateurs fonctionnent toujours |
+| Conteneurs qu'un raccord de remplissage peut remplir (`FillContainers`) | `WaterDispenser` | texte | noms de scripts d'entité ou de sprites séparés par `;`, remplis d'eau croupie comme un baril, quelle que soit leur taille ; barils, récupérateurs d'eau et mangeoires fonctionnent toujours |
 
 Option du mod (pour chaque joueur, dans les options des mods du jeu) : **Jet des arroseurs animé**, activée par
 défaut ; décochez-la pour un jet fixe sur un ordinateur lent.

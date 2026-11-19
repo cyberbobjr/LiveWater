@@ -1,6 +1,6 @@
 {
     "Base.Mov_LiveWater_Pipe": "水道管",
-    "Base.Mov_LiveWater_PondPump": "池のポンプ",
+    "Base.Mov_LiveWater_PondPump": "給水ポンプ",
     "LiveWater.WaterFilter": "浄水カートリッジ",
     "LiveWater.WaterFilterSpent": "使用済み浄水カートリッジ",
     "Base.Mov_LiveWater_FlowMeter": "水道メーター",
@@ -9,5 +9,5 @@
     "Base.Mov_LiveWater_HouseInlet": "家の給水口",
     "Base.Mov_LiveWater_Sprinkler": "スプリンクラー",
     "Base.Mov_LiveWater_SprinklerAuto": "自動スプリンクラー",
-    "Base.Mov_LiveWater_BarrelFitting": "樽の取り付け部"
+    "Base.Mov_LiveWater_BarrelFitting": "給水継手"
 }

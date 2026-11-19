@@ -1,7 +1,7 @@
 {
     "Sandbox_LiveWater": "LiveWater",
     "Sandbox_LWT_PumpFlowMultiplier": "ポンプの流量",
-    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "ポンプが10分ごとに出す水の量（L）に掛ける倍率です（1.0 で池のポンプは 50 L）。",
+    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "ポンプが10分ごとに出す水の量（L）に掛ける倍率です（1.0 で給水ポンプは 50 L）。",
     "Sandbox_LWT_FilterCapacityMultiplier": "浄化カートリッジの寿命",
     "Sandbox_LWT_FilterCapacityMultiplier_tooltip": "摩耗する前に浄化カートリッジが処理できる水の量（L）に掛ける倍率です（1.0 で 500 L）。",
     "Sandbox_LWT_PumpWearMultiplier": "ポンプの摩耗",
@@ -22,6 +22,6 @@
     "Sandbox_LWT_SprinklerTimerMin_tooltip": "自動スプリンクラーの2回の散水の間に、プレイヤーが設定できる最短の時間（時間）です。",
     "Sandbox_LWT_SprinklerTimerMax": "スプリンクラーのタイマー: 最長間隔",
     "Sandbox_LWT_SprinklerTimerMax_tooltip": "自動スプリンクラーの2回の散水の間に、プレイヤーが設定できる最長の時間（時間）です。",
-    "Sandbox_LWT_FillContainers": "樽の取り付け部が満たせる容器",
-    "Sandbox_LWT_FillContainers_tooltip": "エンティティ名またはスプライト名を ; で区切って入力します（ウォーターサーバー: WaterDispenser）。「満たす」に設定した樽の取り付け部で、大きさに関係なく、樽と同じく汚染された水で満たされます。樽と雨水収集器は常に使えます。"
+    "Sandbox_LWT_FillContainers": "給水継手が満たせる容器",
+    "Sandbox_LWT_FillContainers_tooltip": "エンティティ名またはスプライト名を ; で区切って入力します（ウォーターサーバー: WaterDispenser）。給水継手で、大きさに関係なく、樽と同じく汚染された水で満たされます。樽、雨水収集器、給餌桶は常に使えます。"
 }

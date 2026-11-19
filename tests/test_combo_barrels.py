@@ -1,6 +1,6 @@
-"""Players combine barrels and fittings in unusual ways (ADR-001 D26, D28; ADR-004 D04; ADR-005 D06, D07): two
-fittings on one barrel, a barrel feeding another, fuel and water barrels on one network, barrels of another fluid,
-barrels without pump. Water is never created, a barrel never goes above its capacity nor below zero."""
+"""Players combine barrels, fittings and pumps in unusual ways (ADR-001 D26, D28; ADR-005 D06, D07; ADR-011;
+ADR-012): two fittings on one barrel, two pumps against one barrel, fuel and water on one network, barrels of another
+fluid. Water is never created, a barrel never goes above its capacity nor below zero."""
 import unittest
 
 from lwt_fakes import services
@@ -31,7 +31,6 @@ function delivered()
     for _, e in ipairs(emitted("waterDelivered")) do total = total + e[3] end
     return total
 end
-function mode(x, y, m) LiveWater.Parts:call(REG:at(x, y, 0), "setFittingMode", m) end
 """
 
 
@@ -55,41 +54,7 @@ class TwoFittingsOnOneBarrel(unittest.TestCase):
     # same barrel on its east side.
     SECOND = 'place("LiveWater:BarrelFitting", 1, -1, "batman_livewater_01_64")'
 
-    def test_one_set_to_fill_and_one_to_pump_never_makes_water_over_many_steps(self):
-        lua = bench()
-        lua.execute(self.SECOND)
-        lua.execute('mode(1, -1, "pump") CONT["2,-1"] = { amount = 380, capacity = 400, fluid = "clean" }')
-        for _ in range(12):
-            lua.execute("tick()")
-            amount = lua.eval('CONT["2,-1"].amount')
-            self.assertLessEqual(amount, 400)
-            self.assertGreaterEqual(amount, 380 - 1e-9)
-
-    def test_both_set_to_pump_never_give_more_than_the_barrel_holds(self):
-        lua = bench()
-        lua.execute(self.SECOND)
-        lua.execute('mode(2, 0, "pump") mode(1, -1, "pump") CONT["2,-1"] = { amount = 30, capacity = 400, fluid = "clean" }'
-                    ' place("Test:Spr", 1, 1) NEED["1,1"] = 100 tick()')
-        self.assertLessEqual(lua.eval("delivered()"), 30 + 1e-9)
-        self.assertAlmostEqual(lua.eval("TAKEN"), lua.eval("delivered()"))
-
-    def test_two_networks_pumping_the_same_barrel_never_give_more_than_it_holds(self):
-        lua = bench()
-        lua.execute("""
-        mode(2, 0, "pump") place("Test:Spr", 1, 1) NEED["1,1"] = 100
-        place("LiveWater:PondPump", 4, -1) place("LiveWater:BarrelFitting", 3, -1, "batman_livewater_01_67")
-        mode(3, -1, "pump") place("Test:Spr", 4, 0) NEED["4,0"] = 100
-        CONT["2,-1"] = { amount = 30, capacity = 400, fluid = "clean" }
-        """)
-        self.assertNotEqual(lua.eval("NET:networkAt(0, 0, 0)"), lua.eval("NET:networkAt(4, -1, 0)"))
-        lua.execute("tick()")
-        # every litre delivered was really taken from the barrel (the pumps draw the barrel, not their pond)
-        taken = lua.eval("TAKEN")
-        self.assertAlmostEqual(lua.eval("delivered()"), taken)
-        self.assertAlmostEqual(lua.eval('CONT["2,-1"].amount'), 30 - taken)
-        self.assertGreater(taken, 0)
-
-    def test_both_set_to_fill_never_overflow_nor_take_more_than_the_free_room(self):
+    def test_both_never_overflow_nor_take_more_than_the_free_room(self):
         lua = bench()
         lua.execute(self.SECOND)
         lua.execute('CONT["2,-1"] = { amount = 370, capacity = 400, fluid = "tainted" } tick()')
@@ -97,105 +62,59 @@ class TwoFittingsOnOneBarrel(unittest.TestCase):
         self.assertEqual(lua.eval("delivered()"), 30)
 
 
-class OneBarrelFeedsAnother(unittest.TestCase):
-    # Barrel A (2,-1) behind the bench fitting set to Pump; barrel B (1,2) behind a fitting set to Fill at (1,1).
-    LAYOUT = """
-    mode(2, 0, "pump") CONT["2,-1"] = { amount = 30, capacity = 400, fluid = "clean" }
-    place("LiveWater:BarrelFitting", 1, 1, "batman_livewater_01_66") CONT["1,2"] = { amount = 0, capacity = 400 }
-    """
-
-    def test_with_a_pump_water_moves_from_a_to_b_never_more_than_a_holds(self):
+class TwoPumpsOnOneBarrel(unittest.TestCase):
+    def test_two_networks_pumping_the_same_barrel_never_give_more_than_it_holds(self):
         lua = bench()
-        lua.execute(self.LAYOUT + "tick()")
-        self.assertEqual((lua.eval('CONT["2,-1"].amount'), lua.eval('CONT["1,2"].amount')), (0, 30))
-        self.assertEqual(lua.eval('CONT["1,2"].fluid'), "tainted")
-        lua.execute("tick()")
-        self.assertEqual(lua.eval("TAKEN"), 30)
-
-    def test_b_takes_at_most_the_fitting_rate(self):
-        lua = bench()
-        lua.execute(self.LAYOUT + 'CONT["2,-1"].amount = 300 tick()')
-        self.assertEqual((lua.eval('CONT["2,-1"].amount'), lua.eval('CONT["1,2"].amount')), (250, 50))
-
-    def test_without_a_pump_nothing_moves_from_a_to_b(self):
-        lua = domain("""
-        barrel(0, 0, "clean", 30) put("Test:Pipe", 1, 0)
-        put("Test:Fit", 2, 0, 50, { fitting = { mode = "fill", found = true, amount = 0, free = 400 } })
+        lua.execute("""
+        for _, k in ipairs({ "5,-2,0", "5,0,0" }) do WORLD.dry[k] = true WORLD.vessels[k] = true end
+        place("LiveWater:PondPump", 5, -2, "batman_livewater_01_24") place("Test:Spr", 6, -2) NEED["6,-2"] = 100
+        place("LiveWater:PondPump", 5, 0, "batman_livewater_01_24") place("Test:Spr", 6, 0) NEED["6,0"] = 100
+        CONT["5,-1"] = { amount = 30, capacity = 400, fluid = "clean" }
         """)
-        self.assertEqual(lua.eval("state(2, 0)"), "no_pressure")
-        self.assertEqual(lua.eval('R.drawn["0,0,0"].litres'), 0)
+        self.assertNotEqual(lua.eval("NET:networkAt(5, -2, 0)"), lua.eval("NET:networkAt(5, 0, 0)"))
+        lua.execute("tick()")
+        taken = lua.eval("TAKEN")
+        self.assertGreater(taken, 0)
+        self.assertLessEqual(taken, 30)
+        self.assertAlmostEqual(lua.eval("delivered()"), taken)
+        self.assertAlmostEqual(lua.eval('CONT["5,-1"].amount'), 30 - taken)
 
 
 class FuelAndWaterBarrels(unittest.TestCase):
-    def layout(self, near, far):
-        return domain("""
-        put("Test:Pump", 0, 0) put("Test:Pipe", 1, 0) put("Test:Pipe", 2, 0)
-        barrel(1, -1, "%s", 100) barrel(2, -1, "%s", 100)
-        put("Test:Spr", 3, 0, 5) put("Test:Drip", 1, 1, 5) put("Test:Inlet", 2, 1, 5)
-        put("Test:Fit", 0, 1, 5, { fitting = { mode = "fill", found = true, fluid = "clean", amount = 10, free = 100 } })
-        put("Test:Fit", 0, -1, 5, { fitting = { mode = "fill", found = true, amount = 0, free = 100 } })
-        """ % (near, far))
+    """A third-party pump may give fuel (Test:FuelPump); LiveWater's own parts give water only."""
 
-    def test_the_nearest_barrel_sets_the_fluid_of_the_network(self):
-        lua = self.layout("fuel", "clean")
-        self.assertEqual(lua.eval("R.quality"), "fuel")
-        self.assertIsNone(lua.eval('R.drawn["2,-1,0"]'))
-        lua = self.layout("clean", "fuel")
-        self.assertEqual(lua.eval("R.quality"), "clean")
-        self.assertIsNone(lua.eval('R.drawn["2,-1,0"]'))
+    def layout(self, pump):
+        return domain("""
+        put("%s", 0, 0) put("Test:Pipe", 1, 0) put("Test:Pipe", 2, 0)
+        put("Test:Spr", 3, 0, 5) put("Test:Drip", 1, 1, 5) put("Test:Inlet", 2, 1, 5)
+        put("Test:Fit", 0, 1, 5, { fitting = { found = true, fluid = "clean", amount = 10, free = 100 } })
+        put("Test:Fit", 0, -1, 5, { fitting = { found = true, amount = 0, free = 100 } })
+        """ % pump)
 
     def test_fuel_never_reaches_a_sprinkler_a_drip_line_or_a_house(self):
-        lua = self.layout("fuel", "clean")
+        lua = self.layout("Test:FuelPump")
         self.assertEqual([lua.eval("state(%d, %d)" % s) for s in ((3, 0), (1, 1), (2, 1))], ["wrong_fluid"] * 3)
 
     def test_fuel_never_goes_into_a_barrel_of_water_only_into_an_empty_one(self):
-        lua = self.layout("fuel", "clean")
+        lua = self.layout("Test:FuelPump")
         self.assertEqual((lua.eval("state(0, 1)"), lua.eval("state(0, -1)")), ("wrong_fluid", "served"))
         self.assertEqual(lua.eval('R.at["0,-1,0"].quality'), "fuel")
 
     def test_an_empty_barrel_on_a_water_network_gets_water(self):
-        lua = self.layout("clean", "fuel")
+        lua = self.layout("Test:CleanPump")
         self.assertEqual(lua.eval('R.at["0,-1,0"].quality'), "clean")
 
 
 class BarrelOfAnotherFluid(unittest.TestCase):
     def test_a_barrel_of_another_fluid_is_never_drawn_the_pump_uses_its_pond(self):
-        lua = domain('put("Test:Pump", 0, 0) barrel(1, 0, "other", 100) put("Test:Spr", 0, 1, 10)')
-        self.assertIsNone(lua.eval('R.drawn["1,0,0"]'))
+        lua = domain('barrel(0, 0, "other", 100) put("Test:Spr", 0, 1, 10)')
+        self.assertIsNone(lua.eval('R.drawn["0,0,0"]'))
         self.assertEqual((lua.eval("state(0, 1)"), lua.eval("R.quality")), ("served", "tainted"))
 
     def test_water_is_never_poured_on_top_of_another_fluid(self):
-        lua = domain('put("Test:Pump", 0, 0) put("Test:Fit", 1, 0, 10, { fitting = { mode = "fill", found = true,'
+        lua = domain('put("Test:Pump", 0, 0) put("Test:Fit", 1, 0, 10, { fitting = { found = true,'
                      ' fluid = "other", amount = 10, free = 100 } })')
         self.assertEqual(lua.eval("state(1, 0)"), "wrong_fluid")
-
-
-class BarrelsWithoutPump(unittest.TestCase):
-    def test_only_the_drip_lines_are_served_by_gravity(self):
-        lua = domain("""
-        barrel(0, 0, "clean", 100) put("Test:Drip", 1, 0, 2) put("Test:Spr", 1, 1, 1) put("Test:Inlet", 1, -1, 1)
-        put("Test:Drip", 2, 0, 3)
-        """)
-        self.assertEqual([lua.eval("state(%d, %d)" % s) for s in ((1, 0), (2, 0), (1, 1), (1, -1))],
-                         ["served", "served", "no_pressure", "no_pressure"])
-
-    def test_two_barrels_give_a_gravity_pressure_of_one_not_two(self):
-        lua = domain('barrel(0, 0, "clean", 100) put("Test:Drip", 1, 0, 2) barrel(2, 0, "clean", 100)')
-        self.assertEqual(lua.eval("R.pressure"), 1)
-
-    def test_the_barrel_empties_by_what_the_drip_lines_take(self):
-        lua = bench()
-        lua.execute("""
-        TOPO:remove(0, 0, 0) TOPO:remove(1, 0, 0) mode(2, 0, "pump")
-        CONT["2,-1"] = { amount = 7, capacity = 400, fluid = "tainted" }
-        LiveWater.API.registerPart("Test:Drip", { sprites = { [0] = "t_drip" },
-            capabilities = { conduit = true, outlet = { type = "drip" } } })
-        OUTLETS:register("drip", { need = function() return 3 end, deliver = function() end })
-        place("Test:Drip", 2, 1)
-        """)
-        for amount in (4, 1, 0, 0):
-            lua.execute("tick()")
-            self.assertAlmostEqual(lua.eval('CONT["2,-1"].amount'), amount)
 
 
 if __name__ == "__main__":

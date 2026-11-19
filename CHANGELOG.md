@@ -7,26 +7,32 @@
   neighbours and change shape on their own (straight, elbow, T, cross). Pick a pipe up with a wrench.
 - Pipes pass under fences, low or tall, and gates (a dark sleeve shows where they cross), but never through a solid
   wall or a door: to bring water inside a house, use the house water inlet.
-- Pond pump: build it (Electrical 2) and set it down next to a lake, pond or river; it gives 50 L every 10 minutes
-  while something needs water and stops on its own otherwise. It needs power: a generator or the grid, or Live Wire
-  where Live Wire is enabled (it then shows up in the management software with its state and flow).
+- Water pump: build it (Electrical 2) and set it down next to a lake, pond, river or well, or against a barrel (a barrel,
+  rain collector or water cooler of 20 L or more, or a feeding trough) on any of its four sides; it gives 50 L every 10
+  minutes while something needs water and stops on its own otherwise. Against a barrel it pumps the barrel's water
+  (water only, never fuel), and its information shows the litres in the barrel. Two pumps on one network add their flows.
+  It needs power: a generator or the grid, or Live Wire where Live Wire is enabled (it then shows up in the management
+  software with its state and flow).
 - Water filter cartridge: charcoal and cloth, about 500 L of clean water each. It goes in the house water inlet:
   fit, replace or remove it from the inlet's right-click menu, and the inlet shows it. It cleans only the water that
   enters the house, so watering never wears it. A cartridge taken out keeps its wear (its condition).
 - Water filter cartridge: a worn-out cartridge taken out of the house inlet comes back as a Spent Water Filter Cartridge; recharge it with 2 charcoal and 1 ripped sheet (recipe "Recharge Water Filter Cartridge"), or dismantle it for its cloth.
-- Pond pump upkeep: turn it on or off from its right-click menu; its efficiency drops while it runs (and the flow
+- Water pump upkeep: turn it on or off from its right-click menu; its efficiency drops while it runs (and the flow
   with it), below 20% it may break down; repair a stopped pump with 2 scrap metal and a wrench. Zombies hear it only
   while it pumps.
 - Shut-off valve: build it from a pipe and scrap metal with a pipe wrench, set it down between two pipes and
   close it from its right-click menu to cut the water to everything after it (the house, sprinklers further on).
+  Opening or closing a valve (shut-off valve or sprinkler) acts at once: the water stops or flows again right away,
+  and the taps of a house cut off run dry.
 - Water meter: build it and set it inline on a pipe.
-- Wells: a pond pump set down next to a well draws clean water, which reaches the house without a filter.
+- Wells: a water pump set down next to a well draws clean water, which reaches the house without a filter.
 - House water inlet: build it and set it against the outside wall of a house, then run a pipe to it from the pump. The
   sinks, showers and toilets of that house plumbed with a pipe wrench get running water, up to
   3 floors above (range set in the sandbox options). A green light shows clean water (a working filter in the inlet, or a
   well); an amber light means the water is unfiltered and the house gets none. Fixtures already fed by something else (a Live Wire pump) are
   left alone.
-- Barrels reach the house only through a barrel fitting on a pipe and a pump: without a pump, a barrel only feeds drip lines.
+- Only a water pump puts water into a network: a pump set against a barrel is how a barrel's water reaches the pipes, and
+  a network without a pump gives nothing, drip lines included (no more gravity flow).
 - Player bases: an inlet set down away from a map building serves the plumbed fixtures around it (12 squares by
   default, sandbox option), up to 3 floors above. The original fixtures of a nearby map house are left alone.
 - A sink, shower or toilet without water says why in its right-click menu (not plumbed, no inlet, unfiltered water,
@@ -57,10 +63,8 @@
   water; the plants beside it take what they need, the rest soaks away. A drip line at the far end of a network
   that ran out of pressure stays dry.
 - Sandbox options "Sprinkler flow" (10 L by default) and "Drip line flow" (0.5 L per square by default) set how much
-  water they take every 10 minutes. One pond pump (50 L) feeds up to five sprinklers in full; the next ones get
+  water they take every 10 minutes. One water pump (50 L) feeds up to five sprinklers in full; the next ones get
   what is left, then nothing.
-- No pump? A barrel connected with a fitting set to Pump feeds drip lines by its own weight, rain or pond water
-  alike. That is only enough for drip lines: sprinklers and houses on that network get nothing.
 - Right-click actions on the water parts now walk you to the part and take a moment.
 - A part set down where the network cannot take it (square already used, no free outlet on the pump) now says why.
 - A wall torn down between a pipe and a valve (or pump) whose connections are all taken no longer joins them: the
@@ -68,13 +72,14 @@
 - Network view: right-click a part and choose "Show the Water Network" to highlight the whole network, coloured by
   state (green: water delivered, red: not enough pressure, amber: unfiltered water refused, grey: closed or dry,
   blue: pipes and pumps), until "Hide the Water Network".
-- Barrel fitting: set it between a pipe and a barrel or rain collector. "Fill": the pipes fill the barrel (never
-  overflowing); "Pump": the pump draws the barrel instead of its pond. Its look follows the mode and the collector.
-- Gasoline: a fitting set to Pump on a gasoline barrel or a gas station pump makes a gasoline network, which only
-  fills barrels through fittings set to Fill; houses and sprinklers get nothing and say so.
-- A barrel fitting set to Fill always pours tainted water, even from a well: the pipes carry untreated water, only the
-  house inlet gives clean water. It also fills a water cooler the same way; more containers can be listed in the
-  sandbox options.
+- Fill Fitting: set it between a pipe and a barrel, a rain collector or a feeding trough, and the pipes fill it (never
+  overflowing). It only fills: it never sends water out. It also fills a water cooler the same way; more containers can
+  be listed in the sandbox options.
+- The fill fitting always pours tainted water, even from a well: the pipes carry untreated water, only the house inlet
+  gives clean water. Animals can drink it. A feeding trough holding feed gets nothing until the feed is gone; a long
+  trough takes the water in its tank.
+- Modders: API revision 22 adds `LiveWater.API.registerOutlet`, so a part from another mod can take water from the network
+  (producers and consumers, like Live Wire).
 - Clean removal: an admin (or the player in solo) can right-click and choose "Remove LiveWater From This World" to
   take every LiveWater part and hidden tank away before unsubscribing, so the save stays readable. A part set down
   afterwards stays a plain decoration you can pick up again.
@@ -84,19 +89,19 @@
 - Dismantling: every LiveWater part has a "Dismantle" recipe (pipe wrench, screwdriver or knife). It gives back scrap,
   never more than the part cost; a water filter gives back cloth. Parts set down can also be dismantled where they
   stand with the game's Disassemble menu (all but the drip line, which you pick up first).
-- Loot: water pipes, valves and barrel fittings can now be found, rarely, in plumbing supplies and tool crates;
+- Loot: water pipes, valves and fill fittings can now be found, rarely, in plumbing supplies and tool crates;
   sprinklers, drip lines and water filters in garden stores and farming supplies.
-- Barrel fitting: water now flows through it from one pipe to the next (it fills or drains its barrel and passes the
-  rest on); it is drawn straight, bent, as a tee or as a cross to match the pipes around it (the barrel stays behind it).
+- Fill Fitting: water flows through it from one pipe to the next (it fills its container and passes the rest on); it is
+  drawn straight, bent, as a tee or as a cross to match the pipes around it (the container stays behind it).
 - Water meter and inline valve stay straight: only the two pipes on the axis they were set down along connect to them;
   a pipe laid against their side stays apart. The valve keeps that axis when opened or closed.
-- Item names: the valve, house inlet, sprinklers, automatic sprinkler and barrel fitting now show their name in the
+- Item names: the valve, house inlet, sprinklers, automatic sprinkler and fill fitting now show their name in the
   inventory in every language.
 - "Show the Water Network" and "Hide the Water Network" (and the watered area options) no longer show together: one at
   a time.
 - Water meter: it counts the litres since it was set down (kept when picked up); "Information" opens a US-style water
   meter with rolling digits and a sweep hand (one turn every 10 L), the last 10 minutes and the water quality.
-- Pond pump: "Information" opens a backlit LCD screen: state, possible flow, flow of the last 10 minutes, total pumped,
+- Water pump: "Information" opens a backlit LCD screen: state, possible flow, flow of the last 10 minutes, total pumped,
   efficiency, source.
 - A sink, shower, bathtub, toilet or washing machine fed by a house water inlet shows the water it holds in its
   right-click menu (e.g. "Water: 18 L / 25 L").
@@ -105,5 +110,13 @@
 - Sprinklers are easier to read: a bigger lever on the manual sprinkler (along the pipe when open, across when closed),
   a green light on the automatic sprinkler's timer while it waters.
 - Opening or closing a valve (inline or sprinkler) makes a valve sound heard by nearby players.
-- The pond pump hums as long as it is switched on and has current, and goes quiet the moment its generator stops or the
+- The water pump hums as long as it is switched on and has current, and goes quiet the moment its generator stops or the
   grid goes off (zombies still hear it only while it pumps).
+- Gas station pump: the water pump can also stand against a gas station fuel pump and pump its gasoline into the pipes
+  (50 L every 10 minutes, with power as always; the station's fuel goes down).
+- One liquid per network: the first pump placed on a network sets its liquid (water, clean or tainted, or gasoline); a pump
+  of another liquid gives nothing and its information says "Pump: another liquid is in the pipes".
+- Consumers take only what they accept: the house inlet, sprinklers and drip lines take water only ("This is not water" with
+  gasoline in the pipes), and the fill fitting never mixes (never a feeding trough or a gas station pump with anything but water).
+- Modders (API revision 23): outlet field `takes` ("water" by default, "fuel", "other" or "any"); the vessel capability also
+  draws fuel; outcome `otherFluid` for a pump that gave nothing; sensed `takes` of a container.

@@ -15,10 +15,12 @@ if isClient() then return end
 --   LiveWater.Events waterDelivered / partRemoved -> LWT_Outlets (relay tanks of the house inlets,
 --                                                plants of the sprinklers and the drip lines:
 --                                                LWT_Plants with an area strategy, barrels of
---                                                the fittings set to Fill: LWT_Fittings)
---   LiveWater.Events waterDrawn                   -> LWT_Fittings (barrels set to Pump)
+--                                                the barrel fittings: LWT_Fittings)
+--   LiveWater.Events waterDrawn                   -> LWT_Fittings (barrels pumps stand against)
 --   LiveWater.Events networkChanged               -> LWT_Clock:settle (a network left without pump
 --                                                stops showing water)
+--   LiveWater.Events valveChanged                 -> LWT_ValveSounds, LWT_Clock:switched (the water
+--                                                follows at once), LWT_Outlets:cut (ADR-010)
 -- No per-frame event (D08). Events before the first OnInitGlobalModData are ignored.
 -- LiveWater.Server holds the services of the current game (nil before), for later adapters.
 
@@ -53,7 +55,6 @@ local GameVisuals = require "LiveWater/LWT_GameVisuals"
 local Broadcast = require "LiveWater/LWT_GameBroadcast"
 local Fittings = require "LiveWater/LWT_Fittings"
 local GameContainers = require "LiveWater/LWT_GameContainers"
-local Containers = require "LiveWater/LWT_Containers"
 local Removal = require "LiveWater/LWT_Removal"
 local Checks = require "LiveWater/Commands/LWT_CmdChecks"
 local Reasons = require "LiveWater/LWT_Reasons"
@@ -68,7 +69,6 @@ local COMMANDS = {
     [Protocol.SWITCH_VALVE] = "LWT_CmdSwitchValve",
     [Protocol.SET_TIMER] = "LWT_CmdSetTimer",
     [Protocol.SHOW_NETWORK] = "LWT_CmdShowNetwork",
-    [Protocol.SWITCH_FITTING] = "LWT_CmdSwitchFitting",
     [Protocol.REMOVE_ALL] = "LWT_CmdRemoveAll",
 }
 
@@ -79,7 +79,9 @@ local function log(message)
 end
 
 -- Stateless game adapters, needed before OnInitGlobalModData (Live Wire registration).
-local world = GameWorld.new(LiveWater.Parts, LiveWater.Sources)
+-- Barrels a pump may stand against (ADR-011 D01): the same rule as the fittings' containers.
+local BARRELS = { registry = LiveWater.Containers, listed = GameSettings.listedContainers }
+local world = GameWorld.new(LiveWater.Parts, LiveWater.Sources, BARRELS)
 local power = Power.new({ catalog = LiveWater.Parts, world = world })
 
 local function randomShare()
@@ -136,11 +138,14 @@ local function build()
     outlets:register("sprinkler", Plants.new({ farming = farming, area = SprayArea.reach(catalog, GameSettings.scale) }))
     outlets:register("drip", Plants.new({ farming = farming,
         area = DripArea.reach(catalog, network, GameSettings.scale) }))
-    local function listed() return Containers.parseList(GameSettings.scale("FillContainers")) end
+    local listed = BARRELS.listed
     local fittings = Fittings.new({ catalog = catalog, registry = registry, world = world,
         containers = GameContainers.new({ registry = LiveWater.Containers, listed = listed }),
         shapes = LiveWater.Containers, listed = listed, publisher = publisher })
     outlets:register("barrelFill", fittings)
+    -- the consumers of other mods (LiveWater.API.registerOutlet, ADR-012 D04)
+    local adopted = outlets:adopt(LiveWater.OutletTypes)
+    if adopted > 0 then log("LiveWater: " .. adopted .. " outlet type(s) of other mods") end
     local function pumped(part) return hasPump(network, catalog, part) end
     local diagnostics = Diagnostics.new({ relays = relays, pumped = pumped })
     local washerFix = WasherFix.new({ relays = relays, plumbing = plumbing, multiplayer = isServer,
@@ -261,9 +266,14 @@ local function onNetworkChanged(id)
     if server then server.clock:settle(id) end
 end
 
+-- A player opened or closed a valve: heard once (ADR-008 D10); the water follows at once and a house
+-- kept from it loses its relays' water (ADR-010 D02-D04).
 local function onValveChanged(part, open)
     local server = LiveWater.Server
-    if server then server.valveSounds:changed(part, open) end
+    if not server then return end
+    server.valveSounds:changed(part, open)
+    local cut = server.clock:switched(part, open)
+    for i = 1, #cut do server.outlets:cut(cut[i]) end
 end
 
 -- A generator started or stopped, or the public grid went off (ADR-008 D11).

@@ -1,7 +1,7 @@
 {
     "Sandbox_LiveWater": "LiveWater",
     "Sandbox_LWT_PumpFlowMultiplier": "Pompa debisi",
-    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "Bir pompanın her 10 dakikada verdiği litreyi çarpar (1,0'da gölet pompası için 50 L).",
+    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "Bir pompanın her 10 dakikada verdiği litreyi çarpar (1,0'da su pompası için 50 L).",
     "Sandbox_LWT_FilterCapacityMultiplier": "Filtre kartuşu ömrü",
     "Sandbox_LWT_FilterCapacityMultiplier_tooltip": "Bir filtre kartuşunun eskimeden önce temizlediği litreyi çarpar (1,0'da 500 L).",
     "Sandbox_LWT_PumpWearMultiplier": "Pompa aşınması",
@@ -22,6 +22,6 @@
     "Sandbox_LWT_SprinklerTimerMin_tooltip": "Bir otomatik yağmurlayıcının iki sulaması arasında oyuncunun ayarlayabileceği en az saat.",
     "Sandbox_LWT_SprinklerTimerMax": "Yağmurlayıcı zamanlayıcısı: en uzun aralık",
     "Sandbox_LWT_SprinklerTimerMax_tooltip": "Bir otomatik yağmurlayıcının iki sulaması arasında oyuncunun ayarlayabileceği en çok saat.",
-    "Sandbox_LWT_FillContainers": "Varil tesisatının doldurabileceği kaplar",
-    "Sandbox_LWT_FillContainers_tooltip": "Varlık betiklerinin veya sprite'ların adları, ; ile ayrılmış (su sebilleri: WaterDispenser). Boyutları ne olursa olsun, bir varil gibi kirli suyla, Doldur ayarındaki bir varil tesisatından doldurulurlar. Varillar ve yağmur suyu toplayıcılar her zaman çalışır."
+    "Sandbox_LWT_FillContainers": "Doldurma bağlantısının doldurabileceği kaplar",
+    "Sandbox_LWT_FillContainers_tooltip": "Varlık betiklerinin veya sprite'ların adları, ; ile ayrılmış (su sebilleri: WaterDispenser). Boyutları ne olursa olsun, bir varil gibi kirli suyla, bir doldurma bağlantısından doldurulurlar. Variller, yağmur suyu toplayıcılar ve yemlikler her zaman çalışır."
 }

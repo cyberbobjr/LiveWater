@@ -1,3 +1,4 @@
 {
-    "Tooltip_LWT_WaterFilter": "Cartouche au charbon pour l'arrivée d'eau de la maison : rend propres environ 500 L d'eau d'étang ou de rivière pour la maison. Son état indique ce qu'il en reste."
+    "Tooltip_LWT_WaterFilter": "Cartouche au charbon pour l'arrivée d'eau de la maison : rend propres environ 500 L d'eau d'étang ou de rivière pour la maison. Son état indique ce qu'il en reste.",
+    "Tooltip_LWT_FillFitting": "Se pose entre un tuyau et un baril, un récupérateur d'eau de pluie ou une mangeoire : le réseau le remplit."
 }

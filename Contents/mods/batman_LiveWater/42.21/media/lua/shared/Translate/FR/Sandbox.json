@@ -1,7 +1,7 @@
 {
     "Sandbox_LiveWater": "LiveWater",
     "Sandbox_LWT_PumpFlowMultiplier": "Débit des pompes",
-    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "Multiplie les litres qu'une pompe donne toutes les 10 minutes (50 L pour une pompe d'étang à 1,0).",
+    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "Multiplie les litres qu'une pompe donne toutes les 10 minutes (50 L pour une pompe à eau à 1,0).",
     "Sandbox_LWT_FilterCapacityMultiplier": "Durée des cartouches filtrantes",
     "Sandbox_LWT_FilterCapacityMultiplier_tooltip": "Multiplie les litres qu'une cartouche filtrante nettoie avant d'être usée (500 L à 1,0).",
     "Sandbox_LWT_PumpWearMultiplier": "Usure des pompes",
@@ -22,6 +22,6 @@
     "Sandbox_LWT_SprinklerTimerMin_tooltip": "Nombre d'heures minimal qu'un joueur peut régler entre deux arrosages d'un arroseur automatique.",
     "Sandbox_LWT_SprinklerTimerMax": "Minuterie d'arroseur : intervalle le plus long",
     "Sandbox_LWT_SprinklerTimerMax_tooltip": "Nombre d'heures maximal qu'un joueur peut régler entre deux arrosages d'un arroseur automatique.",
-    "Sandbox_LWT_FillContainers": "Conteneurs qu'un raccord de baril peut remplir",
-    "Sandbox_LWT_FillContainers_tooltip": "Noms d'entités ou de sprites, séparés par ; (fontaines à eau : WaterDispenser). Ils se remplissent par un raccord de baril réglé sur Remplir, quelle que soit leur taille, avec de l'eau croupie, comme un baril. Les barils et récupérateurs d'eau de pluie marchent toujours."
+    "Sandbox_LWT_FillContainers": "Conteneurs qu'un raccord de remplissage peut remplir",
+    "Sandbox_LWT_FillContainers_tooltip": "Noms d'entités ou de sprites, séparés par ; (fontaines à eau : WaterDispenser). Ils se remplissent par un raccord de remplissage, quelle que soit leur taille, avec de l'eau croupie, comme un baril. Les barils, récupérateurs d'eau de pluie et mangeoires marchent toujours."
 }

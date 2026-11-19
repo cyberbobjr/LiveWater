@@ -1,8 +1,9 @@
 # Getting started
 
-A LiveWater network always has the same shape: a **source** (a pond pump next to water, or a barrel), **pipes** set down
-on the ground, and **outlets** at the other end (a house water inlet, sprinklers, drip lines, barrels to fill). Water
-moves every 10 in-game minutes.
+A LiveWater network always has the same shape: a **producer**, a **water pump** set next to water (a lake, a pond, a
+river, a well) or against a barrel; **pipes** set down on the ground; and **outlets** at the other end (a house water
+inlet, sprinklers, drip lines, and the **fill fittings** that fill a barrel, a rain collector or a feeding trough). Only
+a pump puts water into the network. Water moves every 10 in-game minutes.
 
 ![The provisional tiles of LiveWater](../../images/art/planche-tuiles-provisoires.png)
 
@@ -16,13 +17,29 @@ One water pipe covers one square. Recipe **Cut Pipe Sections**: 1 metal pipe, wi
 
 > Screenshot to do: the Cut Pipe Sections recipe in the crafting window.
 
-## 2. Build the pond pump
+## 2. Build the water pump
 
-Recipe **Build Pond Pump** (Electrical 2): 1 metal pipe, 2 small metal sheets, 3 electronics scrap, 2 electric wires,
-4 screws, with a screwdriver and a wrench (kept). It gives a pond pump (15 kg) and 15 Electrical XP.
+Recipe **Build Water Pump** (Electrical 2): 1 metal pipe, 2 small metal sheets, 3 electronics scrap, 2 electric wires,
+4 screws, with a screwdriver and a wrench (kept). It gives a water pump (15 kg) and 15 Electrical XP.
 
 Set it down like furniture (right-click it in your inventory, Place) **right next to natural water**: a lake, a pond,
-a river, or a well (see [Wells](#12-wells)). Anywhere else the cursor turns red: *Must stand next to natural water*.
+a river, or a well (see [Wells](#12-wells)); or **against a barrel** or **against a gas station pump** (see below). Anywhere else the cursor turns red:
+*Must stand next to natural water (lake, pond, river), against a well, a barrel or a gas station pump.*
+
+**Against a barrel.** The pump can also stand against a barrel on any of its four sides: a barrel or a rain collector
+holding 20 L or more, a water cooler, a container listed in the sandbox options, or a feeding trough. It then pumps the
+barrel's water into the pipes, up to its flow (50 L every 10 minutes). It pumps water only, never fuel, and the water
+keeps its quality: tainted water passes, and the house needs the filter of its inlet. An empty barrel gives nothing.
+
+Two pumps of the same liquid on one network add their flows (100 L every 10 minutes for two), and each one draws only its own source: a
+pump by a pond never empties the barrel of a pump set against a barrel. A pump that touches both a barrel and a pond
+empties the barrel first, then uses the pond.
+
+**Against a gas station pump.** The pump can also stand against a gas station fuel pump (the vanilla Fossoil and Gas-2-Go pumps). It then pumps the station's gasoline into the pipes, up to its flow (50 L every 10 minutes), with power like always, and the station's stored fuel goes down. An empty station gives nothing.
+
+**One liquid per network.** A network carries one liquid at a time: the first pump placed sets it (water, clean or tainted, or gasoline). A pump of another liquid gives nothing, and its information says *Pump: another liquid is in the pipes*. To have both, make two networks, or close a valve between the pumps: each side has its own first pump.
+
+Consumers take only what they accept. The house water inlet, the sprinklers and the drip lines take water only: with gasoline in the pipes they take nothing and say *This is not water*. The fill fitting never mixes: it fills an empty container with whatever the pipes carry, a container of water with water only, a container of gasoline with gasoline only. It never fills a feeding trough with anything but water, and it never fills a gas station pump.
 
 The pump needs **power**: a generator or the public grid on its square, or LiveWire (see [LiveWire](04-livewire.md)).
 It gives **50 L every 10 minutes** while something downstream needs water, and stops on its own otherwise. A pump that is
@@ -32,8 +49,8 @@ Its right-click menu:
 
 - **Turn Pump On** / **Turn Pump Off**: the switch, on top of the automatic stop.
 - **Information**: a backlit LCD screen: state (running, on standby, switched off, no power, broken down), possible
-  flow, flow of the last 10 minutes, total pumped since it was set down, efficiency, source. The screen updates while
-  it is open.
+  flow, flow of the last 10 minutes, total pumped since it was set down, efficiency, source. When a barrel stands
+  against it, a line **Barrel: N L** gives the litres it holds. The screen updates while it is open.
 - **Repair Pump**: see below.
 
 **Wear.** Its efficiency drops while it runs (about a week of running from 100% to 0% with the default settings), and
@@ -41,17 +58,17 @@ the flow drops with it. Below 20% it may break down; at 0% it stops. Switch it o
 metal** and a **wrench**: efficiency back to 100%.
 
 A pump has 4 connections: up to 4 pipes can leave it. Its pressure is enough for **one house and four sprinklers**
-(a house inlet counts 2, a sprinkler or a filling barrel counts 1, all the drip lines of the network together
+(a house inlet counts 2, a sprinkler or a fill fitting counts 1, all the drip lines of the network together
 count 1).
 
-**While you are away.** Your water network keeps working when you go far from it: the pump still draws from its pond
-or well, open sprinklers and drip lines still water the crops, and barrels set to Fill or Pump keep filling or
-emptying (you find the right amount when you come back). The house inlet waits for your return. Power while you are
+**While you are away.** Your water network keeps working when you go far from it: the pump still draws from its pond,
+well or barrel, open sprinklers and drip lines still water the crops, and barrels filled through a fill fitting keep
+filling (you find the right amount when you come back). The house inlet waits for your return. Power while you are
 away: with LiveWire, the network that powers the pump's square; otherwise the public grid until its shut-off day,
 and a generator counts as it was when you left (it burns no fuel meanwhile and picks up its consumption when you
 return).
 
-![A pond pump running on a river bank, on its generator](../../images/screenshots/pump-running.jpg)
+![A water pump running on a river bank, on its generator](../../images/screenshots/pump-running.jpg)
 
 ![The LCD screen of a running pump](../../images/screenshots/pump-info-en.jpg)
 
@@ -81,8 +98,9 @@ To take a pipe back, pick it up like the other parts, with a **wrench**. You get
 down with the furniture cursor on an empty square between two pipes of a straight run (it takes the place of one pipe:
 pick that pipe up first); it turns along the pipe on its own. It is set down open. Right-click it:
 **Close the Valve** cuts the water to everything after it (the house, the sprinklers further on), **Open the Valve**
-lets it through again; its handwheel shows the state, and **Information** says it too. Pick it up with a wrench like
-the other parts.
+lets it through again; its handwheel shows the state, and **Information** says it too. It acts at once, like the valve
+of a sprinkler: the water stops or flows again right away, and the taps of a house cut off run dry (the water left in
+the pipes is lost). Pick it up with a wrench like the other parts.
 
 Every sprinkler also has its own valve (**Open the Valve** / **Close the Valve**). A closed valve lets no water
 through, and the diagnostics say so (*a valve is closed*). Sprinklers are set down closed.
@@ -119,8 +137,8 @@ cartridge**. It cleans about **500 L**; its condition shows what is left.
 
 The filter goes in the **house water inlet**: right-click it, **Fit Water Filter**, **Replace Water Filter** or
 **Remove Water Filter**. A cartridge taken out keeps its wear. A worn-out one comes back as a **Spent Water Filter Cartridge**: recharge it with 2 charcoal and 1 ripped sheet (recipe **Recharge Water Filter Cartridge**), or dismantle it for its cloth. The inlet shows the
-filter canister under its box. It cleans only the water that enters the house: sprinklers, drip lines and barrels take
-the network's water as it is and never wear the cartridge.
+filter canister under its box. It cleans only the water that enters the house: sprinklers, drip lines and fill fittings
+take the network's water as it is and never wear the cartridge.
 
 ## 7. Sprinklers
 
@@ -140,7 +158,7 @@ plants).
 
 A watering sprinkler shows an animated water jet that turns all the way round (mod option *Animated sprinkler jet*:
 untick it for a still jet on slow computers). A quarter of its water is lost in the air: of 10 L, 7.5 L can reach the
-plants. One pond pump (50 L every 10 minutes) feeds up to five open sprinklers in full; the next ones get what is
+plants. One water pump (50 L every 10 minutes) feeds up to five open sprinklers in full; the next ones get what is
 left, then nothing. It is not silent either: you hear it water, and **zombies hear it** every 10 minutes
 while it sprays. For a quiet garden that saves water, use [drip lines](#8-drip-lines).
 
@@ -174,35 +192,33 @@ pressure stays dry.
 
 - **Any water.** Clean or not, no filter needed. Gasoline or any other fluid is refused.
 - **Little pressure.** All the drip lines of a network count as **1** together, whatever their number.
-- **No pump needed.** Connect a barrel with a [barrel fitting](#9-barrel-fitting-fill-or-pump) set to **Pump**: with no
-  pump on the network, the barrel's own weight pushes its water into the drip lines, rain or pond water alike.
-  This weak pressure is only enough for drip lines: a sprinkler or a house inlet on that network gets nothing.
+- **A pump.** Like every outlet, a drip line gets water only from a [water pump](#2-build-the-water-pump) on its network.
+  A network without a pump gives it nothing.
 
 A drip line makes no sound.
 
-## 9. Barrel fitting: Fill or Pump
+## 9. Fill Fitting
 
-Recipe **Build Barrel Fitting**: 1 water pipe, 1 rubber hose, with a pipe wrench (kept). Set it down between the end
-of a pipe and a barrel or rain collector, or in the middle of a run of pipes, where it passes the water from one pipe
-to the next. Its look follows the pipes around it (straight, bent, tee or cross); the barrel, when there is one, stays
-behind it. Right-click it:
+Recipe **Build Fill Fitting**: 1 water pipe, 1 rubber hose, with a pipe wrench (kept). Set it down between the end
+of a pipe and a barrel, a rain collector, a water cooler or a feeding trough, or in the middle of a run of pipes, where
+it passes the water from one pipe to the next. Its look follows the pipes around it (straight, bent, tee or cross); the
+container, when there is one, stays behind it. Right-click it: **Information** shows what it is doing.
 
-- **Set to Fill**: the pipes fill the barrel, up to 50 L every 10 minutes, never overflowing. The barrel always
-  receives **tainted water**, even from a well: the pipes carry untreated water, only the house inlet gives clean
-  water. A water cooler can be filled the same way.
-- **Set to Pump**: the pump of the network draws the barrel instead of its pond. With no pump on the network, the
-  barrel feeds [drip lines](#8-drip-lines) by its own weight.
+The fill fitting only **fills**. The network fills the container beside it, up to 50 L every 10 minutes, and never above
+its capacity. The water goes in **tainted**, even from a well: the pipes carry untreated water, only the house inlet
+gives clean water. Animals can drink it (checked in the game's code, not yet tested in game).
 
-Its look follows the mode, the shape of the collector and the pipes around it. **Information** shows the mode and the litres in the barrel.
+A feeding trough that holds feed has no water tank (a rule of the game): the fitting gives it nothing, and its
+Information says *The trough holds feed*. Filling resumes once the feed is gone. A long trough (2 to 4 squares) takes
+its water in its tank, and the fitting may stand against any of its tiles.
 
-A barrel reaches the network only through a barrel fitting, never straight into the house: without a pump, only drip
-lines get its water.
+The fitting gives water to the network only if a pump puts it there: a fill fitting never sends the water of a
+container out. To send the water of a barrel into the pipes, set a [water pump](#2-build-the-water-pump) against it.
 
-**Gasoline.** A fitting set to Pump on a gasoline barrel or a gas station pump makes a gasoline network. It only fills
-barrels (empty, or already holding gasoline) through fittings set to Fill. House inlets and sprinklers get nothing and
-say so.
+Its Information says what it is doing: filling the barrel, the barrel full (or none), no barrel next to it, another
+fluid in the barrel, or *The trough holds feed*.
 
-![Two barrel fittings on vanilla rain collectors: a round barrel between two pipes (tee) and a crate where three pipes meet (cross)](../../images/screenshots/barrel-fittings.jpg)
+![Two fill fittings on vanilla rain collectors: a round barrel between two pipes (tee) and a crate where three pipes meet (cross)](../../images/screenshots/barrel-fittings.jpg)
 
 ## 10. City water
 
@@ -216,22 +232,22 @@ Recipe **Build Water Meter**: 1 water pipe, 1 small metal sheet, 2 screws, with 
 inline on a pipe; it follows the pipe's direction and joins only the two pipes on its axis. **Information** opens a
 meter window in the style of a US water meter: a roller counter with the litres that went through it since it was set
 down (kept when you pick it up and set it down again; there is no reset), a sweep hand (one turn every 10 litres), the
-litres of the last 10 minutes, and the fluid (clean water, unfiltered water or gasoline).
+litres of the last 10 minutes, and the fluid (clean water or unfiltered water).
 
 ![The water meter window: rollers, sweep hand, total and last minutes](../../images/screenshots/meter-window-en.jpg)
 
 ## 12. Wells
 
-The same pond pump set down next to a **well** draws **clean water**: the house gets it without a filter. Its
+The same water pump set down next to a **well** draws **clean water**: the house gets it without a filter. Its
 Information says *Source: well (clean water)*.
 
-> Screenshot to do: a pond pump next to a well.
+> Screenshot to do: a water pump next to a well.
 
 ## 13. Dismantle a part
 
 Every LiveWater part can be dismantled in your inventory, with a recipe **Dismantle ...** (crafting window, Assembly
 or Electrical): a pipe wrench or a wrench for the plumbing parts (pipe, valve, water meter, house inlet, sprinkler,
-barrel fitting), a screwdriver for the pond pump and the automatic sprinkler, a knife for a drip line or a water
+fill fitting), a screwdriver for the water pump and the automatic sprinkler, a knife for a drip line or a water
 filter. You never get back more than the part cost, and only scrap: iron pieces, scrap metal, screws, electronics
 scrap, wire. A water filter, new or spent, gives back a piece of cloth, a drip line a rubber band.
 
@@ -241,8 +257,8 @@ the network as if you had picked it up. A drip line is picked up by hand, then d
 
 ## 14. Finding parts
 
-Some parts can be found instead of built, rarely: water pipes, shut-off valves and barrel fittings in plumbing supplies
-and tool crates, sprinklers, drip lines and water filters in garden stores and farming supplies. The pond pump, the
+Some parts can be found instead of built, rarely: water pipes, shut-off valves and fill fittings in plumbing supplies
+and tool crates, sprinklers, drip lines and water filters in garden stores and farming supplies. The water pump, the
 house inlet, the water meter and the automatic sprinkler are never found: you build them.
 
 Next: [Player base](02-player-base.md) · [Diagnostics](03-diagnostics.md)

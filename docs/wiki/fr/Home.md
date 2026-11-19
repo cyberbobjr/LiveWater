@@ -5,10 +5,10 @@
 # LiveWater
 
 **LiveWater** (id du mod `batman_LiveWater`) est un mod de Project Zomboid **Build 42.22**.
-Un jour, l'eau ne coule plus au robinet ; LiveWater vous laisse la ramener vous-même : une pompe d'étang au bord d'un
-lac, d'une rivière ou contre un puits, des tuyaux posés au sol, une arrivée d'eau qui alimente éviers, douches,
-toilettes et lave-linge, des barils qui remplissent ou alimentent le réseau par un raccord de baril, et des arroseurs et lignes de goutte-à-goutte qui arrosent
-le potager tout seuls.
+Un jour, l'eau ne coule plus au robinet ; LiveWater vous laisse la ramener vous-même : une pompe à eau au bord d'un
+lac, d'une rivière ou contre un puits, ou contre un baril ou une pompe de station-service ; des tuyaux posés au sol ; une arrivée d'eau qui alimente éviers,
+douches, toilettes et lave-linge ; un raccord de remplissage qui remplit barils, récupérateurs d'eau et mangeoires ; et des
+arroseurs et lignes de goutte-à-goutte qui arrosent le potager tout seuls.
 
 ![Réseau d'exemple : étang, pompe, tuyaux, maison et potager](../../images/art/planche-reseau-exemple.png)
 

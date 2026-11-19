@@ -1,7 +1,7 @@
 {
     "Sandbox_LiveWater": "LiveWater",
     "Sandbox_LWT_PumpFlowMultiplier": "Vazão das bombas",
-    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "Multiplica os litros que uma bomba dá a cada 10 minutos (50 L para uma bomba de lagoa em 1,0).",
+    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "Multiplica os litros que uma bomba dá a cada 10 minutos (50 L para uma bomba de água em 1,0).",
     "Sandbox_LWT_FilterCapacityMultiplier": "Duração do cartucho filtrante",
     "Sandbox_LWT_FilterCapacityMultiplier_tooltip": "Multiplica os litros que um cartucho filtrante limpa antes de se gastar (500 L em 1,0).",
     "Sandbox_LWT_PumpWearMultiplier": "Desgaste das bombas",
@@ -22,6 +22,6 @@
     "Sandbox_LWT_SprinklerTimerMin_tooltip": "Menor número de horas que um jogador pode definir entre duas regas de um aspersor automático.",
     "Sandbox_LWT_SprinklerTimerMax": "Temporizador do aspersor: intervalo mais longo",
     "Sandbox_LWT_SprinklerTimerMax_tooltip": "Maior número de horas que um jogador pode definir entre duas regas de um aspersor automático.",
-    "Sandbox_LWT_FillContainers": "Recipientes que uma conexão para barril pode encher",
-    "Sandbox_LWT_FillContainers_tooltip": "Nomes de scripts de entidade ou sprites, separados por ; (bebedouros: WaterDispenser). Eles são enchidos por uma conexão para barril ajustada para Encher, qualquer que seja o tamanho, com água contaminada, como um barril. Barris e coletores de chuva sempre funcionam."
+    "Sandbox_LWT_FillContainers": "Recipientes que uma conexão de enchimento pode encher",
+    "Sandbox_LWT_FillContainers_tooltip": "Nomes de scripts de entidade ou sprites, separados por ; (cochos: WaterDispenser). Eles são enchidos por uma conexão de enchimento, qualquer que seja o tamanho, com água contaminada, como um barril. Barris, coletores de chuva e cochos sempre funcionam."
 }

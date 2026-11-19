@@ -16,8 +16,6 @@
     "ContextMenu_LWT_HideNetwork": "Ocultar la red de agua",
     "ContextMenu_LWT_ShowAllAreas": "Mostrar todas las zonas regadas",
     "ContextMenu_LWT_HideArea": "Ocultar la zona regada",
-    "ContextMenu_LWT_FittingToPump": "Ajustar a bombeo",
-    "ContextMenu_LWT_FittingToFill": "Ajustar a llenado",
     "ContextMenu_LWT_RemoveMod": "Quitar LiveWater de este mundo (admin)",
     "ContextMenu_LWT_Debug": "LiveWater (depuración)",
     "ContextMenu_LWT_DebugKit": "Dar el kit de prueba",

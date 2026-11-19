@@ -16,8 +16,6 @@
     "ContextMenu_LWT_HideNetwork": "Masquer le réseau d'eau",
     "ContextMenu_LWT_ShowAllAreas": "Afficher toutes les zones arrosées",
     "ContextMenu_LWT_HideArea": "Masquer la zone arrosée",
-    "ContextMenu_LWT_FittingToPump": "Régler sur Pomper",
-    "ContextMenu_LWT_FittingToFill": "Régler sur Remplir",
     "ContextMenu_LWT_RemoveMod": "Retirer LiveWater de ce monde (admin)",
     "ContextMenu_LWT_Debug": "LiveWater (debug)",
     "ContextMenu_LWT_DebugKit": "Donner le kit de test",

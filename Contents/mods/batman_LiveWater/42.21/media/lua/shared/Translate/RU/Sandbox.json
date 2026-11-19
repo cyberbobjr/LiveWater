@@ -1,7 +1,7 @@
 {
     "Sandbox_LiveWater": "LiveWater",
     "Sandbox_LWT_PumpFlowMultiplier": "Расход насосов",
-    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "Умножает литры, которые насос подаёт каждые 10 минут (50 л для насоса пруда при 1,0).",
+    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "Умножает литры, которые насос подаёт каждые 10 минут (50 л для водяного насоса при 1,0).",
     "Sandbox_LWT_FilterCapacityMultiplier": "Срок службы фильтрующих картриджей",
     "Sandbox_LWT_FilterCapacityMultiplier_tooltip": "Умножает литры, которые картридж очищает до износа (500 л при 1,0).",
     "Sandbox_LWT_PumpWearMultiplier": "Износ насосов",
@@ -22,6 +22,6 @@
     "Sandbox_LWT_SprinklerTimerMin_tooltip": "Наименьшее число часов, которое игрок может задать между двумя поливами автоматического дождевателя.",
     "Sandbox_LWT_SprinklerTimerMax": "Таймер дождевателя: самый длинный интервал",
     "Sandbox_LWT_SprinklerTimerMax_tooltip": "Наибольшее число часов, которое игрок может задать между двумя поливами автоматического дождевателя.",
-    "Sandbox_LWT_FillContainers": "Ёмкости, которые может наполнять врезка для бочки",
-    "Sandbox_LWT_FillContainers_tooltip": "Имена сущностей или спрайтов через ; (кулеры с водой: WaterDispenser). Они наполняются через врезку для бочки в режиме наполнения, любого размера, загрязнённой водой, как бочка. Бочки и сборники дождевой воды работают всегда."
+    "Sandbox_LWT_FillContainers": "Ёмкости, которые может наполнять заливной штуцер",
+    "Sandbox_LWT_FillContainers_tooltip": "Имена сущностей или спрайтов через ; (кулеры с водой: WaterDispenser). Они наполняются через заливной штуцер, любого размера, загрязнённой водой, как бочка. Бочки, сборники дождевой воды и кормушки работают всегда."
 }

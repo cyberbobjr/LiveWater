@@ -17,7 +17,8 @@
 -- State: { on = switch (nil: on), powered = current this step (nil: never asked), running = gave
 --          water last step, litres = its share of the water delivered last step, efficiency
 --          (nil: 100), broken = stopped by a breakdown until repaired, total = litres pumped since
---          it was set down (nil: 0; kept by a pump picked up and set down again, ADR-008 D07) }.
+--          it was set down (nil: 0; kept by a pump picked up and set down again, ADR-008 D07),
+--          otherFluid = gave nothing last step: another fluid is in the pipes (ADR-014 D02) }.
 -- A pump works when switched on, powered, not broken and above 0 %; it runs only while an
 -- outlet takes water (auto-stop). A breakdown only stops it (Q05: no fire).
 
@@ -109,6 +110,7 @@ local function wear(p, d, ctx)
 end
 
 function Pump.stepped(p, d, outcome, ctx)
+    d.otherFluid = outcome.otherFluid == true or nil
     d.running = works(p, d) and outcome.through > 0
     d.litres = d.running and outcome.through or 0
     if d.running then
@@ -167,6 +169,7 @@ local function stateKey(p, d)
     if not switchedOn(d) then return "IGUI_LWT_Pump_Off" end
     if running(d) then return "IGUI_LWT_Pump_Running" end
     if d and d.powered == false then return "IGUI_LWT_Pump_NoPower" end
+    if d and d.otherFluid then return "IGUI_LWT_Pump_OtherFluid" end
     return "IGUI_LWT_Pump_Standby"
 end
 

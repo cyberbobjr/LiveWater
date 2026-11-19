@@ -15,7 +15,7 @@ Page **LiveWater** of the sandbox options (names `LiveWater.<Option>` in the ser
 | Drip line flow (`DripFlow`) | 0.5 | 0 to 10 | litres each drip line square takes every 10 minutes while the network gives it water; the plants beside it take what they need, the rest is lost |
 | Sprinkler timer: shortest interval (`SprinklerTimerMin`) | 1 | 1 to 168 | fewest hours a player may set between two waterings |
 | Sprinkler timer: longest interval (`SprinklerTimerMax`) | 24 | 1 to 168 | most hours a player may set between two waterings |
-| Containers a barrel fitting may fill (`FillContainers`) | `WaterDispenser` | text | entity script or sprite names separated by `;`, filled with tainted water like a barrel, whatever their size; barrels and rain collectors always work |
+| Containers a fill fitting may fill (`FillContainers`) | `WaterDispenser` | text | entity script or sprite names separated by `;`, filled with tainted water like a barrel, whatever their size; barrels, rain collectors and feeding troughs always work |
 
 Mod option (each player, in the game's Mods options): **Animated sprinkler jet**, on by default; untick it for a still
 jet on slow computers.

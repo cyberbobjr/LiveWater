@@ -132,7 +132,7 @@ class RegisterPart(unittest.TestCase):
                          (False, "registration_closed"))
 
     def test_revision(self):
-        self.assertEqual(api().eval("LiveWater.API.revision"), 20)
+        self.assertEqual(api().eval("LiveWater.API.revision"), 23)
 
 
 class RegisterCapability(unittest.TestCase):

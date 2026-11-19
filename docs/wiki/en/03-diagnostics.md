@@ -2,7 +2,7 @@
 
 ## Network view
 
-Right-click any part of a network (pipe, pump, inlet, sprinkler, fitting): **Show the Water Network**. The whole
+Right-click any part of a network (pipe, pump, inlet, sprinkler, fill fitting): **Show the Water Network**. The whole
 network is highlighted until you choose **Hide the Water Network**:
 
 | Colour | Meaning |
@@ -34,13 +34,13 @@ The tooltip of *Hide the Water Network* counts the outlets and the fixtures in e
 **Information** in the right-click menu of a part shows what it does:
 
 - pump: a backlit LCD screen with its state, possible flow, flow of the last 10 minutes, total pumped, efficiency
-  and source (natural water or well);
+  and source (natural water or well), and the litres of the barrel standing against it (*Barrel: N L*), or *Pump: another liquid is in the pipes* when it gives nothing for that reason;
 - house inlet: filter left (or none, or worn out);
 - house inlet: *delivered to the house*, *the house tanks are full*, *none in the pipes*, *unfiltered*, *not enough
   pressure*, *shut off*, or *the pipes carry gasoline*;
-- sprinkler: watering, nothing to water, no water, unfiltered (sprinklers accept it), no pressure, valve closed; the
+- sprinkler: watering, nothing to water, no water, unfiltered (sprinklers accept it), no pressure, valve closed, *This is not water* (gasoline in the pipes); the
   timer interval and whether it has power;
-- barrel fitting: mode (Fill or Pump), litres in the barrel, and what it is doing;
+- fill fitting: what it is doing (filling the barrel, the barrel full or none, *The trough holds feed*), and the litres in the barrel;
 - water meter: total since it was set down, litres in the last 10 minutes and water quality, in a meter window.
 
 ## Why a tap has no water
@@ -56,9 +56,10 @@ Right-click a sink, bathtub, shower, toilet or washing machine that has no water
 | the water is unfiltered: fit a filter in the house water inlet | fit or replace the filter in the house water inlet, or pump from a well |
 | not enough pressure | fewer outlets on that pump, or a second pump |
 | no water in the pipes | the pump is off, broken down or without power |
+| no water in the pipes, and no pump on the network | set a water pump next to water or against a barrel on this network |
+| a liquid other than water is in the pipes | the first pump placed on this network sets its liquid: separate the networks, or close a valve between the pumps |
 | a valve is closed | open it |
 | not enough pressure in the pipes (house inlet without a pump) | pipe a pump to the inlet |
-| the pipes carry gasoline | this network moves gasoline, not water |
 
 ![The right-click menu of a dry sink: "No water: a valve is closed"](../../images/screenshots/sink-dry-en.jpg)
 

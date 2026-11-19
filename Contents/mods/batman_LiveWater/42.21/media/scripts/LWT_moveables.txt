@@ -76,6 +76,7 @@ module Base
         Icon = LWT_BarrelFitting,
         Weight = 1.5,
         WorldObjectSprite = batman_livewater_01_64,
+        Tooltip = Tooltip_LWT_FillFitting,
     }
 
     /* Drip line (ADR-004 D01): one per square, its shape follows the neighbours like a pipe; laid

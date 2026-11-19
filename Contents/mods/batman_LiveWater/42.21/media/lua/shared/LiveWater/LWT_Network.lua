@@ -308,19 +308,18 @@ local function zoneOf(zones, key)
     return key
 end
 
--- Where water gets in a network: pipe distance from the nearest part that pressurizes (or that
--- answers the hook `rootHook` when given, e.g. "gravity", ADR-004 D04).
+-- Where water gets in a network: pipe distance from the nearest part that pressurizes.
 -- Returns the reached parts as a list in service order (distance, then placement order) and
 -- the same nodes by key; node = { key, part, dist, from = key of the previous node, root = true
 -- for a part where the water starts, zone = key of its zone: the roots whose water meets through
 -- open parts (a part reached from two roots that is not closed joins them; a closed valve between
 -- two pumps keeps two zones, ADR-001 D02) }.
-function Network:reach(id, rootHook)
+function Network:reach(id)
     local catalog, byKey, queue, head, zones = self.catalog, {}, {}, 1, {}
-    local members, hook = self:members(id), rootHook or "pressurizes"
+    local members = self:members(id)
     for i = 1, #members do
         local part = members[i]
-        if catalog:any(part, hook) then
+        if catalog:any(part, "pressurizes") then
             local node = { key = keyOf(part), part = part, dist = 0, root = true }
             node.origin = node.key
             zones[node.key] = node.key

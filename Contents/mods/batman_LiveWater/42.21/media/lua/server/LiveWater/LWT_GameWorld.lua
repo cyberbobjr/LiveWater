@@ -6,7 +6,8 @@ if isClient() then return end
 --   setSprite(x, y, z, typeId, name)  setSpriteFromName + transmitUpdatedSpriteToClients
 --   removePart(x, y, z, typeId)       remove the object of that part type, sent to the clients
 --   object(x, y, z, typeId)           the object of that part type, or nil
---   site(x, y, z)                     the place, for Parts:attach (LWT_GameSite)
+--   site(x, y, z)                     the place, for Parts:attach (LWT_GameSite, with the barrels
+--                                     given to new: { registry, listed })
 --   hasPower(x, y, z)                 vanilla rule for an appliance outdoors or indoors: a
 --                                     generator in range or the public grid (PowerPolicy
 --                                     ExteriorOK of ObjectAmbientEmitters, Java 42.22)
@@ -33,8 +34,8 @@ local Mirror = require "LiveWater/LWT_Mirror"
 local GameWorld = {}
 GameWorld.__index = GameWorld
 
-function GameWorld.new(catalog, sources)
-    return setmetatable({ catalog = catalog, sources = sources }, GameWorld)
+function GameWorld.new(catalog, sources, barrels)
+    return setmetatable({ catalog = catalog, sources = sources, barrels = barrels }, GameWorld)
 end
 
 local function squareAt(x, y, z)
@@ -127,7 +128,7 @@ function GameWorld:object(x, y, z, typeId)
 end
 
 function GameWorld:site(x, y, z)
-    return GameSite.new(self.sources, x, y, z)
+    return GameSite.new(self.sources, x, y, z, self.barrels)
 end
 
 function GameWorld:hasPower(x, y, z)

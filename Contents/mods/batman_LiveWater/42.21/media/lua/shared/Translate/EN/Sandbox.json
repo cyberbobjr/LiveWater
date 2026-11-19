@@ -1,7 +1,7 @@
 {
     "Sandbox_LiveWater": "LiveWater",
     "Sandbox_LWT_PumpFlowMultiplier": "Pump flow",
-    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "Multiplies the litres a pump gives every 10 minutes (50 L for a pond pump at 1.0).",
+    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "Multiplies the litres a pump gives every 10 minutes (50 L for a water pump at 1.0).",
     "Sandbox_LWT_FilterCapacityMultiplier": "Filter cartridge life",
     "Sandbox_LWT_FilterCapacityMultiplier_tooltip": "Multiplies the litres a filter cartridge cleans before it is worn out (500 L at 1.0).",
     "Sandbox_LWT_PumpWearMultiplier": "Pump wear",
@@ -22,6 +22,6 @@
     "Sandbox_LWT_SprinklerTimerMin_tooltip": "Fewest hours a player may set between two waterings of an automatic sprinkler.",
     "Sandbox_LWT_SprinklerTimerMax": "Sprinkler timer: longest interval",
     "Sandbox_LWT_SprinklerTimerMax_tooltip": "Most hours a player may set between two waterings of an automatic sprinkler.",
-    "Sandbox_LWT_FillContainers": "Containers a barrel fitting may fill",
-    "Sandbox_LWT_FillContainers_tooltip": "Names of entity scripts or sprites, separated by ; (water coolers: WaterDispenser). They are filled through a barrel fitting set to Fill, whatever their size, with tainted water, like a barrel. Barrels and rain collectors always work."
+    "Sandbox_LWT_FillContainers": "Containers a fill fitting may fill",
+    "Sandbox_LWT_FillContainers_tooltip": "Names of entity scripts or sprites, separated by ; (water coolers: WaterDispenser). They are filled through a fill fitting, whatever their size, with tainted water, like a barrel. Barrels, rain collectors and feeding troughs always work."
 }

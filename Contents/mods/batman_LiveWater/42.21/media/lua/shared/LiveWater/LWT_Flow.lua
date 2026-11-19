@@ -4,11 +4,18 @@
 -- Rules:
 --   each zone of the network (roots that reach one another through open parts; a closed valve
 --   between two pumps makes two zones, D02) is served on its own, by the rules below;
---   the parts that pressurize add their pressure and their litres (D15); litres count only
---   when the part has a source of water; the water is tainted when one source is tainted;
---   parts reached that draw (`draw` hook: a barrel fitting set to Pump, D26) replace the pumps'
---   own sources when they hold something: the pumps move up to their litres from them, nearest
---   first, one fluid per network (the fluid of the nearest; others give nothing this step);
+--   only the parts that pressurize (the pumps, producers) put water in a network (ADR-012 D01, D03:
+--   a network without pump gives nothing); they add their pressure and their litres (D15);
+--   a pump that draws (`draw` hook: a pond pump against a barrel, capability "vessel", ADR-011)
+--   gives the water of its own barrel: min(its litres, what the barrel gives), of the barrel's
+--   quality, taken from that barrel only (drawn); its barrel empty or gone, it gives its own
+--   source; a pump gives its litres only when it has a source of water (`source` hook);
+--   a pump against a gas station fuel pump draws its fuel the same way (ADR-014 D01);
+--   one fluid family per zone and step (ADR-014 D02): the first pump in placement order (the roots
+--   come first in the service order, then by placement) that gives something sets the family; a
+--   pump whose fluid is of another family gives nothing this step, draws nothing, and is told so
+--   (outcome otherFluid);
+--   the water of the zone is the sum of what its pumps give, tainted when one of them is tainted;
 --   fluids: "clean" and "tainted" water, "fuel", any other quality a third-party part gives is
 --   another fluid (family "other"); a filter purifies water only;
 --   outlets are taken in service order (pipe distance, then placement order, D14):
@@ -18,15 +25,10 @@
 --     the outlet does not take this fluid (4th result of `outlet`: nil = water only (clean or tainted), "any",
 --     "water", "fuel", "other") -> "wrong_fluid"
 --     needs clean water and the water reaching it is not clean -> "unfiltered" (D17)
---     the network runs on gravity and the outlet does not work on it -> "no_pressure"
 --     the pressure left is too low, or was too low for an earlier outlet -> "no_pressure"
 --     else                     -> "served": min(need, water left) litres, pressure taken;
 --   the outlets of one cost group (`costGroup` hook, a drip line, ADR-004 D04) pay their cost
 --   once per step: the first served pays, the next ones of the group pay nothing;
---   gravity (ADR-004 D04): on a network without any part that pressurizes, the parts that give
---   gravity pressure (`gravity` hook: a barrel fitting set to Pump) are where the water starts:
---   pressure = the highest they give, water = what they hold (`draw`, no pump capacity); only the
---   outlets that work on gravity (`byGravity` hook) take it;
 --   the first working filter on the way from the pump (outlet included) makes the water clean
 --   and wears by the litres served through it;
 --   every part on the way of the water served is credited those litres and their quality
@@ -55,66 +57,46 @@ local function mix(a, b)
     return b
 end
 
--- Litres the parts that draw give (nearest first, one fluid family, at most `capacity`, no limit
--- when nil): water, quality and the litres of each (by key), or 0 when none holds anything.
-function Flow:draws(nodes, capacity, ctx)
-    local water, quality, drawn, family = 0, nil, {}, nil
-    for i = 1, #nodes do
-        local litres, q = self.catalog:first(nodes[i].part, "draw", ctx)
-        if litres and litres > 0 and q and (family == nil or Flow.family(q) == family) then
-            family = Flow.family(q)
-            local take = capacity and math.min(litres, capacity - water) or litres
-            if take > 0 then
-                water = water + take
-                quality = mix(quality, q)
-                drawn[nodes[i].key] = take
-            end
-        end
-    end
-    return water, quality, drawn
+-- Quality of two waters met (either may be nil).
+local function join(a, b)
+    if a == nil then return b end
+    if b == nil then return a end
+    return mix(a, b)
 end
 
--- Pressure, litres and quality the pressurizing parts give this step, the litres of each
--- pressurizing part (by key) and the litres drawn from each part that draws (by key).
+-- What a pump gives this step: its own barrel's water first (`draw`), else its source; litres,
+-- quality and whether they come from its barrel; 0 without water.
+function Flow:produce(part, litres, ctx)
+    local barrel, q = self.catalog:first(part, "draw", ctx)
+    if barrel and barrel > 0 and q then return math.min(litres, barrel), q, true end
+    q = self.catalog:first(part, "source", ctx)
+    if q then return litres, q, false end
+    return 0, nil, false
+end
+
+-- Pressure, litres and quality the pumps of a zone give this step, the litres of each pump (by
+-- key), the litres each pump drew from its own barrel (by key) and the pumps that gave nothing
+-- because another fluid family is in the pipes (set of keys, D02: the first pump that gives, in
+-- the order of `nodes`, sets the family).
 function Flow:supply(nodes, ctx)
-    local pressure, water, quality, given, capacity, own = 0, 0, nil, {}, 0, {}
+    local pressure, water, quality, given, drawn, other = 0, 0, nil, {}, {}, {}
     for i = 1, #nodes do
-        local part = nodes[i].part
         if nodes[i].root then
+            local part, key = nodes[i].part, nodes[i].key
             local p, litres = self.catalog:first(part, "supply", ctx)
             pressure = pressure + (p or 0)
             if litres and litres > 0 then
-                capacity = capacity + litres
-                own[nodes[i].key] = litres
-                local q = self.catalog:first(part, "source", ctx)
-                if q then
-                    water = water + litres
-                    quality = mix(quality, q)
-                    given[nodes[i].key] = litres
+                local gives, q, fromBarrel = self:produce(part, litres, ctx)
+                if gives > 0 and quality and Flow.family(q) ~= Flow.family(quality) then
+                    other[key] = true
+                elseif gives > 0 then
+                    water, quality, given[key] = water + gives, join(quality, q), gives
+                    if fromBarrel then drawn[key] = gives end
                 end
             end
         end
     end
-    if pressure <= 0 or capacity <= 0 then return pressure, water, quality, given, {} end
-    local drawnWater, drawnQuality, drawn = self:draws(nodes, capacity, ctx)
-    if drawnWater <= 0 then return pressure, water, quality, given, {} end
-    for key, litres in pairs(own) do own[key] = litres * drawnWater / capacity end
-    return pressure, drawnWater, drawnQuality, own, drawn
-end
-
--- Gravity supply of a network without pump (`nodes` reached from the parts that give gravity
--- pressure): pressure (the highest given), litres, quality and the litres drawn from each part (by key).
-function Flow:gravity(nodes, ctx)
-    local pressure = 0
-    for i = 1, #nodes do
-        if nodes[i].root then
-            local p = self.catalog:first(nodes[i].part, "gravity", ctx)
-            if p and p > pressure then pressure = p end
-        end
-    end
-    if pressure <= 0 then return 0, 0, nil, {} end
-    local water, quality, drawn = self:draws(nodes, nil, ctx)
-    return pressure, water, quality, drawn
+    return pressure, water, quality, given, drawn, other
 end
 
 -- First part on the way from the pump to `node`, node included, whose filter works now.
@@ -146,17 +128,15 @@ local function takes(holds, q)
 end
 
 -- Terms of an outlet: { cost, needsClean, holds (4th result of `outlet`), group (cost group or
--- nil), byGravity }, or nil for a part that is not one.
+-- nil) }, or nil for a part that is not one.
 function Flow:termsOf(part)
     local cost, needsClean, _, holds = self.catalog:first(part, "outlet")
     if not cost then return nil end
-    return { cost = cost, needsClean = needsClean, holds = holds, group = self.catalog:first(part, "costGroup"),
-        byGravity = self.catalog:any(part, "byGravity") }
+    return { cost = cost, needsClean = needsClean, holds = holds, group = self.catalog:first(part, "costGroup") }
 end
 
--- State, litres and quality for one outlet of `terms`; `left` holds the water and pressure left,
--- whether the network runs on gravity and the cost groups already paid; the litres served are
--- routed into `result`.
+-- State, litres and quality for one outlet of `terms`; `left` holds the water and pressure left
+-- and the cost groups already paid; the litres served are routed into `result`.
 function Flow:serve(node, terms, byKey, left, ctx, result)
     local catalog, part = self.catalog, node.part
     if catalog:closed(part) then return "closed", 0 end
@@ -167,7 +147,6 @@ function Flow:serve(node, terms, byKey, left, ctx, result)
     local filter = Flow.family(left.quality) == "water" and self:purifierOf(node, byKey, ctx) or nil
     local quality = filter and Flow.CLEAN or left.quality
     if terms.needsClean and quality ~= Flow.CLEAN then return "unfiltered", 0 end
-    if left.gravity and not terms.byGravity then return "no_pressure", 0 end
     local cost = terms.cost
     if terms.group and left.paid[terms.group] then cost = 0 end
     if left.starved or left.pressure < cost then
@@ -182,19 +161,12 @@ function Flow:serve(node, terms, byKey, left, ctx, result)
     return "served", litres, quality
 end
 
--- Supply of a zone (roots whose water meets, Network:reach): { water, given, drawn, served, left =
--- the water and pressure left (Flow:serve) }.
-function Flow:zone(nodes, gravity, ctx)
-    local pressure, water, quality, given, drawn
-    if gravity then
-        pressure, water, quality, drawn = self:gravity(nodes, ctx)
-        given = {}
-    else
-        pressure, water, quality, given, drawn = self:supply(nodes, ctx)
-    end
-    return { water = water, given = given, drawn = drawn, served = 0,
-        left = { pressure = pressure, water = water, quality = quality, starved = false, gravity = gravity,
-            paid = {} } }
+-- Supply of a zone (roots whose water meets, Network:reach): { water, given, drawn, other, served,
+-- left = the water and pressure left (Flow:serve) }.
+function Flow:zone(nodes, ctx)
+    local pressure, water, quality, given, drawn, other = self:supply(nodes, ctx)
+    return { water = water, given = given, drawn = drawn, other = other, served = 0,
+        left = { pressure = pressure, water = water, quality = quality, starved = false, paid = {} } }
 end
 
 -- Nodes grouped by zone: lists by zone key, and the zone keys in the order of their first node.
@@ -216,22 +188,22 @@ end
 -- D02, D15: two pumps on each side of a closed valve are two zones) serves its outlets with its own
 -- pressure and water. Returns { pressure, water, quality (all zones), served = litres, outlets =
 -- list in service order, at = by key, through = litres by key, qualityAt = quality by key, drawn =
--- by key { part, litres } taken from the parts that draw, gravity = true when the network ran on
--- gravity }, outlet = { key, part, state, litres, quality }.
+-- by key { part, litres } taken from the barrels the pumps draw, otherFluid = set of the keys of the
+-- pumps that gave nothing because another fluid is in the pipes (ADR-014 D02) }, outlet = { key,
+-- part, state, litres, quality }.
 function Flow:step(network, id, ctx)
     local nodes, byKey = network:reach(id)
-    local gravity = #nodes == 0
-    if gravity then nodes, byKey = network:reach(id, "gravity") end
     local result = { pressure = 0, water = 0, quality = nil, served = 0, outlets = {}, at = {},
-        through = {}, qualityAt = {}, drawn = {}, gravity = gravity }
+        through = {}, qualityAt = {}, drawn = {}, otherFluid = {} }
     local grouped, order = zonesOf(nodes)
     local zones = {}
     for i = 1, #order do
-        local zone = self:zone(grouped[order[i]], gravity, ctx)
+        local zone = self:zone(grouped[order[i]], ctx)
         zones[order[i]] = zone
         result.pressure = result.pressure + zone.left.pressure
         result.water = result.water + zone.water
         if zone.left.quality then result.quality = mix(result.quality, zone.left.quality) end
+        for key in pairs(zone.other) do result.otherFluid[key] = true end
     end
     for i = 1, #nodes do
         local node = nodes[i]

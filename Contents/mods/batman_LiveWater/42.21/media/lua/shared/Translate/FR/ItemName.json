@@ -1,6 +1,6 @@
 {
     "Base.Mov_LiveWater_Pipe": "Tuyau d'eau",
-    "Base.Mov_LiveWater_PondPump": "Pompe d'étang",
+    "Base.Mov_LiveWater_PondPump": "Pompe à eau",
     "LiveWater.WaterFilter": "Cartouche filtrante",
     "LiveWater.WaterFilterSpent": "Cartouche filtrante usée",
     "Base.Mov_LiveWater_FlowMeter": "Compteur d'eau",
@@ -9,5 +9,5 @@
     "Base.Mov_LiveWater_HouseInlet": "Arrivée d'eau de la maison",
     "Base.Mov_LiveWater_Sprinkler": "Arroseur",
     "Base.Mov_LiveWater_SprinklerAuto": "Arroseur automatique",
-    "Base.Mov_LiveWater_BarrelFitting": "Raccord de baril"
+    "Base.Mov_LiveWater_BarrelFitting": "Raccord de remplissage"
 }

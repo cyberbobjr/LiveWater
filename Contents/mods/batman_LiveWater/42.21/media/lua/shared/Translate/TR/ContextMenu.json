@@ -16,8 +16,6 @@
     "ContextMenu_LWT_HideNetwork": "Su ağını gizle",
     "ContextMenu_LWT_ShowAllAreas": "Tüm sulanan alanları göster",
     "ContextMenu_LWT_HideArea": "Sulanan alanı gizle",
-    "ContextMenu_LWT_FittingToPump": "Pompalamaya ayarla",
-    "ContextMenu_LWT_FittingToFill": "Doldurmaya ayarla",
     "ContextMenu_LWT_RemoveMod": "LiveWater'ı bu dünyadan kaldır (admin)",
     "ContextMenu_LWT_Debug": "LiveWater (hata ayıklama)",
     "ContextMenu_LWT_DebugKit": "Test setini ver",

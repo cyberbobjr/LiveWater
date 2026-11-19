@@ -1,6 +1,6 @@
 {
     "Base.Mov_LiveWater_Pipe": "Water Pipe",
-    "Base.Mov_LiveWater_PondPump": "Pond Pump",
+    "Base.Mov_LiveWater_PondPump": "Water Pump",
     "LiveWater.WaterFilter": "Water Filter Cartridge",
     "LiveWater.WaterFilterSpent": "Spent Water Filter Cartridge",
     "Base.Mov_LiveWater_FlowMeter": "Water Meter",
@@ -9,5 +9,5 @@
     "Base.Mov_LiveWater_HouseInlet": "House Water Inlet",
     "Base.Mov_LiveWater_Sprinkler": "Sprinkler",
     "Base.Mov_LiveWater_SprinklerAuto": "Automatic Sprinkler",
-    "Base.Mov_LiveWater_BarrelFitting": "Barrel Fitting"
+    "Base.Mov_LiveWater_BarrelFitting": "Fill Fitting"
 }

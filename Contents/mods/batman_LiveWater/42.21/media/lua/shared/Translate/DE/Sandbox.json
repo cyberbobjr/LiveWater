@@ -1,7 +1,7 @@
 {
     "Sandbox_LiveWater": "LiveWater",
     "Sandbox_LWT_PumpFlowMultiplier": "Pumpendurchfluss",
-    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "Multipliziert die Liter, die eine Pumpe alle 10 Minuten fördert (50 L für eine Teichpumpe bei 1,0).",
+    "Sandbox_LWT_PumpFlowMultiplier_tooltip": "Multipliziert die Liter, die eine Pumpe alle 10 Minuten fördert (50 L für eine Wasserpumpe bei 1,0).",
     "Sandbox_LWT_FilterCapacityMultiplier": "Lebensdauer der Filterkartuschen",
     "Sandbox_LWT_FilterCapacityMultiplier_tooltip": "Multipliziert die Liter, die eine Filterkartusche reinigt, bevor sie verschlissen ist (500 L bei 1,0).",
     "Sandbox_LWT_PumpWearMultiplier": "Pumpenverschleiß",
@@ -22,6 +22,6 @@
     "Sandbox_LWT_SprinklerTimerMin_tooltip": "Die kleinste Anzahl Stunden, die ein Spieler zwischen zwei Bewässerungen eines automatischen Sprinklers einstellen darf.",
     "Sandbox_LWT_SprinklerTimerMax": "Sprinkler-Zeitschaltuhr: längstes Intervall",
     "Sandbox_LWT_SprinklerTimerMax_tooltip": "Die größte Anzahl Stunden, die ein Spieler zwischen zwei Bewässerungen eines automatischen Sprinklers einstellen darf.",
-    "Sandbox_LWT_FillContainers": "Behälter, die ein Fassanschluss befüllen darf",
-    "Sandbox_LWT_FillContainers_tooltip": "Namen von Entity-Skripten oder Sprites, getrennt durch ; (Wasserspender: WaterDispenser). Sie werden über einen Fassanschluss auf Befüllen gefüllt, unabhängig von ihrer Größe, wie ein Fass mit verunreinigtem Wasser. Fässer und Regenwassersammler funktionieren immer."
+    "Sandbox_LWT_FillContainers": "Behälter, die ein Füllanschluss befüllen darf",
+    "Sandbox_LWT_FillContainers_tooltip": "Namen von Entity-Skripten oder Sprites, getrennt durch ; (Wasserspender: WaterDispenser). Sie werden über einen Füllanschluss gefüllt, unabhängig von ihrer Größe, wie ein Fass mit verunreinigtem Wasser. Fässer, Regenwassersammler und Futtertröge funktionieren immer."
 }

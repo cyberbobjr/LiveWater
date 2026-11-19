@@ -16,8 +16,6 @@
     "ContextMenu_LWT_HideNetwork": "隐藏供水管网",
     "ContextMenu_LWT_ShowAllAreas": "显示所有浇灌范围",
     "ContextMenu_LWT_HideArea": "隐藏浇灌范围",
-    "ContextMenu_LWT_FittingToPump": "设为抽水",
-    "ContextMenu_LWT_FittingToFill": "设为注入",
     "ContextMenu_LWT_RemoveMod": "从此世界移除 LiveWater（管理员）",
     "ContextMenu_LWT_Debug": "LiveWater（调试）",
     "ContextMenu_LWT_DebugKit": "给予测试套件",

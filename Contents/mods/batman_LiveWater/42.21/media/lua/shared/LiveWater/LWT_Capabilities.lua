@@ -62,23 +62,36 @@
 --   outlet(p, d)          fourth result: the fluid the outlet takes (nil = water only, "any",
 --                         "water", "fuel", "other"); state "wrong_fluid" when the network carries
 --                         another one
---   draw(p, d, ctx)       litres the pumps may draw from the part now and their quality
---                         ("clean", "tainted", "fuel"), else nil
+--   draw(p, d, ctx)       litres the part may draw from its container now and their quality
+--                         ("clean", "tainted"), else nil (revision 22: only on a pump, capability
+--                         "vessel": the water of its own barrel, ADR-011)
 --   sense(p, d, info)     the authority tells what the part's container holds (d created)
---   fittingMode(p, d)     a barrel fitting: its mode ("fill", "pump") and its state
---   setFittingMode(p, d, mode)
+--   container(p, d)       (revision 22, in place of fittingMode and setFittingMode) what the part
+--                         does with its container: "fill" (barrel fitting) or "draw" (vessel), its
+--                         sensed state (read only) and its rate (server LWT_Fittings)
 -- Revision 15 (drip line, ADR-004):
 --   costGroup(p, d)       an outlet: name of the group whose outlets of a network pay their pressure
 --                         cost once per step together, else nil
---   byGravity(p, d)       an outlet that works on gravity pressure (network without pump)
---   gravity(p, d, ctx)    pressure the part gives a network without any part that pressurizes, else
---                         nil: water starts there, only for the outlets that work on gravity (flow)
 --   drip(p, d, ctx)       a part that waters the squares beside it: litres of a dose (revision 16:
 --                         and litres drawn per step by the square, ADR-006)
 -- Revision 17 (readouts, ADR-008 D03, D07):
 --   panel(p, d)           "Information" opens a window instead of the tooltip: name of the window
 --                         face the client registered ("counter", "lcd"), translation key of its
 --                         title, and its reading (a counter: whole litres), else nil
+-- Revision 21 (pump against a barrel, ADR-011):
+--   draw(p, d, ctx)       also on a part that pressurizes (capability "vessel"): the water of its own
+--                         barrel, which it gives before its source; no other pump draws from it
+--   attach(p, d, site)    site:hasVessel(): a barrel stands on one of the 4 sides (LWT_GameSite)
+-- Revision 23 (gasoline in the pipes, ADR-014):
+--   outlet(p, d)          fourth result of the capability "outlet": its field `takes` ("water" by
+--                         default, "fuel", "other", "any"); nil from a hook of another mod still
+--                         means water only
+--   draw(p, d, ctx)       capability "vessel": water or fuel (a gas station fuel pump, whose sensed
+--                         fluid is "fuel"); site:hasVessel() is also true against a fuel pump
+--   stepped(p, d, outcome, ctx)  outcome.otherFluid = true for a pump that gave nothing this step
+--                         because another fluid family is in the pipes of its zone (the first pump
+--                         in placement order that gives sets it)
+--   sense(p, d, info)     info.takes: what an empty container takes ("water": a feeding trough)
 -- ctx is the context of the step: { need, hours (revision 9: world age in hours), scale = function(optionName) -> multiplier,
 -- random = function() -> 0..1 (breakdowns; none without it), sources = registry of source kinds
 -- (revision 6, LWT_Sources) }.
@@ -89,7 +102,7 @@ local HOOKS = { "define", "carries", "blocks", "pressurizes", "ports", "supply",
     "wear", "look", "attach", "power", "powered", "stepped", "output", "lines",
     "cartridge", "fit", "unfit", "actions", "switchable", "switch", "repairable", "repair", "sound",
     "spray", "jet", "opened", "open", "prepare", "opens", "timer", "setTimer",
-    "status", "draw", "sense", "fittingMode", "setFittingMode", "costGroup", "byGravity", "gravity", "drip",
+    "status", "draw", "sense", "container", "costGroup", "drip",
     "panel" }
 
 local Capabilities = {}

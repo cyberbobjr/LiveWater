@@ -1,7 +1,7 @@
 """ADR-004 (plan 004, G02-G04): the drip line LiveWater:DripLine. A drip outlet waters with any water, clean or not,
 and refuses every other fluid (ADR-005 D03, replaces ADR-004 D05), all the
-drip outlets of a network pay their pressure cost once per step (D04), a barrel fitting set to Pump on a network
-without any pump gives a gravity pressure only drip outlets use (D04); each drip square waters its unlinked
+drip outlets of a network pay their pressure cost once per step (D04), like every consumer it needs a pump
+(ADR-012 D03); each drip square waters its unlinked
 neighbours N, E, S, W with 0.2 L doses and loses nothing (D02, D03); each square served draws its flow, thirsty plants
 or not (ADR-006 D01, D02: sandbox DripFlow, 0.5 L); no sound (D06); part, moveable, recipe, translations (D01, D07) and
 its 16 tiles (indices 160-175)."""
@@ -16,6 +16,7 @@ from lwt_harness import ROOT, new_lua
 API = "shared/LiveWater/LWT_API.lua"
 DRIP = "shared/LiveWater/Parts/LWT_PartDripLine.lua"
 FITTING = "shared/LiveWater/Parts/LWT_PartBarrelFitting.lua"
+POND = "shared/LiveWater/Parts/LWT_PartPondPump.lua"
 MEDIA = os.path.join(ROOT, "Contents", "mods", "batman_LiveWater", "42.21", "media")
 TILE = "batman_livewater_01_"
 LANGS = ("EN", "FR", "DE", "ES", "PT", "PTBR", "RU", "TR", "CN", "JP", "KO")
@@ -30,13 +31,19 @@ part("Test:Inlet", { outlet = { type = "houseInlet" } })
 part("Test:Spr", { outlet = { type = "sprinkler" } })
 part("Test:Drip", { conduit = true, outlet = { type = "drip" } })
 part("Test:Fit", { fitting = true })
+-- A pump against a barrel (capability vessel, ADR-011): its barrel's water first, else its pond.
+part("Test:BarrelPump", { intake = true, pump = true, vessel = true })
+-- A third-party pump of fuel (no fluid of LiveWater's own parts but water).
+LiveWater.API.registerCapability("fuelTank", { define = function() return {} end,
+    draw = function() return 100, "fuel" end })
+part("Test:FuelPump", { fuelTank = true, pump = true })
 NET = require("LiveWater/LWT_Network").new(LiveWater.Parts)
 FLOW = require("LiveWater/LWT_Flow").new(LiveWater.Parts)
 NEED = {}
 CTX = { need = function(p) return NEED[p.x .. "," .. p.y] end }
 function put(t, x, y, need, data) NET:add({ type = t, x = x, y = y, z = 0, data = data }) NEED[x .. "," .. y] = need end
 function barrel(x, y, fluid, amount)
-    put("Test:Fit", x, y, nil, { fitting = { mode = "pump", found = true, fluid = fluid, amount = amount } })
+    put("Test:BarrelPump", x, y, nil, { vessel = { found = true, fluid = fluid, amount = amount } })
 end
 function step() R = FLOW:step(NET, NET:networkAt(0, 0, 0), CTX) return R end
 function state(x, y) return R.at[x .. "," .. y .. ",0"].state end
@@ -74,11 +81,11 @@ class SharedCost(unittest.TestCase):
         self.assertEqual(lua.eval("state(5, 0)"), "no_pressure")
 
 
-# A tank that gives the pumps another fluid than water or fuel (a third-party part).
+# A pump that gives another fluid than water or fuel (a third-party part).
 OTHER_TANK = r"""
 LiveWater.API.registerCapability("juiceTank", { define = function() return {} end,
     draw = function() return 100, "juice" end })
-LiveWater.API.registerPart("Test:JuiceTank", { sprites = { [0] = "t_juice" }, capabilities = { juiceTank = true } })
+LiveWater.API.registerPart("Test:JuiceTank", { sprites = { [0] = "t_juice" }, capabilities = { juiceTank = true, pump = true } })
 """
 
 
@@ -91,15 +98,14 @@ class Quality(unittest.TestCase):
             self.assertEqual((lua.eval("state(1, 0)"), lua.eval("state(0, 1)")), ("served", "served"), pump)
 
     def test_sprinklers_and_drip_lines_take_no_fuel(self):
-        lua = flow('put("Test:CleanPump", 0, 0) barrel(0, -1, "fuel", 100) put("Test:Drip", 1, 0, 1)'
-                   ' put("Test:Spr", 0, 1, 1)')
+        lua = flow('put("Test:FuelPump", 0, 0) put("Test:Drip", 1, 0, 1) put("Test:Spr", 0, 1, 1)')
         self.assertEqual((lua.eval("state(1, 0)"), lua.eval("state(0, 1)")), ("wrong_fluid", "wrong_fluid"))
 
     def test_sprinklers_and_drip_lines_take_no_other_fluid(self):
         lua = new_lua(API)
         lua.execute(OTHER_TANK)
         lua.execute(SETUP)
-        lua.execute('put("Test:CleanPump", 0, 0) put("Test:JuiceTank", 0, -1) put("Test:Drip", 1, 0, 1)'
+        lua.execute('put("Test:JuiceTank", 0, 0) put("Test:Drip", 1, 0, 1)'
                     ' put("Test:Spr", 0, 1, 1) put("Test:InlineFilter", -1, 0) put("Test:Inlet", -2, 0, 1) step()')
         self.assertEqual(lua.eval("R.quality"), "juice")
         self.assertEqual((lua.eval("state(1, 0)"), lua.eval("state(0, 1)")), ("wrong_fluid", "wrong_fluid"))
@@ -109,30 +115,9 @@ class Quality(unittest.TestCase):
         lua = new_lua(API)
         lua.execute(OTHER_TANK)
         lua.execute(SETUP)
-        lua.execute('put("Test:CleanPump", 0, 0) put("Test:JuiceTank", 0, -1) put("Test:InlineFilter", 1, 0)'
-                    ' put("Test:Fit", 2, 0, 5, { fitting = { mode = "fill", found = true, free = 100 } }) step()')
+        lua.execute('put("Test:JuiceTank", 0, 0) put("Test:InlineFilter", 1, 0)'
+                    ' put("Test:Fit", 2, 0, 5, { fitting = { found = true, free = 100 } }) step()')
         self.assertEqual((lua.eval("state(2, 0)"), lua.eval('R.at["2,0,0"].quality')), ("served", "juice"))
-
-
-class Gravity(unittest.TestCase):
-    def test_a_barrel_without_pump_feeds_only_the_drip_lines(self):
-        lua = flow("""
-        barrel(0, 0, "clean", 30)
-        put("Test:Drip", 1, 0, 2) put("Test:Spr", 1, 1, 1) put("Test:Drip", 2, 0, 3) put("Test:Inlet", 3, 0, 5)
-        """)
-        self.assertEqual(lua.eval("R.pressure"), 1)
-        self.assertEqual((lua.eval("state(1, 0)"), lua.eval("state(2, 0)")), ("served", "served"))
-        self.assertEqual((lua.eval("litres(1, 0)"), lua.eval("litres(2, 0)")), (2, 3))
-        self.assertEqual((lua.eval("state(1, 1)"), lua.eval("state(3, 0)")), ("no_pressure", "no_pressure"))
-        self.assertEqual(lua.eval('R.drawn["0,0,0"].litres'), 5)
-
-    def test_a_barrel_set_to_fill_gives_no_gravity(self):
-        lua = flow('put("Test:Fit", 0, 0) put("Test:Drip", 1, 0, 2)')
-        self.assertEqual(lua.eval("#R.outlets"), 0)
-
-    def test_tainted_barrel_water_feeds_the_drip_lines_without_filter(self):
-        lua = flow('barrel(0, 0, "tainted", 30) put("Test:Drip", 1, 0, 2)')
-        self.assertEqual(lua.eval("state(1, 0)"), "served")
 
 
 class Area(unittest.TestCase):
@@ -188,8 +173,9 @@ LiveWater.Events.on("waterDrawn", function(part, litres) FITTINGS:drawn(part, li
 CLOCK = require("LiveWater/LWT_Clock").new({ network = NET, flow = require("LiveWater/LWT_Flow").new(LiveWater.Parts),
     catalog = LiveWater.Parts, world = WORLD, events = LiveWater.Events, publisher = PUB, chores = { FITTINGS },
     need = function(part) return OUTLETS:need(part) end })
-place("LiveWater:BarrelFitting", 0, 0, "batman_livewater_01_72")
-LiveWater.Parts:call(REG:at(0, 0, 0), "setFittingMode", "pump")
+-- a pump against the barrel at (0,-1), away from any pond (ADR-011)
+WORLD.dry["0,0,0"] = true WORLD.vessels["0,0,0"] = true
+assert(place("LiveWater:PondPump", 0, 0, "batman_livewater_01_24"))
 for x = 1, 3 do place("LiveWater:DripLine", x, 0) end
 function tick() EMITTED = {} CLOCK:tick() end
 """
@@ -197,13 +183,13 @@ function tick() EMITTED = {} CLOCK:tick() end
 
 class Watering(unittest.TestCase):
     def bench(self, fluid, setup=""):
-        lua = services(new_lua, FITTING, DRIP)
+        lua = services(new_lua, POND, DRIP)
         lua.execute(BENCH)
         lua.execute('CONT["0,-1"] = { amount = 30, capacity = 400, fluid = "%s" }' % fluid)
         lua.execute(setup + " plant(2, 1, 0, 20) plant(4, 0, 0, 10) plant(2, 0, 0, 10) plant(0, 1, 0, 10) tick()")
         return lua
 
-    def test_a_barrel_waters_the_squares_beside_the_line_by_gravity_without_loss(self):
+    def test_a_pumped_barrel_waters_the_squares_beside_the_line_without_loss(self):
         lua = self.bench("clean")
         self.assertEqual(dict(lua.eval("FARM.watered").items()), {"2,1": 2, "4,0": 1})
         # ADR-006 D01: three line squares draw 0.5 L each (DripFlow), 1.5 L whatever the plants need (was 0.6 L)
@@ -218,7 +204,7 @@ class Watering(unittest.TestCase):
         self.assertAlmostEqual(lua.eval('CONT["0,-1"].amount'), 29.4)
 
     def test_no_thirsty_plant_still_draws_the_flow(self):
-        lua = services(new_lua, FITTING, DRIP)
+        lua = services(new_lua, POND, DRIP)
         lua.execute(BENCH)
         lua.execute('CONT["0,-1"] = { amount = 30, capacity = 400, fluid = "clean" } tick()')
         self.assertAlmostEqual(lua.eval('CONT["0,-1"].amount'), 28.5)

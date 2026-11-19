@@ -107,6 +107,10 @@ function FakePlumbing:fillRelay(x, y, z, litres)
     r.amount = r.amount + n
     return n
 end
+function FakePlumbing:emptyRelay(x, y, z)
+    local r = self.relays[k(x, y, z)]
+    if r then r.amount = 0 end
+end
 function FakePlumbing:cityWaterRuns() return self.cityRuns end
 function FakePlumbing:markRelay(x, y, z, why)
     local r = self.relays[k(x, y, z)]
@@ -259,6 +263,17 @@ class RelayPlan(unittest.TestCase):
 
 
 class Relays(unittest.TestCase):
+    def test_a_house_cut_by_a_valve_loses_the_water_of_its_relays_at_once(self):
+        # ADR-010 D04: the outlet handler's cut empties the relays of that inlet only
+        lua = bench()
+        lua.execute("PLUMB:addFixture(2, 12, 0)")
+        lua.execute('place("LiveWater:HouseInlet", 5, 9, "%s42") CLOCK:tick()' % TILE)
+        lua.execute('relayAt(2, 12, 1).amount = 20 PLUMB.relays["7,7,1"] = { owner = "50,9,0", amount = 9, capacity = 25 }')
+        lua.execute("OUTLETS:cut(REG:at(5, 9, 0))")
+        self.assertEqual(lua.eval("relayAt(2, 12, 1).amount"), 0)
+        self.assertEqual(lua.eval("relayAt(7, 7, 1).amount"), 9)
+        lua.execute("OUTLETS:cut({ x = 1, y = 1, z = 0, type = 'Test:Pipe' })")
+
     def test_relays_go_above_the_fixtures_of_the_building_and_leave_with_the_inlet(self):
         lua = bench()
         lua.execute("PLUMB:addFixture(2, 12, 0) PLUMB:addFixture(3, 12, 0) PLUMB:addFixture(4, 15, 2)"

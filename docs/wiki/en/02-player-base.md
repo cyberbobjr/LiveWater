@@ -6,9 +6,9 @@ yourself), it serves the fixtures plumbed with a pipe wrench **around it**:
 - within **12 squares** (sandbox option *Base inlet range*);
 - on its own level and up to **3 floors above** it.
 
-Everything else works as in a house: pipe it to a pump. A barrel reaches the network only through a
-[barrel fitting](01-getting-started.md#9-barrel-fitting-fill-or-pump) on a pipe, and without a pump a barrel only feeds
-drip lines.
+Everything else works as in a house: pipe it to a pump. A barrel reaches the network only when a
+[water pump](01-getting-started.md#2-build-the-water-pump) stands against it, and a
+[fill fitting](01-getting-started.md#9-fill-fitting) on a pipe fills it.
 
 Tips:
 

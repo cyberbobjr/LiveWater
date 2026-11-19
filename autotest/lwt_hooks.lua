@@ -29,7 +29,12 @@ a drip line beside a pipe waters its crop (state served), an automatic sprinkler
 waters 30 minutes (three steps served) then closes (ADR-006 D03), the sprinkler opened again keeps watering the
 crop while the player is 300 squares away (layout chunks unloaded, ADR-006 D06-D08: pump on its recorded source,
 generator kept at its last loaded state, crop watered through its global object; back: crop watered, sprinkler
-served and drawn "on"), no Lua error. An open sprinkler draws its flow
+served and drawn "on"), a second pump set down against a vanilla rain collector away from any water pumps its
+water to a fill fitting against a vanilla feeding trough (the trough fills, ADR-013) then to a manual sprinkler on
+a small network of its own, then everything is taken up (ADR-011), a third pump set down against a vanilla gas
+station fuel pump (fixture: 200 units of piped fuel) sends its gasoline to a fill fitting against an empty rain
+collector (the collector holds petrol, the station is lower) while a manual sprinkler on the same network takes
+none (state wrong_fluid), then everything is taken up (ADR-014), no Lua error. An open sprinkler draws its flow
 at every step, thirsty crop or not (ADR-006 D01): it is "served" at every step its valve is open, never "idle".
 A phase is judged on every ten-minute step it ran (the pump stops when no outlet needs water).
 Parameters (ctx.params, text): centers, radius (scan radius, default 40), stepSec (deadline of one ten-minute
@@ -587,23 +592,6 @@ local function valveIndex(L, open)
     return (open and 16 or 18) + (ew and 0 or 1)
 end
 
--- Empty the relay tanks of the inlet (fixture: a dry house before the closed-valve phase).
-local function drainRelays(L)
-    local s = server()
-    local list = s.relays:positions({ x = L.inlet.x, y = L.inlet.y, z = 0 })
-    for i = 1, #list do
-        local square = sq(list[i].x, list[i].y, list[i].z)
-        local objects = square and square:getObjects()
-        for j = 0, (objects and objects:size() or 0) - 1 do
-            local obj = objects:get(j)
-            if obj:hasModData() and obj:getModData().LiveWaterRelay and obj:getFluidContainer() then
-                obj:getFluidContainer():Empty()
-                obj:sync()
-            end
-        end
-    end
-end
-
 local function relaysOf(L)
     local s = server()
     local list = s.relays:positions({ x = L.inlet.x, y = L.inlet.y, z = 0 })
@@ -730,12 +718,23 @@ local function onTen()
     if S.seen then snapshot() end
 end
 
+-- Is a network ahead of the clock (steps brought forward by valves, ADR-010 D02)? The clock skips it meanwhile.
+local function clockAhead()
+    local s = server()
+    local ahead = s and s.clock and s.clock.ahead
+    if not ahead then return false end
+    for _ in pairs(ahead) do return true end
+    return false
+end
+
+-- n ten-minute steps of the networks: the steps the clock skips to catch up with the valves are not counted.
 local function waitSteps(n)
     return function()
         if not S.waitFrom then
+            fastForward(true)
+            if clockAhead() then return false end
             S.waitFrom = S.tens or 0
             resetSeen()
-            fastForward(true)
         end
         if (S.tens or 0) - S.waitFrom >= n then
             S.waitFrom = nil
@@ -1397,9 +1396,10 @@ local function buildSteps(ctx)
         pl:setGodMod(true)
         pl:setInvisible(true)
         giveItems(pl, { { "Base.Mov_LiveWater_Pipe", 80 }, { "LiveWater.WaterFilter", 1 }, { "Base.PipeWrench", 1 },
-            { "Base.Mov_LiveWater_PondPump", 1 }, { "Base.Mov_LiveWater_HouseInlet", 1 },
-            { "Base.Mov_LiveWater_Sprinkler", 1 }, { "Base.Mov_LiveWater_Valve", 1 },
-            { "Base.Mov_LiveWater_DripLine", 1 }, { "Base.Mov_LiveWater_SprinklerAuto", 1 } })
+            { "Base.Mov_LiveWater_PondPump", 3 }, { "Base.Mov_LiveWater_HouseInlet", 1 },
+            { "Base.Mov_LiveWater_Sprinkler", 3 }, { "Base.Mov_LiveWater_Valve", 1 },
+            { "Base.Mov_LiveWater_DripLine", 1 }, { "Base.Mov_LiveWater_SprinklerAuto", 1 },
+            { "Base.Mov_LiveWater_BarrelFitting", 2 } })
         if visual then
             giveItems(pl, { { "Base.Mov_LiveWater_FlowMeter", 1 }, { "Base.Mov_LiveWater_BarrelFitting", 3 },
                 { "Base.Mov_LiveWater_SprinklerAuto", 1 } })
@@ -1606,19 +1606,23 @@ local function buildSteps(ctx)
         local e = entryAt(S.L.sprinkler)
         if not S.valveSent then
             S.valveSent = true
+            -- the crop's level before the valve: the opening waters it at once (ADR-010 D02)
+            local pl = plantAt(S.L.crop)
+            S.levelBefore = pl and pl.waterLvl or -1
             goNear(S.L.sprinkler)
             send("switchValve", { x = S.L.sprinkler.x, y = S.L.sprinkler.y, z = 0 })
             return false
         end
         if not (e and e.data and e.data.valve and e.data.valve.open == true) then return false end
         rec(true, "sprinkler valve opened (switchValve)")
-        local pl = plantAt(S.L.crop)
-        S.levelBefore = pl and pl.waterLvl or -1
+        -- ADR-010 D02: the network makes its step at once, the sprinkler sprays without waiting for the clock
+        rec(e.data.spray and e.data.spray.on == true, "opened sprinkler sprays at once",
+            "outlet " .. tostring(e.data.outlet and e.data.outlet.state))
         goNear(S.L.pump)
         return true
     end, 20)
 
-    addStep("two ten-minute steps without filter", waitSteps(2), stepSec * 2)
+    addStep("two ten-minute steps without filter", waitSteps(2), stepSec * 8)
 
     addStep("checks without filter", function()
         local L, seen = S.L, S.seen
@@ -1661,7 +1665,7 @@ local function buildSteps(ctx)
         return true
     end, 20)
 
-    addStep("two ten-minute steps with filter", waitSteps(2), stepSec * 2)
+    addStep("two ten-minute steps with filter", waitSteps(2), stepSec * 8)
 
     addStep("checks with filter", function()
         local L, seen = S.L, S.seen
@@ -1739,16 +1743,22 @@ local function buildSteps(ctx)
             return false
         end
         if not (e and e.data and e.data.valve and e.data.valve.open == false) then return false end
-        drainRelays(S.L)
+        -- ADR-010 D02, D04: the house is cut at once, its relays emptied by the mod
+        local inlet = entryAt(S.L.inlet)
+        local n, amount = relaysOf(S.L)
+        rec(inlet and inlet.data.outlet and inlet.data.outlet.state == "closed" and amount <= 0.001,
+            "closed inline valve cuts the house at once (relays emptied)",
+            "outlet " .. tostring(inlet and inlet.data.outlet and inlet.data.outlet.state) .. ", relays " .. n
+            .. " litres " .. amount)
         local pl = plantAt(S.L.crop)
         pl.waterLvl = 0
         pl:saveData()
-        rec(true, "inline valve closed (switchValve)", "relays emptied, crop dry (fixture)")
+        rec(true, "inline valve closed (switchValve)", "crop dry (fixture)")
         goNear(S.L.pump)
         return true
     end, 20)
 
-    addStep("two ten-minute steps with the inline valve closed", waitSteps(2), stepSec * 2)
+    addStep("two ten-minute steps with the inline valve closed", waitSteps(2), stepSec * 8)
 
     addStep("checks with the inline valve closed", function()
         local L, seen = S.L, S.seen
@@ -1776,6 +1786,8 @@ local function buildSteps(ctx)
             return false
         end
         if not (e and e.data and e.data.valve and e.data.valve.open == false) then return false end
+        rec(not (e.data.spray and e.data.spray.on), "closed sprinkler stops spraying at once",
+            "outlet " .. tostring(e.data.outlet and e.data.outlet.state))
         local pl = plantAt(S.L.crop)
         pl.waterLvl = 0
         pl:saveData()
@@ -1785,7 +1797,7 @@ local function buildSteps(ctx)
         return true
     end, 20)
 
-    addStep("two ten-minute steps with the valve closed", waitSteps(2), stepSec * 2)
+    addStep("two ten-minute steps with the valve closed", waitSteps(2), stepSec * 8)
 
     addStep("checks with the valve closed", function()
         local L = S.L
@@ -1832,7 +1844,7 @@ local function buildSteps(ctx)
         return true
     end)
 
-    addStep("two ten-minute steps with the drip line", waitSteps(2), stepSec * 2)
+    addStep("two ten-minute steps with the drip line", waitSteps(2), stepSec * 8)
 
     addStep("checks of the drip line", function()
         local D = S.D
@@ -1845,6 +1857,271 @@ local function buildSteps(ctx)
             "state " .. tostring(state) .. " water level " .. level)
         return true
     end)
+
+    -- ADR-011 and ADR-013: a second pump against a vanilla rain collector (100 L) away from any water feeds a
+    -- small network of its own: two pipes, a fill fitting against a vanilla feeding trough (simple, 50 L, made
+    -- as SFeedingTroughSystem:addTrough does) and a manual sprinkler. The pump's placement passes only against
+    -- the barrel (GameSite:hasVessel). Phase 1, sprinkler closed: the trough fills from the barrel. Phase 2,
+    -- sprinkler opened by hand: it waters from the barrel. Everything is taken up again afterwards.
+    -- Squares (area a, fittingArea): collector a, pump a+(0,1), pipes a+(1,1) a+(2,1), sprinkler a+(2,2),
+    -- fitting a+(3,1) facing S (trough behind it, N, pipe on its W side), trough a+(3,0).
+    addStep("pump against a rain collector, pipes, trough fitting and sprinkler set down (ADR-011, ADR-013)", function()
+        local B = S.BP
+        if not B then
+            local a = fittingArea(S.L)
+            if not a then
+                rec(false, "free area away from water for the barrel pump")
+                return "abort"
+            end
+            local barrel, hasFluid = makeCollector({ x = a.x, y = a.y }, "carpentry_02_122", 100)
+            rec(hasFluid, "vanilla rain collector with 100 L set (fixture)", key(a.x, a.y))
+            S.BP = { a = a, barrel = barrel, pump = { x = a.x, y = a.y + 1 },
+                pipes = { { x = a.x + 1, y = a.y + 1 }, { x = a.x + 2, y = a.y + 1 } },
+                sprinkler = { x = a.x + 2, y = a.y + 2 }, fitting = { x = a.x + 3, y = a.y + 1 },
+                trough = { x = a.x + 3, y = a.y }, i = 0 }
+            B = S.BP
+            local ts = sq(B.trough.x, B.trough.y, 0)
+            local lo = ts and SFeedingTroughSystem and FeedingTroughDef
+                and SFeedingTroughSystem.instance:addTrough(ts, FeedingTroughDef["simple"], false, 0, 0)
+            B.troughObj = lo and lo:getIsoObject() or nil
+            rec(B.troughObj ~= nil and B.troughObj:getFluidContainer() ~= nil,
+                "vanilla feeding trough set with its water tank (fixture)", key(B.trough.x, B.trough.y))
+            goNear(B.pump)
+            local ok, why = placeMoveable(player(), PUMP_SPRITE, B.pump)
+            local e = entryAt(B.pump)
+            rec(ok and e ~= nil and e.data and e.data.intake and e.data.intake.source == nil,
+                "pump set down against the rain collector away from water (vanilla placement)",
+                tostring(why or "") .. " entry " .. tostring(e and e.type) .. " source "
+                .. tostring(e and e.data and e.data.intake and e.data.intake.source))
+            if not (ok and e) then return "abort" end
+            return false
+        end
+        local p = B.pipes[B.i]
+        if p and not entryAt(p) then return false end
+        B.i = B.i + 1
+        local nextPipe = B.pipes[B.i]
+        if nextPipe then
+            goNear(nextPipe)
+            placeMoveable(player(), PIPE_SPRITE, nextPipe)
+            return false
+        end
+        if not B.othersSet then
+            B.othersSet = true
+            local ok1, why1 = placeMoveable(player(), SPRINKLER_SPRITE, B.sprinkler)
+            local ok2, why2 = placeMoveable(player(), FITTING_SPRITE, B.fitting)
+            if not ok1 then info("barrel sprinkler: " .. tostring(why1)) end
+            if not ok2 then info("trough fitting: " .. tostring(why2)) end
+            return false
+        end
+        if not (entryAt(B.sprinkler) and entryAt(B.fitting)) then return false end
+        local s = server()
+        local id = s.network:networkAt(B.pump.x, B.pump.y, 0)
+        rec(id ~= nil and s.network:networkAt(B.sprinkler.x, B.sprinkler.y, 0) == id
+            and s.network:networkAt(B.fitting.x, B.fitting.y, 0) == id
+            and id ~= s.network:networkAt(S.L.pump.x, S.L.pump.y, 0),
+            "barrel pump, pipes, trough fitting and sprinkler make a network of their own", "network " .. tostring(id))
+        B.powered = s.world:hasPower(B.pump.x, B.pump.y, 0)
+        if not B.powered then info("barrel pump out of the generator's reach: its water checks are skipped") end
+        B.barrel0 = B.barrel:getFluidContainer():getAmount()
+        B.trough0 = B.troughObj and B.troughObj:getWater() or 0
+        return true
+    end, 40)
+
+    addStep("one ten-minute step with the trough fitting (sprinkler closed)", waitSteps(1), stepSec * 4)
+
+    addStep("checks of the trough fitting", function()
+        local B = S.BP
+        if not B.powered or not B.troughObj then return true end
+        local e = entryAt(B.fitting)
+        local state = e and e.data and e.data.fitting and e.data.fitting.state
+        local water, barrel = B.troughObj:getWater(), B.barrel:getFluidContainer():getAmount()
+        rec(state == "served" and water > B.trough0 + 0.01 and barrel < B.barrel0 - 0.01,
+            "the fill fitting fills the feeding trough with the barrel's water (ADR-013 D03)",
+            "state " .. tostring(state) .. " trough " .. string.format("%.2f -> %.2f L", B.trough0, water)
+            .. " barrel " .. string.format("%.2f -> %.2f L", B.barrel0, barrel))
+        return true
+    end)
+
+    addStep("barrel sprinkler valve opened (switchValve)", function()
+        local B = S.BP
+        local e = entryAt(B.sprinkler)
+        if not B.valveSent then
+            B.valveSent = true
+            B.before = B.barrel:getFluidContainer():getAmount()
+            goNear(B.sprinkler)
+            send("switchValve", { x = B.sprinkler.x, y = B.sprinkler.y, z = 0 })
+            return false
+        end
+        if not (e and e.data and e.data.valve and e.data.valve.open == true) then return false end
+        rec(true, "barrel sprinkler valve opened (switchValve)")
+        return true
+    end, 20)
+
+    addStep("one ten-minute step with the barrel pump", waitSteps(1), stepSec * 4)
+
+    addStep("checks of the barrel pump", function()
+        local B = S.BP
+        if not B.powered then return true end
+        local e = entryAt(B.sprinkler)
+        local state = e and e.data and e.data.outlet and e.data.outlet.state
+        local after = B.barrel:getFluidContainer():getAmount()
+        rec(state == "served" and after < B.before - 0.01, "the pump against the barrel waters from the barrel",
+            "state " .. tostring(state) .. " barrel " .. string.format("%.2f -> %.2f L", B.before, after))
+        return true
+    end)
+
+    addStep("barrel pump installation taken up, rain collector and trough removed", function()
+        local B = S.BP
+        local list = { B.sprinkler, B.fitting, B.pipes[2], B.pipes[1], B.pump }
+        for _, p in ipairs(list) do
+            if entryAt(p) then
+                goNear(p)
+                local ok, why = pickUpMoveable(player(), p)
+                if not ok then info("pickup " .. key(p.x, p.y) .. ": " .. tostring(why)) end
+                return false
+            end
+        end
+        local s = sq(B.a.x, B.a.y, 0)
+        if s and B.barrel:getSquare() then s:transmitRemoveItemFromSquare(B.barrel) end
+        local ts = sq(B.trough.x, B.trough.y, 0)
+        if ts and B.troughObj and B.troughObj:getSquare() then
+            local lo = SFeedingTroughSystem.instance:getLuaObjectOnSquare(ts)
+            if lo then SFeedingTroughSystem.instance:removeLuaObject(lo) end
+            ts:transmitRemoveItemFromSquare(B.troughObj)
+        end
+        rec(true, "barrel pump installation taken up (vanilla pickup)")
+        return true
+    end, 40)
+
+    -- ADR-014: a third pump against a vanilla gas station fuel pump (sprite with fuelAmount, its piped fuel set
+    -- to 200 units: fixture) away from any water feeds a small network of its own: two pipes, a fill fitting
+    -- against an EMPTY vanilla rain collector and a manual sprinkler opened by hand. The pump's placement passes
+    -- only against the fuel pump (GameSite:hasVessel, D01). After one step: the collector holds petrol (D04, an
+    -- empty container takes any fluid), the station holds less (D01), the sprinkler takes none (wrong_fluid,
+    -- D03). With the sandbox option FuelStationGasInfinite the station always reads 1000: its check is info only.
+    -- Squares (area a, fittingArea): station a, pump a+(0,1), pipes a+(1,1) a+(2,1), sprinkler a+(2,2), fitting
+    -- a+(3,1) facing S (collector behind it, N, pipe on its W side), collector a+(3,0).
+    local STATION_SPRITE = "location_shop_fossoil_01_12"
+    addStep("pump against a gas station fuel pump, pipes, fill fitting and sprinkler set down (ADR-014)", function()
+        local B = S.FP
+        if not B then
+            local a = fittingArea(S.L)
+            if not a then
+                rec(false, "free area away from water for the fuel station pump")
+                return "abort"
+            end
+            local station = addEdgeObject({ x = a.x, y = a.y }, STATION_SPRITE)
+            station:setPipedFuelAmount(200)
+            rec(station:getPipedFuelAmount() > 0, "vanilla gas station fuel pump with piped fuel set (fixture)",
+                key(a.x, a.y) .. " " .. tostring(station:getPipedFuelAmount()) .. " units")
+            S.FP = { a = a, station = station, pump = { x = a.x, y = a.y + 1 },
+                pipes = { { x = a.x + 1, y = a.y + 1 }, { x = a.x + 2, y = a.y + 1 } },
+                sprinkler = { x = a.x + 2, y = a.y + 2 }, fitting = { x = a.x + 3, y = a.y + 1 },
+                barrelAt = { x = a.x + 3, y = a.y }, i = 0 }
+            B = S.FP
+            local barrel, hasFluid = makeCollector(B.barrelAt, "carpentry_02_122", 0)
+            B.barrel = barrel
+            rec(hasFluid and barrel:getFluidContainer():getAmount() < 0.01,
+                "empty vanilla rain collector set (fixture)", key(B.barrelAt.x, B.barrelAt.y))
+            goNear(B.pump)
+            local ok, why = placeMoveable(player(), PUMP_SPRITE, B.pump)
+            local e = entryAt(B.pump)
+            rec(ok and e ~= nil and e.data and e.data.intake and e.data.intake.source == nil,
+                "pump set down against the gas station fuel pump away from water (vanilla placement)",
+                tostring(why or "") .. " entry " .. tostring(e and e.type) .. " source "
+                .. tostring(e and e.data and e.data.intake and e.data.intake.source))
+            if not (ok and e) then return "abort" end
+            return false
+        end
+        local p = B.pipes[B.i]
+        if p and not entryAt(p) then return false end
+        B.i = B.i + 1
+        local nextPipe = B.pipes[B.i]
+        if nextPipe then
+            goNear(nextPipe)
+            placeMoveable(player(), PIPE_SPRITE, nextPipe)
+            return false
+        end
+        if not B.othersSet then
+            B.othersSet = true
+            local ok1, why1 = placeMoveable(player(), SPRINKLER_SPRITE, B.sprinkler)
+            local ok2, why2 = placeMoveable(player(), FITTING_SPRITE, B.fitting)
+            if not ok1 then info("fuel network sprinkler: " .. tostring(why1)) end
+            if not ok2 then info("fuel network fitting: " .. tostring(why2)) end
+            return false
+        end
+        if not (entryAt(B.sprinkler) and entryAt(B.fitting)) then return false end
+        local s = server()
+        local id = s.network:networkAt(B.pump.x, B.pump.y, 0)
+        rec(id ~= nil and s.network:networkAt(B.sprinkler.x, B.sprinkler.y, 0) == id
+            and s.network:networkAt(B.fitting.x, B.fitting.y, 0) == id
+            and id ~= s.network:networkAt(S.L.pump.x, S.L.pump.y, 0),
+            "fuel station pump, pipes, fill fitting and sprinkler make a network of their own",
+            "network " .. tostring(id))
+        B.powered = s.world:hasPower(B.pump.x, B.pump.y, 0)
+        if not B.powered then info("fuel station pump out of the generator's reach: its fuel checks are skipped") end
+        return true
+    end, 40)
+
+    addStep("fuel network sprinkler valve opened (switchValve)", function()
+        local B = S.FP
+        local e = entryAt(B.sprinkler)
+        if not B.valveSent then
+            B.valveSent = true
+            goNear(B.sprinkler)
+            send("switchValve", { x = B.sprinkler.x, y = B.sprinkler.y, z = 0 })
+            return false
+        end
+        if not (e and e.data and e.data.valve and e.data.valve.open == true) then return false end
+        rec(true, "fuel network sprinkler valve opened (switchValve)")
+        B.station0 = B.station:getPipedFuelAmount()
+        B.barrel0 = B.barrel:getFluidContainer():getAmount()
+        if B.barrel0 > 0.01 then info("the rain collector caught rain before the step: the petrol check may fail") end
+        return true
+    end, 20)
+
+    addStep("one ten-minute step with the fuel station pump", waitSteps(1), stepSec * 4)
+
+    addStep("checks of the fuel station pump", function()
+        local B = S.FP
+        if not B.powered then return true end
+        local fe, se = entryAt(B.fitting), entryAt(B.sprinkler)
+        local fstate = fe and fe.data and fe.data.fitting and fe.data.fitting.state
+        local sstate = se and se.data and se.data.outlet and se.data.outlet.state
+        local petrol = B.barrel:getFluidContainer():getSpecificFluidAmount(Fluid.Petrol)
+        rec(fstate == "served" and petrol > 0.01,
+            "the fill fitting fills the empty rain collector with the station's gasoline (ADR-014 D01, D04)",
+            "state " .. tostring(fstate) .. " petrol " .. string.format("%.2f L", petrol))
+        local station = B.station:getPipedFuelAmount()
+        if B.station0 == 1000 and station == 1000 then
+            info("station reads 1000 units before and after (FuelStationGasInfinite?): its decrease is not checked")
+        else
+            rec(station < B.station0, "the gas station holds less fuel after the step (ADR-014 D01)",
+                "station " .. tostring(B.station0) .. " -> " .. tostring(station) .. " units")
+        end
+        rec(sstate == "wrong_fluid", "the sprinkler takes no gasoline (state wrong_fluid, ADR-014 D03)",
+            "state " .. tostring(sstate))
+        return true
+    end)
+
+    addStep("fuel station pump installation taken up, station and rain collector removed", function()
+        local B = S.FP
+        local list = { B.sprinkler, B.fitting, B.pipes[2], B.pipes[1], B.pump }
+        for _, p in ipairs(list) do
+            if entryAt(p) then
+                goNear(p)
+                local ok, why = pickUpMoveable(player(), p)
+                if not ok then info("pickup " .. key(p.x, p.y) .. ": " .. tostring(why)) end
+                return false
+            end
+        end
+        local bs = sq(B.barrelAt.x, B.barrelAt.y, 0)
+        if bs and B.barrel:getSquare() then bs:transmitRemoveItemFromSquare(B.barrel) end
+        local ss = sq(B.a.x, B.a.y, 0)
+        if ss and B.station:getSquare() then ss:transmitRemoveItemFromSquare(B.station) end
+        rec(true, "fuel station pump installation taken up (vanilla pickup)")
+        return true
+    end, 40)
 
     -- The inline valve closed above is opened again: the automatic sprinkler may stand after it (in the run of
     -- 2026-11-19 it stood one square past it, every step "closed": the flow keeps an outlet behind a closed valve
@@ -1917,7 +2194,7 @@ local function buildSteps(ctx)
         return false
     end, 20)
 
-    addStep("four ten-minute steps with the automatic sprinkler", waitSteps(4), stepSec * 4)
+    addStep("four ten-minute steps with the automatic sprinkler", waitSteps(4), stepSec * 6)
 
     addStep("checks of the automatic sprinkler", function()
         local A = S.A
@@ -2004,7 +2281,7 @@ local function buildSteps(ctx)
         return true
     end, 60)
 
-    addStep("two ten-minute steps away from the layout", waitSteps(2), stepSec * 2)
+    addStep("two ten-minute steps away from the layout", waitSteps(2), stepSec * 8)
 
     addStep("back at the layout: crop watered, sprinkler served and spraying", function()
         local L = S.L
@@ -2085,6 +2362,7 @@ end
 local function serverWait(n)
     return function()
         if not M.waitFrom then
+            if clockAhead() then return false end
             M.waitFrom = S.tens or 0
             resetSeen()
         end
@@ -2187,6 +2465,9 @@ local function serverSteps(ctx)
             if spriteOf(L.pipes[i], PIPE) ~= SHEET .. expectedMask(L, L.pipes[i]) then wrong = wrong + 1 end
         end
         rec(wrong == 0, "pipe sprites by side mask (server)", "wrong " .. wrong)
+        -- the crop's level before the valve: the opening waters it at once (ADR-010 D02)
+        local pl = plantAt(L.crop)
+        S.levelBefore = pl and pl.waterLvl or -1
         tell("open")
         return true
     end)
@@ -2194,13 +2475,13 @@ local function serverSteps(ctx)
     addStep("sprinkler valve opened by client 1", function()
         local e = entryAt(S.L.sprinkler)
         if not (e and e.data.valve and e.data.valve.open == true) then return false end
-        local pl = plantAt(S.L.crop)
-        S.levelBefore = pl and pl.waterLvl or -1
         rec(true, "sprinkler valve opened by client 1 (switchValve)")
+        rec(e.data.spray and e.data.spray.on == true, "opened sprinkler sprays at once (server)",
+            "outlet " .. tostring(e.data.outlet and e.data.outlet.state))
         return true
     end, 60)
 
-    addStep("two ten-minute steps without filter", serverWait(2), stepSec * 2)
+    addStep("two ten-minute steps without filter", serverWait(2), stepSec * 8)
 
     addStep("checks without filter (server)", function()
         local L = S.L
@@ -2224,7 +2505,7 @@ local function serverSteps(ctx)
         return true
     end, 60)
 
-    addStep("two ten-minute steps with filter", serverWait(2), stepSec * 2)
+    addStep("two ten-minute steps with filter", serverWait(2), stepSec * 8)
 
     addStep("checks with filter (server)", function()
         local L = S.L
@@ -2243,15 +2524,16 @@ local function serverSteps(ctx)
     addStep("inline valve closed by client 1", function()
         local e = entryAt(S.L.valve)
         if not (e and e.data.valve and e.data.valve.open == false) then return false end
-        drainRelays(S.L)
+        local n, amount = relaysOf(S.L)
+        rec(amount <= 0.001, "closed inline valve cuts the house at once (server)", "relays " .. n .. " litres " .. amount)
         local pl = plantAt(S.L.crop)
         pl.waterLvl = 0
         pl:saveData()
-        rec(true, "inline valve closed by client 1 (switchValve)", "relays emptied, crop dry (fixture)")
+        rec(true, "inline valve closed by client 1 (switchValve)", "crop dry (fixture)")
         return true
     end, 60)
 
-    addStep("two ten-minute steps with the inline valve closed", serverWait(2), stepSec * 2)
+    addStep("two ten-minute steps with the inline valve closed", serverWait(2), stepSec * 8)
 
     addStep("checks with the inline valve closed (server)", function()
         local L, seen = S.L, S.seen
@@ -2277,7 +2559,7 @@ local function serverSteps(ctx)
         return true
     end, 60)
 
-    addStep("two ten-minute steps with the valve closed", serverWait(2), stepSec * 2)
+    addStep("two ten-minute steps with the valve closed", serverWait(2), stepSec * 8)
 
     addStep("checks with the valve closed (server)", function()
         local L = S.L

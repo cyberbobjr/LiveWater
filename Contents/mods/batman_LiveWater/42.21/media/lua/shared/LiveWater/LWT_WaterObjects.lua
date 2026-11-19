@@ -8,6 +8,12 @@
 --   mark(obj, key)          ModData table under `key`, or nil
 --   isVessel(obj)           an object holding a FluidContainer LiveWater may use: neither an item
 --                           on the floor, nor a fixture, nor a relay, nor marked by another mod
+--   entityName(obj)         name of the entity script of an object, or nil
+--   isBarrel(obj, registry, listed)  a vessel the barrel fittings work with: registry:admits
+--                           (LWT_Containers: 20 L or more, registered or listed in `listed`)
+--   isFuelPump(obj)         a gas station fuel pump: its sprite carries the property "fuelAmount"
+--                           (IsoPropertyType.FUEL_AMOUNT; its piped fuel is IsoObject.getPipedFuelAmount,
+--                           Java 42.22), ADR-014 D01
 --   changesSources(obj)     set down or taken, it may change which fixture has which tank above:
 --                           a fixture, or a water tank that is not one of LiveWater's relays
 --   cityWaterRuns()         the city water still runs (rule of IsoObject.isWaterInfinite, 42.22)
@@ -49,6 +55,23 @@ function WaterObjects.isVessel(obj)
         return false
     end
     return obj:getFluidContainer() ~= nil
+end
+
+function WaterObjects.entityName(obj)
+    local script = obj:getEntityScript()
+    return script and script:getName() or nil
+end
+
+function WaterObjects.isBarrel(obj, registry, listed)
+    return WaterObjects.isVessel(obj)
+        and registry:admits(obj:getFluidContainer():getCapacity(), obj:getSpriteName(), WaterObjects.entityName(obj), listed)
+end
+
+function WaterObjects.isFuelPump(obj)
+    if not obj or instanceof(obj, "IsoWorldInventoryObject") then return false end
+    local sprite = obj:getSprite()
+    local props = sprite and sprite:getProperties()
+    return props ~= nil and props:has("fuelAmount")
 end
 
 function WaterObjects.changesSources(obj)

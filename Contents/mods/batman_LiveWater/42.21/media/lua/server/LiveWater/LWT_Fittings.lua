@@ -1,31 +1,36 @@
 if isClient() then return end
--- LiveWater: barrel fittings on the authority (ADR-001 D26, P02, P17, L08). Chore of the clock and
--- handler of the outlet type "barrelFill" (LWT_Outlets):
---   tick()                         before the networks: every fitting on a loaded square senses its
---                                  container (`sense` hook: fluid, amount, free room, shape, share)
---                                  and is presented (its sprite follows its mode and the shape)
---   chunkLoaded(x, y, size)        the squares x..x+size-1, y..y+size-1 were loaded: a fitting
+-- LiveWater: the containers set against parts, on the authority (ADR-001 D26, P02, P17, L08;
+-- ADR-011; ADR-012 D02). A part works with a container when it has the `sense` hook; its `container`
+-- hook says what it does with it: "fill" (a barrel fitting, a consumer) or "draw" (a pump against a
+-- barrel, capability "vessel"), its sensed state and its rate. Chore of the clock and handler of
+-- the outlet type "barrelFill" (LWT_Outlets):
+--   tick()                         before the networks: every such part on a loaded square senses
+--                                  its container (`sense` hook: fluid, amount, free room, shape,
+--                                  share) and is presented (a fitting's sprite follows the shape)
+--   chunkLoaded(x, y, size)        the squares x..x+size-1, y..y+size-1 were loaded: a part
 --                                  counted while away there writes its count to its container
---   need(part)                     set to Fill: the container's free room not yet promised this tick
+--   need(part)                     "fill": the container's free room not yet promised this tick
 --                                  to another fitting on it, at most the fitting's rate
 --   deliver(part, litres, quality) the litres go into the container: water of any quality goes in
 --                                  tainted (ADR-005 D07: the network carries impure water except
---                                  in the house), fuel stays fuel
---   drawn(part, litres)            set to Pump: the pumps took those litres (event waterDrawn); the
---                                  fittings sense their containers again (another network steps next)
--- While the square of a fitting or of its container is not loaded (ADR-006 D06), the fitting keeps
--- the content its last sense recorded and counts in it what the network takes (Pump: never more
--- than the recorded amount) or puts (Fill: never more than the recorded free room); the count
+--                                  in the house), another fluid stays itself
+--   drawn(part, litres)            "draw": the pump took those litres (event waterDrawn); the parts
+--                                  sense their containers again (another network steps next)
+-- While the square of a part or of its container is not loaded (ADR-006 D06), the part keeps
+-- the content its last sense recorded and counts in it what the network takes ("draw": never more
+-- than the recorded amount) or puts ("fill": never more than the recorded free room); the count
 -- (`offline`) is written to the real container once, before the first sense on a loaded square
 -- (chunk loaded, else the next step): taken then added, never more than the container holds or
 -- has room for, so no water is ever created.
--- Two fittings on one container never count the same litres twice: those set to Pump share its
--- amount (`share`, what each may give), those set to Fill share its free room.
--- The container stands on the square behind the fitting (opposite its facing: a fitting facing S
+-- Two parts on one container never count the same litres twice: those that draw share its amount
+-- (`share`, what each may take), those that fill share its free room.
+-- The container stands on the square behind the part (opposite its facing: a fitting facing S
 -- has its pipe on the S side and the barrel on the N side, tile builder), else on the first other
 -- side that holds one. No game API here; dependencies are injected: { catalog, registry (active()),
 -- world (isLoaded, spriteOf), containers (port, LWT_GameContainers: at(x, y, z) -> { fluid, amount,
--- free, sprite, entity } or nil; add(x, y, z, litres, quality); take(x, y, z, litres)), shapes
+-- free, sprite, entity, blocked (optional: why nothing may go in, "feed": a trough holding feed), takes
+-- (optional: what it takes even empty, "water" for a trough, ADR-014 D04) } or nil;
+-- add(x, y, z, litres, quality); take(x, y, z, litres)), shapes
 -- (LWT_Containers: shape), listed (optional: function() -> set of the names of
 -- the sandbox option FillContainers), publisher (optional: present(part)) }.
 
@@ -45,7 +50,8 @@ function Fittings.new(deps)
         promised = {}, pending = {} }, Fittings)
 end
 
-function Fittings:isFitting(part)
+-- Does the part work with a container set against it?
+function Fittings:hasContainer(part)
     return self.catalog:hasHook(part.type, "sense")
 end
 
@@ -68,16 +74,16 @@ function Fittings:look(part)
         local x, y, z = part.x + list[i][1], part.y + list[i][2], part.z
         local c = self.containers:at(x, y, z)
         if c then
-            return { found = true, fluid = c.fluid, amount = c.amount, free = c.free,
-                shape = self.shapes:shapeOf(c.sprite, c.entity, listed), cx = x, cy = y, cz = z }
+            return { found = true, fluid = c.fluid, amount = c.amount, free = c.free, blocked = c.blocked,
+                takes = c.takes, shape = self.shapes:shapeOf(c.sprite, c.entity, listed), cx = x, cy = y, cz = z }
         end
     end
     return { found = false }
 end
 
--- Mode, sensed state and rate of a fitting.
+-- Role ("fill" or "draw"), sensed state and rate of a part.
 local function stateOf(self, part)
-    local mode, d, rate = self.catalog:first(part, "fittingMode")
+    local mode, d, rate = self.catalog:first(part, "container")
     return mode, d or {}, rate or 0
 end
 
@@ -109,7 +115,7 @@ function Fittings:count(part, taken, added, quality)
     local amount = (d.amount or 0) - taken + added
     local info = { found = true, shape = d.shape, fluid = quality or d.fluid, amount = amount,
         free = (d.free or 0) + taken - added, share = d.share and math.max(0, d.share - taken) or nil,
-        cx = d.cx, cy = d.cy, cz = d.cz,
+        cx = d.cx, cy = d.cy, cz = d.cz, takes = d.takes,
         offline = { taken = (off.taken or 0) + taken, added = (off.added or 0) + added, quality = quality or off.quality } }
     if amount <= EPSILON then info.fluid = nil end
     self.catalog:call(part, "sense", info)
@@ -117,25 +123,25 @@ function Fittings:count(part, taken, added, quality)
 end
 
 -- Every fitting on a loaded square senses its container (after writing the count it kept while
--- away); the amount of a container is shared between the fittings set to Pump on it. Returns the
+-- away); the amount of a container is shared between the parts that draw from it. Returns the
 -- fittings sensed.
 function Fittings:senseAll()
-    local parts, sensed, infos, pumping = self.registry:active(), {}, {}, {}
+    local parts, sensed, infos, drawing = self.registry:active(), {}, {}, {}
     for i = 1, #parts do
         local part = parts[i]
-        if self:isFitting(part) and self:isLoaded(part) then
+        if self:hasContainer(part) and self:isLoaded(part) then
             self:settle(part)
             local info = self:look(part)
             sensed[#sensed + 1], infos[#sensed + 1] = part, info
-            if info.found and stateOf(self, part) == "pump" then
+            if info.found and stateOf(self, part) == "draw" then
                 local key = containerKey(info)
-                pumping[key] = (pumping[key] or 0) + 1
+                drawing[key] = (drawing[key] or 0) + 1
             end
         end
     end
     for i = 1, #sensed do
         local info = infos[i]
-        if info.found then info.share = (info.amount or 0) / (pumping[containerKey(info)] or 1) end
+        if info.found then info.share = (info.amount or 0) / (drawing[containerKey(info)] or 1) end
         self.catalog:call(sensed[i], "sense", info)
     end
     return sensed
@@ -190,7 +196,7 @@ end
 
 function Fittings:drawn(part, litres)
     local mode, d = stateOf(self, part)
-    if mode ~= "pump" or not d.found then return end
+    if mode ~= "draw" or not d.found then return end
     if not self:isLoaded(part) then
         self:count(part, math.max(0, math.min(litres, d.amount or 0)), 0, nil)
         return
