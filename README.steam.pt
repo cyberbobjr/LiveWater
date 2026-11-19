@@ -1,41 +1,93 @@
-[h1]LiveWater[/h1]
+[h1]LiveWater - Água Canalizada e Rega[/h1]
 
 [b]Build 42.22 · Um jogador e multijogador (multijogador ainda não testado)[/b]
 
-Um dia, as torneiras secam. Traga a água de volta com as suas próprias mãos: uma bomba de lagoa junto ao rio, canos atravessados no quintal, água corrente em casa e aspersores que regam as hortas sozinhos.
+Um dia, as torneiras secam. Traga a água de volta com as próprias mãos: uma bomba de água junto ao rio, canos atravessados no quintal, água canalizada em casa e aspersores que regam a horta sozinhos enquanto você anda à procura de saque. O LiveWater é o irmão canalizador do [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url]: mesmo espírito, mesmos menus do botão direito.
 
-[h2]O que pode construir[/h2]
-[list]
-[*][b]Tubos de água[/b]: serre um tubo de metal em 4. Como qualquer outra peça, coloque um por quadrícula com «Colocar» no menu do botão direito do objeto; os tubos ligam-se e mudam de forma sozinhos. Recolha-os com uma chave.
-[*][b]Bomba de lagoa[/b] (Eletricidade 2): coloque-a junto a um lago, lagoa, rio ou poço. Bombeia 50 L a cada 10 minutos enquanto alguma saída precisar de água. Precisa de eletricidade (gerador, rede ou LiveWire). Interruptor, desgaste, avarias, reparação com sucata metálica e ruído que atrai zombies.
-[*][b]Cartucho filtrante[/b]: carvão e pano, cerca de 500 L de água limpa. Monta-se na entrada de água da casa e só limpa a água que entra nela. A água da lagoa não é filtrada; a água do poço é limpa.
-[*][b]Entrada de água da casa[/b]: coloque-a contra a parede exterior de uma casa e ligue-a à bomba. Os lavatórios, banheiras, duches, sanitas e máquinas de lavar que canalizou recebem água corrente, até 3 pisos acima e na cave. Luz verde: água limpa. Luz âmbar: água não filtrada, a casa não recebe água.
-[*][b]Aspersor[/b]: abra a válvula e ele borrifa 10 L a cada 10 minutos sobre o quadrado de 5 × 5 quadrículas à sua volta, com um jato que dá a volta completa; as plantas que precisam de água tomam a sua parte, o resto perde-se. Clique com o botão direito para mostrar a área regada. Um quarto da sua água perde-se no ar e os zombies ouvem-no. Feche-o quando a horta estiver regada.
-[*][b]Aspersor automático[/b] (Eletricidade 2): um temporizador abre-o 30 minutos a cada 6 horas (de 1 a 24 h). Precisa de um pouco de eletricidade.
-[*][b]Linha de gota-a-gota[/b] (mangueira de borracha, fita adesiva, faca): coloque-a entre as fileiras e ela rega as quadrículas dos dois lados, sem ruído, 0,5 L por quadrícula a cada 10 minutos, nada se perde no ar. Serve qualquer água, limpa ou não. Sem bomba? Um acessório de barril em "Definir como Bombear" alimenta-a por gravidade.
-[*][b]Acessório de barril[/b]: entre um tubo e um barril. "Definir como Encher": os tubos enchem o barril ou um bebedouro. "Definir como Bombear": a bomba puxa o conteúdo do barril. Funciona também com gasolina, apenas para barris.
-[*][b]Contador de água[/b]: colocado em linha num tubo, mostra os litros dos últimos 10 minutos.
-[/list]
+[img]https://raw.githubusercontent.com/cyberbobjr/LiveWater/main/docs/images/diagrams/diagram_pt.png[/img]
 
-[h2]Barris e rede da cidade[/h2]
+[h2]Como funciona[/h2]
+
+Uma rede tem sempre a mesma forma. Uma [b]Bomba de Água[/b] (o produtor) puxa do que estiver encostado a ela: lago, lagoa, rio, poço, barril ou até a bomba de um posto de combustível. Os [b]tubos[/b] no chão transportam a água. Na outra ponta, os [b]consumidores[/b] tiram o que precisam: a entrada de água da casa, os aspersores, as linhas de gota-a-gota e as conexões de enchimento. Só uma bomba põe água nos tubos, e a água avança a cada 10 minutos de jogo.
+[url=https://github.com/cyberbobjr/LiveWater/wiki/EN-01-getting-started]Primeiros passos[/url]
+
+[h2]Equipamento[/h2]
+
+[img]https://raw.githubusercontent.com/cyberbobjr/LiveWater/main/docs/images/diagrams/equipment_pt.png[/img]
+
+Cada peça é colocada como um móvel: botão direito no inventário, "Colocar". Os tubos ligam-se e dobram-se sozinhos, passam por baixo de vedações, nunca por dentro de paredes. Recolha as peças com uma chave.
+
+[h2]A Bomba de Água[/h2]
+
+50 L a cada 10 minutos, só enquanto alguma saída pedir água. Precisa de eletricidade: gerador, rede pública ou LiveWire. Zune, e os zombies ouvem-na ao bombear. Desgasta-se após cerca de uma semana a funcionar; repara-se com 2 de Sucata de Metal e uma chave. O ecrã LCD mostra estado, caudal, total bombeado e origem. Uma bomba chega para uma casa e quatro aspersores; duas bombas somam os caudais.
+
+[h2]Água canalizada em casa[/h2]
+
+Coloque a [b]Entrada de Água da Casa[/b] contra a parede exterior de um edifício do mapa e leve um tubo até lá. Cada lava-loiça, banheira, duche, sanita e máquina de lavar que tenha canalizado com a Chave de Tubos (a ação "Instalar" do jogo) recebe água, até 3 pisos acima e 2 níveis de cave abaixo.
+A água de lagoa e de rio é suja: instale um [b]Cartucho Filtrante de Água[/b] (carvão e pano, cerca de 500 L) na entrada. Luz verde: passa água limpa. Luz âmbar: água não filtrada, a casa não recebe nada. Uma bomba num poço dá água limpa, sem filtro. Um cartucho gasto recarrega-se com carvão e pano.
+
+[h2]Regar a horta[/h2]
+
 [list]
-[*]Os barris só chegam à casa por um acessório de barril num tubo e uma bomba: sem bomba, um barril só alimenta as linhas de gota-a-gota.
-[*]A sua própria base: uma entrada fora de um edifício do mapa serve os equipamentos num raio de 12 quadrículas.
-[*]Enquanto a água da cidade estiver a correr, ligue à rede da cidade um lavatório, um duche ou uma sanita que tenha colocado num edifício do mapa.
+[*][b]Aspersor[/b]: abra a válvula e ele borrifa 10 L a cada 10 minutos sobre o quadrado de 5x5 à volta, com um jato que dá a volta completa. Um quarto da água perde-se no ar, e os zombies ouvem-no. Feche-o quando a horta estiver regada.
+[*][b]Aspersor Automático[/b] (Eletricidade 2): um temporizador o abre 30 minutos a cada 6 horas (de 1 a 24 h). Precisa de 5 W.
+[*][b]Linha de gota-a-gota[/b]: estenda-a no trilho entre duas fileiras. Silenciosa, 0,5 L por quadrado, nada se perde, serve qualquer água.
 [/list]
+Botão direito num aspersor: "Mostrar todas as áreas regadas" ilumina cada quadrado regado.
+
+[h2]Barris, coletores de chuva e comedouros[/h2]
+
+A [b]Conexão de enchimento[/b] fica entre um tubo e um barril, um coletor de chuva, um dispensador de água ou um comedouro, e enche-o a partir da rede, sem nunca ultrapassar a capacidade. A água entra sem tratamento (contaminada). Os seus animais podem beber do comedouro.
+Para enviar a água de um barril para os tubos, encoste uma bomba de água a ele: a bomba esvazia o barril e depois a lagoa, se encostar numa.
+
+[h2]Válvulas[/h2]
+
+Uma válvula de corte entre dois tubos interrompe tudo o que vem depois, de imediato. Cada aspersor tem também a sua própria válvula. O contador de água, instalado em linha, conta os litros que passam por ele.
+
+[h2]Gasolina nos tubos[/h2]
+
+Encoste a bomba de água a uma bomba de combustível e ela bombeia gasolina. Um só líquido por rede: o da primeira bomba colocada. A entrada de água da casa, os aspersores e as linhas de gota-a-gota só recebem água e dizem "Isto não é água"; a conexão de enchimento nunca mistura, por isso pode levar combustível até um barril a alguns quadrados de distância.
 
 [h2]Saber sempre porquê[/h2]
-"Mostrar a rede de água" realça uma rede inteira consoante o estado. Um lavatório seco indica o motivo no menu do botão direito: não ligado, sem entrada, água não filtrada, pressão baixa, válvula fechada...
 
+"Mostrar a rede de água" realça uma rede inteira conforme o estado. Um lava-loiça seco indica o motivo no menu do botão direito: não canalizado, sem entrada, água não filtrada, pressão baixa, válvula fechada...
+[url=https://github.com/cyberbobjr/LiveWater/wiki/EN-03-diagnostics]Diagnóstico[/url]
+
+[h2]Receitas[/h2]
+
+[img]https://raw.githubusercontent.com/cyberbobjr/LiveWater/main/docs/images/diagrams/recipe_book_pt.png[/img]
+
+11 receitas de fabrico, acima. Cada peça pode ser desmontada para sucata, no inventário ou no local (o menu "Desmontar" do jogo). Tubos, válvulas, conexões, aspersores, linhas de gota-a-gota e filtros também aparecem, raramente, em lojas de canalização e de jardinagem.
+
+[h2]Enquanto está fora[/h2]
+
+A rede continua a funcionar: as bombas puxam, os aspersores e as linhas de gota-a-gota regam, os barris enchem. Ao regressar, encontra as quantidades certas.
+
+[h2]Multijogador[/h2]
+
+O servidor verifica cada ação; redes, válvulas e equipamentos são guardados e sincronizados.
+[url=https://github.com/cyberbobjr/LiveWater/wiki/EN-08-multiplayer]Guia do multijogador[/url]
+
+[hr][/hr]
 [h2]Opções e compatibilidade[/h2]
 [list]
-[*]Opções sandbox: caudal e desgaste da bomba, duração do filtro, alcance das entradas, alcance, caudal e limites do temporizador dos aspersores, caudal do gota-a-gota, recipientes a encher e correção da máquina de lavar em multijogador.
-[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] é opcional: a bomba passa então a funcionar com o seu inversor (250 W) e aparece no respetivo software.
+[*]Opções sandbox: caudal e desgaste da bomba, duração do filtro, alcance das entradas de água, alcance, caudal e limites do temporizador dos aspersores, caudal da linha de gota-a-gota, recipientes a encher.
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] é opcional: a bomba passa então a funcionar com o inversor dele (250 W) e aparece no respetivo software.
+[*]Enquanto a água da cidade estiver a correr, pode ligar-se a ela um lava-loiça, uma banheira ou uma sanita que tenha colocado num edifício do mapa.
 [*]Não compatível com LG Extended Plumbing nem com LG Connect To Water Supply (o LiveWater cobre o que eles fazem).
-[*]Remoção segura: um administrador escolhe "Remover LiveWater deste mundo (admin)" antes de cancelar a subscrição.
 [*]Aberto a outros mods através de uma API pública.
-[*]Traduzido para 11 línguas.
+[*]Remoção segura: um administrador escolhe "Remover LiveWater deste mundo (admin)" antes de cancelar a subscrição.
 [/list]
 
+[h2]Documentação e Discord[/h2]
+
+[url=https://github.com/cyberbobjr/LiveWater/wiki/EN-Home]Wiki do LiveWater[/url] · Código-fonte: [url=https://github.com/cyberbobjr/LiveWater]GitHub[/url] · [url=https://discord.gg/QEsBya7hUA]Discord[/url]
+
+[h2]Apoie o projeto[/h2]
+
+Gostou do mod? Um café ajuda a financiar novas funcionalidades e traduções.
+[url=https://ko-fi.com/Z8Z8QJV31][img]https://storage.ko-fi.com/cdn/kofi6.png?v=6[/img][/url]
+
 [h2]Créditos[/h2]
+
 Criado por batmanfr. Código e tiles originais; nenhum conteúdo retirado de outros mods. Licença MIT.

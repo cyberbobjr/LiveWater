@@ -1,41 +1,93 @@
-[h1]LiveWater[/h1]
+[h1]LiveWater - Su Tesisatı ve Sulama[/h1]
 
 [b]Build 42.22 · Tek oyunculu ve çok oyunculu (çok oyunculu henüz test edilmedi)[/b]
 
-Bir gün musluklar kurur. Suyu kendi ellerinizle geri getirin: nehir kenarına bir gölet pompası, avluya serilmiş borular, evin içinde akan su ve kendi kendine bahçeyi sulayan yağmurlayıcılar.
+Bir gün musluklar kurur. Suyu kendi ellerinizle geri getirin: nehir kenarına bir su pompası, avluya serilmiş borular, evin içinde yeniden akan su ve siz eşya toplarken mahsulleri kendiliğinden sulayan yağmurlayıcılar. LiveWater, [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url]'ın tesisatçı kardeşidir: aynı ruh, aynı sağ tık menüleri.
 
-[h2]Neler inşa edebilirsiniz[/h2]
-[list]
-[*][b]Su boruları[/b]: bir Metal Boruyu 4'e kesin. Diğer her parça gibi, eşyanın sağ tık menüsündeki "Yerleştir" ile kare başına birer tane koyun; borular kendiliğinden birleşir ve şeklini alır. Bir anahtarla toplayın.
-[*][b]Gölet pompası[/b] (Elektrikçilik 2): bir göl, gölet, nehir ya da kuyunun yanına koyun. Bir çıkış su istediği sürece 10 dakikada bir 50 L. Elektrik gerekir (jeneratör, şebeke ya da LiveWire). Anahtar, aşınma, arızalar, hurda metalle onarım, zombileri çeken gürültü.
-[*][b]Su filtre kartuşu[/b]: mangal kömürü ve bez, yaklaşık 500 L temiz su. Ev su girişine takılır ve yalnızca eve giren suyu temizler. Gölet suyu filtrelenmez; kuyu suyu temizdir.
-[*][b]Ev su girişi[/b]: bir evin dış duvarına dayayın ve pompaya bağlayın. Tesisat döşediğiniz lavabolar, küvetler, duşlar, tuvaletler ve çamaşır makineleri, 3 kat yukarıya ve bodruma kadar akan su alır. Yeşil ışık: temiz su. Turuncu ışık: filtrelenmemiş su, ev hiç su almaz.
-[*][b]Yağmurlayıcı[/b]: vanasını açın; çevresindeki 5 × 5 karelik alana her 10 dakikada 10 L püskürtür, jeti tam tur döner; su isteyen bitkiler paylarını alır, kalanı kaybolur. Sulanan alanı görmek için sağ tıklayın. Suyunun dörtte biri havada kaybolur ve zombiler onu duyar. Bahçe sulanınca kapatın.
-[*][b]Otomatik yağmurlayıcı[/b] (Elektrikçilik 2): bir zamanlayıcı onu 6 saatte bir 30 dakikalığına açar (1 ila 24 saat). Biraz elektrik gerektirir.
-[*][b]Damla sulama hortumu[/b] (kauçuk hortum, koli bandı, bıçak): sıralarınızın arasına döşeyin; iki yanındaki kareleri sessizce sular, her 10 dakikada kare başına 0,5 L, havada hiçbir şey kaybolmaz. Temiz olsun olmasın her su işe yarar. Pompa yok mu? "Pompalamaya ayarla" konumundaki bir varil tesisatı onu yerçekimiyle besler.
-[*][b]Varil tesisatı[/b]: bir boru ile bir varil arasına. "Doldurmaya ayarla": borular varili ya da bir su soğutucusunu doldurur. "Pompalamaya ayarla": pompa varilden çeker. Benzinle de çalışır, yalnızca varillerde.
-[*][b]Su sayacı[/b]: bir borunun üzerine hat olarak takılır; son 10 dakikanın litre değerini gösterir.
-[/list]
+[img]https://raw.githubusercontent.com/cyberbobjr/LiveWater/main/docs/images/diagrams/diagram_tr.png[/img]
 
-[h2]Variller ve şehir suyu[/h2]
+[h2]Nasıl çalışır[/h2]
+
+Her ağın yapısı aynıdır. Bir [b]Su pompası[/b] (üretici), dokunduğu şeyden çeker: göl, gölet, nehir, kuyu, varil ya da bir akaryakıt istasyonu pompası. [b]Borular[/b] suyu yerde taşır. Uçtaki [b]tüketiciler[/b] ihtiyaçlarını alır: ev su girişi, yağmurlayıcılar, damla sulama hortumu, doldurma bağlantıları. Borulara suyu yalnızca pompa koyar ve su her 10 oyun dakikasında bir ilerler.
+[url=https://github.com/cyberbobjr/LiveWater/wiki/EN-01-getting-started]Başlarken[/url]
+
+[h2]Ekipman[/h2]
+
+[img]https://raw.githubusercontent.com/cyberbobjr/LiveWater/main/docs/images/diagrams/equipment_tr.png[/img]
+
+Her parça bir mobilya gibi yerleştirilir: envanterde sağ tık, "Yerleştir". Borular kendiliğinden birleşir ve kıvrılır; çitlerin altından geçer, duvarların içinden geçmez. Parçaları bir anahtarla geri alırsınız.
+
+[h2]Su pompası[/h2]
+
+Aşağı akışta biri su istediği sürece 10 dakikada 50 L. Elektrik gerekir: jeneratör, şebeke ya da LiveWire. Vızıldar ve pompalarken zombiler onu duyar. Yaklaşık bir hafta çalıştıktan sonra aşınır; 2 Hurda Metal ve bir anahtarla onarılır. LCD ekran durumu, debiyi, toplam pompalanan miktarı ve kaynağı gösterir. Bir pompa bir eve ve dört yağmurlayıcıya yeter; iki pompanın debileri toplanır.
+
+[h2]Evde akan su[/h2]
+
+[b]Ev su girişini[/b] haritadaki bir binanın dış duvarına dayayın ve bir boruyla ona bağlayın. Boru Anahtarıyla tesisatını kurduğunuz her lavabo, küvet, duş, tuvalet ve çamaşır makinesi (oyunun "Tesisat kur" eylemi) su alır: 3 kat yukarıya ve bodruma kadar.
+Gölet ve nehir suyu kirlidir: girişe bir [b]Su Filtre Kartuşu[/b] (mangal kömürü ve bez, yaklaşık 500 L) takın. Yeşil ışık: temiz su akar. Turuncu ışık: filtrelenmemiş su, ev hiç su almaz. Kuyudaki bir pompa filtresiz temiz su verir. Bitmiş kartuş, mangal kömürü ve bezle yeniden doldurulur.
+
+[h2]Bahçeyi sulamak[/h2]
+
 [list]
-[*]Variller eve yalnızca bir boruya takılan varil tesisatı ve bir pompa üzerinden ulaşır: pompa yoksa bir varil yalnızca damla sulama hortumlarını besler.
-[*]Kendi üssünüz: haritadaki bir binanın dışındaki bir su girişi, 12 karelik yarıçapındaki su noktalarına hizmet eder.
-[*]Şehir suyu akarken, haritadaki bir binaya koyduğunuz bir lavaboyu, duşu ya da tuvaleti şehir suyuna bağlayın.
+[*][b]Yağmurlayıcı[/b]: vanasını açın; her 10 dakikada etrafındaki 5 × 5 karelik alana 10 L püskürtür, jet tam tur döner. Suyun dörtte biri havada kaybolur ve zombiler onu duyar. Bahçe sulanınca kapatın.
+[*][b]Otomatik yağmurlayıcı[/b] (Elektrikçilik 2): bir zamanlayıcı onu 6 saatte bir 30 dakika açar (1 ila 24 saat). 5 W gerektirir.
+[*][b]Damla sulama hortumu[/b]: iki sıra arasına serin; iki yandaki kareleri sessizce sular, kare başına 0,5 L, hiçbir su boşa gitmez, temiz ya da kirli her su kullanılabilir.
 [/list]
+Bir yağmurlayıcıya sağ tıklayın: "Tüm sulanan alanları göster" her sulanan kareyi aydınlatır.
+
+[h2]Variller, yağmur toplayıcılar ve yemlikler[/h2]
+
+[b]Doldurma bağlantısı[/b], bir boru ile bir varil, yağmur toplayıcı, su soğutucu veya yemlik arasına takılır ve ağdan doldurur; kapasitesini asla aşmaz. Su arıtılmamış (kirli) olarak girer. Hayvanlarınız yemlikten su içebilir.
+Bir varilin suyunu borulara göndermek için yanına bir su pompası koyun: pompa önce varili boşaltır, bitişikteki bir gölet varsa onu da boşaltır.
+
+[h2]Vanalar[/h2]
+
+İki boru arasındaki kapatma vanası, arkasındaki her şeyi anında keser. Her yağmurlayıcının da kendi vanası vardır. Hat üzerine kurulan su sayacı, içinden geçen litreleri sayar.
+
+[h2]Borularda benzin[/h2]
+
+Su pompasını bir akaryakıt istasyonu pompasının yanına koyarsanız benzin pompalar. Her ağda tek bir sıvı olur: ilk konulan pompanınki. Ev su girişi, yağmurlayıcılar ve damla sulama hortumu yalnızca su alır ve "Bu su değil" der; doldurma bağlantısı asla karıştırmaz, bu yüzden yakıtı birkaç kare ötedeki bir varile de taşıyabilirsiniz.
 
 [h2]Nedenini hep bilin[/h2]
-"Su ağını göster" bir ağın tamamını durumuna göre vurgular. Kuru bir lavabo, sağ tık menüsünde nedenini söyler: tesisata bağlı değil, su girişi yok, filtrelenmemiş su, düşük basınç, kapalı vana...
 
+"Su ağını göster" bir ağın tamamını duruma göre renklendirir. Kuru bir lavabo, sağ tık menüsünde nedenini söyler: tesisata bağlı değil, su girişi yok, filtrelenmemiş su, düşük basınç, kapalı vana...
+[url=https://github.com/cyberbobjr/LiveWater/wiki/EN-03-diagnostics]Teşhis[/url]
+
+[h2]Tarifler[/h2]
+
+[img]https://raw.githubusercontent.com/cyberbobjr/LiveWater/main/docs/images/diagrams/recipe_book_tr.png[/img]
+
+Yukarıda gösterilen 11 üretim tarifi. Her parça hurdaya ayrılabilir; envanterde ya da bulunduğu yerde (oyunun "Sök" menüsü). Borular, vanalar, doldurma bağlantıları, yağmurlayıcılar, damla sulama hortumları ve filtreler tesisat ve bahçe dükkanlarında nadiren de bulunabilir.
+
+[h2]Siz yokken[/h2]
+
+Ağ çalışmaya devam eder: pompalar çeker, yağmurlayıcılar ve damla hortumlar sular, variller dolar. Döndüğünüzde doğru miktarları bulursunuz.
+
+[h2]Çok oyunculu[/h2]
+
+Sunucu her eylemi denetler; ağlar, vanalar ve tesisatlar kaydedilir ve senkronize edilir.
+[url=https://github.com/cyberbobjr/LiveWater/wiki/EN-08-multiplayer]Çok oyunculu rehberi[/url]
+
+[hr][/hr]
 [h2]Seçenekler ve uyumluluk[/h2]
 [list]
-[*]Sandbox seçenekleri: pompa debisi ve aşınması, filtre ömrü, su girişi menzilleri, yağmurlayıcı menzili, debisi ve zamanlayıcı sınırları, damla sulama debisi, doldurulacak kaplar, çok oyunculudaki çamaşır makinesi düzeltmesi.
+[*]Sandbox seçenekleri: pompa debisi ve aşınması, filtre ömrü, su girişi menzilleri, yağmurlayıcı menzili ve zamanlayıcısı, damla hortum debisi, doldurulacak kaplar.
 [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] isteğe bağlıdır: pompa o zaman kendi invertöründen (250 W) çalışır ve yazılımında görünür.
-[*]LG Extended Plumbing ve LG Connect To Water Supply ile uyumlu değildir (LiveWater onların yaptığını kapsar).
+[*]Şehir suyu akarken, haritadaki bir binaya koyduğunuz bir lavabo ya da tuvalet şehir suyuna bağlanabilir.
+[*]LG Extended Plumbing ve LG Connect To Water Supply ile uyumlu değildir (LiveWater onların yaptıklarını kapsar).
+[*]Üretici ve tüketiciler için genel API ile diğer modlara açıktır.
 [*]Güvenli kaldırma: bir yönetici, abonelikten çıkmadan önce "LiveWater'ı bu dünyadan kaldır (admin)" seçeneğini seçer.
-[*]Genel bir API ile diğer modlara açıktır.
-[*]11 dile çevrilmiştir.
 [/list]
 
+[h2]Belgeler ve Discord[/h2]
+
+[url=https://github.com/cyberbobjr/LiveWater/wiki/EN-Home]LiveWater wiki[/url] · Kaynak kod: [url=https://github.com/cyberbobjr/LiveWater]GitHub[/url] · [url=https://discord.gg/QEsBya7hUA]Discord[/url]
+
+[h2]Projeyi destekleyin[/h2]
+
+Modu beğendiniz mi? Bir kahve, yeni özelliklerin ve çevirilerin finansmanına yardımcı olur.
+[url=https://ko-fi.com/Z8Z8QJV31][img]https://storage.ko-fi.com/cdn/kofi6.png?v=6[/img][/url]
+
 [h2]Katkıda bulunanlar[/h2]
+
 batmanfr tarafından oluşturuldu. Özgün kod ve kaplamalar; başka modlardan hiçbir içerik alınmadı. Lisans MIT.

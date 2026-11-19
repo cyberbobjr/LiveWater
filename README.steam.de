@@ -1,41 +1,93 @@
-[h1]LiveWater[/h1]
+[h1]LiveWater - Fließendes Wasser & Bewässerung[/h1]
 
 [b]Build 42.22 · Einzelspieler & Mehrspieler (Mehrspieler noch nicht getestet)[/b]
 
-Eines Tages kommt aus dem Hahn kein Wasser mehr. Bring es selbst zurück: eine Teichpumpe am Fluss, Rohre quer durch den Hof, fließendes Wasser im Haus und Sprinkler, die den Garten von allein gießen.
+Eines Tages bleibt der Hahn trocken. Bring das Wasser selbst zurück: eine Pumpe am Flussufer, Rohre quer durch den Hof, wieder fließendes Wasser im Haus und Sprinkler, die deine Beete gießen, während du unterwegs bist. LiveWater ist der Klempner-Bruder von [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url]: gleicher Geist, gleiche Rechtsklick-Menüs.
 
-[h2]Was du bauen kannst[/h2]
-[list]
-[*][b]Wasserrohre[/b]: Sägt ein Metallrohr in 4 Teile. Wie jedes andere Teil über „Platzieren“ im Rechtsklick-Menü des Gegenstands setzen, eins pro Feld; Rohre verbinden sich und nehmen ihre Form selbst an. Mit einem Schraubenschlüssel aufheben.
-[*][b]Teichpumpe[/b] (Elektrik 2): Direkt an einen See, Teich, Fluss oder Brunnen stellen. 50 L alle 10 Minuten, solange irgendwo Wasser gebraucht wird. Braucht Strom (Generator, Stromnetz oder LiveWire). Schalter, Verschleiß, Ausfälle, Reparatur mit Metallschrott; ein Geräusch, das Zombies anlockt.
-[*][b]Filterkartusche[/b]: Holzkohle und Stoff, reinigt etwa 500 L Wasser. Sie kommt in den Hauswassereinlass und reinigt nur das Wasser, das ins Haus fließt. Teichwasser ist ungefiltert; Brunnenwasser ist sauber.
-[*][b]Wassereinlass des Hauses[/b]: An die Außenwand eines Hauses setzen und mit der Pumpe verbinden. Spülen, Badewannen, Duschen, Toiletten und Waschmaschinen, die du angeschlossen hast, bekommen fließendes Wasser, bis 3 Stockwerke darüber und im Keller. Grünes Licht: sauberes Wasser. Bernsteinfarbenes Licht: ungefiltert, das Haus bekommt keins.
-[*][b]Sprinkler[/b]: Ventil öffnen, dann versprüht er alle 10 Minuten 10 L über das Quadrat von 5 × 5 Feldern um ihn herum, mit einem Strahl, der sich einmal ganz im Kreis dreht; die Pflanzen, die Wasser brauchen, nehmen ihren Teil, der Rest geht verloren. Per Rechtsklick lässt sich der bewässerte Bereich anzeigen. Ein Viertel seines Wassers geht in der Luft verloren, und Zombies hören ihn. Schließen, wenn der Garten bewässert ist.
-[*][b]Automatischer Sprinkler[/b] (Elektrik 2): Eine Zeitschaltuhr öffnet ihn alle 6 Stunden für 30 Minuten (1 bis 24 h). Braucht etwas Strom.
-[*][b]Tropfschlauch[/b] (Gummischlauch, Klebeband, Messer): zwischen die Pflanzreihen legen; er bewässert die Felder auf beiden Seiten, leise, 0,5 L pro Feld alle 10 Minuten, nichts geht in der Luft verloren. Jedes Wasser reicht, sauber oder nicht. Keine Pumpe? Ein Fass-Anschluss auf „Auf Pumpen stellen“ versorgt ihn durch die Schwerkraft.
-[*][b]Fass-Anschluss[/b]: Zwischen Rohr und Fass. „Auf Befüllen stellen“: Die Rohre füllen das Fass oder einen Wasserspender. „Auf Pumpen stellen“: Die Pumpe saugt das Fass leer. Funktioniert auch mit Benzin, aber nur bei Fässern.
-[*][b]Wasserzähler[/b]: In eine Rohrleitung eingesetzt, zeigt er die Liter der letzten 10 Minuten.
-[/list]
+[img]https://raw.githubusercontent.com/cyberbobjr/LiveWater/main/docs/images/diagrams/diagram_de.png[/img]
 
-[h2]Fässer und Stadtwasser[/h2]
+[h2]So funktioniert es[/h2]
+
+Ein Netz hat immer dieselbe Form. Eine [b]Wasserpumpe[/b] (der Erzeuger) saugt aus allem, was sie berührt: See, Teich, Fluss, Brunnen, Fass oder sogar eine Zapfsäule. [b]Rohre[/b] am Boden leiten das Wasser weiter. Am Ende nehmen sich die [b]Verbraucher[/b], was sie brauchen: der Hauswassereinlass, Sprinkler, Tropfschläuche, Füllanschlüsse. Nur eine Pumpe bringt Wasser in die Rohre, und das Wasser fließt alle 10 Spielminuten weiter.
+[url=https://github.com/cyberbobjr/LiveWater/wiki/EN-01-getting-started]Erste Schritte[/url]
+
+[h2]Ausrüstung[/h2]
+
+[img]https://raw.githubusercontent.com/cyberbobjr/LiveWater/main/docs/images/diagrams/equipment_de.png[/img]
+
+Jedes Teil wird wie ein Möbelstück platziert: Rechtsklick im Inventar, „Platzieren“. Rohre verbinden sich und biegen sich von selbst, sie führen unter Zäunen durch, nie durch Wände. Teile nimmst du mit einem Schraubenschlüssel wieder auf.
+
+[h2]Die Wasserpumpe[/h2]
+
+50 L alle 10 Minuten, aber nur, wenn irgendetwas stromabwärts Wasser verlangt. Sie braucht Strom: einen Generator, das öffentliche Netz oder LiveWire. Sie brummt, und Zombies hören sie beim Pumpen. Nach etwa einer Woche Betrieb nutzt sie sich ab; repariere sie mit 2 Metallschrott und einem Schraubenschlüssel. Ihr LCD-Display zeigt Status, Durchfluss, Gesamtmenge und Quelle. Eine Pumpe reicht für ein Haus und vier Sprinkler; zwei Pumpen addieren ihre Durchflüsse.
+
+[h2]Fließendes Wasser im Haus[/h2]
+
+Setze den [b]Hauswassereinlass[/b] an die Außenwand eines Kartengebäudes und verlege ein Rohr dorthin. Jede Spüle, Badewanne, Dusche, Toilette und Waschmaschine, die du mit der Rohrzange angeschlossen hast (die Spielaktion „anschließen“), bekommt Wasser, bis 3 Stockwerke darüber und 2 Kellerebenen darunter.
+Teich- und Flusswasser ist schmutzig: Setze eine [b]Filterkartusche[/b] (Holzkohle und Stoff, etwa 500 L) in den Einlass. Grünes Licht: sauberes Wasser fließt. Bernsteinfarbenes Licht: ungefiltert, das Haus bekommt nichts. Eine Pumpe an einem Brunnen liefert sauberes Wasser, ohne Filter. Eine verbrauchte Kartusche füllst du mit Holzkohle und Stoff wieder auf.
+
+[h2]Garten bewässern[/h2]
+
 [list]
-[*]Ein Fass gelangt nur über einen Fassanschluss an einem Rohr und eine Pumpe ins Netz: ohne Pumpe versorgt ein Fass nur die Tropfschläuche.
-[*]Deine eigene Basis: Ein Einlass außerhalb eines Kartengebäudes versorgt die Anschlüsse im Umkreis von 12 Feldern.
-[*]Solange das Stadtwasser läuft, verbinde eine Spüle, Dusche oder Toilette, die du in einem Kartengebäude aufgestellt hast, mit dem Stadtwasser.
+[*][b]Sprinkler[/b]: Öffne sein Ventil, und er sprüht alle 10 Minuten 10 L über die 5x5 Felder um sich herum; der Strahl dreht sich einmal ganz im Kreis. Ein Viertel geht in der Luft verloren, und Zombies hören ihn. Schließe ihn, wenn der Garten gegossen ist.
+[*][b]Automatischer Sprinkler[/b] (Elektrotechnik 2): eine Zeitschaltuhr bewässert 30 Minuten alle 6 Stunden (1 bis 24 h). Braucht 5 W.
+[*][b]Tropfschlauch[/b]: lege ihn im Weg zwischen zwei Reihen aus. Lautlos, 0,5 L pro Feld, nichts geht verloren, jedes Wasser ist recht.
 [/list]
+Rechtsklick auf einen Sprinkler: „Alle bewässerten Bereiche anzeigen“ markiert jedes bewässerte Feld.
+
+[h2]Fässer, Regentonnen und Futtertröge[/h2]
+
+Der [b]Füllanschluss[/b] sitzt zwischen einem Rohr und einem Fass, einer Regentonne, einem Wasserspender oder einem Futtertrog und füllt ihn aus dem Netz, nie über sein Fassungsvermögen hinaus. Das Wasser fließt ungefiltert (verunreinigt) hinein. Deine Tiere können aus dem Futtertrog trinken.
+Um das Wasser eines Fasses in die Rohre zu leiten, stelle eine Wasserpumpe daneben: Sie leert das Fass und danach den Teich, falls einer angrenzt.
+
+[h2]Absperrventile[/h2]
+
+Ein Absperrventil zwischen zwei Rohren schneidet alles dahinter sofort ab. Jeder Sprinkler hat außerdem sein eigenes Ventil. Der Wasserzähler, direkt in die Leitung gesetzt, zählt die Liter, die hindurchfließen.
+
+[h2]Benzin in den Rohren[/h2]
+
+Stelle die Wasserpumpe an eine Zapfsäule, und sie pumpt Benzin. Pro Netz nur eine Flüssigkeit: die der ersten gesetzten Pumpe. Hauswassereinlass, Sprinkler und Tropfschläuche nehmen nur Wasser und sagen „Das ist kein Wasser“; der Füllanschluss mischt nie, du kannst also Benzin bis zu einem Fass einige Felder weiter leiten.
 
 [h2]Immer wissen, warum[/h2]
-„Wassernetz anzeigen“ hebt ein ganzes Netz nach Zustand hervor. Eine trockene Spüle nennt im Rechtsklick-Menü den Grund: nicht angeschlossen, kein Einlass, ungefiltertes Wasser, zu wenig Druck, Ventil geschlossen ...
 
-[h2]Optionen und Kompatibilität[/h2]
+„Wassernetz anzeigen“ färbt ein ganzes Netz nach Zustand ein. Eine trockene Spüle nennt im Rechtsklick-Menü den Grund: nicht angeschlossen, kein Einlass, ungefiltertes Wasser, zu wenig Druck, Ventil geschlossen ...
+[url=https://github.com/cyberbobjr/LiveWater/wiki/EN-03-diagnostics]Diagnose[/url]
+
+[h2]Rezepte[/h2]
+
+[img]https://raw.githubusercontent.com/cyberbobjr/LiveWater/main/docs/images/diagrams/recipe_book_de.png[/img]
+
+11 Herstellungsrezepte, oben abgebildet. Jedes Teil lässt sich zerlegen, für Metallschrott, im Inventar oder vor Ort (das Menü „Abbauen“ des Spiels). Rohre, Ventile, Füllanschlüsse, Sprinkler, Tropfschläuche und Filter findet man auch selten in Klempner- und Gartenläden.
+
+[h2]Während du weg bist[/h2]
+
+Das Netz läuft weiter: Pumpen saugen, Sprinkler und Tropfschläuche gießen, Fässer füllen sich. Bei deiner Rückkehr findest du die richtigen Mengen vor.
+
+[h2]Mehrspieler[/h2]
+
+Der Server prüft jede Aktion; Netze, Ventile und Anschlüsse werden gespeichert und synchronisiert.
+[url=https://github.com/cyberbobjr/LiveWater/wiki/EN-08-multiplayer]Mehrspieler-Anleitung[/url]
+
+[hr][/hr]
+[h2]Optionen & Kompatibilität[/h2]
 [list]
-[*]Sandbox-Optionen: Pumpenfluss und Verschleiß, Filterlebensdauer, Reichweite der Einlässe, Reichweite, Durchfluss und Zeitgrenzen der Sprinkler, Durchfluss der Tropfschläuche, zu befüllende Behälter, Korrektur der Waschmaschinen im Mehrspieler.
-[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] ist optional: Die Pumpe läuft dann mit dem Wechselrichter (250 W) und erscheint in dessen Software.
+[*]Sandbox-Optionen: Pumpenfluss und Verschleiß, Filterlebensdauer, Reichweite der Einlässe, Reichweite und Timer der Sprinkler, Durchfluss des Tropfschlauchs, zu befüllende Behälter.
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] ist optional: Die Pumpe läuft dann über den Wechselrichter (250 W) und erscheint in dessen Software.
+[*]Solange das Stadtwasser läuft, kann eine Spüle oder Toilette, die du in einem Kartengebäude aufgestellt hast, daran angeschlossen werden.
 [*]Nicht kompatibel mit LG Extended Plumbing und LG Connect To Water Supply (LiveWater deckt ab, was sie tun).
-[*]Sicheres Entfernen: Ein Admin wählt „LiveWater aus dieser Welt entfernen (Admin)“, bevor er es abbestellt.
-[*]Offen für andere Mods über eine öffentliche API.
-[*]In 11 Sprachen übersetzt.
+[*]Offen für andere Mods: öffentliche API für Erzeuger und Verbraucher.
+[*]Sicheres Entfernen: Ein Admin wählt „LiveWater aus dieser Welt entfernen (Admin)“, bevor er abbestellt.
 [/list]
 
+[h2]Dokumentation & Discord[/h2]
+
+[url=https://github.com/cyberbobjr/LiveWater/wiki/EN-Home]LiveWater-Wiki[/url] · Quellcode: [url=https://github.com/cyberbobjr/LiveWater]GitHub[/url] · [url=https://discord.gg/QEsBya7hUA]Discord[/url]
+
+[h2]Projekt unterstützen[/h2]
+
+Dir gefällt der Mod? Ein Kaffee hilft, neue Funktionen und Übersetzungen zu finanzieren.
+[url=https://ko-fi.com/Z8Z8QJV31][img]https://storage.ko-fi.com/cdn/kofi6.png?v=6[/img][/url]
+
 [h2]Credits[/h2]
+
 Erstellt von batmanfr. Originalcode und Kacheln; keine Inhalte aus anderen Mods übernommen. Lizenz MIT.

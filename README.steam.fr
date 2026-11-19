@@ -1,41 +1,93 @@
-[h1]LiveWater[/h1]
+[h1]LiveWater - Eau courante et irrigation[/h1]
 
 [b]Build 42.22 · Solo et multijoueur (multijoueur pas encore testé)[/b]
 
-Un jour, l'eau ne coule plus au robinet. Ramenez-la vous-même : une pompe d'étang au bord de la rivière, des tuyaux à travers la cour, l'eau courante dans la maison et des arroseurs qui arrosent le potager tout seuls.
+Un jour, l'eau ne coule plus au robinet. Ramenez-la vous-même : une pompe au bord de la rivière, des tuyaux à travers la cour, l'eau courante de retour dans la maison, et des arroseurs qui arrosent le potager pendant que vous êtes en expédition. LiveWater est le petit frère plombier de [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] : même esprit, mêmes menus au clic droit.
 
-[h2]Ce que vous pouvez construire[/h2]
-[list]
-[*][b]Tuyaux d'eau[/b] : sciez un tuyau en métal en 4. Comme toute autre pièce, posez-en un par case avec « Placer » au clic droit sur l'objet ; les tuyaux se raccordent et prennent seuls leur forme. On les ramasse avec une clé.
-[*][b]Pompe d'étang[/b] (Électricité 2) : posez-la au bord d'un lac, d'un étang, d'une rivière ou contre un puits. 50 L toutes les 10 minutes tant qu'une sortie a besoin d'eau. Il lui faut du courant (générateur, réseau public ou LiveWire). Interrupteur, usure, pannes, réparation à la ferraille, bruit qui attire les zombies.
-[*][b]Cartouche filtrante[/b] : charbon de bois et tissu, environ 500 L d'eau propre. Elle se monte dans l'arrivée d'eau de la maison et ne filtre que l'eau qui y entre. L'eau d'étang n'est pas filtrée ; l'eau de puits est propre.
-[*][b]Arrivée d'eau de la maison[/b] : posez-la contre le mur extérieur d'une maison et reliez-la à la pompe. Les éviers, baignoires, douches, toilettes et lave-linge que vous avez raccordés reçoivent l'eau courante, jusqu'à 3 étages au-dessus et au sous-sol. Voyant vert : eau propre. Voyant ambre : eau non filtrée, la maison n'en reçoit pas.
-[*][b]Arroseur[/b] : ouvrez sa vanne et il arrose 10 L toutes les 10 minutes sur le carré de 5 × 5 cases autour de lui, avec un jet qui fait tout le tour ; les plantes qui ont soif prennent leur part, le reste est perdu. Clic droit pour afficher la zone arrosée. Un quart de son eau se perd en l'air et les zombies l'entendent. Fermez-le une fois le potager arrosé.
-[*][b]Arroseur automatique[/b] (Électricité 2) : une minuterie l'ouvre 30 minutes toutes les 6 heures (de 1 à 24 h). Il lui faut un peu de courant.
-[*][b]Ligne de goutte-à-goutte[/b] (tuyau en caoutchouc, ruban adhésif, couteau) : posée entre vos rangs, elle arrose les cases de chaque côté, sans bruit, 0,5 L par case toutes les 10 minutes, rien de perdu en l'air. Toute eau convient, propre ou non. Pas de pompe ? Un raccord de baril réglé sur « Pomper » l'alimente par gravité.
-[*][b]Raccord de baril[/b] : entre un tuyau et un baril. « Remplir » : les tuyaux remplissent le baril ou une fontaine à eau. « Pomper » : la pompe tire le contenu du baril. Marche aussi avec l'essence, pour des barils seulement.
-[*][b]Compteur d'eau[/b] : posé en ligne sur un tuyau, il montre les litres des 10 dernières minutes.
-[/list]
+[img]https://raw.githubusercontent.com/cyberbobjr/LiveWater/main/docs/images/diagrams/diagram_fr.png[/img]
 
-[h2]Barils et réseau public[/h2]
+[h2]Comment ça marche[/h2]
+
+Un réseau a toujours la même forme. Une [b]pompe à eau[/b] (le producteur) puise dans ce qu'elle touche : un lac, un étang ou une rivière, un puits, un baril, et même une pompe de station-service. Les [b]tuyaux[/b] posés au sol transportent l'eau. Au bout, les [b]consommateurs[/b] prennent ce qu'il leur faut : l'arrivée d'eau de la maison, les arroseurs, le goutte-à-goutte, les raccords de remplissage. Seule une pompe met de l'eau dans les tuyaux, et l'eau avance toutes les 10 minutes de jeu.
+[url=https://github.com/cyberbobjr/LiveWater/wiki/FR-01-premiers-pas]Premiers pas[/url]
+
+[h2]Équipement[/h2]
+
+[img]https://raw.githubusercontent.com/cyberbobjr/LiveWater/main/docs/images/diagrams/equipment_fr.png[/img]
+
+Chaque pièce se pose comme un meuble : clic droit dans l'inventaire, « Placer ». Les tuyaux se raccordent et prennent leur forme tout seuls, passent sous les clôtures, jamais à travers un mur. On ramasse les pièces avec une clé.
+
+[h2]La pompe à eau[/h2]
+
+50 L toutes les 10 minutes, seulement quand un consommateur demande de l'eau. Il lui faut du courant : un générateur, le réseau public ou LiveWire. Elle ronronne, et les zombies l'entendent pendant qu'elle pompe. Elle s'use en une semaine de marche environ ; réparez-la avec 2 morceaux de ferraille et une clé. Son écran LCD donne l'état, le débit, le total pompé et la source. Une pompe suffit pour une maison et quatre arroseurs ; deux pompes additionnent leurs débits.
+
+[h2]L'eau courante dans la maison[/h2]
+
+Posez l'[b]arrivée d'eau de la maison[/b] contre le mur extérieur d'un bâtiment de la carte et amenez-y un tuyau. Chaque évier, baignoire, douche, toilette et machine à laver que vous avez raccordé à la clé à molette (l'action du jeu « Raccorder la plomberie ») reçoit l'eau, jusqu'à 3 étages au-dessus et 2 niveaux de sous-sol.
+L'eau d'étang et de rivière est sale : montez une [b]cartouche filtrante[/b] (charbon de bois et tissu, environ 500 L) dans l'arrivée. Voyant vert : l'eau propre passe. Voyant ambre : eau non filtrée, la maison ne reçoit rien. Une pompe sur un puits donne de l'eau propre, sans filtre. Une cartouche usée se recharge avec du charbon de bois et du tissu.
+
+[h2]Arroser le potager[/h2]
+
 [list]
-[*]Les barils n'atteignent la maison que par un raccord de baril posé sur un tuyau, et une pompe : sans pompe, un baril n'alimente que les lignes de goutte-à-goutte.
-[*]Votre propre base : une arrivée d'eau hors d'un bâtiment de la carte dessert les points d'eau dans un rayon de 12 cases.
-[*]Tant que l'eau de la ville coule, raccordez au réseau public un évier, une douche ou des toilettes posés par vous dans un bâtiment de la carte.
+[*][b]Arroseur[/b] : ouvrez sa vanne et il arrose 10 L toutes les 10 minutes sur les 5x5 cases autour de lui, jet qui tourne sur lui-même. Un quart se perd dans l'air, et les zombies l'entendent. Fermez-le quand le potager est arrosé.
+[*][b]Arroseur automatique[/b] (Électricité 2) : une minuterie arrose 30 minutes toutes les 6 heures (de 1 à 24 h). Il lui faut 5 W.
+[*][b]Ligne de goutte-à-goutte[/b] : posez-la dans l'allée entre deux rangs. Silencieuse, 0,5 L par case, rien de perdu, n'importe quelle eau convient.
 [/list]
+Clic droit sur un arroseur : « Afficher toutes les zones arrosées » éclaire chaque case arrosée.
+
+[h2]Barils, collecteurs d'eau de pluie et mangeoires[/h2]
+
+Le [b]raccord de remplissage[/b] se pose entre un tuyau et un baril, un collecteur d'eau de pluie, une fontaine à eau ou une mangeoire, et le remplit depuis le réseau, sans jamais dépasser sa contenance. L'eau y entre non traitée (souillée). Vos bêtes peuvent boire à la mangeoire.
+Pour envoyer l'eau d'un baril dans les tuyaux, posez une pompe à eau contre lui : la pompe vide le baril, puis son étang si elle en touche un.
+
+[h2]Vannes[/h2]
+
+Une vanne d'arrêt entre deux tuyaux coupe tout ce qui suit, sur-le-champ. Chaque arroseur a aussi sa vanne. Le compteur d'eau, posé sur la ligne, compte les litres qui le traversent.
+
+[h2]De l'essence dans les tuyaux[/h2]
+
+Posez la pompe à eau contre une pompe de station-service et elle pompe l'essence. Un seul liquide par réseau : celui de la première pompe posée. L'arrivée d'eau de la maison, les arroseurs et le goutte-à-goutte ne prennent que de l'eau et disent « Ce n'est pas de l'eau » ; le raccord de remplissage ne mélange jamais : vous pouvez amener l'essence jusqu'à un baril quelques cases plus loin.
 
 [h2]Toujours savoir pourquoi[/h2]
-« Afficher le réseau d'eau » met tout un réseau en surbrillance selon son état. Un évier sec dit pourquoi dans son menu au clic droit : pas raccordé, aucune arrivée d'eau, eau non filtrée, pression insuffisante, vanne fermée...
 
+« Afficher le réseau d'eau » colore tout un réseau selon son état. Un évier à sec dit pourquoi dans son menu au clic droit : pas raccordé, pas d'arrivée, eau non filtrée, pression trop faible, vanne fermée...
+[url=https://github.com/cyberbobjr/LiveWater/wiki/FR-03-diagnostic]Diagnostic[/url]
+
+[h2]Recettes[/h2]
+
+[img]https://raw.githubusercontent.com/cyberbobjr/LiveWater/main/docs/images/diagrams/recipe_book_fr.png[/img]
+
+11 recettes de fabrication, ci-dessus. Chaque pièce se démonte pour sa ferraille, dans l'inventaire ou sur place (menu « Démonter » du jeu). Tuyaux, vannes, raccords de remplissage, arroseurs, goutte-à-goutte et cartouches se trouvent aussi, rarement, dans les magasins de plomberie et de jardinage.
+
+[h2]Pendant votre absence[/h2]
+
+Le réseau continue de fonctionner : les pompes puisent, les arroseurs et le goutte-à-goutte arrosent, les barils se remplissent. Vous retrouvez les bonnes quantités à votre retour.
+
+[h2]Multijoueur[/h2]
+
+Le serveur vérifie chaque action ; réseaux, vannes et appareils sont sauvegardés et synchronisés.
+[url=https://github.com/cyberbobjr/LiveWater/wiki/FR-08-multijoueur]Guide du multijoueur[/url]
+
+[hr][/hr]
 [h2]Options et compatibilité[/h2]
 [list]
-[*]Options sandbox : débit et usure des pompes, durée des filtres, portées des arrivées d'eau, portée, débit et bornes de la minuterie des arroseurs, débit du goutte-à-goutte, conteneurs à remplir, correctif des lave-linge en multijoueur.
+[*]Options sandbox : débit et usure de la pompe, durée du filtre, portées de l'arrivée, portée et minuterie des arroseurs, débit du goutte-à-goutte, récipients à remplir.
 [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] est facultatif : la pompe tourne alors sur son onduleur (250 W) et apparaît dans son logiciel.
+[*]Tant que l'eau de la ville coule, un évier ou des toilettes que vous posez dans un bâtiment de la carte peuvent y être raccordés.
 [*]Incompatible avec LG Extended Plumbing et LG Connect To Water Supply (LiveWater couvre ce qu'ils font).
-[*]Retrait sans risque : un administrateur choisit « Retirer LiveWater de ce monde » avant de se désabonner.
-[*]Ouvert aux autres mods par une API publique.
-[*]Traduit en 11 langues.
+[*]Ouvert aux autres mods : API publique pour les producteurs et les consommateurs.
+[*]Retrait sans risque : un admin choisit « Retirer LiveWater de ce monde » avant de se désabonner.
 [/list]
 
+[h2]Documentation et Discord[/h2]
+
+[url=https://github.com/cyberbobjr/LiveWater/wiki/FR-Home]Wiki LiveWater[/url] · Code source : [url=https://github.com/cyberbobjr/LiveWater]GitHub[/url] · [url=https://discord.gg/QEsBya7hUA]Discord[/url]
+
+[h2]Soutenir le projet[/h2]
+
+Le mod vous plaît ? Un café aide à financer de nouvelles fonctions et des traductions.
+[url=https://ko-fi.com/Z8Z8QJV31][img]https://storage.ko-fi.com/cdn/kofi6.png?v=6[/img][/url]
+
 [h2]Crédits[/h2]
+
 Créé par batmanfr. Code et tuiles originaux ; aucun contenu repris d'autres mods. Licence MIT.
