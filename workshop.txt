@@ -1,4 +1,5 @@
 version=1
+id=3842634322
 title=LiveWater
 description=[h1]LiveWater - Running Water & Irrigation[/h1]
 description=
@@ -97,4 +98,4 @@ description=[h2]Credits[/h2]
 description=
 description=Created by batmanfr. Original code and tiles; no content taken from other mods. Licence MIT.
 tags=Build 42;Multiplayer
-visibility=private
+visibility=public
