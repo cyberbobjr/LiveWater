@@ -3,8 +3,8 @@
 Se désabonner en pleine partie laisserait les tuiles de LiveWater et ses réservoirs cachés dans le monde. Retirez-les
 d'abord :
 
-1. En **administrateur** sur un serveur (ou le joueur en solo), clic droit n'importe où, **Retirer LiveWater de ce
-   monde (admin)**, puis confirmez. C'est définitif.
+1. En **administrateur** sur un serveur, ou en solo dans une partie lancée en **mode debug** (option de lancement
+   `-debug` dans Steam), clic droit n'importe où, **Retirer LiveWater de ce monde (admin)**, puis confirmez. C'est définitif.
 2. Tuyaux, pompes, arroseurs, arrivées d'eau, raccords de remplissage et compteurs d'eau des zones chargées disparaissent,
    avec les réservoirs cachés des arrivées d'eau. Éviers, douches et toilettes
    restent raccordés, simplement sans source.

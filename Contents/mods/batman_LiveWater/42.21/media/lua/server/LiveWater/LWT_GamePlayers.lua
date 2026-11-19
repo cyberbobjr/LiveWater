@@ -11,13 +11,14 @@ if isClient() then return end
 --   hasTool(player, tag)      item with that tag ("base:pipewrench") in the inventory
 --   tell(player, key)         show a translated note: sent to the client on a server, shown
 --                             directly in solo (sendServerCommand does nothing in solo)
---   isAdmin(player)           may remove LiveWater from the world: role capability
---                             UseDebugContextMenu on a server (vanilla ClientCommands.lua), always in solo
+--   isAdmin(player)           may remove LiveWater from the world: admin role in multiplayer, debug
+--                             mode in solo (LWT_RemovalRight, ADR-016)
 --   all()                     the players of the game (online players on a server, local ones
 --                             in solo)
 
 local Notice = require "LiveWater/LWT_Notice"
 local Protocol = require "LiveWater/LWT_Protocol"
+local RemovalRight = require "LiveWater/LWT_RemovalRight"
 
 local GamePlayers = {}
 GamePlayers.__index = GamePlayers
@@ -69,8 +70,7 @@ function GamePlayers:hasTool(player, tag)
 end
 
 function GamePlayers:isAdmin(player)
-    if not isServer() then return true end
-    return player:getRole():hasCapability(Capability.UseDebugContextMenu)
+    return RemovalRight.allowed(player)
 end
 
 function GamePlayers:all()

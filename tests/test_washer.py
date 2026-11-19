@@ -89,7 +89,8 @@ class WasherFix(unittest.TestCase):
         self.assertIn("type = boolean", block)
         self.assertIn("default = true", block)
         with open(os.path.join(MEDIA, "..", "mod.info"), encoding="utf-8") as f:
-            self.assertIn("incompatible=\\LGExtendedPlumbing,\\LGMainsWater", f.read())
+            # LG mods: ADR-001 Q09; Plysken Irrigation Pipes (id PIP, Workshop 3739173520): user, 2026-11-19
+            self.assertIn("incompatible=\\LGExtendedPlumbing,\\LGMainsWater,\\PIP", f.read())
 
 
 if __name__ == "__main__":

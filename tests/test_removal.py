@@ -142,6 +142,50 @@ class AdminMenu(unittest.TestCase):
         self.assertEqual(lua.eval("SENT[1][1]"), "removeLiveWater")
 
 
+RIGHT = r"""
+CLIENT, SERVER, DEBUG, ADMIN = false, false, false, false
+function isClient() return CLIENT end
+function isServer() return SERVER end
+function isDebugEnabled() return DEBUG end
+Capability = { UseDebugContextMenu = "debug" }
+PLAYER = { getRole = function() return { hasCapability = function(_, c) return ADMIN and c == "debug" end } end }
+Right = require("LiveWater/LWT_RemovalRight")
+"""
+
+
+class RemovalRight(unittest.TestCase):
+    """ADR-016 D01: debug mode in solo, the admin role in multiplayer."""
+
+    def right(self, client, server, debug, admin):
+        lua = new_lua(API)
+        lua.execute(RIGHT)
+        lua.execute("CLIENT, SERVER, DEBUG, ADMIN = %s, %s, %s, %s" % tuple(
+            str(v).lower() for v in (client, server, debug, admin)))
+        return lua.eval("Right.allowed(PLAYER)")
+
+    def test_solo_needs_debug_mode(self):
+        self.assertFalse(self.right(False, False, False, True))
+        self.assertTrue(self.right(False, False, True, False))
+
+    def test_multiplayer_needs_the_admin_role_even_in_debug(self):
+        for client, server in ((True, False), (False, True)):
+            self.assertFalse(self.right(client, server, True, False))
+            self.assertTrue(self.right(client, server, False, True))
+
+    def test_the_menu_is_hidden_in_a_plain_solo_game(self):
+        lua = new_lua(API, "client/LiveWater/LWT_AdminMenu.lua")
+        lua.execute(MENU)
+        lua.execute("function isClient() return false end function isServer() return false end"
+                    " function isDebugEnabled() return DEBUG == true end ALLOWED = true menu()")
+        self.assertEqual(lua.eval("#OPTIONS"), 0)
+        lua.execute("DEBUG = true menu()")
+        self.assertEqual(lua.eval("#OPTIONS"), 1)
+
+    def test_the_authority_uses_the_same_rule(self):
+        with open(os.path.join(MEDIA, "lua", "server", "LiveWater", "LWT_GamePlayers.lua"), encoding="ascii") as f:
+            self.assertIn('RemovalRight.allowed(player)', f.read())
+
+
 class Texts(unittest.TestCase):
     def test_translations(self):
         tr = os.path.join(MEDIA, "lua", "shared", "Translate")

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0-beta3 — 2026-11-19
+
+- **Compatibility:** LiveWater is now marked incompatible with Plysken Irrigation Pipes, which lays its own irrigation network; LiveWater's pipes, sprinklers and drip lines cover it.
+- **Remove LiveWater From This World:** in singleplayer the option no longer shows in every right-click menu: it is offered only in a game started in debug mode (`-debug` launch option). On a server it stays for admins only.
+
 ## 1.0.0-beta2 — 2026-11-19
 
 - **Experience:** building water parts now trains Welding (pipes, valves, fill fittings, water meter, sprinklers, house water inlet: 5 to 10 XP), and the water pump and automatic sprinkler keep training Electrical. Dismantling gives a little experience in the same skill. Filter cartridges and drip lines give none.

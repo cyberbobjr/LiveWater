@@ -77,7 +77,7 @@
 [*]Настройки песочницы: насос, фильтры, радиусы вводов, дождеватели, шланги, ёмкости.
 [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] необязателен: тогда насос работает от его инвертора (250 Вт).
 [*]Пока идёт городская вода, раковину или унитаз в здании карты можно подключить к ней.
-[*]Несовместим с LG Extended Plumbing и LG Connect To Water Supply.
+[*]Несовместим с LG Extended Plumbing, LG Connect To Water Supply и Plysken Irrigation Pipes.
 [*]Открыт для модов: публичный API.
 [*]Безопасное удаление: админ выбирает «Убрать LiveWater из этого мира (админ)» перед отпиской.
 [/list]

@@ -317,6 +317,10 @@ fichiers installés, confirmé statiquement) ; « LG Connect To Water Supply » 
   `batman_LiveWater` : `incompatible=\LGExtendedPlumbing,\LGMainsWater`, puisque LiveWater couvre leurs
   fonctionnalités et que deux mods qui changent la source d'eau des points d'eau risquent de les alimenter deux fois
   (même choix que Live Wire Extended face à LG Extended Electricity, D-40 de Live Wire).
+  Mise à jour du 2026-11-19, demande de l'utilisateur (« rajoutes un mod incompatible : Plysken Irrigation pipe ») :
+  `\PIP` (Plysken Irrigation Pipes, Workshop 3739173520, variante `42.1`) s'ajoute à la liste, qui devient
+  `incompatible=\LGExtendedPlumbing,\LGMainsWater,\PIP` ; ce mod pose son propre réseau de tuyaux d'irrigation
+  alimenté par des barils de pluie, que LiveWater couvre (tuyaux, arroseurs, goutte-à-goutte).
 
 ## Arbitrages ouverts
 

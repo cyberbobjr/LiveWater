@@ -2,8 +2,8 @@
 
 Unsubscribing in the middle of a game would leave LiveWater tiles and hidden tanks in the world. Remove them first:
 
-1. As an **admin** on a server (or the player in singleplayer), right-click anywhere and choose **Remove LiveWater
-   From This World (admin)**, then confirm. It cannot be undone.
+1. As an **admin** on a server, or in singleplayer in a game started in **debug mode** (`-debug` launch option in
+   Steam), right-click anywhere and choose **Remove LiveWater From This World (admin)**, then confirm. It cannot be undone.
 2. Every LiveWater pipe, pump, sprinkler, house inlet, fill fitting and water meter in the loaded areas disappears,
    with the hidden tanks of the inlets. Sinks, showers and toilets stay plumbed,
    simply without a source.

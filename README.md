@@ -6,7 +6,7 @@ on an open water network (producers and consumers, like Live Wire) that other mo
 
 - Mod `batman_LiveWater`. LiveWire is optional: with LiveWire (API revision 6 or later) the pump and the sprinkler
   timers are billed by its inverter; without it, the vanilla power rule applies.
-- Not compatible with LG Extended Plumbing and LG Connect To Water Supply.
+- Not compatible with LG Extended Plumbing, LG Connect To Water Supply and Plysken Irrigation Pipes.
 - Player guide: [wiki (English)](docs/wiki/en/Home.md), [wiki (français)](docs/wiki/fr/Home.md).
 - Modders: [public API](docs/wiki/en/06-for-modders.md).
 - Development documentation (French): [docs/](docs/README.md). Changes: [CHANGELOG.md](CHANGELOG.md).

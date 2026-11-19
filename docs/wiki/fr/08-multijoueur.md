@@ -12,6 +12,9 @@
 - LiveWater est **incompatible** avec *LG Extended Plumbing* et *LG Connect To Water Supply* : tous deux changent la
   source d'eau des points d'eau, et deux mods de ce genre rempliraient deux fois le même évier. LiveWater couvre ce
   qu'ils font.
+- LiveWater est aussi **incompatible** avec *Plysken Irrigation Pipes* : ce mod pose ses propres tuyaux d'irrigation,
+  alimentés par des barils de pluie, qui arrosent les cultures ; les tuyaux, arroseurs et goutte-à-goutte de LiveWater
+  font le même travail.
 - L'option sandbox *Corriger les lave-linge raccordés* (activée par défaut) corrige un défaut du jeu sur serveur : les
   lave-linge alimentés par une arrivée d'eau apparaissent raccordés aux joueurs et s'arrêtent quand ils n'ont plus
   d'eau.

@@ -77,7 +77,7 @@ Sunucu her eylemi denetler; ağlar, vanalar ve tesisatlar kaydedilir ve senkroni
 [*]Sandbox seçenekleri: pompa debisi ve aşınması, filtre ömrü, su girişi menzilleri, yağmurlayıcı menzili ve zamanlayıcısı, damla hortum debisi, doldurulacak kaplar.
 [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] isteğe bağlıdır: pompa o zaman kendi invertöründen (250 W) çalışır ve yazılımında görünür.
 [*]Şehir suyu akarken, haritadaki bir binaya koyduğunuz bir lavabo ya da tuvalet şehir suyuna bağlanabilir.
-[*]LG Extended Plumbing ve LG Connect To Water Supply ile uyumlu değildir (LiveWater onların yaptıklarını kapsar).
+[*]LG Extended Plumbing, LG Connect To Water Supply ve Plysken Irrigation Pipes ile uyumlu değildir (LiveWater onların yaptıklarını kapsar).
 [*]Üretici ve tüketiciler için genel API ile diğer modlara açıktır.
 [*]Güvenli kaldırma: bir yönetici, abonelikten çıkmadan önce "LiveWater'ı bu dünyadan kaldır (admin)" seçeneğini seçer.
 [/list]
