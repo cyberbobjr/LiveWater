@@ -21,7 +21,7 @@ lave-linge) sont surlignés aussi :
 | vert | raccordé à l'arrivée d'eau, avec de l'eau |
 | rouge | raccordé à l'arrivée d'eau, mais à sec |
 | ambre | pas raccordé (utilisez une clé à tuyau dessus) |
-| gris | alimenté par autre chose (baril au-dessus, pompe de LiveWire) |
+| gris | alimenté par autre chose (pompe de LiveWire) |
 
 L'infobulle de *Masquer le réseau d'eau* compte les sorties et les appareils de chaque état.
 
@@ -53,15 +53,13 @@ Clic droit sur un évier, une baignoire, une douche, des toilettes ou un lave-li
 |---|---|
 | pas encore raccordé | utilisez une clé anglaise dessus (action « Raccorder » du jeu) |
 | aucune arrivée d'eau ne le dessert | posez une arrivée d'eau sur ce bâtiment, ou rapprochez-la (portée, étages) |
-| son réservoir appartient à autre chose, et il est vide | un autre système (baril au-dessus, pompe de LiveWire) l'alimente |
+| son réservoir appartient à autre chose, et il est vide | un autre système (pompe de LiveWire) l'alimente |
 | l'eau arrive | attendez jusqu'à 10 minutes |
 | l'eau n'est pas filtrée : montez un filtre dans l'arrivée d'eau | montez ou remplacez le filtre de l'arrivée d'eau, ou pompez dans un puits |
 | pression insuffisante | moins de sorties sur cette pompe, ou une deuxième pompe |
 | pas d'eau dans les tuyaux | la pompe est éteinte, en panne ou sans courant |
 | une vanne est fermée | ouvrez-la |
-| les barils sont plus bas que ce point d'eau | ajoutez une pompe au réseau, ou du courant sur la case du baril |
-| les barils sont vides ou contiennent autre chose que de l'eau | remplissez-les ou videz-les |
-| l'arrivée d'eau n'a ni pompe ni baril | reliez-y une pompe ou raccordez un baril |
+| pression insuffisante dans les tuyaux (arrivée d'eau sans pompe) | reliez une pompe à l'arrivée d'eau |
 | les tuyaux transportent de l'essence | ce réseau transporte de l'essence, pas de l'eau |
 
 > Capture à faire : le menu au clic droit d'un évier sec, avec sa ligne « Pas d'eau ».

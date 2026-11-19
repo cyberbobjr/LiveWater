@@ -2,6 +2,7 @@
     "Base.Mov_LiveWater_Pipe": "Tubería de agua",
     "Base.Mov_LiveWater_PondPump": "Bomba de estanque",
     "LiveWater.WaterFilter": "Cartucho filtrante de agua",
+    "LiveWater.WaterFilterSpent": "Cartucho filtrante de agua usado",
     "Base.Mov_LiveWater_FlowMeter": "Contador de agua",
     "Base.Mov_LiveWater_DripLine": "Línea de goteo",
     "Base.Mov_LiveWater_Valve": "Válvula de cierre",

@@ -17,15 +17,15 @@ Un jour, l'eau ne coule plus au robinet. Ramenez-la vous-même : une pompe d'ét
 [*][b]Compteur d'eau[/b] : posé en ligne sur un tuyau, il montre les litres des 10 dernières minutes.
 [/list]
 
-[h2]Pas de pompe ? Barils et réseau public[/h2]
+[h2]Barils et réseau public[/h2]
 [list]
-[*]Raccordez à l'arrivée d'eau, à la clé anglaise, un récupérateur d'eau de pluie ou un baril posé dans la maison ou sur son toit. Il alimente son étage et ceux du dessous (tous les étages avec une pompe ou du courant). Les barils se vident ensemble ; gardez-en un en réserve.
+[*]Les barils n'atteignent la maison que par un raccord de baril posé sur un tuyau, et une pompe : sans pompe, un baril n'alimente que les lignes de goutte-à-goutte.
 [*]Votre propre base : une arrivée d'eau hors d'un bâtiment de la carte dessert les points d'eau dans un rayon de 12 cases.
 [*]Tant que l'eau de la ville coule, raccordez au réseau public un évier, une douche ou des toilettes posés par vous dans un bâtiment de la carte.
 [/list]
 
 [h2]Toujours savoir pourquoi[/h2]
-« Afficher le réseau d'eau » met tout un réseau en surbrillance selon son état. Un évier sec dit pourquoi dans son menu au clic droit : pas raccordé, aucune arrivée d'eau, eau non filtrée, pression insuffisante, vanne fermée, barils trop bas ou vides...
+« Afficher le réseau d'eau » met tout un réseau en surbrillance selon son état. Un évier sec dit pourquoi dans son menu au clic droit : pas raccordé, aucune arrivée d'eau, eau non filtrée, pression insuffisante, vanne fermée...
 
 [h2]Options et compatibilité[/h2]
 [list]

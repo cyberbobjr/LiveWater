@@ -2,6 +2,7 @@
     "Base.Mov_LiveWater_Pipe": "Tuyau d'eau",
     "Base.Mov_LiveWater_PondPump": "Pompe d'étang",
     "LiveWater.WaterFilter": "Cartouche filtrante",
+    "LiveWater.WaterFilterSpent": "Cartouche filtrante usée",
     "Base.Mov_LiveWater_FlowMeter": "Compteur d'eau",
     "Base.Mov_LiveWater_DripLine": "Ligne de goutte-à-goutte",
     "Base.Mov_LiveWater_Valve": "Vanne d'arrêt",

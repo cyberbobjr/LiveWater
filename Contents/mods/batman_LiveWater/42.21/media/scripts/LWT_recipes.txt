@@ -68,6 +68,25 @@ module LiveWater
         }
     }
 
+    /* Recharge a spent cartridge (ADR-009 D02): the casing is kept, fresh charcoal and a cloth go in. */
+    craftRecipe LWTRechargeWaterFilter
+    {
+        timedAction = Making,
+        time = 100,
+        Tags = AnySurfaceCraft,
+        category = LiveWater,
+        inputs
+        {
+            item 1 [LiveWater.WaterFilterSpent] mode:destroy,
+            item 2 tags[base:charcoal],
+            item 1 [Base.RippedSheets] mode:destroy,
+        }
+        outputs
+        {
+            item 1 LiveWater.WaterFilter,
+        }
+    }
+
     /* Shut-off valve (ADR-001 D02, P11): a gate valve on a pipe section; set down between two pipes. */
     craftRecipe LWTBuildValve
     {

@@ -44,9 +44,8 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
   source trouvée), `LWT_PlaceRules.lua` (règles de pose au curseur de meuble vanilla : enveloppe
   `canPlaceMoveableInternal` et le panneau d'information, refus seulement pour nos tuiles), `LWT_Mirror.lua` (état
   d'une pièce recopié dans `movableData` de son objet), `LWT_Reasons.lua` (raison de refus → clé de traduction).
-- `LWT_Reserve.lua` (pur) : réserve partagée d'une maison (barils qui se vident ensemble, mis en réserve, gravité,
-  raison d'un manque). `LWT_WaterObjects.lua` (adaptateur partagé) : règles des objets d'eau (point d'eau, baril
-  raccordable, marques `LiveWaterRelay` et `LiveWaterBarrel`, marques d'autres mods jamais touchées, eau de la ville).
+- `LWT_WaterObjects.lua` (adaptateur partagé) : règles des objets d'eau (point d'eau, réservoir utilisable, marque
+  `LiveWaterRelay`, marques d'autres mods jamais touchées, eau de la ville).
 - `LWT_CityWater.lua` (pur) : règle du raccord d'un point d'eau posé au réseau public (menu et commande).
 - `LWT_Diagnosis.lua` (pur) : raison du manque d'eau d'une arrivée d'eau et ligne d'un point d'eau sans eau.
 - `LWT_Protocol.lua` : noms du module et des commandes réseau partagés par client et serveur ; `LWT_Notice.lua` : note
@@ -121,8 +120,6 @@ commandes du filtre) ; un refus est dit au joueur par clé de traduction.
 - `LWT_Relays.lua` : réservoirs relais des arrivées d'eau (gestionnaire `houseInlet` et tâche de l'horloge) : pose,
   retrait, besoin, remplissage, relais en attente d'une case chargée (`orphans`) ; `LWT_GamePlumbing.lua` : adaptateur
   du jeu (bâtiment, points d'eau, objets relais).
-- `LWT_HouseBarrels.lua` : barils raccordés à une arrivée d'eau (raccord, débranchement, mise en réserve, tâche de
-  l'horloge après les relais : l'eau des barils remplit les relais selon `LWT_Reserve`).
 - `LWT_Plants.lua` : plantes d'un arroseur ou d'une ligne de goutte-à-goutte (gestionnaires `sprinkler` et `drip`, une
   instance par type avec sa stratégie de zone injectée : besoin = débit de la sortie, que les plantes aient soif ou non,
   ADR-006 D01 ; l'eau reçue moins la part perdue en l'air donne des doses entières aux plantes qui ont besoin d'eau, les
@@ -134,8 +131,9 @@ commandes du filtre) ; un refus est dit au joueur par clé de traduction.
   relevé, écrit une fois dans le vrai conteneur au `LoadChunk` ou au premier pas chargé, ADR-006 D06) ; `LWT_GameContainers.lua` : adaptateur (baril,
   récupérateur, pompe à essence d'une station).
 - `LWT_Removal.lua` : retrait de LiveWater d'un monde (P21) : pièces des cases chargées retirées, les autres au
-  chargement de leur zone (tâche de l'horloge, drapeau persistant), relais et barils par `partRemoved`.
-- `LWT_Diagnostics.lua` : tâche de l'horloge, raison du manque d'eau notée sur les relais vides (`LWT_Diagnosis`).
+  chargement de leur zone (tâche de l'horloge, drapeau persistant), relais par `partRemoved`.
+- `LWT_Diagnostics.lua` : tâche de l'horloge, raison du manque d'eau notée sur les relais vides (`LWT_Diagnosis` ;
+  sans pompe dans son réseau, une arrivée d'eau n'a pas de pression, ADR-009 D03).
 - `LWT_WasherFix.lua` : tâche de l'horloge, serveur seulement : état des lave-linge servis par nos relais renvoyé aux
   clients (arrêt à sec, raccord), option `WasherFix`.
 - `LWT_Power.lua` : seul adaptateur du courant. À `OnInitWorld`, si `LiveWire.API.revision >= 6`, inscrit chaque type
@@ -159,8 +157,7 @@ commandes du filtre) ; un refus est dit au joueur par clé de traduction.
 `complete`, donc jamais confiée au serveur), `LWT_PartMenu.lua` (menu générique : les actions que les capacités d'une pièce proposent, crochet
 `actions`, lues dans l'état recopié sur l'objet ; une action qui demande un objet n'apparaît que si le joueur le
 porte) `LWT_PumpSounds.lua` (boucle sonore jouée localement sur un émetteur libre, à l'ordre du serveur, aucun abonnement
-par image) et `LWT_NoticeClient.lua` (affiche les notes `notice` du serveur), `LWT_BarrelMenu.lua` (raccorder, débrancher, mettre
-en réserve un baril, lu dans sa marque), `LWT_FixtureMenu.lua` (ligne « Pas d'eau : raison » d'un point d'eau sans eau), `LWT_CityWaterMenu.lua`
+par image) et `LWT_NoticeClient.lua` (affiche les notes `notice` du serveur), `LWT_FixtureMenu.lua` (ligne « Pas d'eau : raison » d'un point d'eau sans eau), `LWT_CityWaterMenu.lua`
 (« Raccorder au réseau public »), `LWT_WasherClient.lua` (état « raccordé » d'un lave-linge marqué par le serveur,
 appliqué à son menu et à son interrupteur), `LWT_SprinklerJet.lua` (jet animé des arroseurs, **seul abonnement par image
 du mod**, D08a : `OnTick` seulement tant qu'un arroseur en marche est chargé, 6 images par seconde au plus, un tour

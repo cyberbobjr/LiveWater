@@ -2,6 +2,7 @@
     "LWTCutPipeSections": "配管の部品を切断する",
     "LWTBuildPondPump": "池のポンプを作る",
     "LWTMakeWaterFilter": "浄水カートリッジを作る",
+    "LWTRechargeWaterFilter": "浄水カートリッジを詰め替える",
     "LWTBuildValve": "止水バルブを作る",
     "LWTBuildFlowMeter": "水道メーターを作る",
     "LWTBuildHouseInlet": "家の給水口を作る",
@@ -18,5 +19,6 @@
     "LWTDismantleSprinklerAuto": "自動スプリンクラーを分解する",
     "LWTDismantleBarrelFitting": "樽の取り付け部を分解する",
     "LWTDismantleDripLine": "点滴チューブを分解する",
-    "LWTDismantleWaterFilter": "浄水カートリッジを分解する"
+    "LWTDismantleWaterFilter": "浄水カートリッジを分解する",
+    "LWTDismantleWaterFilterSpent": "使用済み浄水カートリッジを分解する"
 }

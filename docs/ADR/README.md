@@ -10,3 +10,4 @@
 | [006](termines/006-vision-debit.md) | Vision débit : une sortie d'arrosage ouverte consomme son débit | Accepté (2026-11-18) | [plan-006](../ADR-plans/termines/plan-006-vision-debit.md) | Terminé le 2026-11-19 |
 | [007](termines/007-demontage-et-butin.md) | Démontage des équipements et butin | Accepté (2026-11-19) | [plan-007](../ADR-plans/termines/plan-007-demontage-et-butin.md) | Terminé le 2026-11-19 |
 | [008](008-lisibilite-du-reseau.md) | Lisibilité du réseau : raccord coudé, noms, compteur, pompe, appareils de la maison | Accepté (2026-11-19) | [plan-008](../ADR-plans/plan-008-lisibilite-du-reseau.md) | En cours |
+| [009](009-cartouche-rechargeable-et-barils.md) | Cartouche rechargeable ; plus de baril raccordé directement à la maison | Accepté (2026-11-19) | [plan-009](../ADR-plans/plan-009-cartouche-rechargeable-et-barils.md) | En cours |

@@ -22,7 +22,7 @@ Recipe **Build Pond Pump** (Electrical 2): 1 metal pipe, 2 small metal sheets, 3
 4 screws, with a screwdriver and a wrench (kept). It gives a pond pump (15 kg) and 15 Electrical XP.
 
 Set it down like furniture (right-click it in your inventory, Place) **right next to natural water**: a lake, a pond,
-a river, or a well (see [Wells](#13-wells)). Anywhere else the cursor turns red: *Must stand next to natural water*.
+a river, or a well (see [Wells](#12-wells)). Anywhere else the cursor turns red: *Must stand next to natural water*.
 
 The pump needs **power**: a generator or the public grid on its square, or LiveWire (see [LiveWire](04-livewire.md)).
 It gives **50 L every 10 minutes** while something downstream needs water, and stops on its own otherwise. A pump that is
@@ -105,7 +105,7 @@ Its light tells you what it does:
 - **amber**: the water is **unfiltered**, the house gets **none** (fit a filter in the inlet, replace a worn-out one,
   or use a well).
 
-A fixture already fed by something else (a LiveWire pump, a barrel above it) is left alone.
+A fixture already fed by something else (a LiveWire pump) is left alone.
 
 A sink, shower, bathtub, toilet or washing machine that this inlet feeds shows the water it holds in its right-click
 menu, for example a greyed line **Water: 18 L / 25 L**.
@@ -118,7 +118,7 @@ Pond and river water is not clean. Recipe **Make Water Filter**: 2 charcoal and 
 cartridge**. It cleans about **500 L**; its condition shows what is left.
 
 The filter goes in the **house water inlet**: right-click it, **Fit Water Filter**, **Replace Water Filter** or
-**Remove Water Filter**. A cartridge taken out keeps its wear; a worn-out one is thrown away. The inlet shows the
+**Remove Water Filter**. A cartridge taken out keeps its wear. A worn-out one comes back as a **Spent Water Filter Cartridge**: recharge it with 2 charcoal and 1 ripped sheet (recipe **Recharge Water Filter Cartridge**), or dismantle it for its cloth. The inlet shows the
 filter canister under its box. It cleans only the water that enters the house: sprinklers, drip lines and barrels take
 the network's water as it is and never wear the cartridge.
 
@@ -195,31 +195,22 @@ behind it. Right-click it:
 
 Its look follows the mode, the shape of the collector and the pipes around it. **Information** shows the mode and the litres in the barrel.
 
+A barrel reaches the network only through a barrel fitting, never straight into the house: without a pump, only drip
+lines get its water.
+
 **Gasoline.** A fitting set to Pump on a gasoline barrel or a gas station pump makes a gasoline network. It only fills
 barrels (empty, or already holding gasoline) through fittings set to Fill. House inlets and sprinklers get nothing and
 say so.
 
 ![Two barrel fittings on vanilla rain collectors: a round barrel between two pipes (tee) and a crate where three pipes meet (cross)](../../images/screenshots/barrel-fittings.jpg)
 
-## 10. Barrels connected to the house
-
-No pump? Right-click a rain collector or a barrel standing **inside the house or on its roof**: **Connect to the House
-Water Inlet** (with a pipe wrench). No pipe is needed, only a house water inlet on that building.
-
-- A barrel feeds **its own floor and the floors below** (gravity). With a pump on the inlet's network, or power on the
-  barrel's square, it feeds every floor.
-- All connected barrels drain **together**. **Keep in Reserve (used last)** sets one aside: it is used only once the
-  others are empty. **Use With the Other Barrels** puts it back.
-- An empty barrel stays connected. A barrel holding anything other than water gives nothing until it is emptied.
-- **Disconnect from the House Water Inlet**, or carry the barrel away: it is no longer connected.
-
-## 11. City water
+## 10. City water
 
 While the city water still runs, right-click a sink, bathtub, shower, toilet or washing machine that **you set down**
 inside a room of a building of the map: **Connect to the City Water**. It then works like the original fixtures:
 unlimited water until the city water is cut off.
 
-## 12. Water meter
+## 11. Water meter
 
 Recipe **Build Water Meter**: 1 water pipe, 1 small metal sheet, 2 screws, with a screwdriver (kept). Set it down
 inline on a pipe; it follows the pipe's direction and joins only the two pipes on its axis. **Information** opens a
@@ -229,26 +220,26 @@ litres of the last 10 minutes, and the fluid (clean water, unfiltered water or g
 
 ![The water meter window: rollers, sweep hand, total and last minutes](../../images/screenshots/meter-window-en.jpg)
 
-## 13. Wells
+## 12. Wells
 
 The same pond pump set down next to a **well** draws **clean water**: the house gets it without a filter. Its
 Information says *Source: well (clean water)*.
 
 > Screenshot to do: a pond pump next to a well.
 
-## 14. Dismantle a part
+## 13. Dismantle a part
 
 Every LiveWater part can be dismantled in your inventory, with a recipe **Dismantle ...** (crafting window, Assembly
 or Electrical): a pipe wrench or a wrench for the plumbing parts (pipe, valve, water meter, house inlet, sprinkler,
 barrel fitting), a screwdriver for the pond pump and the automatic sprinkler, a knife for a drip line or a water
 filter. You never get back more than the part cost, and only scrap: iron pieces, scrap metal, screws, electronics
-scrap, wire. A water filter gives back a piece of cloth, a drip line a rubber band.
+scrap, wire. A water filter, new or spent, gives back a piece of cloth, a drip line a rubber band.
 
 A part set down can also be dismantled where it stands, with the game's own **Disassemble** menu and the same tool
 (Maintenance raises your chance for the plumbing parts, Electrical for the pump and the automatic sprinkler). It leaves
 the network as if you had picked it up. A drip line is picked up by hand, then dismantled in the inventory.
 
-## 15. Finding parts
+## 14. Finding parts
 
 Some parts can be found instead of built, rarely: water pipes, shut-off valves and barrel fittings in plumbing supplies
 and tool crates, sprinklers, drip lines and water filters in garden stores and farming supplies. The pond pump, the

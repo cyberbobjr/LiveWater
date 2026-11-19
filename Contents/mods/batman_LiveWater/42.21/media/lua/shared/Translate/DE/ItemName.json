@@ -2,6 +2,7 @@
     "Base.Mov_LiveWater_Pipe": "Wasserrohr",
     "Base.Mov_LiveWater_PondPump": "Teichpumpe",
     "LiveWater.WaterFilter": "Filterkartusche",
+    "LiveWater.WaterFilterSpent": "Verbrauchte Filterkartusche",
     "Base.Mov_LiveWater_FlowMeter": "Wasserzähler",
     "Base.Mov_LiveWater_DripLine": "Tropfschlauch",
     "Base.Mov_LiveWater_Valve": "Absperrventil",

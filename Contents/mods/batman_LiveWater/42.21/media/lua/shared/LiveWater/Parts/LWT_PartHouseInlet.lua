@@ -5,7 +5,8 @@
 -- docs/annexes/conception/tuiles-contrat.md): 40-43 filtered (green light), 44-47 unfiltered
 -- (amber light, D17); with a filter cartridge fitted, 176-179 green, 180-183 amber (worn
 -- cartridge); facings S, E, N, W. The charcoal cartridge (LiveWater.WaterFilter, 500 L) fits in
--- it and cleans only the water the house takes (ADR-005 D01, D04).
+-- it and cleans only the water the house takes (ADR-005 D01, D04); worn out, it comes back as
+-- LiveWater.WaterFilterSpent (ADR-009 D01).
 -- Look keys (LWT_Parts:look joins the capability tokens in kind order): filter ("filter" while
 -- a cartridge is in) then outlet ("filtered" or "unfiltered").
 
@@ -16,7 +17,7 @@ LiveWater.API.registerPart("LiveWater:HouseInlet", {
     -- variant key -> first index of its four facings
     variants = Tiles.variants({ filtered = 40, unfiltered = 44, filter_filtered = 176, filter_unfiltered = 180 }),
     capabilities = {
-        filter = { item = "LiveWater.WaterFilter", capacity = 500 },
+        filter = { item = "LiveWater.WaterFilter", spent = "LiveWater.WaterFilterSpent", capacity = 500 },
         outlet = { type = "houseInlet" },
     },
 })

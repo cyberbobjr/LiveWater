@@ -1,29 +1,31 @@
-"""E26: player base, diagnostic, pickup (ADR-001 D28, L09, L11, L12): outside a map building the inlet serves the plumbed
+"""E26: player base, diagnostic (ADR-001 L09, L11; ADR-009 D03): outside a map building the inlet serves the plumbed
 fixtures within a range (12 by default, sandbox) up to 3 floors above; a fixture without water says why in one
-translated line; a barrel set down again does not stay connected to its old house."""
+translated line; an inlet without pump says it has no pressure."""
 import json
 import os
 import unittest
 
 from lwt_fakes import services
 from lwt_harness import ROOT, new_lua
-from test_barrels import BARRELS
 from test_inlet import BENCH, INLET, POND, TILE
 
 API = "shared/LiveWater/LWT_API.lua"
 MEDIA = os.path.join(ROOT, "Contents", "mods", "batman_LiveWater", "42.21", "media")
 
 DIAG = r"""
-DIAGNOSTICS = require("LiveWater/LWT_Diagnostics").new({ relays = RELAYS, barrels = BARRELS,
+PUMPED = {}
+DIAGNOSTICS = require("LiveWater/LWT_Diagnostics").new({ relays = RELAYS,
     pumped = function(part) return PUMPED[part.x .. "," .. part.y .. "," .. part.z] == true end })
-CLOCK.chores = { RELAYS, BARRELS, DIAGNOSTICS }
+CLOCK.chores = { RELAYS, DIAGNOSTICS }
+-- Two floors served: a fixture on the ground floor (2, 12, 0) and one upstairs (6, 16, 1).
+PLUMB:addFixture(2, 12, 0) PLUMB:addFixture(6, 16, 1)
+place("LiveWater:HouseInlet", 5, 9, "batman_livewater_01_42")
 """
 
 
 def bench():
     lua = services(new_lua, INLET, POND)
     lua.execute(BENCH)
-    lua.execute(BARRELS)
     lua.execute(DIAG)
     return lua
 
@@ -40,7 +42,6 @@ class BaseMode(unittest.TestCase):
         self.assertFalse(lua.eval("A:contains(110, 110, 0)"))
         self.assertTrue(lua.eval("A:contains(101, 101, 3)"))
         self.assertFalse(lua.eval("A:contains(101, 101, 4)"))
-        self.assertTrue(lua.eval("A:reaches(101, 101, 4)"))
 
     def test_the_range_is_a_sandbox_option(self):
         lua = bench()
@@ -86,18 +87,17 @@ class Diagnosis(unittest.TestCase):
         self.lua = new_lua(API)
         self.lua.execute("D = require('LiveWater/LWT_Diagnosis')")
 
-    def inlet(self, state, short, barrels, pumped):
-        return self.lua.eval("D.inlet(%s, %s, %s, %s)" % (
-            json.dumps(state) if state else "nil", json.dumps(short) if short else "nil",
-            "true" if barrels else "false", "true" if pumped else "false"))
+    def inlet(self, state, pumped):
+        return self.lua.eval("D.inlet(%s, %s)" % (json.dumps(state) if state else "nil", "true" if pumped else "false"))
 
     def test_the_inlet_reason(self):
-        self.assertEqual(self.inlet("unfiltered", None, False, True), "unfiltered")
-        self.assertEqual(self.inlet("no_pressure", "gravity", True, True), "no_pressure")
-        self.assertEqual(self.inlet("served", "gravity", True, False), "gravity")
-        self.assertEqual(self.inlet("served", None, False, False), "no_supply")
-        self.assertEqual(self.inlet(None, "empty", True, False), "empty")
-        self.assertIsNone(self.inlet("served", None, False, True))
+        self.assertEqual(self.inlet("unfiltered", True), "unfiltered")
+        self.assertEqual(self.inlet("no_water", True), "no_water")
+        self.assertIsNone(self.inlet("served", True))
+
+    def test_an_inlet_without_pump_has_no_pressure(self):
+        self.assertEqual(self.inlet("served", False), "no_pressure")
+        self.assertEqual(self.inlet(None, False), "no_pressure")
 
     def fixture(self, info):
         return self.lua.eval("D.fixture(%s)" % info)
@@ -107,12 +107,12 @@ class Diagnosis(unittest.TestCase):
         self.assertEqual(self.fixture("{ plumbed = false }"), "IGUI_LWT_Why_NoInlet")
         self.assertEqual(self.fixture("{ plumbed = true }"), "IGUI_LWT_Why_NoInlet")
         self.assertEqual(self.fixture("{ plumbed = true, source = 'other' }"), "IGUI_LWT_Why_Other")
-        self.assertEqual(self.fixture("{ plumbed = true, source = 'ours', why = 'gravity' }"), "IGUI_LWT_Why_gravity")
+        self.assertEqual(self.fixture("{ plumbed = true, source = 'ours', why = 'closed' }"), "IGUI_LWT_Why_closed")
         self.assertEqual(self.fixture("{ plumbed = true, source = 'ours' }"), "IGUI_LWT_Why_Waiting")
 
     def test_every_line_is_translated(self):
         keys = ["IGUI_LWT_Why_" + k for k in ("NotPlumbed", "NoInlet", "Other", "Waiting", "unfiltered", "no_pressure",
-                                               "no_water", "closed", "gravity", "empty", "no_supply")]
+                                               "no_water", "closed")]
         keys += ["ContextMenu_LWT_NoWater"]
         for lang in ("EN", "FR"):
             found = {}
@@ -132,25 +132,11 @@ class Marks(unittest.TestCase):
         lua.execute('PUMPED["5,9,0"] = true CLOCK:tick() CLOCK:tick()')
         self.assertEqual(lua.eval("relayAt(2, 12, 1).why"), "unfiltered")
 
-    def test_a_house_without_pump_nor_barrel_says_so(self):
+    def test_a_house_without_pump_has_no_pressure(self):
         lua = bench()
         lua.execute("CLOCK:tick()")
-        self.assertEqual(lua.eval("relayAt(2, 12, 1).why"), "no_supply")
-        lua.execute("PLUMB:addBarrel(3, 13, 0, 100) BARRELS:connect(3, 13, 0) CLOCK:tick()")
-        self.assertIsNone(lua.eval("relayAt(2, 12, 1).why"))
-        self.assertEqual(lua.eval("relayAt(6, 16, 2).why"), "gravity")
-
-
-class Pickup(unittest.TestCase):
-    def test_a_barrel_set_down_again_forgets_its_old_house(self):
-        lua = bench()
-        lua.execute("PLUMB:addBarrel(3, 13, 0, 0, { mark = { inlet = '50,50,0' } }) BARRELS:placed(3, 13, 0)")
-        self.assertIsNone(lua.eval("barrelAt(3, 13, 0).mark"))
-
-    def test_a_connected_barrel_keeps_its_mark(self):
-        lua = bench()
-        lua.execute("PLUMB:addBarrel(3, 13, 0, 0) BARRELS:connect(3, 13, 0) BARRELS:placed(3, 13, 0)")
-        self.assertEqual(lua.eval("barrelAt(3, 13, 0).mark.inlet"), "5,9,0")
+        self.assertEqual(lua.eval("relayAt(2, 12, 1).why"), "no_pressure")
+        self.assertEqual(lua.eval("relayAt(6, 16, 2).why"), "no_pressure")
 
 
 if __name__ == "__main__":

@@ -19,4 +19,14 @@ module LiveWater
         ConditionMax = 100,
         Tooltip = Tooltip_LWT_WaterFilter,
     }
+
+    /* A cartridge taken out worn out (ADR-009 D01): it cannot be fitted, it is recharged with
+       charcoal and cloth (LWTRechargeWaterFilter) or dismantled. Never found as loot. */
+    item WaterFilterSpent
+    {
+        DisplayCategory = Material,
+        ItemType = base:normal,
+        Weight = 0.5,
+        Icon = LWT_WaterFilterSpent,
+    }
 }

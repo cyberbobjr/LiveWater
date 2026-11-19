@@ -17,15 +17,15 @@ The taps run dry one day. Bring the water back yourself: a pond pump by the rive
 [*][b]Water meter[/b]: set inline on a pipe, shows the litres of the last 10 minutes.
 [/list]
 
-[h2]No pump? Barrels and city water[/h2]
+[h2]Barrels and city water[/h2]
 [list]
-[*]Connect a rain collector or barrel inside the house or on its roof to the house water inlet with a pipe wrench. It feeds its floor and the floors below (every floor with a pump or power). All barrels drain together; keep one in reserve.
+[*]Barrels reach the house only through a barrel fitting on a pipe and a pump: without a pump, a barrel only feeds drip lines.
 [*]Your own base: an inlet away from a map building serves the fixtures within 12 squares.
 [*]While the city water runs, connect a sink, shower or toilet you set down in a map building to the city water.
 [/list]
 
 [h2]Always know why[/h2]
-"Show the Water Network" highlights a whole network by state. A dry sink tells you why in its right-click menu: not plumbed, no inlet, unfiltered water, low pressure, closed valve, barrels too low or empty...
+"Show the Water Network" highlights a whole network by state. A dry sink tells you why in its right-click menu: not plumbed, no inlet, unfiltered water, low pressure, closed valve...
 
 [h2]Options and compatibility[/h2]
 [list]

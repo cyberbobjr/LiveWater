@@ -2,6 +2,7 @@
     "Base.Mov_LiveWater_Pipe": "Su Borusu",
     "Base.Mov_LiveWater_PondPump": "Gölet Pompası",
     "LiveWater.WaterFilter": "Su Filtre Kartuşu",
+    "LiveWater.WaterFilterSpent": "Kullanılmış Su Filtre Kartuşu",
     "Base.Mov_LiveWater_FlowMeter": "Su Sayacı",
     "Base.Mov_LiveWater_DripLine": "Damla Sulama Hortumu",
     "Base.Mov_LiveWater_Valve": "Kapatma Vanası",

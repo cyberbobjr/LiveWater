@@ -2,6 +2,7 @@
     "Base.Mov_LiveWater_Pipe": "수도 배관",
     "Base.Mov_LiveWater_PondPump": "연못 펌프",
     "LiveWater.WaterFilter": "정수 필터 카트리지",
+    "LiveWater.WaterFilterSpent": "다 쓴 정수 필터 카트리지",
     "Base.Mov_LiveWater_FlowMeter": "수도 계량기",
     "Base.Mov_LiveWater_DripLine": "점적 호스",
     "Base.Mov_LiveWater_Valve": "차단 밸브",

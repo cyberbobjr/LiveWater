@@ -2,6 +2,7 @@
     "Base.Mov_LiveWater_Pipe": "水道管",
     "Base.Mov_LiveWater_PondPump": "池のポンプ",
     "LiveWater.WaterFilter": "浄水カートリッジ",
+    "LiveWater.WaterFilterSpent": "使用済み浄水カートリッジ",
     "Base.Mov_LiveWater_FlowMeter": "水道メーター",
     "Base.Mov_LiveWater_DripLine": "点滴チューブ",
     "Base.Mov_LiveWater_Valve": "止水バルブ",

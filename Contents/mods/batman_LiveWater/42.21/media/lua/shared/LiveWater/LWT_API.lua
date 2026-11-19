@@ -90,7 +90,9 @@ LiveWater.Events = EventBus.new(EventBus.NAMES)
 -- linked relative to the facing, Parts:branch, Parts:followsLinks) in place of `bends`.
 -- Revision 19 (ADR-008 D08): part definition field `sidesByFacing` (sides a part may connect by for
 -- the facing of the sprite it was set down with, recorded on the part: Parts:sidesOf).
-local API = { revision = 19 }
+-- Revision 20 (ADR-009 D01): filter field `spent` (item a worn-out cartridge comes back as), fourth
+-- result of the `cartridge` hook.
+local API = { revision = 20 }
 LiveWater.API = API
 
 local function answer(call, id, ok, reason, detail)

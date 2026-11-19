@@ -2,8 +2,8 @@ if isClient() then return end
 -- LiveWater: clean removal of LiveWater from a world (ADR-001 P21, L14), on the authority, so that the
 -- save stays readable once the mod is unsubscribed. Started by an admin (command removeLiveWater):
 --   start()   every part of a registered type on a loaded square leaves the topology and its tile is
---             removed; partRemoved takes its relay tanks and barrel connections with it (LWT_Relays,
---             LWT_HouseBarrels: relays on squares not loaded wait in their orphans until loaded);
+--             removed; partRemoved takes its relay tanks with it (LWT_Relays: relays on squares not
+--             loaded wait in their orphans until loaded);
 --             the fixtures keep their vanilla state (plumbed, now without an outside source).
 --             Returns how many parts went and how many wait on squares not loaded.
 --   tick()    chore of the clock: once started, the parts whose square is now loaded go too; nil

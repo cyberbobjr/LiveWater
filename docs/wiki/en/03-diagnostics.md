@@ -21,7 +21,7 @@ washing machines) are highlighted too:
 | green | connected to the house inlet, with water |
 | red | connected to the house inlet, but dry |
 | amber | not plumbed (use a pipe wrench on it) |
-| grey | fed by something else (a barrel above, a Live Wire pump) |
+| grey | fed by something else (a Live Wire pump) |
 
 The tooltip of *Hide the Water Network* counts the outlets and the fixtures in each state.
 
@@ -51,15 +51,13 @@ Right-click a sink, bathtub, shower, toilet or washing machine that has no water
 |---|---|
 | not plumbed yet | use a pipe wrench on it (the game's Plumb action) |
 | no house water inlet serves it | set an inlet on this building, or move closer (range, floors) |
-| its tank belongs to something else, and it is empty | another system (a barrel above it, a LiveWire pump) feeds it |
+| its tank belongs to something else, and it is empty | another system (a LiveWire pump) feeds it |
 | the water is on its way | wait up to 10 minutes |
 | the water is unfiltered: fit a filter in the house water inlet | fit or replace the filter in the house water inlet, or pump from a well |
 | not enough pressure | fewer outlets on that pump, or a second pump |
 | no water in the pipes | the pump is off, broken down or without power |
 | a valve is closed | open it |
-| the barrels stand lower than this fixture | add a pump to the network, or power the barrel's square |
-| the barrels are empty or hold something other than water | refill or empty them |
-| the inlet has no pump and no barrel | pipe a pump to it or connect a barrel |
+| not enough pressure in the pipes (house inlet without a pump) | pipe a pump to the inlet |
 | the pipes carry gasoline | this network moves gasoline, not water |
 
 ![The right-click menu of a dry sink: "No water: a valve is closed"](../../images/screenshots/sink-dry-en.jpg)

@@ -12,7 +12,7 @@
 
 local SHAPES = { tall = true, low = true }
 
--- Litres from which any fluid container is a barrel (same rule as LWT_WaterObjects.isBarrel).
+-- Litres from which any fluid container is a barrel.
 local MIN_LITRES = 20
 
 -- Registered by default whatever their size (vanilla 42.22 entity WaterDispenser, 15 L).

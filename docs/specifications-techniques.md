@@ -167,13 +167,10 @@ Tout argument est recontrôlé sur l'autorité. Portée : 3 cases (Tchebychev) s
 
 | Sens | Commande | Arguments | Contrôles, dans l'ordre (raison du refus) | Effet |
 |---|---|---|---|---|
-| client → serveur | `fitFilter` | `x`, `y`, `z` entiers | arguments (`invalid`), pièce (`nothing_here`), emplacement de cartouche (`no_filter_slot`), portée (`too_far`), cartouche dans l'inventaire (`no_cartridge`) | cartouche prise (son état = part restante) ; l'ancienne ressort d'abord (rendue avec sa part restante, jetée si usée) |
-| client → serveur | `removeFilter` | `x`, `y`, `z` entiers | mêmes contrôles jusqu'à la portée, puis cartouche montée (`no_filter`) | cartouche rendue avec sa part restante, ou jetée si usée |
+| client → serveur | `fitFilter` | `x`, `y`, `z` entiers | arguments (`invalid`), pièce (`nothing_here`), emplacement de cartouche (`no_filter_slot`), portée (`too_far`), cartouche dans l'inventaire (`no_cartridge`) | cartouche prise (son état = part restante) ; l'ancienne ressort d'abord (rendue avec sa part restante, ou en cartouche usée `LiveWater.WaterFilterSpent` si épuisée, ADR-009 D01) |
+| client → serveur | `removeFilter` | `x`, `y`, `z` entiers | mêmes contrôles jusqu'à la portée, puis cartouche montée (`no_filter`) | cartouche rendue avec sa part restante, ou en cartouche usée `LiveWater.WaterFilterSpent` si épuisée (ADR-009 D01) |
 | client → serveur | `switchPump` | `x`, `y`, `z` entiers | arguments, pièce, interrupteur (`not_switchable`), portée | interrupteur basculé ; éteinte, la pompe s'arrête aussitôt |
 | client → serveur | `repairPump` | `x`, `y`, `z` entiers | arguments, pièce, réparable (`not_repairable`), à l'arrêt (`running`), usée ou en panne (`not_needed`), portée, outil (`need_wrench`), matériau (`no_parts`) | matériau consommé, rendement 100 %, panne effacée |
-| client → serveur | `connectBarrel` | `x`, `y`, `z` entiers | arguments, portée, clé à tuyau (`need_tool`), baril raccordable (`not_barrel`), arrivée d'eau dont la zone atteint la case (`no_inlet`) | baril raccordé à l'arrivée d'eau la plus proche, marque `LiveWaterBarrel` |
-| client → serveur | `disconnectBarrel` | `x`, `y`, `z` entiers | arguments, portée, clé à tuyau, baril raccordé (`not_connected`) | raccord et marque effacés |
-| client → serveur | `reserveBarrel` | `x`, `y`, `z` entiers | arguments, portée, baril raccordé | « en réserve » basculé |
 | client → serveur | `cityWater` | `x`, `y`, `z` entiers | arguments, point d'eau posé par un joueur et pas raccordé (`not_fixture`), portée, pièce d'un bâtiment de la carte (`not_map_building`), eau de la ville qui coule et case sans `isNoWater` (`no_city_water`) | ModData `canBeWaterPiped` effacée, `setUsesExternalWaterSource(false)`, `transmitModData` : point d'eau d'origine (M01) |
 | client → serveur | `switchValve` | `x`, `y`, `z` entiers | arguments, pièce, vanne (`not_valve`), portée | vanne ouverte ou fermée, `valveChanged` |
 | client → serveur | `setTimer` | `x`, `y`, `z`, `hours` entiers | arguments (`invalid`), pièce, minuterie (`not_timer`), bornes sandbox (`out_of_bounds`), portée | intervalle de la minuterie |
@@ -187,7 +184,7 @@ Tout argument est recontrôlé sur l'autorité. Portée : 3 cases (Tchebychev) s
 
 Clés des refus (`IG_UI.json`, table partagée `LWT_Reasons`) : `IGUI_LWT_NoSource` (`no_source`), `IGUI_LWT_NoFilter` (`no_cartridge`), `IGUI_LWT_NoFilterFitted` (`no_filter`), `IGUI_LWT_NoFilterSlot` (`no_filter_slot`), `IGUI_LWT_StillRunning` (`running`), `IGUI_LWT_NotNeeded` (`not_needed`), `IGUI_LWT_NeedWrench` (`need_wrench`), `IGUI_LWT_NoScrap` (`no_parts`), `IGUI_LWT_Invalid`, `IGUI_LWT_TooFar` (`too_far`),
 `IGUI_LWT_Occupied`, `IGUI_LWT_PortsFull`, `IGUI_LWT_NeedTool`,
-`IGUI_LWT_NothingHere`, `IGUI_LWT_NotBarrel` (`not_barrel`), `IGUI_LWT_NoInlet` (`no_inlet`), `IGUI_LWT_NotConnected` (`not_connected`), `IGUI_LWT_NotFixture` (`not_fixture`), `IGUI_LWT_NotMapBuilding` (`not_map_building`), `IGUI_LWT_NoCityWater` (`no_city_water`), autre raison `IGUI_LWT_Refused`. Menu des pièces : `ContextMenu_LWT_FitFilter`, `ContextMenu_LWT_ReplaceFilter`, `ContextMenu_LWT_RemoveFilter`, `ContextMenu_LWT_TurnOn`, `ContextMenu_LWT_TurnOff`, `ContextMenu_LWT_Repair`, `ContextMenu_LWT_Info` (infobulle : lignes d'information traduites, `IGUI_LWT_Pump_*`, `IGUI_LWT_Filter_*`, `IGUI_LWT_Source_<sorte>`).
+`IGUI_LWT_NothingHere`, `IGUI_LWT_NotFixture` (`not_fixture`), `IGUI_LWT_NotMapBuilding` (`not_map_building`), `IGUI_LWT_NoCityWater` (`no_city_water`), autre raison `IGUI_LWT_Refused`. Menu des pièces : `ContextMenu_LWT_FitFilter`, `ContextMenu_LWT_ReplaceFilter`, `ContextMenu_LWT_RemoveFilter`, `ContextMenu_LWT_TurnOn`, `ContextMenu_LWT_TurnOff`, `ContextMenu_LWT_Repair`, `ContextMenu_LWT_Info` (infobulle : lignes d'information traduites, `IGUI_LWT_Pump_*`, `IGUI_LWT_Filter_*`, `IGUI_LWT_Source_<sorte>`).
 
 ## Registre persistant (ModData globale `LiveWater`, `LWT_Registry`)
 
@@ -199,7 +196,6 @@ partie à l'autre) ; le graphe en est reconstruit à ce moment.
 | `seq` | dernier ordre de pose attribué (jamais réutilisé) |
 | `parts["x,y,z"]` | entrée d'une pièce posée |
 | `relays["x,y,z"]` | relais d'une arrivée d'eau (clé de sa case) : `{ ["x,y,z"] = { x, y, z } }` |
-| `barrels["x,y,z"]` | barils raccordés à une arrivée d'eau (clé de sa case) : `{ ["x,y,z"] = { x, y, z, reserve } }` |
 | `orphans["x,y,z"]` | relais à retirer dès que sa case est chargée : `{ x, y, z, owner }` |
 
 Entrée : `v` (version du schéma, 1), `type` (id `"<Mod>:<Nom>"`), `x`, `y`, `z`, `order` (ordre de pose), `data`
@@ -261,7 +257,7 @@ dix minutes, par sortie servie), `valveChanged`. La reconstruction au chargement
   (0, 1, 8 ou 9, lu par le port monde `edge`) ; la pièce prend alors `Parts:crossing`, sinon l'image de son masque.
 
 Tâches de l'horloge (`chores` de `LWT_Clock`, avant les réseaux, au même pas `EveryTenMinutes`) : retrait
-(`LWT_Removal`), relais des arrivées d'eau (`LWT_Relays`), barils raccordés à la maison, diagnostic, correctif des
+(`LWT_Removal`), relais des arrivées d'eau (`LWT_Relays`), diagnostic, correctif des
 lave-linge, raccords de baril, `edgeWatch` (murs et clôtures).
 
 ## Réseaux hors chargement (ADR-006 D06-D08)
@@ -310,24 +306,18 @@ lave-linge, raccords de baril, `edgeWatch` (murs et clôtures).
 - Besoin de l'arrivée d'eau = place libre de ses relais qui servent un point d'eau raccordé ; l'eau livrée les remplit
   (eau propre). Points d'eau relevés sur événement seulement (D10) : à la pose ou au rechargement de l'arrivée d'eau, à la pose ou au retrait d'un point d'eau ou d'un réservoir à portée (`OnObjectAdded`, `OnObjectAboutToBeRemoved`), au chargement d'un chunk à portée (`LoadChunk`) et à la coupure de l'eau de la ville, au plus un relevé par pas ; en mode base, jamais les points d'eau d'un bâtiment de la carte ; relais retirés avec l'arrivée d'eau.
 
-## Barils raccordés à la maison (`LWT_HouseBarrels`, `LWT_Reserve`, D28)
+## Barils et maison (ADR-009 D03)
 
-- Baril raccordable (`LWT_WaterObjects.isBarrel`) : objet du monde avec un `FluidContainer` d'au moins 20 L, ni point
-  d'eau, ni relais, ni marqué par un autre mod (`LiveWireRelay`, `LiveWireBarrel`). Marque sur le baril :
-  `LiveWaterBarrel = { inlet = "x,y,z", reserve }` (menus du client). Menu : `ContextMenu_LWT_ConnectBarrel`,
-  `_DisconnectBarrel`, `_ReserveBarrel`, `_UseBarrel`.
-- Zone : dans le bâtiment de l'arrivée d'eau ou juste au-dessus d'une de ses cases (toit), dans sa portée.
-- Toutes les dix minutes, après les relais : les barils remplissent les relais qui servent un point d'eau raccordé ;
-  gravité (un baril sert son niveau et ceux du dessous), levée par une pompe du réseau de l'arrivée d'eau ou le
-  courant de la case du baril ; prorata de l'eau des barils, ceux en réserve en dernier ; un baril qui contient autre
-  chose que de l'eau ne donne rien. Le réseau complète ensuite. Fluides gardés en proportion (`FluidContainer.Transfer`).
+- Un baril ne rejoint le réseau que par un raccord de baril (`LiveWater:BarrelFitting`). Sans pompe dans le réseau, un
+  raccord en « Pomper » ne sert que les sorties qui marchent par gravité (goutte-à-goutte, ADR-004 D04) : l'arrivée
+  d'eau et les arroseurs n'ont rien. Le baril vanilla posé au-dessus d'un évier reste au jeu.
 
 ## Diagnostic d'un point d'eau (`LWT_Diagnosis`, `LWT_Diagnostics`, L09)
 
-- Serveur, chaque pas, après les relais et les barils : une raison par arrivée d'eau, notée dans `LiveWaterRelay.why`
-  de ses relais vides (effacée sur un relais qui a de l'eau) : `unfiltered`, `no_pressure`, `no_water`, `closed`
-  (dernier pas du réseau, si une pompe est dans le réseau), `gravity`, `empty` (barils), `no_supply` (ni pompe ni
-  baril).
+- Serveur, chaque pas, après les relais : une raison par arrivée d'eau, notée dans `LiveWaterRelay.why` de ses relais
+  vides (effacée sur un relais qui a de l'eau) : `unfiltered`, `no_pressure`, `no_water`, `closed`, `wrong_fluid`
+  (dernier pas du réseau, si une pompe est dans le réseau) ; `no_pressure` aussi quand aucune pompe n'est dans le
+  réseau (ADR-009 D03).
 - Client : au clic droit d'un point d'eau sans eau qui tire ou peut tirer sur une source extérieure, option grisée
   `ContextMenu_LWT_NoWater` (« Pas d'eau : %1 ») avec `IGUI_LWT_Why_NoInlet`, `_NotPlumbed`, `_Other`, `_<raison>` ou
   `_Waiting`.

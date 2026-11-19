@@ -83,6 +83,7 @@ A part whose mod is removed stays inert in the save and comes back with its type
 | 17 | `panel` hook of the capabilities: "Information" opens a window instead of the tooltip; part field `bends` (replaced by `branches` in revision 18) |
 | 18 | part field `branches`: variant chosen by the mask of the connected sides, relative to the facing (replaces `bends`) |
 | 19 | part field `sidesByFacing`: sides the part may connect by, according to the facing it was set down with |
+| 20 | filter setting `spent` (item a worn-out cartridge comes back as, ADR-009 D01); fourth result of the `cartridge` hook |
 
 Changes are additive only: a function or field never changes meaning in a later revision. One exception before the
 first release: revision 16 made the spray `loss` a share of the water drawn (ADR-006).

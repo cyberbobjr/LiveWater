@@ -2,6 +2,7 @@
     "Base.Mov_LiveWater_Pipe": "Cano de Água",
     "Base.Mov_LiveWater_PondPump": "Bomba de Lagoa",
     "LiveWater.WaterFilter": "Cartucho Filtrante de Água",
+    "LiveWater.WaterFilterSpent": "Cartucho Filtrante de Água Usado",
     "Base.Mov_LiveWater_FlowMeter": "Medidor de Água",
     "Base.Mov_LiveWater_DripLine": "Linha de gotejamento",
     "Base.Mov_LiveWater_Valve": "Válvula de Corte",

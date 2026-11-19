@@ -1,7 +1,6 @@
 """Players combine barrels and fittings in unusual ways (ADR-001 D26, D28; ADR-004 D04; ADR-005 D06, D07): two
 fittings on one barrel, a barrel feeding another, fuel and water barrels on one network, barrels of another fluid,
-barrels without pump, a house barrel that also has a fitting. Water is never created, a barrel never goes above its
-capacity nor below zero."""
+barrels without pump. Water is never created, a barrel never goes above its capacity nor below zero."""
 import unittest
 
 from lwt_fakes import services
@@ -197,81 +196,6 @@ class BarrelsWithoutPump(unittest.TestCase):
         for amount in (4, 1, 0, 0):
             lua.execute("tick()")
             self.assertAlmostEqual(lua.eval('CONT["2,-1"].amount'), amount)
-
-
-# A barrel connected to the house (ADR-001 L01, D28) that also has a fitting: the containers port of the fittings
-# reads and writes the same barrel as the house reserve (PLUMB.barrels of test_barrels).
-HOUSE_FITTING = r"""
-local function k(x, y, z) return x .. "," .. y .. "," .. z end
-HOUSE_CONTAINERS = {}
-function HOUSE_CONTAINERS:at(x, y, z)
-    local b = PLUMB.barrels[k(x, y, z)]
-    if not b then return nil end
-    return { fluid = b.amount > 0 and (b.fluid or "clean") or nil, amount = b.amount, free = b.capacity - b.amount }
-end
-function HOUSE_CONTAINERS:add(x, y, z, litres, quality)
-    local b = PLUMB.barrels[k(x, y, z)]
-    local n = math.min(litres, b.capacity - b.amount)
-    b.amount, b.fluid = b.amount + n, quality
-    return n
-end
-function HOUSE_CONTAINERS:take(x, y, z, litres)
-    local b = PLUMB.barrels[k(x, y, z)]
-    local n = math.min(litres, b.amount)
-    b.amount = b.amount - n
-    return n
-end
-FITTINGS = require("LiveWater/LWT_Fittings").new({ catalog = LiveWater.Parts, registry = REG, world = WORLD,
-    containers = HOUSE_CONTAINERS, shapes = LiveWater.Containers })
-OUTLETS:register("barrelFill", FITTINGS)
-LiveWater.Events.on("waterDrawn", function(part, litres) FITTINGS:drawn(part, litres) end)
-CLOCK.chores = { RELAYS, BARRELS, FITTINGS }
--- pond pump (3,8), pipes down to a fitting (3,12) on the house barrel (3,13), a pipe to the inlet (5,9)
-place("LiveWater:PondPump", 3, 8, "batman_livewater_01_24")
-for y = 9, 11 do place("Test:Pipe", 3, y) end
-place("Test:Pipe", 4, 9)
-place("LiveWater:BarrelFitting", 3, 12, "batman_livewater_01_64")
-PLUMB:addBarrel(3, 13, 0, 100) BARRELS:connect(3, 13, 0)
--- not lifted: the barrel alone serves the ground floor, the network (drawing the same barrel) the floor above
-function relays()
-    local total = 0
-    for _, r in pairs(PLUMB.relays) do total = total + r.amount end
-    return total
-end
-function drink() for _, r in pairs(PLUMB.relays) do DRUNK = (DRUNK or 0) + r.amount r.amount = 0 end end
-"""
-
-
-class HouseBarrelWithAFitting(unittest.TestCase):
-    def bench(self, fitting_mode):
-        from test_barrels import BARRELS
-        from test_inlet import BENCH as INLET_BENCH, INLET
-        lua = services(new_lua, INLET, POND, FITTING)
-        lua.execute(INLET_BENCH)
-        lua.execute(BARRELS)
-        lua.execute(HOUSE_FITTING)
-        lua.execute('LiveWater.Parts:call(REG:at(3, 12, 0), "setFittingMode", "%s")' % fitting_mode)
-        return lua
-
-    def test_set_to_pump_the_house_and_the_network_share_the_barrel_without_making_water(self):
-        lua = self.bench("pump")
-        self.assertEqual(lua.eval("NET:networkAt(3, 12, 0)"), lua.eval("NET:networkAt(5, 9, 0)"))
-        for _ in range(6):
-            lua.execute("CLOCK:tick()")
-            barrel = lua.eval("barrelAt(3, 13, 0).amount")
-            self.assertGreaterEqual(barrel, 0)
-            self.assertAlmostEqual(barrel + lua.eval("relays()") + lua.eval("DRUNK or 0"), 100)
-            lua.execute("drink()")
-        self.assertGreater(lua.eval("DRUNK"), 50)
-
-    def test_set_to_fill_the_network_tops_the_house_barrel_up_never_beyond_its_capacity(self):
-        lua = self.bench("fill")
-        lua.execute("barrelAt(3, 13, 0).amount = 390")
-        for _ in range(4):
-            lua.execute("CLOCK:tick()")
-            self.assertLessEqual(lua.eval("barrelAt(3, 13, 0).amount"), 400)
-            lua.execute("drink()")
-        self.assertEqual(lua.eval("barrelAt(3, 13, 0).fluid"), "tainted")
 
 
 if __name__ == "__main__":

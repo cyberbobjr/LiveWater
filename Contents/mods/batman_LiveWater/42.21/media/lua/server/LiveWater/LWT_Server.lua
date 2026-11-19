@@ -2,8 +2,7 @@ if isClient() then return end
 -- LiveWater: composition root on the authority (solo game or server). Builds the services with
 -- their game adapters at OnInitGlobalModData (the global ModData is reloaded just before it:
 -- never keep a table of an earlier game) and wires the game events, each once:
---   OnObjectAdded / OnObjectAboutToBeRemoved  -> LWT_Placement (and a barrel connected, taken away
---                                                or set down again: LWT_HouseBarrels, L12)
+--   OnObjectAdded / OnObjectAboutToBeRemoved  -> LWT_Placement
 --   OnObjectAdded / OnObjectAboutToBeRemoved of a fixture or a water tank, LoadChunk
 --                                             -> LWT_Relays (fixtures surveyed again, D10)
 --   LoadChunk                                 -> LWT_Fittings (count kept while away written
@@ -43,7 +42,6 @@ local Publisher = require "LiveWater/LWT_Publisher"
 local Outlets = require "LiveWater/LWT_Outlets"
 local Relays = require "LiveWater/LWT_Relays"
 local GamePlumbing = require "LiveWater/LWT_GamePlumbing"
-local HouseBarrels = require "LiveWater/LWT_HouseBarrels"
 local WaterObjects = require "LiveWater/LWT_WaterObjects"
 local Diagnostics = require "LiveWater/LWT_Diagnostics"
 local WasherFix = require "LiveWater/LWT_WasherFix"
@@ -66,9 +64,6 @@ local COMMANDS = {
     [Protocol.REMOVE_FILTER] = "LWT_CmdRemoveFilter",
     [Protocol.SWITCH_PUMP] = "LWT_CmdSwitchPump",
     [Protocol.REPAIR_PUMP] = "LWT_CmdRepairPump",
-    [Protocol.CONNECT_BARREL] = "LWT_CmdConnectBarrel",
-    [Protocol.DISCONNECT_BARREL] = "LWT_CmdDisconnectBarrel",
-    [Protocol.RESERVE_BARREL] = "LWT_CmdReserveBarrel",
     [Protocol.CITY_WATER] = "LWT_CmdCityWater",
     [Protocol.SWITCH_VALVE] = "LWT_CmdSwitchValve",
     [Protocol.SET_TIMER] = "LWT_CmdSetTimer",
@@ -95,7 +90,7 @@ local function gameHours()
     return getGameTime():getWorldAgeHours()
 end
 
--- A part that pressurizes (a pump) is in the network of `part` (lifts the gravity rule, D28).
+-- A part that pressurizes (a pump) is in the network of `part`.
 local function hasPump(network, catalog, part)
     local id = network:networkAt(part.x, part.y, part.z)
     local members = id and network:members(id) or {}
@@ -147,14 +142,12 @@ local function build()
         shapes = LiveWater.Containers, listed = listed, publisher = publisher })
     outlets:register("barrelFill", fittings)
     local function pumped(part) return hasPump(network, catalog, part) end
-    local barrels = HouseBarrels.new({ store = store, plumbing = plumbing, world = world, relays = relays,
-        lifted = pumped })
-    local diagnostics = Diagnostics.new({ relays = relays, barrels = barrels, pumped = pumped })
+    local diagnostics = Diagnostics.new({ relays = relays, pumped = pumped })
     local washerFix = WasherFix.new({ relays = relays, plumbing = plumbing, multiplayer = isServer,
         enabled = function() return GameSettings.scale("WasherFix") ~= false end })
     removal = Removal.new({ store = store, registry = registry, topology = topology, world = world, log = log })
     local commands = Commands.new({ topology = topology, catalog = catalog, world = world,
-        players = players, publisher = publisher, scale = GameSettings.scale, barrels = barrels,
+        players = players, publisher = publisher, scale = GameSettings.scale,
         plumbing = plumbing, events = LiveWater.Events, replies = replies, removal = removal, relays = relays })
     for name, file in pairs(COMMANDS) do
         commands:register(name, require("LiveWater/Commands/" .. file))
@@ -164,12 +157,12 @@ local function build()
     local server = {
         world = world,
         registry = registry, network = network, topology = topology, commands = commands,
-        publisher = publisher, power = power, outlets = outlets, relays = relays, barrels = barrels,
+        publisher = publisher, power = power, outlets = outlets, relays = relays,
         fittings = fittings, valveSounds = ValveSounds.new(sounds),
         placement = Placement.new(topology, catalog, log, world, notifier(players)),
         clock = Clock.new({ network = network, flow = Flow.new(catalog), catalog = catalog,
             events = LiveWater.Events, power = power, publisher = publisher, scale = GameSettings.scale,
-            random = randomShare, hours = gameHours, sources = LiveWater.Sources, chores = { removal, relays, barrels, diagnostics, washerFix, fittings, edgeWatch },
+            random = randomShare, hours = gameHours, sources = LiveWater.Sources, chores = { removal, relays, diagnostics, washerFix, fittings, edgeWatch },
             need = function(part) return outlets:need(part) end }),
     }
     local count = topology:rebuild()
@@ -197,7 +190,6 @@ local function onObjectAdded(obj)
     server.placement:added(name, x, y, z)
     if world:isEdgeObject(obj) then server.placement:edgeChanged(x, y, z) end
     if WaterObjects.changesSources(obj) then server.relays:touched(x, y, z) end
-    if WaterObjects.mark(obj, WaterObjects.BARREL_KEY) then server.barrels:placed(x, y, z) end
     if WaterObjects.mark(obj, WaterObjects.WASHER_KEY) then
         -- a washer set down again is not plumbed any more (L12)
         obj:getModData()[WaterObjects.WASHER_KEY] = nil
@@ -215,7 +207,6 @@ local function onObjectAboutToBeRemoved(obj)
         world:without(obj, function() server.placement:edgeChanged(x, y, z) end)
     end
     if WaterObjects.changesSources(obj) then server.relays:touched(x, y, z) end
-    if WaterObjects.mark(obj, WaterObjects.BARREL_KEY) then server.barrels:disconnect(x, y, z) end
 end
 
 -- Width of a chunk in squares (IsoChunk, Java 42.22).
@@ -253,7 +244,6 @@ local function onPartRemoved(entry)
     if not server then return end
     server.publisher:forget(entry)
     server.outlets:release(entry)
-    server.barrels:forget(entry)
 end
 
 local function onWaterDelivered(part, litres, quality)

@@ -7,12 +7,12 @@ if isClient() then return end
 local Cartridge = require "LiveWater/Commands/LWT_CmdCartridge"
 
 return function(ctx, player, args)
-    local entry, item, fitted, left = Cartridge.find(ctx, player, args)
+    local entry, item, fitted, left, spent = Cartridge.find(ctx, player, args)
     if not entry then return false, item end
     if not ctx.players:has(player, item) then return false, "no_cartridge" end
     local ok, share = ctx.players:take(player, item)
     if not ok then return false, "no_cartridge" end
-    if fitted then Cartridge.takeOut(ctx, player, entry, item, left) end
+    if fitted then Cartridge.takeOut(ctx, player, entry, item, left, spent) end
     ctx.catalog:call(entry, "fit", share or 1, ctx)
     ctx.publisher:present(entry)
     return true

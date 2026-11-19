@@ -28,7 +28,8 @@
 --   lines(p, d, ctx)   text lines { { key, arg, ..., rank = n } } (information, Live Wire); ctx
 --                      (optional, revision 16): { scale } for the sandbox values (watering flow)
 -- Revision 3 (filter cartridge, part menu):
---   cartridge(p, d, ctx)  removable cartridge: item full type, fitted (bool), share left 0..1
+--   cartridge(p, d, ctx)  removable cartridge: item full type, fitted (bool), share left 0..1,
+--                         full type of the worn-out item (revision 20, nil: thrown away)
 --   fit(p, d, share, ctx) a cartridge with `share` left goes in (d created)
 --   unfit(p, d)           the cartridge comes out (d created)
 --   actions(p, d)         actions of the part menu: { { command, key, item = item to carry } }

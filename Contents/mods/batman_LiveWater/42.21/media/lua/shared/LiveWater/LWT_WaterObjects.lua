@@ -1,6 +1,6 @@
 -- LiveWater: rules on the game objects that hold or give water (ADR-001 D18, D21, D28). Both sides:
 -- the server adapters and the client menus ask the same rules.
---   RELAY_KEY, BARREL_KEY   ModData keys of LiveWater's relay tanks and connected barrels
+--   RELAY_KEY               ModData key of LiveWater's relay tanks
 --   RELAY_LITRES            capacity of a relay tank (LWT_Relays places them, menus show it)
 --   WASHER_KEY              ModData key of a washer known plumbed (multiplayer fix, E28)
 --   FOREIGN_KEYS            marks of other mods' objects never taken (Live Wire relays, barrels)
@@ -8,21 +8,16 @@
 --   mark(obj, key)          ModData table under `key`, or nil
 --   isVessel(obj)           an object holding a FluidContainer LiveWater may use: neither an item
 --                           on the floor, nor a fixture, nor a relay, nor marked by another mod
---   isBarrel(obj)           a barrel or rain collector LiveWater may connect: a vessel of
---                           MIN_BARREL_LITRES or more
 --   changesSources(obj)     set down or taken, it may change which fixture has which tank above:
 --                           a fixture, or a water tank that is not one of LiveWater's relays
---   isWaterOnly(fc)         the container holds water (clean or tainted) only, or nothing
 --   cityWaterRuns()         the city water still runs (rule of IsoObject.isWaterInfinite, 42.22)
 --   cityInfo(obj)           what LWT_CityWater asks of a fixture
 
 local WaterObjects = {}
 
 WaterObjects.RELAY_KEY = "LiveWaterRelay"
-WaterObjects.BARREL_KEY = "LiveWaterBarrel"
 WaterObjects.WASHER_KEY = "LiveWaterWasher"
 WaterObjects.FOREIGN_KEYS = { "LiveWireRelay", "LiveWireBarrel" }
-WaterObjects.MIN_BARREL_LITRES = 20
 WaterObjects.RELAY_LITRES = 25
 WaterObjects.EPSILON = 0.001
 
@@ -56,21 +51,10 @@ function WaterObjects.isVessel(obj)
     return obj:getFluidContainer() ~= nil
 end
 
-function WaterObjects.isBarrel(obj)
-    return WaterObjects.isVessel(obj) and obj:getFluidContainer():getCapacity() >= WaterObjects.MIN_BARREL_LITRES
-end
-
 function WaterObjects.changesSources(obj)
     if not obj or instanceof(obj, "IsoWorldInventoryObject") then return false end
     if WaterObjects.isFixture(obj) then return true end
     return obj:getFluidContainer() ~= nil and WaterObjects.mark(obj, WaterObjects.RELAY_KEY) == nil
-end
-
-function WaterObjects.isWaterOnly(fc)
-    local amount = fc:getAmount()
-    if amount <= WaterObjects.EPSILON then return true end
-    local water = fc:getSpecificFluidAmount(Fluid.Water) + fc:getSpecificFluidAmount(Fluid.TaintedWater)
-    return water >= amount - WaterObjects.EPSILON
 end
 
 function WaterObjects.cityWaterRuns()

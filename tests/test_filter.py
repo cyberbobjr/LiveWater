@@ -1,7 +1,8 @@
 """E10: water filter cartridge (ADR-001 D17, Q02, P07; ADR-005 D01, D04): LiveWater.WaterFilter made from charcoal and
 cloth, 500 L per cartridge (sandbox multiplier), fitted into and taken out of the house water inlet by server commands,
 the inlet sprite shows it (green while it cleans, amber once worn), it wears by the litres the house takes; a worn
-cartridge is thrown away, a partly used one comes back with its condition."""
+cartridge comes back as LiveWater.WaterFilterSpent (ADR-009 D01), recharged by a recipe (D02), a partly used one comes back
+with its condition."""
 import json
 import os
 import re
@@ -15,6 +16,7 @@ INLET = "shared/LiveWater/Parts/LWT_PartHouseInlet.lua"
 MEDIA = os.path.join(ROOT, "Contents", "mods", "batman_LiveWater", "42.21", "media")
 TILE = "batman_livewater_01_"
 FILTER = "LiveWater.WaterFilter"
+SPENT = "LiveWater.WaterFilterSpent"
 
 BENCH = r"""
 LiveWater.API.registerPart("Test:Spr", { sprites = { [0] = "t_spr" }, capabilities = { outlet = { type = "sprinkler" } } })
@@ -103,11 +105,30 @@ class FilterCommands(unittest.TestCase):
         self.assertFalse(lua.eval("REG:at(1, 0, 0).data.filter.fitted"))
         self.assertEqual(lua.eval("WORLD:sprite(1, 0, 0)"), TILE + "40")
 
-    def test_a_worn_cartridge_is_thrown_away(self):
+    def test_a_worn_cartridge_comes_back_spent(self):
         lua = bench()
         lua.execute('cmd("fitFilter", 1, 0) REG:at(1, 0, 0).data.filter.used = 500')
         self.assertTrue(lua.eval('cmd("removeFilter", 1, 0)'))
         self.assertEqual(lua.eval('P.items["LiveWater.WaterFilter"]'), 1)
+        self.assertEqual(lua.eval('P.items["%s"]' % SPENT), 1)
+        self.assertEqual(lua.eval("P.given[1].type"), SPENT)
+        self.assertIsNone(lua.eval("P.given[1].fraction"))
+        self.assertFalse(lua.eval("REG:at(1, 0, 0).data.filter.fitted"))
+
+    def test_replacing_a_worn_cartridge_gives_the_spent_one_back(self):
+        lua = bench()
+        lua.execute('cmd("fitFilter", 1, 0) REG:at(1, 0, 0).data.filter.used = 500')
+        self.assertTrue(lua.eval('cmd("fitFilter", 1, 0)'))
+        self.assertEqual(lua.eval('P.items["LiveWater.WaterFilter"]'), 0)
+        self.assertEqual(lua.eval("P.given[1].type"), SPENT)
+        self.assertEqual(lua.eval("REG:at(1, 0, 0).data.filter.used"), 0)
+
+    def test_a_spent_cartridge_is_never_fitted(self):
+        lua = bench()
+        lua.execute('P.items = { ["%s"] = 1 }' % SPENT)
+        self.assertEqual(call(lua, 'cmd("fitFilter", 1, 0)'), (False, "no_cartridge"))
+        self.assertEqual(lua.eval('P.items["%s"]' % SPENT), 1)
+        self.assertFalse(lua.eval("REG:at(1, 0, 0).data.filter and REG:at(1, 0, 0).data.filter.fitted or false"))
 
     def test_a_used_cartridge_keeps_its_wear_and_replacing_returns_the_old_one(self):
         lua = bench()
@@ -200,6 +221,19 @@ class Scripts(unittest.TestCase):
         self.assertIn("tags[base:charcoal]", recipe)
         self.assertIn("[Base.RippedSheets]", recipe)
         self.assertIn("item 1 LiveWater.WaterFilter", recipe)
+        self.assertRegex(script("LWT_items.txt"), r"item WaterFilterSpent\s*\{[^}]*Icon\s*=\s*LWT_WaterFilterSpent,")
+        self.assertNotRegex(script("LWT_items.txt"), r"item WaterFilterSpent\s*\{[^}]*ConditionMax")
+        recharge = re.search(r"craftRecipe LWTRechargeWaterFilter\s*\{[\s\S]*?outputs[\s\S]*?\}",
+                             script("LWT_recipes.txt")).group(0)
+        make = re.search(r"craftRecipe LWTMakeWaterFilter\s*\{([\s\S]*?)inputs", script("LWT_recipes.txt")).group(1)
+        fields = r"\n\s*(\w+ = [^\n]+)"
+        self.assertEqual(re.findall(fields, re.search(r"\{([\s\S]*?)inputs", recharge).group(1)),
+                         re.findall(fields, make))
+        ins = re.search(r"inputs\s*\{([^}]*)\}", recharge).group(1)
+        self.assertEqual([l.strip() for l in ins.strip().splitlines()],
+                         ["item 1 [%s] mode:destroy," % SPENT, "item 2 tags[base:charcoal],",
+                          "item 1 [Base.RippedSheets] mode:destroy,"])
+        self.assertRegex(re.search(r"outputs\s*\{([^}]*)\}", recharge).group(1), r"^\s*item 1 LiveWater\.WaterFilter,\s*$")
         with open(os.path.join(MEDIA, "sandbox-options.txt"), encoding="ascii") as f:
             self.assertRegex(f.read(), r"option LiveWater\.FilterCapacityMultiplier\s*\{\s*type = double, min = [\d.]+,"
                                        r" max = [\d.]+, default = 1\.0,")
@@ -210,6 +244,8 @@ class Scripts(unittest.TestCase):
                     return json.load(f)
             self.assertIn(FILTER, load("ItemName.json"))
             self.assertIn("LWTMakeWaterFilter", load("Recipes.json"))
+            self.assertIn(SPENT, load("ItemName.json"))
+            self.assertIn("LWTRechargeWaterFilter", load("Recipes.json"))
             self.assertIn("Tooltip_LWT_WaterFilter", load("Tooltip.json"))
             for key in ("ContextMenu_LWT_FitFilter", "ContextMenu_LWT_ReplaceFilter", "ContextMenu_LWT_RemoveFilter"):
                 self.assertIn(key, load("ContextMenu.json"))

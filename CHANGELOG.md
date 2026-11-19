@@ -12,8 +12,8 @@
   where Live Wire is enabled (it then shows up in the management software with its state and flow).
 - Water filter cartridge: charcoal and cloth, about 500 L of clean water each. It goes in the house water inlet:
   fit, replace or remove it from the inlet's right-click menu, and the inlet shows it. It cleans only the water that
-  enters the house, so watering never wears it. A cartridge taken out keeps its wear (its condition), a worn one is
-  thrown away.
+  enters the house, so watering never wears it. A cartridge taken out keeps its wear (its condition).
+- Water filter cartridge: a worn-out cartridge taken out of the house inlet comes back as a Spent Water Filter Cartridge; recharge it with 2 charcoal and 1 ripped sheet (recipe "Recharge Water Filter Cartridge"), or dismantle it for its cloth.
 - Pond pump upkeep: turn it on or off from its right-click menu; its efficiency drops while it runs (and the flow
   with it), below 20% it may break down; repair a stopped pump with 2 scrap metal and a wrench. Zombies hear it only
   while it pumps.
@@ -24,17 +24,13 @@
 - House water inlet: build it and set it against the outside wall of a house, then run a pipe to it from the pump. The
   sinks, showers and toilets of that house plumbed with a pipe wrench get running water, up to
   3 floors above (range set in the sandbox options). A green light shows clean water (a working filter in the inlet, or a
-  well); an amber light means the water is unfiltered and the house gets none. Fixtures already fed by something else (a Live Wire pump, a barrel) are
+  well); an amber light means the water is unfiltered and the house gets none. Fixtures already fed by something else (a Live Wire pump) are
   left alone.
-- Barrels connected to the house: right-click a rain collector or barrel inside the house or on its roof and connect
-  it to the house water inlet with a pipe wrench, no pipe nor pump needed. It feeds its own floor and the floors below,
-  or every floor when a pump is on the inlet's network or the barrel has power. All the barrels drain together; keep
-  one in reserve to have it used last. A barrel holding anything but water gives nothing.
+- Barrels reach the house only through a barrel fitting on a pipe and a pump: without a pump, a barrel only feeds drip lines.
 - Player bases: an inlet set down away from a map building serves the plumbed fixtures around it (12 squares by
   default, sandbox option), up to 3 floors above. The original fixtures of a nearby map house are left alone.
 - A sink, shower or toilet without water says why in its right-click menu (not plumbed, no inlet, unfiltered water,
-  low pressure, closed valve, barrels too low or empty...).
-- A barrel carried away is no longer connected to its old house.
+  low pressure, closed valve...).
 - Multiplayer fix: washing machines fed by a house water inlet now show as plumbed to the players and stop for
   them when they run out of water, instead of looking stuck (can be turned off in the sandbox options).
 - City water: right-click a sink, bathtub, shower, toilet or washing machine you set down inside a building of the map

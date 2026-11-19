@@ -3,6 +3,8 @@
 --             FilterCapacityMultiplier
 --   item      optional full type of a removable cartridge ("LiveWater.WaterFilter"): the part
 --             filters only while one is fitted; without it the filter is built in
+--   spent     optional full type of that cartridge once worn out ("LiveWater.WaterFilterSpent",
+--             ADR-009 D01): taken out worn, it comes back as this item; without it, it is thrown away
 -- State: { used = litres filtered by the current cartridge, fitted = a cartridge is in,
 --          capacity = litres of the fitted cartridge, rated when it went in }.
 
@@ -16,6 +18,7 @@ end
 local SPEC = {
     capacity = Check.number(1, 1000000, 500),
     item = { valid = isFullType },
+    spent = { valid = isFullType },
 }
 
 local Filter = {}
@@ -46,11 +49,11 @@ function Filter.wear(p, d, litres, ctx)
     d.used = math.min(capacity(p, d, ctx), (d.used or 0) + litres)
 end
 
--- Removable cartridge: its item, whether one is fitted and the share of it left; nil when the
--- filter is built in.
+-- Removable cartridge: its item, whether one is fitted, the share of it left and the item it
+-- becomes once worn out (nil: none); nil when the filter is built in.
 function Filter.cartridge(p, d, ctx)
     if p.item == nil then return nil end
-    return p.item, fitted(p, d), fitted(p, d) and left(p, d, ctx) or 0
+    return p.item, fitted(p, d), fitted(p, d) and left(p, d, ctx) or 0, p.spent
 end
 
 -- A cartridge with `share` (0..1) left goes in.

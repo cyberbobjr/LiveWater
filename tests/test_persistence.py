@@ -2,7 +2,6 @@
 keeps the fields it does not know (data of a newer version) when it is written again."""
 import unittest
 
-from test_barrels import bench as barrels_bench
 from test_inlet import TILE, bench as inlet_bench
 
 
@@ -19,14 +18,6 @@ class RelayRecords(unittest.TestCase):
         lua.execute('PLUMB:addFixture(2, 12, 0) place("LiveWater:HouseInlet", 5, 9, "%s42") CLOCK:tick()' % TILE)
         lua.execute('PLUMB.unloaded["2,12,1"] = true TOPO:remove(5, 9, 0)')
         self.assertEqual(lua.eval('STORE.orphans["2,12,1"].v'), 1)
-
-
-class BarrelRecords(unittest.TestCase):
-    def test_a_barrel_record_is_versioned(self):
-        lua = barrels_bench()
-        lua.execute("PLUMB:addBarrel(3, 13, 0, 100) CLOCK:tick()")
-        self.assertTrue(lua.eval("BARRELS:connect(3, 13, 0)"))
-        self.assertEqual(lua.eval('STORE.barrels["5,9,0"]["3,13,0"].v'), 1)
 
 
 class MirroredState(unittest.TestCase):

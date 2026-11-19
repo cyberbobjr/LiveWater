@@ -32,6 +32,9 @@ FAMILIES = {
 JUNK = {"Base.RubberBand"}
 # Whole raw materials a quarter part is cut out of (ADR-007 D01).
 RAW = {"Base.MetalPipe", "Base.RubberHose"}
+# Worn items and the new item they were (ADR-009 D01): a worn one cost what the new one cost, and the recipe that
+# turns it back into a new one is not a build recipe.
+WORN = {"LiveWater.WaterFilterSpent": "LiveWater.WaterFilter"}
 
 
 def family(item):
@@ -75,8 +78,12 @@ def equipment():
 
 def build_cost(item, recipes):
     """Raw materials consumed to make one `item`, LiveWater intermediates expanded (fractions for split outputs)."""
+    if item in WORN:
+        return build_cost(WORN[item], recipes)
     for name, r in recipes.items():
         if name.startswith("LWTDismantle"):
+            continue
+        if any(items and items[0] in WORN for _, items, _, _ in r["inputs"]):
             continue
         made = dict((it, n) for n, it in r["outputs"])
         if item not in made:
@@ -143,7 +150,7 @@ class DismantleRecipes(unittest.TestCase):
             self.assertEqual(tools[name], "plumbing", name)
         for name in ("PondPump", "SprinklerAuto"):
             self.assertEqual(tools[name], "electrical", name)
-        for name in ("DripLine", "WaterFilter"):
+        for name in ("DripLine", "WaterFilter", "WaterFilterSpent"):
             self.assertEqual(tools[name], "knife", name)
         self.assertEqual(self.d.TOOLS.plumbing.perk, "Maintenance")
         self.assertEqual(self.d.TOOLS.electrical.perk, "Electricity")
@@ -179,8 +186,9 @@ class DismantleRecipes(unittest.TestCase):
         self.assertFalse(returns["DripLine"] & RAW)
 
     def test_the_water_filter_gives_back_cloth_only(self):
-        filt = [p for p in self.parts if p["item"] == "LiveWater.WaterFilter"][0]
-        self.assertEqual({it for it, _ in filt["returns"]}, {"Base.RippedSheets"})
+        for item in ("LiveWater.WaterFilter", "LiveWater.WaterFilterSpent"):
+            filt = [p for p in self.parts if p["item"] == item][0]
+            self.assertEqual(filt["returns"], [("Base.RippedSheets", 1)], item)
 
     def test_the_recipe_names_are_translated(self):
         tr = os.path.join(MEDIA, "lua", "shared", "Translate")
@@ -235,7 +243,7 @@ class DismantleInWorld(unittest.TestCase):
             self.assertEqual(named[name]["material"], "LiveWater" + name)
             self.assertEqual(named[name]["scrap"], size, name)
             self.assertIsNotNone(self.defs[named[name]["material"]], name)
-        for name in ("DripLine", "WaterFilter"):
+        for name in ("DripLine", "WaterFilter", "WaterFilterSpent"):
             self.assertIsNone(named[name]["material"])
         self.assertEqual(len(list(self.defs.keys())), 8)
 

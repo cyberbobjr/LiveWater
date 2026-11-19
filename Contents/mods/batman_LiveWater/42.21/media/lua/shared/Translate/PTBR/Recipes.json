@@ -2,6 +2,7 @@
     "LWTCutPipeSections": "Cortar Trechos de Cano",
     "LWTBuildPondPump": "Montar Bomba de Lagoa",
     "LWTMakeWaterFilter": "Fazer Cartucho Filtrante",
+    "LWTRechargeWaterFilter": "Recarregar Cartucho Filtrante",
     "LWTBuildValve": "Montar Válvula de Corte",
     "LWTBuildFlowMeter": "Montar Medidor de Água",
     "LWTBuildHouseInlet": "Montar Entrada de Água da Casa",
@@ -18,5 +19,6 @@
     "LWTDismantleSprinklerAuto": "Desmontar Aspersor Automático",
     "LWTDismantleBarrelFitting": "Desmontar Conexão para Barril",
     "LWTDismantleDripLine": "Desmontar linha de gotejamento",
-    "LWTDismantleWaterFilter": "Desmontar Cartucho Filtrante"
+    "LWTDismantleWaterFilter": "Desmontar Cartucho Filtrante",
+    "LWTDismantleWaterFilterSpent": "Desmontar Cartucho Filtrante Usado"
 }

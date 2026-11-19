@@ -2,6 +2,7 @@
     "LWTCutPipeSections": "Cut Pipe Sections",
     "LWTBuildPondPump": "Build Pond Pump",
     "LWTMakeWaterFilter": "Make Water Filter",
+    "LWTRechargeWaterFilter": "Recharge Water Filter Cartridge",
     "LWTBuildValve": "Build Shut-off Valve",
     "LWTBuildFlowMeter": "Build Water Meter",
     "LWTBuildHouseInlet": "Build House Water Inlet",
@@ -18,5 +19,6 @@
     "LWTDismantleSprinklerAuto": "Dismantle Automatic Sprinkler",
     "LWTDismantleBarrelFitting": "Dismantle Barrel Fitting",
     "LWTDismantleDripLine": "Dismantle Drip Line",
-    "LWTDismantleWaterFilter": "Dismantle Water Filter"
+    "LWTDismantleWaterFilter": "Dismantle Water Filter",
+    "LWTDismantleWaterFilterSpent": "Dismantle Spent Water Filter"
 }

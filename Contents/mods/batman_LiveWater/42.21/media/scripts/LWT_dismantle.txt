@@ -189,4 +189,21 @@ module LiveWater
             item 1 Base.RippedSheets,
         }
     }
+
+    craftRecipe LWTDismantleWaterFilterSpent
+    {
+        timedAction = Making,
+        time = 40,
+        Tags = AnySurfaceCraft,
+        category = LiveWater,
+        inputs
+        {
+            item 1 tags[base:sharpknife] mode:keep flags[Prop1;MayDegradeLight],
+            item 1 [LiveWater.WaterFilterSpent] mode:destroy flags[AllowDestroyedItem],
+        }
+        outputs
+        {
+            item 1 Base.RippedSheets,
+        }
+    }
 }

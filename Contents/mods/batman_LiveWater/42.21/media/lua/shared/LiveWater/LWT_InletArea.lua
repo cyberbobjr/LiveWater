@@ -12,9 +12,8 @@
 -- In base mode, a fixture of a map building (its original sinks, flagged mapBuilding by the probe)
 -- is never taken: after the city water shut-off the circle would otherwise put relays over a
 -- neighbour's house; one already fed by a relay of this inlet keeps it.
--- An area: { mode, x, y, z, range, minX, maxX, minY, maxY, minZ, maxZ, topZ, contains(self, x, y, z),
--- reaches(self, x, y, z), serves(self, fixture, owner) }. reaches: a barrel there may join the reserve of the inlet (ADR-001 D28,
--- L01): in the circle, inside the area or right above it (on the roof), up to topZ.
+-- An area: { mode, x, y, z, range, minX, maxX, minY, maxY, minZ, maxZ, contains(self, x, y, z),
+-- serves(self, fixture, owner) }.
 
 local InletArea = {}
 InletArea.__index = InletArea
@@ -30,11 +29,6 @@ end
 function InletArea:contains(x, y, z)
     if z < self.minZ or z > self.maxZ or not inCircle(self, x, y) then return false end
     return self:holds(x, y, z)
-end
-
-function InletArea:reaches(x, y, z)
-    if z < self.minZ or z > self.topZ or not inCircle(self, x, y) then return false end
-    return self:holds(x, y, z) or self:holds(x, y, z - 1)
 end
 
 -- May the inlet `owner` (key) serve this fixture { x, y, z, source, mapBuilding } of its area?
@@ -53,8 +47,7 @@ function InletArea.building(b, x, y, z, range)
     local area = new({ mode = "building", x = x, y = y, z = z, range = range,
         minX = math.max(b.x1, x - range), maxX = math.min(b.x2, x + range),
         minY = math.max(b.y1, y - range), maxY = math.min(b.y2, y + range),
-        minZ = math.min(b.minLevel, z, -InletArea.BASEMENT_LEVELS), maxZ = z + InletArea.LEVELS_UP,
-        topZ = b.maxLevel + 1 })
+        minZ = math.min(b.minLevel, z, -InletArea.BASEMENT_LEVELS), maxZ = z + InletArea.LEVELS_UP })
     function area:holds(fx, fy, fz)
         return b:contains(fx, fy, fz) or (fz < 0 and b:contains(fx, fy, 0))
     end
@@ -65,7 +58,7 @@ end
 function InletArea.base(x, y, z, range)
     local area = new({ mode = "base", x = x, y = y, z = z, range = range,
         minX = x - range, maxX = x + range, minY = y - range, maxY = y + range,
-        minZ = z, maxZ = z + InletArea.LEVELS_UP, topZ = z + InletArea.LEVELS_UP + 1 })
+        minZ = z, maxZ = z + InletArea.LEVELS_UP })
     function area:holds()
         return true
     end

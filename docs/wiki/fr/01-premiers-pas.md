@@ -23,7 +23,7 @@ Recette **Fabriquer une pompe d'étang** (Électricité 2) : 1 tuyau en métal, 
 (15 kg) et 15 XP d'Électricité.
 
 Posez-la comme un meuble (clic droit dans l'inventaire, Placer) **juste au bord d'une eau naturelle** : lac, étang,
-rivière, ou contre un puits (voir [Puits](#13-puits)). Ailleurs, le curseur passe au rouge : *Doit être posée au bord
+rivière, ou contre un puits (voir [Puits](#12-puits)). Ailleurs, le curseur passe au rouge : *Doit être posée au bord
 d'une eau naturelle*.
 
 La pompe a besoin de **courant** : un générateur ou le réseau public sur sa case, ou LiveWire (voir
@@ -108,7 +108,7 @@ Son voyant dit ce qu'elle fait :
 - **ambre** : l'eau n'est **pas filtrée**, la maison n'en reçoit **pas** (montez un filtre dans l'arrivée d'eau,
   remplacez une cartouche usée, ou pompez dans un puits).
 
-Un point d'eau déjà alimenté par autre chose (une pompe de LiveWire, un baril au-dessus) est laissé tel quel.
+Un point d'eau déjà alimenté par autre chose (une pompe de LiveWire) est laissé tel quel.
 
 Un évier, une douche, une baignoire, des toilettes ou un lave-linge alimenté par l'arrivée d'eau affiche dans son menu
 clic droit l'eau qu'il contient, par exemple une ligne grisée **Eau : 18 L / 25 L**.
@@ -121,8 +121,8 @@ L'eau d'un étang ou d'une rivière n'est pas propre. Recette **Fabriquer une ca
 et 2 tissus déchirés donnent une **cartouche filtrante**. Elle nettoie environ **500 L** ; son état montre ce qui reste.
 
 Le filtre se monte dans l'**arrivée d'eau de la maison** : clic droit dessus, **Monter la cartouche filtrante**,
-**Remplacer la cartouche filtrante** ou **Retirer la cartouche filtrante**. Une cartouche retirée garde son usure ; une
-cartouche usée est jetée. L'arrivée d'eau montre le boîtier du filtre sous son coffret. Il ne nettoie que l'eau qui
+**Remplacer la cartouche filtrante** ou **Retirer la cartouche filtrante**. Une cartouche retirée garde son usure. Une
+cartouche usée revient sous le nom de **cartouche filtrante usée** : rechargez-la avec 2 charbons de bois et 1 tissu déchiré (recette **Recharger une cartouche filtrante**), ou démontez-la pour son tissu. L'arrivée d'eau montre le boîtier du filtre sous son coffret. Il ne nettoie que l'eau qui
 entre dans la maison : arroseurs, lignes de goutte-à-goutte et barils prennent l'eau du réseau telle quelle et n'usent
 jamais la cartouche.
 
@@ -201,32 +201,21 @@ baril, quand il y en a un, reste derrière lui. Clic droit :
 
 Son dessin suit le mode, la forme du récupérateur et les tuyaux voisins. **Informations** montre le mode et les litres du baril.
 
+Un baril n'atteint le réseau que par un raccord de baril, jamais directement la maison : sans pompe, seules les lignes de goutte-à-goutte reçoivent son eau.
+
 **Essence.** Un raccord réglé sur Pomper contre un baril d'essence ou une pompe de station-service fait un réseau
 d'essence. Il ne remplit que des barils (vides, ou contenant déjà de l'essence) par des raccords réglés sur Remplir.
 Arrivées d'eau et arroseurs ne reçoivent rien et le disent.
 
 ![Deux raccords sur des récupérateurs d'eau vanilla : un tonneau rond entre deux tuyaux (té) et une caisse au croisement de trois tuyaux (croix)](../../images/screenshots/barrel-fittings.jpg)
 
-## 10. Barils raccordés à la maison
-
-Pas de pompe ? Clic droit sur un récupérateur d'eau de pluie ou un baril posé **dans la maison ou sur son toit** :
-**Raccorder à l'arrivée d'eau de la maison** (avec une clé anglaise). Aucun tuyau n'est nécessaire, seulement une
-arrivée d'eau sur ce bâtiment.
-
-- Un baril alimente **son étage et ceux du dessous** (gravité). Avec une pompe dans le réseau de l'arrivée d'eau, ou du
-  courant sur la case du baril, il alimente tous les étages.
-- Tous les barils raccordés se vident **ensemble**. **Garder en réserve (pris en dernier)** en met un de côté : il
-  n'est utilisé qu'une fois les autres vides. **Utiliser avec les autres barils** le remet avec eux.
-- Un baril vide reste raccordé. Un baril qui contient autre chose que de l'eau ne donne rien tant qu'il n'est pas vidé.
-- **Débrancher de l'arrivée d'eau de la maison**, ou emportez le baril : il n'est plus raccordé.
-
-## 11. Réseau public
+## 10. Réseau public
 
 Tant que l'eau de la ville coule, clic droit sur un évier, une baignoire, une douche, des toilettes ou un lave-linge
 **que vous avez posé** dans une pièce d'un bâtiment de la carte : **Raccorder au réseau public**. Il se comporte alors
 comme un point d'eau d'origine : eau illimitée jusqu'à la coupure de l'eau de la ville.
 
-## 12. Compteur d'eau
+## 11. Compteur d'eau
 
 Recette **Fabriquer un compteur d'eau** : 1 tuyau d'eau, 1 petite plaque en métal, 2 vis, avec un tournevis
 (gardé). Posez-le en ligne sur un tuyau ; il suit le sens du tuyau et ne se raccorde qu'à ses deux côtés, sur cet axe.
@@ -238,27 +227,27 @@ le repose ; il n'y a pas de remise à zéro.
 
 ![La fenêtre du compteur d'eau : rouleaux, aiguille, total et dernières minutes](../../images/screenshots/meter-window-fr.jpg)
 
-## 13. Puits
+## 12. Puits
 
 La même pompe d'étang posée contre un **puits** tire de l'**eau propre** : la maison la reçoit sans filtre. Ses
 informations disent *Source : puits (eau propre)*.
 
 > Capture à faire : une pompe d'étang contre un puits.
 
-## 14. Démonter une pièce
+## 13. Démonter une pièce
 
 Chaque pièce LiveWater se démonte dans l'inventaire, par une recette **Démonter ...** (fenêtre d'artisanat,
 Assemblage ou Électricité) : une clé à tuyau ou une clé pour les pièces de plomberie (tuyau, vanne, compteur, arrivée
 d'eau, arroseur, raccord de baril), un tournevis pour la pompe d'étang et l'arroseur automatique, un couteau pour une
 ligne de goutte-à-goutte ou une cartouche filtrante. On ne récupère jamais plus que ce que la pièce a coûté, et
-seulement des débris : morceaux de fer, ferraille, vis, ferraille électronique, fil. Une cartouche filtrante rend un
+seulement des débris : morceaux de fer, ferraille, vis, ferraille électronique, fil. Une cartouche filtrante, neuve ou usée, rend un
 morceau de tissu, une ligne de goutte-à-goutte un élastique.
 
 Une pièce posée se démonte aussi sur place, par le menu **Démonter** du jeu et avec le même outil (l'Entretien augmente
 vos chances pour les pièces de plomberie, l'Électricité pour la pompe et l'arroseur automatique). Elle quitte le réseau
 comme si vous l'aviez ramassée. Une ligne de goutte-à-goutte se ramasse à la main, puis se démonte dans l'inventaire.
 
-## 15. Trouver des pièces
+## 14. Trouver des pièces
 
 Certaines pièces se trouvent au lieu de se fabriquer, rarement : tuyaux d'eau, vannes d'arrêt et raccords de baril
 dans les fournitures de plomberie et les caisses à outils ; arroseurs, lignes de goutte-à-goutte et cartouches

@@ -17,15 +17,15 @@ Un día los grifos dejan de dar agua. Tráela tú mismo: una bomba de estanque j
 [*][b]Contador de agua[/b]: se coloca en línea en una tubería y muestra los litros de los últimos 10 minutos.
 [/list]
 
-[h2]¿Sin bomba? Barriles y red de la ciudad[/h2]
+[h2]Barriles y red de la ciudad[/h2]
 [list]
-[*]Conecta con una llave para tubos un recolector de lluvia o un barril, dentro de la casa o en su tejado, a la entrada de agua de la casa. Alimenta su piso y los inferiores (todos los pisos con bomba o corriente). Todos los barriles se vacían a la vez; guarda uno de reserva.
+[*]Los barriles solo llegan a la casa a través de un conector de barril en una tubería y una bomba: sin bomba, un barril solo alimenta las líneas de goteo.
 [*]Tu propia base: una entrada fuera de un edificio del mapa abastece los puntos de agua a 12 casillas.
 [*]Mientras corra el agua de la ciudad, conecta a ella un fregadero, ducha o inodoro que hayas colocado en un edificio del mapa.
 [/list]
 
 [h2]Saber siempre el porqué[/h2]
-"Mostrar la red de agua" resalta toda una red según su estado. Un fregadero seco explica el motivo en su menú del clic derecho: no conectado, sin entrada, agua sin filtrar, presión baja, válvula cerrada, barriles demasiado bajos o vacíos...
+"Mostrar la red de agua" resalta toda una red según su estado. Un fregadero seco explica el motivo en su menú del clic derecho: no conectado, sin entrada, agua sin filtrar, presión baja, válvula cerrada...
 
 [h2]Opciones y compatibilidad[/h2]
 [list]

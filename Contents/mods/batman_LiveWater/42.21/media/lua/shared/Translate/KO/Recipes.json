@@ -2,6 +2,7 @@
     "LWTCutPipeSections": "배관 부품 자르기",
     "LWTBuildPondPump": "연못 펌프 만들기",
     "LWTMakeWaterFilter": "정수 필터 카트리지 만들기",
+    "LWTRechargeWaterFilter": "정수 필터 카트리지 다시 채우기",
     "LWTBuildValve": "차단 밸브 만들기",
     "LWTBuildFlowMeter": "수도 계량기 만들기",
     "LWTBuildHouseInlet": "집 급수구 만들기",
@@ -18,5 +19,6 @@
     "LWTDismantleSprinklerAuto": "자동 스프링클러 분해하기",
     "LWTDismantleBarrelFitting": "배럴 연결구 분해하기",
     "LWTDismantleDripLine": "점적 호스 분해하기",
-    "LWTDismantleWaterFilter": "정수 필터 카트리지 분해하기"
+    "LWTDismantleWaterFilter": "정수 필터 카트리지 분해하기",
+    "LWTDismantleWaterFilterSpent": "다 쓴 정수 필터 카트리지 분해하기"
 }

@@ -2,6 +2,7 @@
     "Base.Mov_LiveWater_Pipe": "Water Pipe",
     "Base.Mov_LiveWater_PondPump": "Pond Pump",
     "LiveWater.WaterFilter": "Water Filter Cartridge",
+    "LiveWater.WaterFilterSpent": "Spent Water Filter Cartridge",
     "Base.Mov_LiveWater_FlowMeter": "Water Meter",
     "Base.Mov_LiveWater_DripLine": "Drip Line",
     "Base.Mov_LiveWater_Valve": "Shut-off Valve",

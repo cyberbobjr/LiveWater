@@ -83,6 +83,8 @@ Dismantle.PARTS = {
     -- Gives back cloth, never the burnt charcoal (D01).
     { name = "WaterFilter", item = "LiveWater.WaterFilter", tool = "knife", time = 40,
       returns = { { "Base.RippedSheets", 1 } } },
+    { name = "WaterFilterSpent", item = "LiveWater.WaterFilterSpent", tool = "knife", time = 40,
+      returns = { { "Base.RippedSheets", 1 } } },
 }
 
 function Dismantle.recipeName(part)

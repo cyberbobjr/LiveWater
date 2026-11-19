@@ -86,6 +86,7 @@ Une pièce dont le mod est retiré reste inerte dans la sauvegarde et revient av
 | 17 | crochet `panel` des capacités : « Information » ouvre une fenêtre à la place de l'infobulle ; champ `bends` de la pièce (remplacé par `branches` en révision 18) |
 | 18 | champ `branches` de la pièce : variante choisie par le masque des côtés raccordés, relatif à l'orientation (remplace `bends`) |
 | 19 | champ `sidesByFacing` de la pièce : côtés que la pièce peut raccorder, selon l'orientation de pose |
+| 20 | réglage `spent` du filtre (objet que rend une cartouche usée, ADR-009 D01) ; quatrième résultat du crochet `cartridge` |
 
 Les changements sont seulement additifs : une fonction ou un champ ne change jamais de sens dans une révision suivante.
 Une exception avant la première publication : la révision 16 a fait de `loss` de `spray` une part de l'eau prélevée

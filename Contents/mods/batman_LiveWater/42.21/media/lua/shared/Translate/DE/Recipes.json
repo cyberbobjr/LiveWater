@@ -2,6 +2,7 @@
     "LWTCutPipeSections": "Rohrstücke zuschneiden",
     "LWTBuildPondPump": "Teichpumpe bauen",
     "LWTMakeWaterFilter": "Filterkartusche herstellen",
+    "LWTRechargeWaterFilter": "Filterkartusche nachfüllen",
     "LWTBuildValve": "Absperrventil bauen",
     "LWTBuildFlowMeter": "Wasserzähler bauen",
     "LWTBuildHouseInlet": "Hauswassereinlass bauen",
@@ -18,5 +19,6 @@
     "LWTDismantleSprinklerAuto": "Automatischen Sprinkler zerlegen",
     "LWTDismantleBarrelFitting": "Fassanschluss zerlegen",
     "LWTDismantleDripLine": "Tropfschlauch zerlegen",
-    "LWTDismantleWaterFilter": "Filterkartusche zerlegen"
+    "LWTDismantleWaterFilter": "Filterkartusche zerlegen",
+    "LWTDismantleWaterFilterSpent": "Verbrauchte Filterkartusche zerlegen"
 }
