@@ -1,6 +1,21 @@
 # Changelog
 
-## Unreleased
+## 1.0.0-beta — 2026-11-19
+
+First beta of LiveWater: running water and irrigation, the plumbing brother of LiveWire.
+
+- **Water pump** (Electrical 2): draws from a lake, pond, river, well, barrel or even a gas station pump, 50 L every 10 minutes while something downstream needs it. Needs power (generator, grid or LiveWire), hums, wears out and is repaired with scrap metal.
+- **Pipes** set down like furniture: they join and bend on their own, pass under fences, never through walls.
+- **House water inlet**: every fixture you plumbed with a pipe wrench gets water, up to 3 floors up and 2 basement levels down. A **water filter cartridge** cleans pond and river water; well water needs none.
+- **Garden**: manual and automatic sprinklers (timer, Electrical 2) and silent drip lines; "Show All Watered Areas".
+- **Fill fitting**: fills barrels, rain collectors, water coolers and feeding troughs from the pipes.
+- **Shut-off valves** and an inline **water meter**.
+- **Gasoline in the pipes**: one liquid per network, set by the first pump placed.
+- **Diagnostics**: "Show the Water Network" colours a network by state, and a dry sink tells you why.
+- Works while you are away, in singleplayer and multiplayer (multiplayer not tested by players yet), 11 languages, sandbox options, public API for other mods, and a clean "Remove LiveWater From This World" action.
+- With LiveWire 2.1.8 or later, LiveWire's own water pump recipe makes way for LiveWater's.
+
+## 0.1.0 — development builds (not published)
 
 - Galvanized water pipes: cut a metal pipe into four pipes with a hacksaw.
 - Pipes are placed with the "Place" menu like every other LiveWater equipment, one per square; they join their

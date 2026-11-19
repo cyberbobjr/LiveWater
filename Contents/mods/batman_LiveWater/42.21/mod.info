@@ -5,6 +5,6 @@ poster=poster.png
 icon=icon.png
 incompatible=\LGExtendedPlumbing,\LGMainsWater
 versionMin=42.21
-modversion=0.1.0
+modversion=1.0.0-beta
 pack=batman_livewater_01
 tiledef=batman_livewater_01 7176
