@@ -1,5 +1,8 @@
 [h1]LiveWater - Agua corriente y riego[/h1]
 
+[h1]BETA[/h1]
+[b]LiveWater está en beta: la mayoría de las funciones van bien, pero quedan errores. No lo exprimas todavía en un servidor de producción ni en una partida que aprecies. Pruébalo antes en un mundo de prueba.[/b]
+
 [b]Build 42.22 · Un jugador y multijugador (multijugador aún sin probar)[/b]
 
 Un día los grifos se secan. Trae el agua de vuelta tú mismo: una bomba junto al río, tuberías cruzando el patio, agua corriente en casa y aspersores que riegan tus cultivos mientras sales a saquear. LiveWater es el hermano fontanero de [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url]: mismo espíritu, mismos menús del clic derecho.

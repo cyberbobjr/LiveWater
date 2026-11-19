@@ -2,6 +2,9 @@ version=1
 title=LiveWater
 description=[h1]LiveWater - Running Water & Irrigation[/h1]
 description=
+description=[h1]BETA[/h1]
+description=[b]LiveWater is a beta: most features work, but bugs remain. Do not push it hard yet on a production server or on a save you love. Try it on a test world first.[/b]
+description=
 description=[b]Build 42.22 · Singleplayer & Multiplayer (multiplayer not tested yet)[/b]
 description=
 description=One day the taps run dry. Bring the water back yourself: a pump on the river bank, pipes across the yard, running water in the house again, and sprinklers that water your crops while you are out looting. LiveWater is the plumbing brother of [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url]: same spirit, same kind of right-click menus.
