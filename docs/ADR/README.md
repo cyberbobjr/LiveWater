@@ -16,3 +16,4 @@
 | [012](012-producteurs-et-consommateurs.md) | Producteurs et consommateurs : seule une pompe met l'eau dans le réseau ; API ouverte | Accepté (2026-11-19) | [plan-012](../ADR-plans/plan-012-producteurs-et-consommateurs.md) | En cours |
 | [013](013-raccord-de-remplissage-et-abreuvoirs.md) | Raccord de remplissage : barils, récupérateurs d'eau et mangeoires | Accepté (2026-11-19) | [plan-013](../ADR-plans/plan-013-raccord-de-remplissage-et-abreuvoirs.md) | En cours |
 | [014](014-essence-dans-les-tuyaux.md) | Essence dans les tuyaux : pompe sur une station-service, un seul liquide par réseau | Accepté (2026-11-19) | [plan-014](../ADR-plans/plan-014-essence-dans-les-tuyaux.md) | En cours |
+| [015](015-experience-des-recettes.md) | Expérience des recettes : Travail des métaux et Électricité | Accepté (2026-11-19) | [plan-015](../ADR-plans/plan-015-experience-des-recettes.md) | En cours (passage en jeu à faire) |

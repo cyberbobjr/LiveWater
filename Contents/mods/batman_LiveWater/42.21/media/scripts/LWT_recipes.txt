@@ -13,6 +13,7 @@ module LiveWater
         time = 160,
         Tags = AnySurfaceCraft,
         category = LiveWater,
+        xpAward = MetalWelding:5,
         inputs
         {
             item 1 [Base.MetalPipe],
@@ -94,6 +95,7 @@ module LiveWater
         time = 120,
         Tags = AnySurfaceCraft,
         category = LiveWater,
+        xpAward = MetalWelding:5,
         inputs
         {
             item 1 tags[base:pipewrench] mode:keep flags[MayDegradeLight],
@@ -113,6 +115,7 @@ module LiveWater
         time = 150,
         Tags = AnySurfaceCraft,
         category = LiveWater,
+        xpAward = MetalWelding:8,
         inputs
         {
             item 1 tags[base:screwdriver] mode:keep flags[Prop1;MayDegradeLight],
@@ -132,6 +135,7 @@ module LiveWater
         time = 200,
         Tags = AnySurfaceCraft,
         category = LiveWater,
+        xpAward = MetalWelding:10,
         inputs
         {
             item 1 tags[base:pipewrench] mode:keep flags[MayDegradeLight],
@@ -153,6 +157,7 @@ module LiveWater
         time = 150,
         Tags = AnySurfaceCraft,
         category = LiveWater,
+        xpAward = MetalWelding:8,
         inputs
         {
             item 1 tags[base:pipewrench] mode:keep flags[MayDegradeLight],
@@ -195,6 +200,7 @@ module LiveWater
         time = 120,
         Tags = AnySurfaceCraft,
         category = LiveWater,
+        xpAward = MetalWelding:5,
         inputs
         {
             item 1 tags[base:pipewrench] mode:keep flags[MayDegradeLight],

@@ -15,6 +15,7 @@ module LiveWater
         time = 60,
         Tags = AnySurfaceCraft,
         category = LiveWater,
+        xpAward = MetalWelding:2,
         inputs
         {
             item 1 tags[base:pipewrench;base:wrench] mode:keep flags[MayDegradeLight],
@@ -32,6 +33,7 @@ module LiveWater
         time = 100,
         Tags = AnySurfaceCraft,
         category = LiveWater,
+        xpAward = MetalWelding:2,
         inputs
         {
             item 1 tags[base:pipewrench;base:wrench] mode:keep flags[MayDegradeLight],
@@ -50,6 +52,7 @@ module LiveWater
         time = 100,
         Tags = AnySurfaceCraft,
         category = LiveWater,
+        xpAward = MetalWelding:2,
         inputs
         {
             item 1 tags[base:pipewrench;base:wrench] mode:keep flags[MayDegradeLight],
@@ -68,6 +71,7 @@ module LiveWater
         time = 150,
         Tags = AnySurfaceCraft,
         category = LiveWater,
+        xpAward = MetalWelding:2,
         inputs
         {
             item 1 tags[base:pipewrench;base:wrench] mode:keep flags[MayDegradeLight],
@@ -87,6 +91,7 @@ module LiveWater
         time = 200,
         Tags = AnySurfaceCraft,
         category = LiveWater,
+        xpAward = Electricity:5,
         inputs
         {
             item 1 tags[base:screwdriver] mode:keep flags[Prop1;MayDegradeLight],
@@ -107,6 +112,7 @@ module LiveWater
         time = 100,
         Tags = AnySurfaceCraft,
         category = LiveWater,
+        xpAward = MetalWelding:2,
         inputs
         {
             item 1 tags[base:pipewrench;base:wrench] mode:keep flags[MayDegradeLight],
@@ -125,6 +131,7 @@ module LiveWater
         time = 150,
         Tags = AnySurfaceCraft,
         category = LiveWater,
+        xpAward = Electricity:3,
         inputs
         {
             item 1 tags[base:screwdriver] mode:keep flags[Prop1;MayDegradeLight],
@@ -145,6 +152,7 @@ module LiveWater
         time = 80,
         Tags = AnySurfaceCraft,
         category = LiveWater,
+        xpAward = MetalWelding:2,
         inputs
         {
             item 1 tags[base:pipewrench;base:wrench] mode:keep flags[MayDegradeLight],

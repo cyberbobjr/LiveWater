@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-beta2 — 2026-11-19
+
+- **Experience:** building water parts now trains Welding (pipes, valves, fill fittings, water meter, sprinklers, house water inlet: 5 to 10 XP), and the water pump and automatic sprinkler keep training Electrical. Dismantling gives a little experience in the same skill. Filter cartridges and drip lines give none.
+
 ## 1.0.0-beta — 2026-11-19
 
 First beta of LiveWater: running water and irrigation, the plumbing brother of LiveWire.

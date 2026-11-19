@@ -255,6 +255,19 @@ A part set down can also be dismantled where it stands, with the game's own **Di
 (Maintenance raises your chance for the plumbing parts, Electrical for the pump and the automatic sprinkler). It leaves
 the network as if you had picked it up. A drip line is picked up by hand, then dismantled in the inventory.
 
+### Experience
+
+Metal parts train **Welding**, the pump and the automatic sprinkler train **Electrical**:
+
+| Recipe | Making | Dismantling |
+|---|---|---|
+| Cut Pipe Sections, shut-off valve, fill fitting | 5 Welding | 2 Welding |
+| Water meter, sprinkler | 8 Welding | 2 Welding |
+| House water inlet | 10 Welding | 2 Welding |
+| Water pump | 15 Electrical | 5 Electrical |
+| Automatic sprinkler | 10 Electrical | 3 Electrical |
+| Water filter cartridge, drip lines | none | none |
+
 ## 14. Finding parts
 
 Some parts can be found instead of built, rarely: water pipes, shut-off valves and fill fittings in plumbing supplies

@@ -268,6 +268,19 @@ Une pièce posée se démonte aussi sur place, par le menu **Démonter** du jeu 
 vos chances pour les pièces de plomberie, l'Électricité pour la pompe et l'arroseur automatique). Elle quitte le réseau
 comme si vous l'aviez ramassée. Une ligne de goutte-à-goutte se ramasse à la main, puis se démonte dans l'inventaire.
 
+### Expérience
+
+Les pièces en métal font progresser le **Travail des métaux**, la pompe et l'arroseur automatique l'**Électricité** :
+
+| Recette | Fabrication | Démontage |
+|---|---|---|
+| Découper des tuyaux, vanne d'arrêt, raccord de remplissage | 5 Travail des métaux | 2 Travail des métaux |
+| Compteur d'eau, arroseur | 8 Travail des métaux | 2 Travail des métaux |
+| Arrivée d'eau de la maison | 10 Travail des métaux | 2 Travail des métaux |
+| Pompe à eau | 15 Électricité | 5 Électricité |
+| Arroseur automatique | 10 Électricité | 3 Électricité |
+| Cartouche filtrante, goutte-à-goutte | aucune | aucune |
+
 ## 14. Trouver des pièces
 
 Certaines pièces se trouvent au lieu de se fabriquer, rarement : tuyaux d'eau, vannes d'arrêt et raccords de remplissage
