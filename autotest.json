@@ -22,8 +22,8 @@
     "timeoutSec": 1200,
     "startDelaySec": 5
   },
-  // Dedicated server + client 1 (--client-run): the server sets the layout down around client 1, client 1 lays
-  // the pipes and works the valve and the filter through the real commands (sendClientCommand).
+  // Dedicated server + client 1 (--client-run): the server sets the layout down around client 1, client 1 sees
+  // the pipes arrive and works the valve and the filter through the real commands (sendClientCommand).
   "mp": {
     "serverName": "pzat_livewater_mp",
     "port": 17431,

@@ -14,10 +14,14 @@
     "Sandbox_LWT_WasherFix_tooltip": "Sur un serveur, les lave-linge alimentés par une arrivée d'eau montrent leur état réel aux joueurs : raccordés, et arrêtés quand ils n'ont plus d'eau.",
     "Sandbox_LWT_SprinklerRadiusMultiplier": "Portée des arroseurs",
     "Sandbox_LWT_SprinklerRadiusMultiplier_tooltip": "Multiplie la distance à laquelle un arroseur arrose les plantes (2 cases à 1,0 ; 10 au plus).",
+    "Sandbox_LWT_SprinklerFlow": "Débit des arroseurs",
+    "Sandbox_LWT_SprinklerFlow_tooltip": "Litres qu'un arroseur ouvert prélève toutes les 10 minutes, que les plantes aient soif ou non (10 L par défaut). Un quart se perd dans l'air ; les plantes à portée prennent ce qu'il leur faut, le reste est perdu.",
+    "Sandbox_LWT_DripFlow": "Débit du goutte-à-goutte",
+    "Sandbox_LWT_DripFlow_tooltip": "Litres que prélève chaque case de ligne de goutte-à-goutte toutes les 10 minutes quand le réseau lui donne de l'eau (0,5 L par défaut). Rien ne se perd dans l'air ; les plantes voisines prennent ce qu'il leur faut, le reste est perdu.",
     "Sandbox_LWT_SprinklerTimerMin": "Minuterie d'arroseur : intervalle le plus court",
     "Sandbox_LWT_SprinklerTimerMin_tooltip": "Nombre d'heures minimal qu'un joueur peut régler entre deux arrosages d'un arroseur automatique.",
     "Sandbox_LWT_SprinklerTimerMax": "Minuterie d'arroseur : intervalle le plus long",
     "Sandbox_LWT_SprinklerTimerMax_tooltip": "Nombre d'heures maximal qu'un joueur peut régler entre deux arrosages d'un arroseur automatique.",
     "Sandbox_LWT_FillContainers": "Conteneurs qu'un raccord de baril peut remplir",
-    "Sandbox_LWT_FillContainers_tooltip": "Noms d'entités ou de sprites, séparés par ; (fontaines à eau : WaterDispenser). Ils se remplissent par un raccord de baril réglé sur Remplir, quelle que soit leur taille, avec de l'eau propre seulement. Les barils et récupérateurs d'eau de pluie marchent toujours."
+    "Sandbox_LWT_FillContainers_tooltip": "Noms d'entités ou de sprites, séparés par ; (fontaines à eau : WaterDispenser). Ils se remplissent par un raccord de baril réglé sur Remplir, quelle que soit leur taille, avec de l'eau croupie, comme un baril. Les barils et récupérateurs d'eau de pluie marchent toujours."
 }

@@ -6,12 +6,13 @@ Um dia a torneira seca. Traga a água de volta por conta própria: uma bomba de 
 
 [h2]O que você pode construir[/h2]
 [list]
-[*][b]Trechos de cano[/b]: serre um Tubo de Ferro em 4. Coloque um por quadrado pelo menu do clique direito; os canos se conectam e mudam de forma sozinhos. Desmonte com a Chave de Cano.
+[*][b]Canos de água[/b]: serre um Tubo de Ferro em 4. Como qualquer outra peça, coloque um por quadrado com "Colocar" no menu do clique direito do item; os canos se conectam e mudam de forma sozinhos. Recolha-os com uma chave.
 [*][b]Bomba de lagoa[/b] (Elétrica 2): coloque-a ao lado de um lago, lagoa, rio ou poço. 50 L a cada 10 minutos enquanto alguma saída precisar de água. Precisa de energia (gerador, rede elétrica ou LiveWire). Interruptor, desgaste, falhas, conserto com sucata metálica, barulho que atrai zumbis.
-[*][b]Cartucho filtrante[/b]: carvão e tecido, cerca de 500 L de água limpa. A água de lagoa não é filtrada; a de poço é limpa.
+[*][b]Cartucho filtrante[/b]: carvão e tecido, cerca de 500 L de água limpa. Ele vai na entrada de água da casa e só limpa a água que entra nela. A água de lagoa não é filtrada; a de poço é limpa.
 [*][b]Entrada de água da casa[/b]: coloque-a encostada na parede externa de uma casa e ligue-a à bomba. Pias, banheiras, chuveiros, vasos sanitários e máquinas de lavar que você encanou recebem água corrente, até 3 andares acima e no porão. Luz verde: água limpa. Luz âmbar: água não filtrada, a casa não recebe nenhuma.
-[*][b]Aspersor[/b]: abra a válvula e ele rega as plantas que precisam dela num raio de 2 quadrados, com um jato animado.
-[*][b]Aspersor automático[/b] (Elétrica 2): um temporizador o abre a cada 6 horas (de 1 a 24 h). Precisa de um pouco de energia.
+[*][b]Aspersor[/b]: abra a válvula e ele borrifa 10 L a cada 10 minutos sobre o quadrado de 5 × 5 quadrados ao seu redor, com um jato que dá a volta completa; as plantas que precisam de água pegam a sua parte, o resto se perde. Clique com o botão direito para mostrar a área regada. Um quarto da água se perde no ar e os zumbis o ouvem. Feche-o quando a horta estiver regada.
+[*][b]Aspersor automático[/b] (Elétrica 2): um temporizador o abre por 30 minutos a cada 6 horas (de 1 a 24 h). Precisa de um pouco de energia.
+[*][b]Linha de gotejamento[/b] (mangueira de borracha, fita adesiva, faca): coloque entre as fileiras e ela rega os quadrados dos dois lados, sem barulho, 0,5 L por quadrado a cada 10 minutos, nada se perde no ar. Qualquer água serve, limpa ou não. Sem bomba? Uma conexão para barril em "Ajustar para Bombear" a alimenta por gravidade.
 [*][b]Conexão para barril[/b]: entre um cano e um barril. "Ajustar para Encher": os canos enchem o barril ou um bebedouro. "Ajustar para Bombear": a bomba puxa o barril. Funciona com gasolina também, só para barris.
 [*][b]Medidor de água[/b]: instalado em linha num cano, mostra os litros dos últimos 10 minutos.
 [/list]
@@ -28,7 +29,7 @@ Um dia a torneira seca. Traga a água de volta por conta própria: uma bomba de 
 
 [h2]Opções e compatibilidade[/h2]
 [list]
-[*]Opções de sandbox: vazão e desgaste das bombas, duração dos filtros, alcance das entradas de água, alcance e limites do temporizador dos aspersores, recipientes a encher, correção da máquina de lavar no multiplayer.
+[*]Opções de sandbox: vazão e desgaste das bombas, duração dos filtros, alcance das entradas de água, alcance, vazão e limites do temporizador dos aspersores, vazão do gotejamento, recipientes a encher, correção da máquina de lavar no multiplayer.
 [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] é opcional: a bomba então funciona com o inversor dele (250 W) e aparece no software dele.
 [*]Incompatível com LG Extended Plumbing e LG Connect To Water Supply (LiveWater cobre o que eles fazem).
 [*]Remoção segura: um administrador escolhe "Remover LiveWater deste mundo (admin)" antes de se desinscrever.

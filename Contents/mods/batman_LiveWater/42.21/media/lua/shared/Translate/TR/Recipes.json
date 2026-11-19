@@ -7,5 +7,16 @@
     "LWTBuildHouseInlet": "Ev Su Girişi Yap",
     "LWTBuildSprinkler": "Yağmurlayıcı Yap",
     "LWTUpgradeSprinkler": "Yağmurlayıcıya Zamanlayıcı Ekle",
-    "LWTBuildBarrelFitting": "Varil Tesisatı Yap"
+    "LWTBuildBarrelFitting": "Varil Tesisatı Yap",
+    "LWTMakeDripLine": "Damla sulama hortumu yap",
+    "LWTDismantlePipe": "Su Borusunu Sök",
+    "LWTDismantleValve": "Kapatma Vanasını Sök",
+    "LWTDismantleFlowMeter": "Su Sayacını Sök",
+    "LWTDismantleHouseInlet": "Ev Su Girişini Sök",
+    "LWTDismantlePondPump": "Gölet Pompasını Sök",
+    "LWTDismantleSprinkler": "Yağmurlayıcıyı Sök",
+    "LWTDismantleSprinklerAuto": "Otomatik Yağmurlayıcıyı Sök",
+    "LWTDismantleBarrelFitting": "Varil Tesisatını Sök",
+    "LWTDismantleDripLine": "Damla sulama hortumunu sök",
+    "LWTDismantleWaterFilter": "Su Filtre Kartuşunu Sök"
 }

@@ -6,12 +6,13 @@ Eines Tages kommt aus dem Hahn kein Wasser mehr. Bring es selbst zurück: eine T
 
 [h2]Was du bauen kannst[/h2]
 [list]
-[*][b]Rohrstücke[/b]: Sägt ein Metallrohr in 4 Teile. Pro Feld im Rechtsklick-Menü setzen; Rohre verbinden sich und nehmen ihre Form selbst an. Mit der Rohrzange abbauen.
+[*][b]Wasserrohre[/b]: Sägt ein Metallrohr in 4 Teile. Wie jedes andere Teil über „Platzieren“ im Rechtsklick-Menü des Gegenstands setzen, eins pro Feld; Rohre verbinden sich und nehmen ihre Form selbst an. Mit einem Schraubenschlüssel aufheben.
 [*][b]Teichpumpe[/b] (Elektrik 2): Direkt an einen See, Teich, Fluss oder Brunnen stellen. 50 L alle 10 Minuten, solange irgendwo Wasser gebraucht wird. Braucht Strom (Generator, Stromnetz oder LiveWire). Schalter, Verschleiß, Ausfälle, Reparatur mit Metallschrott; ein Geräusch, das Zombies anlockt.
-[*][b]Filterkartusche[/b]: Holzkohle und Stoff, reinigt etwa 500 L Wasser. Teichwasser ist ungefiltert; Brunnenwasser ist sauber.
+[*][b]Filterkartusche[/b]: Holzkohle und Stoff, reinigt etwa 500 L Wasser. Sie kommt in den Hauswassereinlass und reinigt nur das Wasser, das ins Haus fließt. Teichwasser ist ungefiltert; Brunnenwasser ist sauber.
 [*][b]Wassereinlass des Hauses[/b]: An die Außenwand eines Hauses setzen und mit der Pumpe verbinden. Spülen, Badewannen, Duschen, Toiletten und Waschmaschinen, die du angeschlossen hast, bekommen fließendes Wasser, bis 3 Stockwerke darüber und im Keller. Grünes Licht: sauberes Wasser. Bernsteinfarbenes Licht: ungefiltert, das Haus bekommt keins.
-[*][b]Sprinkler[/b]: Ventil öffnen, dann bewässert er die Pflanzen, die Wasser brauchen, im Umkreis von 2 Feldern, mit animiertem Strahl.
-[*][b]Automatischer Sprinkler[/b] (Elektrik 2): Eine Zeitschaltuhr öffnet ihn alle 6 Stunden (1 bis 24 h). Braucht etwas Strom.
+[*][b]Sprinkler[/b]: Ventil öffnen, dann versprüht er alle 10 Minuten 10 L über das Quadrat von 5 × 5 Feldern um ihn herum, mit einem Strahl, der sich einmal ganz im Kreis dreht; die Pflanzen, die Wasser brauchen, nehmen ihren Teil, der Rest geht verloren. Per Rechtsklick lässt sich der bewässerte Bereich anzeigen. Ein Viertel seines Wassers geht in der Luft verloren, und Zombies hören ihn. Schließen, wenn der Garten bewässert ist.
+[*][b]Automatischer Sprinkler[/b] (Elektrik 2): Eine Zeitschaltuhr öffnet ihn alle 6 Stunden für 30 Minuten (1 bis 24 h). Braucht etwas Strom.
+[*][b]Tropfschlauch[/b] (Gummischlauch, Klebeband, Messer): zwischen die Pflanzreihen legen; er bewässert die Felder auf beiden Seiten, leise, 0,5 L pro Feld alle 10 Minuten, nichts geht in der Luft verloren. Jedes Wasser reicht, sauber oder nicht. Keine Pumpe? Ein Fass-Anschluss auf „Auf Pumpen stellen“ versorgt ihn durch die Schwerkraft.
 [*][b]Fass-Anschluss[/b]: Zwischen Rohr und Fass. „Auf Befüllen stellen“: Die Rohre füllen das Fass oder einen Wasserspender. „Auf Pumpen stellen“: Die Pumpe saugt das Fass leer. Funktioniert auch mit Benzin, aber nur bei Fässern.
 [*][b]Wasserzähler[/b]: In eine Rohrleitung eingesetzt, zeigt er die Liter der letzten 10 Minuten.
 [/list]
@@ -28,7 +29,7 @@ Eines Tages kommt aus dem Hahn kein Wasser mehr. Bring es selbst zurück: eine T
 
 [h2]Optionen und Kompatibilität[/h2]
 [list]
-[*]Sandbox-Optionen: Pumpenfluss und Verschleiß, Filterlebensdauer, Reichweite der Einlässe, Reichweite und Zeitgrenzen der Sprinkler, zu befüllende Behälter, Korrektur der Waschmaschinen im Mehrspieler.
+[*]Sandbox-Optionen: Pumpenfluss und Verschleiß, Filterlebensdauer, Reichweite der Einlässe, Reichweite, Durchfluss und Zeitgrenzen der Sprinkler, Durchfluss der Tropfschläuche, zu befüllende Behälter, Korrektur der Waschmaschinen im Mehrspieler.
 [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] ist optional: Die Pumpe läuft dann mit dem Wechselrichter (250 W) und erscheint in dessen Software.
 [*]Nicht kompatibel mit LG Extended Plumbing und LG Connect To Water Supply (LiveWater deckt ab, was sie tun).
 [*]Sicheres Entfernen: Ein Admin wählt „LiveWater aus dieser Welt entfernen (Admin)“, bevor er es abbestellt.

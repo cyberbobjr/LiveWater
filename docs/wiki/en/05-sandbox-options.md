@@ -11,9 +11,11 @@ Page **LiveWater** of the sandbox options (names `LiveWater.<Option>` in the ser
 | Base inlet range (`BaseRange`) | 12 | 1 to 50 | squares around an inlet away from a map building (player base) |
 | Fix plumbed washing machines (`WasherFix`) | on | on/off | multiplayer: washing machines fed by an inlet show as plumbed and stop when dry |
 | Sprinkler reach (`SprinklerRadiusMultiplier`) | 1.0 | 0.5 to 5 | multiplies the watering radius (2 squares at 1.0, 10 at most) |
+| Sprinkler flow (`SprinklerFlow`) | 10 | 0 to 100 | litres an open sprinkler takes every 10 minutes, thirsty plants or not; a quarter is lost in the air, the plants take what they need, the rest is lost |
+| Drip line flow (`DripFlow`) | 0.5 | 0 to 10 | litres each drip line square takes every 10 minutes while the network gives it water; the plants beside it take what they need, the rest is lost |
 | Sprinkler timer: shortest interval (`SprinklerTimerMin`) | 1 | 1 to 168 | fewest hours a player may set between two waterings |
 | Sprinkler timer: longest interval (`SprinklerTimerMax`) | 24 | 1 to 168 | most hours a player may set between two waterings |
-| Containers a barrel fitting may fill (`FillContainers`) | `WaterDispenser` | text | entity script or sprite names separated by `;`, filled with clean water only, whatever their size; barrels and rain collectors always work |
+| Containers a barrel fitting may fill (`FillContainers`) | `WaterDispenser` | text | entity script or sprite names separated by `;`, filled with tainted water like a barrel, whatever their size; barrels and rain collectors always work |
 
 Mod option (each player, in the game's Mods options): **Animated sprinkler jet**, on by default; untick it for a still
 jet on slow computers.

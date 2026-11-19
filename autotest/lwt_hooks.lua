@@ -13,17 +13,25 @@ Solo (client hooks: authority and client in one process):
   3. fixtures (named as such in the report): a vanilla generator (IsoGenerator, fuelled, connected, on), a
      carrot crop through the vanilla farming system (SFarmingSystem:plow then SPlantGlobalObject:seed, water
      level set to 0), the fixture plumbed as ISPlumbItem:complete does;
-  4. the pump, the inlet, the sprinkler and the valve are set down through the real moveable placement
-     (ISMoveableSpriteProps:placeMoveable, what ISMoveablesAction:complete calls), with the moveable items;
-  5. pipes, filter and valve go through the real client commands (sendClientCommand, module LiveWater: lay,
+  4. the pipes, the pump, the inlet, the sprinkler and the valve are set down through the real moveable
+     placement (ISMoveableSpriteProps:placeMoveable, what ISMoveablesAction:complete calls), with the moveable
+     items; a pipe is picked up through the real moveable pickup (ISMoveableSpriteProps:pickUpMoveable);
+  5. filter and valve go through the real client commands (sendClientCommand, module LiveWater:
      switchValve, fitFilter), queued in solo and handled by the authority's dispatcher;
   6. time runs in fast forward and the real EveryTenMinutes steps are counted (no direct clock call).
 Checks: network built (one network), pipe sprites by side mask, pump powered and running, sprinkler served
 and the plant's water level up, house inlet refused without filter (state unfiltered, amber sprite, relays
-empty), then with the filter served (green sprite, relay filled, the fixture gives clean water), the
+empty), then with the filter cartridge fitted in the house inlet (ADR-005) served (green sprite with the
+canister, 176-179, relay filled, the fixture gives clean water), the
 inline valve closed stops the house downstream while the sprinkler upstream still waters (relays emptied and
 crop dried first: fixture), the sprinkler valve closed stops the branch (state closed, plant level unchanged),
-no Lua error. A phase is judged on every ten-minute step it ran (the pump stops when no outlet needs water).
+a drip line beside a pipe waters its crop (state served), an automatic sprinkler beside a pipe near the pump
+waters 30 minutes (three steps served) then closes (ADR-006 D03), the sprinkler opened again keeps watering the
+crop while the player is 300 squares away (layout chunks unloaded, ADR-006 D06-D08: pump on its recorded source,
+generator kept at its last loaded state, crop watered through its global object; back: crop watered, sprinkler
+served and drawn "on"), no Lua error. An open sprinkler draws its flow
+at every step, thirsty crop or not (ADR-006 D01): it is "served" at every step its valve is open, never "idle".
+A phase is judged on every ten-minute step it ran (the pump stops when no outlet needs water).
 Parameters (ctx.params, text): centers, radius (scan radius, default 40), stepSec (deadline of one ten-minute
 step, default 90).
 ]]
@@ -34,8 +42,17 @@ local MODULE = "LiveWater"
 local SHEET = "batman_livewater_01_"
 local PIPE = "LiveWater:PipeGalvanized"
 local PUMP_SPRITE, INLET_SPRITE, SPRINKLER_SPRITE = SHEET .. "24", SHEET .. "40", SHEET .. "48"
+-- house inlet with a filter cartridge fitted (ADR-005): 176-179 green lamp, 180-183 amber lamp
+local INLET_FILTER_GREEN = 176
 local VALVE_SPRITE, VALVE = SHEET .. "16", "LiveWater:Valve"
 local METER_SPRITE, FITTING_SPRITE = SHEET .. "20", SHEET .. "64"
+-- Tile of an inline part along its axis (side mask 10 = east-west, 5 = north-south): ew index, ns = ew + 1.
+local function alongAxis(ewSprite, axis)
+    if axis == 5 then return SHEET .. (tonumber(string.match(ewSprite, "_(%d+)$")) + 1) end
+    return ewSprite
+end
+-- a pipe is a moveable shown straight E-W on the cursor; its shape then follows the neighbours
+local PIPE_SPRITE, PIPE_ITEM = SHEET .. "10", "Base.Mov_LiveWater_Pipe"
 local SIDES = { { 0, -1, 1 }, { 1, 0, 2 }, { 0, 1, 4 }, { -1, 0, 8 } }
 
 -- ------------------------------------------------------------------ report
@@ -122,7 +139,7 @@ local function hasWater(s)
     return s ~= nil and s:has(IsoFlagType.water)
 end
 
--- Free for a part (the rule of LWT_GameWorld:isFree), outdoors, nothing else standing there. `wallOk`: a wall
+-- Free for a part (floor, no water, nothing solid, no tree), outdoors, nothing else standing there. `wallOk`: a wall
 -- on the square's own edge is allowed (a house's south or east wall belongs to the outside square along it).
 local function free(s, wallOk)
     if not s or not s:getFloor() then return false end
@@ -330,12 +347,13 @@ local function findLayout(cx, cy, r, withMeter)
     used[key(L.sprinkler.x, L.sprinkler.y)] = true
     for v = branchIndex + 1, #L.pipes - 1 do
         local p = L.pipes[v]
-        local links = 0
+        local mask = 0
         for j = 1, 4 do
-            if used[key(p.x + SIDES[j][1], p.y + SIDES[j][2])] then links = links + 1 end
+            if used[key(p.x + SIDES[j][1], p.y + SIDES[j][2])] then mask = mask + SIDES[j][3] end
         end
-        if not L.valve and links == 2 then
-            L.valve = p
+        -- an inline part only links on the axis it shows (ADR-008 D08): a straight square of the line
+        if not L.valve and (mask == 5 or mask == 10) then
+            L.valve, L.valveAxis = p, mask
             table.remove(L.pipes, v)
         end
     end
@@ -343,12 +361,12 @@ local function findLayout(cx, cy, r, withMeter)
     if withMeter then
         for v = #L.pipes - 1, 2, -1 do
             local p = L.pipes[v]
-            local links = 0
+            local mask = 0
             for j = 1, 4 do
-                if used[key(p.x + SIDES[j][1], p.y + SIDES[j][2])] then links = links + 1 end
+                if used[key(p.x + SIDES[j][1], p.y + SIDES[j][2])] then mask = mask + SIDES[j][3] end
             end
-            if not L.meter and links == 2 and not near(p, L.valve, 1) and not near(p, L.sprinkler, 1) then
-                L.meter = p
+            if not L.meter and (mask == 5 or mask == 10) and not near(p, L.valve, 1) and not near(p, L.sprinkler, 1) then
+                L.meter, L.meterAxis = p, mask
                 table.remove(L.pipes, v)
             end
         end
@@ -453,6 +471,56 @@ local function placeMoveable(player, spriteName, p, origName)
     if not props:canPlaceMoveableInternal(player, square, item) then return false, "canPlaceMoveable refused" end
     props:placeMoveable(player, square, origName)
     return true
+end
+
+-- Vanilla moveable pickup (ISMoveablesAction:complete -> ISMoveableSpriteProps:pickUpMoveable) of the LiveWater
+-- object of a square, whatever its current sprite: returns true, or false and why.
+local function pickUpMoveable(player, p)
+    local square = sq(p.x, p.y, 0)
+    if not square then return false, "square not loaded" end
+    local objs = square:getObjects()
+    for i = 0, objs:size() - 1 do
+        local name = objs:get(i):getSpriteName()
+        if name and string.find(name, "^" .. SHEET) then
+            local props = ISMoveableSpriteProps.new(getSprite(name))
+            if not props:canPickUpMoveable(player, square, objs:get(i)) then return false, "canPickUpMoveable refused" end
+            props:pickUpMoveable(player, square, true)
+            return true
+        end
+    end
+    return false, "no LiveWater object"
+end
+
+-- ADR-002: a strip of `n` free squares going south (x, y .. y + n - 1) near `c`, holding no part and no
+-- layout square (`taken`), with no part and no taken square next to it (nothing links to the strip), or nil.
+local function freeStrip(c, n, taken)
+    for r = 3, 14 do
+        for dx = -r, r do
+            for dy = -r, r do
+                local ok = true
+                for i = 0, n - 1 do
+                    local x, y = c.x + dx, c.y + dy + i
+                    if taken[key(x, y)] or entryAt({ x = x, y = y }) or not free(sq(x, y, 0)) then ok = false break end
+                    for _, d in ipairs(SIDES) do
+                        local nx, ny = x + d[1], y + d[2]
+                        local inStrip = nx == c.x + dx and ny >= c.y + dy and ny <= c.y + dy + n - 1
+                        if not inStrip and (taken[key(nx, ny)] or entryAt({ x = nx, y = ny })) then ok = false end
+                    end
+                    if not ok then break end
+                end
+                if ok then return { x = c.x + dx, y = c.y + dy } end
+            end
+        end
+    end
+    return nil
+end
+
+-- An edge object of the vanilla tileset on a square, added as the map does (no event in solo).
+local function addEdgeObject(p, spriteName)
+    local s = sq(p.x, p.y, 0)
+    local obj = IsoObject.new(getCell(), s, spriteName)
+    s:AddTileObject(obj)
+    return obj
 end
 
 local function makeGenerator(p)
@@ -613,6 +681,13 @@ local function snapshot()
     local sstate = spr and spr.data and spr.data.outlet and spr.data.outlet.state
     if istate then seen.inlet[istate] = true end
     if sstate then seen.sprinkler[sstate] = true end
+    if S.A then
+        local a = entryAt(S.A.at)
+        local c = a and a.data and a.data.controller or {}
+        S.A.states[#S.A.states + 1] = tostring(a and a.data and a.data.outlet and a.data.outlet.state)
+            .. "(" .. tostring(c.slice) .. "/" .. tostring(c.watering) .. "/" .. tostring(c.powered) .. "/h"
+            .. string.format("%.1f", getGameTime():getWorldAgeHours()) .. ")"
+    end
     local ps = spriteOf(L.pump, "LiveWater:PondPump")
     if ps then seen.pumpSprite[ps] = true end
     -- Live Wire (optional): the watts it bills for the pump object this step
@@ -638,6 +713,18 @@ local function seenText()
     return table.concat(S.seen.log, "; ")
 end
 
+-- Fast forward for the ten-minute waits. setGameSpeed alone only moves the speed buttons: SpeedControls
+-- SetCurrentGameSpeed resets the time multiplier to 1 (SpeedControls.java:137), so the multiplier is set after it,
+-- at 40 like the vanilla Wait button.
+local function fastForward(on)
+    if on then
+        setGameSpeed(4)
+        getGameTime():setMultiplier(40)
+    else
+        setGameSpeed(1)
+    end
+end
+
 local function onTen()
     S.tens = (S.tens or 0) + 1
     if S.seen then snapshot() end
@@ -648,11 +735,11 @@ local function waitSteps(n)
         if not S.waitFrom then
             S.waitFrom = S.tens or 0
             resetSeen()
-            setGameSpeed(3)
+            fastForward(true)
         end
         if (S.tens or 0) - S.waitFrom >= n then
             S.waitFrom = nil
-            setGameSpeed(1)
+            fastForward(false)
             return true
         end
         return false
@@ -729,6 +816,21 @@ local function partMenu(p, typeId, hover)
     return function() openMenu(p(), { objectOf(p(), typeId) }, hover and getText(hover)) end
 end
 
+-- Window of "Information" of a part (ADR-008 D03, D07), opened like the menu option does.
+local function partWindow(p, typeId, face)
+    return function()
+        local Panels = require "LiveWater/LWT_Panels"
+        local obj = objectOf(p(), typeId)
+        rec(Panels.get(face) ~= nil and obj ~= nil, "window face '" .. face .. "' opens on " .. typeId)
+        Panels.open(player(), face, { object = obj, type = typeId })
+    end
+end
+
+local function closePartWindow()
+    local W = require "LiveWater/LWT_PartWindow"
+    if W.instance then W.instance:close() end
+end
+
 -- Attached jet frame of the sprinkler object (sprite name), or nil.
 local function jetFrame(obj)
     local list = obj and obj:getAttachedAnimSprite()
@@ -736,7 +838,8 @@ local function jetFrame(obj)
         local sprite = list:get(i):getParentSprite()
         local name = sprite and sprite:getName()
         local index = name and tonumber(string.match(name, "^" .. SHEET .. "(%d+)$"))
-        if index and index >= 80 and index <= 103 then return name end
+        local Tiles = require "LiveWater/LWT_Tiles"
+        if index and index >= Tiles.JET_FIRST and index < Tiles.JET_FIRST + 4 * Tiles.JET_FRAMES then return name end
     end
     return nil
 end
@@ -875,7 +978,7 @@ local function fittingArea(L)
             for dy = -d, d do
                 local x0, y0 = L.pump.x + dx, L.pump.y + dy
                 local ok = true
-                for i = 0, 2 do
+                for i = -1, 3 do
                     for j = 0, 2 do
                         local x, y = x0 + i, y0 + j
                         if ok and (used[key(x, y)] or touchesAny(x, y, used) or not free(sq(x, y, 0))
@@ -904,7 +1007,8 @@ local function fittingSteps()
             rec(tall and low, "vanilla rain collectors set (fixture)", "round barrel " .. key(a.x, a.y)
                 .. ", crate " .. key(a.x + 2, a.y))
             S.F = { a = a, tall = { x = a.x, y = a.y + 1 }, low = { x = a.x + 2, y = a.y + 1 }, i = 0,
-                pipes = { { x = a.x, y = a.y + 2 }, { x = a.x + 1, y = a.y + 2 }, { x = a.x + 2, y = a.y + 2 } } }
+                pipes = { { x = a.x - 1, y = a.y + 1 }, { x = a.x + 1, y = a.y + 1 }, { x = a.x + 2, y = a.y + 2 },
+                    { x = a.x + 3, y = a.y + 1 } } }
             return false
         end
         local p = F.pipes[F.i]
@@ -913,7 +1017,7 @@ local function fittingSteps()
         local nextPipe = F.pipes[F.i]
         if nextPipe then
             goNear(nextPipe)
-            send("lay", { x = nextPipe.x, y = nextPipe.y, z = 0, part = PIPE })
+            placeMoveable(player(), PIPE_SPRITE, nextPipe)
             return false
         end
         goNear(F.tall)
@@ -927,8 +1031,10 @@ local function fittingSteps()
     addStep("fitting drawn by its container's shape", function()
         local F = S.F
         local tall, low = spriteOf(F.tall, FIT), spriteOf(F.low, FIT)
-        rec(tall == SHEET .. "64" and low == SHEET .. "68", "fitting drawn by its container's shape (Fill)",
-            "round barrel " .. tostring(tall) .. ", crate " .. tostring(low))
+        -- ADR-008 D01b: the round barrel's fitting stands between a pipe on each side (tee, Fill tall 208); the
+        -- crate's has pipes in front and on both sides (cross, Fill low 236)
+        rec(tall == SHEET .. "208", "fitting between two pipes drawn as a tee (round barrel)", "round barrel " .. tostring(tall))
+        rec(low == SHEET .. "236", "fitting at a crossing drawn as a cross (crate)", "crate " .. tostring(low))
         return true
     end)
     shot({ name = "barrel-fittings", at = function() return { x = S.F.a.x + 1, y = S.F.a.y + 1 } end })
@@ -1063,7 +1169,7 @@ local function showcaseSteps()
             info("showcase: tee " .. key(X.tee.x, X.tee.y) .. " fitting " .. key(X.fitting.x, X.fitting.y)
                 .. " barrel " .. key(X.barrel.x, X.barrel.y) .. " auto sprinkler " .. key(X.auto.x, X.auto.y))
             goNear(X.pipe)
-            send("lay", { x = X.pipe.x, y = X.pipe.y, z = 0, part = PIPE })
+            placeMoveable(player(), PIPE_SPRITE, X.pipe)
             return false
         end
         local X = S.X
@@ -1072,7 +1178,7 @@ local function showcaseSteps()
         if not X.autoPipeSent then
             X.autoPipeSent = true
             goNear(X.autoPipe)
-            send("lay", { x = X.autoPipe.x, y = X.autoPipe.y, z = 0, part = PIPE })
+            placeMoveable(player(), PIPE_SPRITE, X.autoPipe)
             return false
         end
         return entryAt(X.autoPipe) ~= nil
@@ -1130,6 +1236,8 @@ local function visualSteps(block)
         shot({ name = "flow-meter", at = at("meter"), note = spriteNote("meter", "LiveWater:FlowMeter") })
         shot({ name = "menu-pump-info", at = at("pump"),
             prepare = partMenu(at("pump"), "LiveWater:PondPump", "ContextMenu_LWT_Info") })
+        shot({ name = "pump-window", at = at("pump"), prepare = partWindow(at("pump"), "LiveWater:PondPump", "lcd"),
+            after = closePartWindow })
         shot({ name = "menu-valve", at = at("valve"), prepare = partMenu(at("valve"), VALVE) })
         addStep("network view asked (showNetwork)", function()
             local View = require "LiveWater/LWT_NetworkView"
@@ -1141,6 +1249,10 @@ local function visualSteps(block)
             end
             if #View.shown == 0 then return false end
             rec(true, "network view highlights the parts", #View.shown .. " parts")
+            rec(View.fixtures > 0, "network view highlights the house fixtures (ADR-008 D06)",
+                View.fixtures .. " fixtures, fed " .. tostring(View.counts.fixtures_fed) .. " dry "
+                .. tostring(View.counts.fixtures_dry) .. " not plumbed " .. tostring(View.counts.fixtures_notPlumbed)
+                .. " other " .. tostring(View.counts.fixtures_other))
             return true
         end, 20)
         shot({ name = "network-view", at = middle, zoom = 1.0 })
@@ -1150,10 +1262,23 @@ local function visualSteps(block)
         stopDry()
     elseif block == "filtered" then
         dryCrop()
-        shot({ name = "pump-filter-running", at = at("pump"), note = spriteNote("pump", "LiveWater:PondPump") })
         shot({ name = "inlet-filtered", at = at("inlet"), offset = OUTSIDE, note = spriteNote("inlet", "LiveWater:HouseInlet") })
         shot({ name = "network-filtered", at = at("valve"), zoom = 0.75 })
-        -- whole installation working (pump, filter, line, valve, meter, sprinkler spraying, house served, plus the
+        -- the meter is on the house line: with the filter fitted the house is served, so it counts (ADR-008 D03)
+        addStep("water meter total counts the house water", function()
+            local Mirror = require "LiveWater/LWT_Mirror"
+            local state = Mirror.read(objectOf(S.L.meter, "LiveWater:FlowMeter"))
+            local d = state and state.data and state.data.meter
+            local total = d and d.total or 0
+            if total <= 0 then return false end
+            rec(true, "water meter total counts the house water", string.format("%.1f L", total))
+            return true
+        end, 60)
+        shot({ name = "meter-window", at = at("meter"), prepare = partWindow(at("meter"), "LiveWater:FlowMeter", "counter"),
+            after = closePartWindow })
+        shot({ name = "menu-sink-water", at = function() return S.L.fixture end,
+            prepare = function() openMenu(S.L.fixture, { S.L.fixture.obj }) end })
+        -- whole installation working (pump, line, inlet with its filter, valve, meter, sprinkler spraying, house served, plus the
         -- showcase: barrel branch and automatic sprinkler), for
         -- a promotional picture: the trees around it are removed from this copied world (their faded outlines
         -- would cover the parts).
@@ -1216,10 +1341,18 @@ local function visualSteps(block)
             if not X.undone then
                 X.undone = true
                 goNear(X.pipe)
-                send("dismantle", { x = X.pipe.x, y = X.pipe.y, z = 0 })
+                X.pipesBefore = player():getInventory():getCountTypeRecurse(PIPE_ITEM)
+                local ok, why = pickUpMoveable(player(), X.pipe)
+                if not ok then info("pickup: " .. tostring(why)) end
                 return false
             end
             if entryAt(X.pipe) then return false end
+            if not X.pickedChecked then
+                X.pickedChecked = true
+                local after = player():getInventory():getCountTypeRecurse(PIPE_ITEM)
+                rec(after == X.pipesBefore + 1, "a pipe picked up gives the pipe item back (vanilla pickup)",
+                    X.pipesBefore .. " -> " .. after)
+            end
             if not X.closing then
                 X.closing = true
                 goNear(X.auto)
@@ -1263,9 +1396,10 @@ local function buildSteps(ctx)
         local pl = player()
         pl:setGodMod(true)
         pl:setInvisible(true)
-        giveItems(pl, { { "LiveWater.PipeSection", 80 }, { "LiveWater.WaterFilter", 1 }, { "Base.PipeWrench", 1 },
+        giveItems(pl, { { "Base.Mov_LiveWater_Pipe", 80 }, { "LiveWater.WaterFilter", 1 }, { "Base.PipeWrench", 1 },
             { "Base.Mov_LiveWater_PondPump", 1 }, { "Base.Mov_LiveWater_HouseInlet", 1 },
-            { "Base.Mov_LiveWater_Sprinkler", 1 }, { "Base.Mov_LiveWater_Valve", 1 } })
+            { "Base.Mov_LiveWater_Sprinkler", 1 }, { "Base.Mov_LiveWater_Valve", 1 },
+            { "Base.Mov_LiveWater_DripLine", 1 }, { "Base.Mov_LiveWater_SprinklerAuto", 1 } })
         if visual then
             giveItems(pl, { { "Base.Mov_LiveWater_FlowMeter", 1 }, { "Base.Mov_LiveWater_BarrelFitting", 3 },
                 { "Base.Mov_LiveWater_SprinklerAuto", 1 } })
@@ -1350,7 +1484,7 @@ local function buildSteps(ctx)
         return true
     end)
 
-    addStep("pipes laid through the lay command", function()
+    addStep("pipes set down (vanilla placement)", function()
         local L = S.L
         S.pipeIndex = S.pipeIndex or 0
         local p = L.pipes[S.pipeIndex]
@@ -1358,13 +1492,64 @@ local function buildSteps(ctx)
         S.pipeIndex = S.pipeIndex + 1
         local nextPipe = L.pipes[S.pipeIndex]
         if not nextPipe then
-            rec(true, "pipes laid through the lay command", #L.pipes .. " pipes")
+            rec(true, "pipes set down (vanilla placement)", #L.pipes .. " pipes")
             return true
         end
         goNear(nextPipe)
-        send("lay", { x = nextPipe.x, y = nextPipe.y, z = 0, part = PIPE })
+        local ok, why = placeMoveable(player(), PIPE_SPRITE, nextPipe)
+        if not ok then info("pipe " .. key(nextPipe.x, nextPipe.y) .. ": " .. tostring(why)) end
         return false
     end, 120)
+
+    -- ADR-002: under a fence with a sleeve, never through a solid wall; a wall taken away joins again, a wall
+    -- built without an event is found by the clock
+    addStep("barriers: pipe under a fence draws its sleeve, a wall cuts", function()
+        local L, taken = S.L, {}
+        for _, p in ipairs(L.pipes) do taken[key(p.x, p.y)] = true end
+        for _, p in ipairs({ L.pump, L.inlet, L.sprinkler, L.crop, L.gen, L.valve }) do
+            if p then taken[key(p.x, p.y)] = true end
+        end
+        local a = freeStrip(L.pump, 2, taken)
+        if not a then rec(false, "barriers: free squares", "none near the pump") return true end
+        taken[key(a.x, a.y)], taken[key(a.x, a.y + 1)] = true, true
+        local b = freeStrip(L.pump, 2, taken)
+        if not b then rec(false, "barriers: free squares", "none near the pump") return true end
+        S.B = { a1 = a, a2 = { x = a.x, y = a.y + 1 }, b1 = b, b2 = { x = b.x, y = b.y + 1 } }
+        local B = S.B
+        B.fence = addEdgeObject(B.a2, "fencing_01_1")
+        B.wall = addEdgeObject(B.b2, "walls_exterior_house_01_1")
+        goNear(B.a1)
+        for _, p in ipairs({ B.a1, B.a2, B.b1, B.b2 }) do
+            local ok, why = placeMoveable(player(), PIPE_SPRITE, p)
+            if not ok then info("barrier pipe " .. key(p.x, p.y) .. ": " .. tostring(why)) end
+        end
+        local net = server().network
+        rec(spriteOf(B.a2, PIPE) == SHEET .. "104" and spriteOf(B.a1, PIPE) == SHEET .. "4",
+            "a pipe under a fence is linked and draws its sleeve", tostring(spriteOf(B.a1, PIPE)) .. " / "
+            .. tostring(spriteOf(B.a2, PIPE)))
+        rec(net:mask(B.b1.x, B.b1.y, 0) == 0 and net:mask(B.b2.x, B.b2.y, 0) == 0,
+            "a solid wall cuts the pipe", "masks " .. net:mask(B.b1.x, B.b1.y, 0) .. " " .. net:mask(B.b2.x, B.b2.y, 0))
+        sq(B.b2.x, B.b2.y, 0):transmitRemoveItemFromSquare(B.wall)
+        rec(net:mask(B.b1.x, B.b1.y, 0) == 4 and spriteOf(B.b2, PIPE) == SHEET .. "1",
+            "the wall taken away joins the pipes again", "mask " .. net:mask(B.b1.x, B.b1.y, 0))
+        B.wall = addEdgeObject(B.b2, "walls_exterior_house_01_1")
+        B.from = S.tens or 0
+        fastForward(true)
+        return true
+    end, 30)
+
+    addStep("barriers: a wall built later is found by the clock", function()
+        local B, net = S.B, server().network
+        if not B or not B.wall then return true end
+        if net:mask(B.b1.x, B.b1.y, 0) ~= 0 and (S.tens or 0) - B.from < 2 then return false end
+        fastForward(false)
+        rec(net:mask(B.b1.x, B.b1.y, 0) == 0, "a wall built later is found by the clock",
+            "after " .. ((S.tens or 0) - B.from) .. " step(s)")
+        sq(B.b2.x, B.b2.y, 0):transmitRemoveItemFromSquare(B.wall)
+        sq(B.a2.x, B.a2.y, 0):transmitRemoveItemFromSquare(B.fence)
+        for _, p in ipairs({ B.a1, B.a2, B.b1, B.b2 }) do pickUpMoveable(player(), p) end
+        return true
+    end, 300)
 
     addStep("house inlet and sprinkler set down (vanilla placement)", function()
         local L = S.L
@@ -1373,10 +1558,10 @@ local function buildSteps(ctx)
         goNear(L.sprinkler)
         local ok2, why2 = placeMoveable(player(), SPRINKLER_SPRITE, L.sprinkler)
         goNear(L.valve)
-        local ok3, why3 = placeMoveable(player(), VALVE_SPRITE, L.valve)
+        local ok3, why3 = placeMoveable(player(), alongAxis(VALVE_SPRITE, L.valveAxis), L.valve, VALVE_SPRITE)
         if L.meter then
             goNear(L.meter)
-            local ok4, why4 = placeMoveable(player(), METER_SPRITE, L.meter)
+            local ok4, why4 = placeMoveable(player(), alongAxis(METER_SPRITE, L.meterAxis), L.meter, METER_SPRITE)
             local e4 = entryAt(L.meter)
             rec(ok4 and e4 ~= nil, "flow meter set down between two pipes", tostring(why4 or "") .. " "
                 .. tostring(e4 and e4.type))
@@ -1453,22 +1638,26 @@ local function buildSteps(ctx)
         local level = pl and pl.waterLvl or -1
         rec(seen.sprinkler.served and level > S.levelBefore, "sprinkler waters the crop",
             "water level " .. tostring(S.levelBefore) .. " -> " .. tostring(level))
+        -- ADR-006 D01: open, it draws its flow at every step, thirsty crop or not
+        rec(seen.sprinkler.served and not seen.sprinkler.idle, "open sprinkler served at every step (never idle)",
+            seenText())
         return true
     end)
 
     if visual then visualSteps("unfiltered") end
 
-    addStep("filter fitted (fitFilter)", function()
-        local pump = entryAt(S.L.pump)
+    addStep("filter fitted in the house inlet (fitFilter)", function()
+        local inlet = entryAt(S.L.inlet)
         if not S.filterSent then
             S.filterSent = true
-            goNear(S.L.pump)
-            send("fitFilter", { x = S.L.pump.x, y = S.L.pump.y, z = 0 })
+            goNear(S.L.inlet)
+            send("fitFilter", { x = S.L.inlet.x, y = S.L.inlet.y, z = 0 })
             return false
         end
-        local f = pump and pump.data and pump.data.filter
+        local f = inlet and inlet.data and inlet.data.filter
         if not (f and f.fitted == true) then return false end
-        rec(true, "filter fitted (fitFilter)", "capacity " .. tostring(f.capacity) .. " L")
+        rec(true, "filter fitted in the house inlet (fitFilter)", "capacity " .. tostring(f.capacity) .. " L")
+        goNear(S.L.pump)
         return true
     end, 20)
 
@@ -1481,17 +1670,65 @@ local function buildSteps(ctx)
         rec(seen.inlet.served and n > 0 and amount > 0, "house inlet served, relay tank filled",
             "relays " .. n .. " litres " .. amount)
         local isprite = spriteOf(L.inlet, "LiveWater:HouseInlet")
-        rec(isprite == SHEET .. (40 + (L.inletTurn or 0)), "house inlet sprite green (filtered)", tostring(isprite))
+        rec(isprite == SHEET .. (INLET_FILTER_GREEN + (L.inletTurn or 0)), "house inlet sprite green with its filter",
+            tostring(isprite))
         local obj = L.fixture.obj
         local clean, tainted = relayFluids(L)
         rec(obj:getFluidAmount() > 0 and obj:hasWater() and clean > 0 and tainted <= 0.001,
             "the plumbed fixture gives clean water", "fixture litres " .. tostring(obj:getFluidAmount())
             .. ", tank clean " .. clean .. " tainted " .. tainted)
-        rec(seen.pumpSprite[SHEET .. (32 + (L.pumpTurn or 0))] == true, "pump sprite running with filter")
+        rec(seen.pumpSprite[SHEET .. (28 + (L.pumpTurn or 0))] == true, "pump sprite on (no filter on the pump)")
         return true
     end)
 
     if visual then visualSteps("filtered") end
+
+    -- ADR-008 D11: the pump's hum follows the current at once (OnElectricityChanged), not the next step. The
+    -- public grid is cut first (sandbox ElecShutModifier on this copied world: the game's own shut-off, its event
+    -- comes about 3 s later), the generator keeps the pump humming; then the generator stops and starts again.
+    addStep("pump hum follows the grid shut-off and the generator", function()
+        local Sounds = require "LiveWater/LWT_PumpSounds"
+        local k = key(S.L.pump.x, S.L.pump.y) .. ",0"
+        local option = getSandboxOptions():getOptionByName("ElecShutModifier")
+        local P = S.power
+        if not P then
+            P = { phase = 0, t = nowMs(), was = option:getValue() }
+            S.power = P
+            option:setValue(-1)
+            return false
+        end
+        local playing, waited = Sounds.playing[k] ~= nil, nowMs() - P.t
+        local function done(ok, name, detail)
+            rec(ok, name, detail)
+            S.gen:setActivated(true)
+            option:setValue(P.was)
+            return true
+        end
+        if P.phase == 0 then
+            if waited < 5000 then return false end
+            local psq = sq(S.L.pump.x, S.L.pump.y, 0)
+            if not playing then return done(false, "pump hums on its generator with the grid cut", "silent") end
+            rec(true, "pump hums on its generator with the grid cut", "grid " .. tostring(psq and psq:hasGridPower()))
+            S.gen:setActivated(false)
+            P.phase, P.t = 1, nowMs()
+        elseif P.phase == 1 then
+            if playing then
+                if waited > 5000 then return done(false, "pump hum stops with the generator", "still playing after 5 s") end
+                return false
+            end
+            P.off = waited
+            S.gen:setActivated(true)
+            P.phase, P.t = 2, nowMs()
+        elseif P.phase == 2 then
+            if not playing then
+                if waited > 5000 then return done(false, "pump hum starts again with the generator", "silent after 5 s") end
+                return false
+            end
+            return done(true, "pump hum follows the generator at once",
+                string.format("off in %d ms, on in %d ms", P.off, waited))
+        end
+        return false
+    end, 30)
 
     addStep("inline valve closed (switchValve)", function()
         local e = entryAt(S.L.valve)
@@ -1520,7 +1757,8 @@ local function buildSteps(ctx)
         rec(not seen.inlet.served and amount <= 0.001, "closed inline valve stops the house inlet downstream",
             "relays " .. n .. " litres " .. amount)
         local pl = plantAt(L.crop)
-        rec(seen.sprinkler.served and pl and pl.waterLvl > 0, "the sprinkler upstream of the valve still waters",
+        rec(seen.sprinkler.served and not seen.sprinkler.idle and pl and pl.waterLvl > 0,
+            "the sprinkler upstream of the valve still waters, served at every step",
             "level " .. tostring(pl and pl.waterLvl))
         local vs = spriteOf(L.valve, VALVE)
         rec(vs == SHEET .. valveIndex(L, false), "inline valve drawn closed", tostring(vs))
@@ -1561,7 +1799,234 @@ local function buildSteps(ctx)
         return true
     end)
 
+    -- ADR-004: a drip line branched on a pipe near the pump waters the crop beside it (any water, ADR-005; no sound)
+    addStep("drip line set down beside a pipe, crop planted beside it", function()
+        local L, taken = S.L, {}
+        for _, p in ipairs(L.pipes) do taken[key(p.x, p.y)] = true end
+        for _, p in ipairs({ L.pump, L.inlet, L.sprinkler, L.crop, L.gen, L.valve }) do
+            if p then taken[key(p.x, p.y)] = true end
+        end
+        local function clear(x, y)
+            return not taken[key(x, y)] and not entryAt({ x = x, y = y }) and free(sq(x, y, 0))
+        end
+        for i = 1, math.min(3, #L.pipes) do
+            local p = L.pipes[i]
+            for _, d in ipairs(SIDES) do
+                local dl = { x = p.x + d[1], y = p.y + d[2] }
+                -- the crop goes on a side of the line, square to the pipe-to-line direction
+                local crop = { x = dl.x + d[2], y = dl.y + d[1] }
+                if clear(dl.x, dl.y) and clear(crop.x, crop.y) then
+                    goNear(dl)
+                    local ok, why = placeMoveable(player(), SHEET .. "170", dl)
+                    local e = entryAt(dl)
+                    local plantObj = plant(crop)
+                    S.D = { line = dl, crop = crop }
+                    rec(ok and e ~= nil and e.type == "LiveWater:DripLine" and plantObj ~= nil,
+                        "drip line set down beside a pipe (vanilla placement), crop planted beside it",
+                        tostring(why or "") .. " " .. key(dl.x, dl.y) .. " crop " .. key(crop.x, crop.y))
+                    return true
+                end
+            end
+        end
+        rec(false, "drip line set down beside a pipe", "no free square beside the first pipes")
+        return true
+    end)
+
+    addStep("two ten-minute steps with the drip line", waitSteps(2), stepSec * 2)
+
+    addStep("checks of the drip line", function()
+        local D = S.D
+        if not D then return true end
+        local e = entryAt(D.line)
+        local state = e and e.data and e.data.outlet and e.data.outlet.state
+        local pl = plantAt(D.crop)
+        local level = pl and pl.waterLvl or -1
+        rec(level > 0 and state == "served", "the drip line waters the crop beside it",
+            "state " .. tostring(state) .. " water level " .. level)
+        return true
+    end)
+
+    -- The inline valve closed above is opened again: the automatic sprinkler may stand after it (in the run of
+    -- 2026-11-19 it stood one square past it, every step "closed": the flow keeps an outlet behind a closed valve
+    -- dry, as it should).
+    addStep("inline valve opened again (switchValve)", function()
+        local e = entryAt(S.L.valve)
+        if not S.inlineOpenSent then
+            S.inlineOpenSent = true
+            goNear(S.L.valve)
+            send("switchValve", { x = S.L.valve.x, y = S.L.valve.y, z = 0 })
+            return false
+        end
+        if not (e and e.data and e.data.valve and e.data.valve.open == true) then return false end
+        rec(true, "inline valve opened again (switchValve)")
+        return true
+    end, 20)
+
+    -- ADR-006 D03: an automatic sprinkler beside one of the first pipes (in reach of the generator) is opened by
+    -- its timer at once (new slice of hours) for 30 minutes: three ten-minute steps served, then closed
+    addStep("automatic sprinkler set down beside a pipe near the pump", function()
+        local L, taken = S.L, {}
+        for _, p in ipairs(L.pipes) do taken[key(p.x, p.y)] = true end
+        for _, p in ipairs({ L.pump, L.inlet, L.sprinkler, L.crop, L.gen, L.valve, L.meter }) do
+            if p then taken[key(p.x, p.y)] = true end
+        end
+        if S.D then
+            taken[key(S.D.line.x, S.D.line.y)] = true
+            taken[key(S.D.crop.x, S.D.crop.y)] = true
+        end
+        for i = 1, math.min(3, #L.pipes) do
+            local p = L.pipes[i]
+            for _, d in ipairs(SIDES) do
+                local at = { x = p.x + d[1], y = p.y + d[2] }
+                if not taken[key(at.x, at.y)] and not entryAt(at) and free(sq(at.x, at.y, 0))
+                    and not touchesAny(at.x, at.y, taken, key(p.x, p.y)) then
+                    goNear(at)
+                    S.A = { at = at, states = {} }
+                    local ok, why = placeMoveable(player(), SHEET .. "56", at)
+                    local e = entryAt(at)
+                    rec(ok and e ~= nil and e.type == "LiveWater:SprinklerAuto",
+                        "automatic sprinkler set down beside a pipe (vanilla placement)",
+                        tostring(why or "") .. " " .. key(at.x, at.y))
+                    goNear(L.pump)
+                    return true
+                end
+            end
+        end
+        rec(false, "automatic sprinkler set down beside a pipe", "no free square beside the first pipes")
+        return true
+    end)
+
+    -- One opening only in the four steps watched: a 24 h timer (the player's Watering Timer menu, command
+    -- setTimer) cannot reach its next slice of hours, a 6 h one may (run of 2026-11-19: new slice at hour 6.0).
+    addStep("automatic sprinkler timer set to 24 hours (setTimer)", function()
+        local A = S.A
+        if not A then return true end
+        local e = entryAt(A.at)
+        local c = e and e.data and e.data.controller
+        if c and c.every == 24 then
+            rec(true, "automatic sprinkler timer set to 24 hours (setTimer)")
+            goNear(S.L.pump)
+            return true
+        end
+        if not A.timerSent then
+            A.timerSent = true
+            goNear(A.at)
+            return false
+        end
+        send("setTimer", { x = A.at.x, y = A.at.y, z = 0, hours = 24 })
+        return false
+    end, 20)
+
+    addStep("four ten-minute steps with the automatic sprinkler", waitSteps(4), stepSec * 4)
+
+    addStep("checks of the automatic sprinkler", function()
+        local A = S.A
+        if not A then return true end
+        local e = entryAt(A.at)
+        local c = e and e.data and e.data.controller or {}
+        local served = 0
+        for _, st in ipairs(A.states) do
+            if string.sub(st, 1, 6) == "served" then served = served + 1 end
+        end
+        rec(served == 3 and string.sub(A.states[#A.states] or "", 1, 6) == "closed" and c.watering ~= true,
+            "the automatic sprinkler waters 30 minutes (three steps) then closes",
+            "states " .. table.concat(A.states, ",") .. " powered " .. tostring(c.powered))
+        S.scrapAt = A.at
+        S.A = nil
+        return true
+    end)
+
+    -- ADR-007 D02: the game's own Disassemble (ISMoveableSpriteProps:scrapObject, tile property CanScrap and the
+    -- LiveWater material declared at boot) takes the automatic sprinkler away; it leaves the network by the same
+    -- removal event as a pick-up. The scrap it gives is shown (chance-based, not checked).
+    addStep("the automatic sprinkler dismantled with the game's Disassemble", function()
+        local at = S.scrapAt
+        if not at then return true end
+        S.scrapAt = nil
+        local inv = player():getInventory()
+        if not inv:containsTypeRecurse("Screwdriver") then inv:AddItem("Base.Screwdriver") end
+        local s, obj = sq(at.x, at.y, 0), nil
+        for i = 0, s:getObjects():size() - 1 do
+            local o = s:getObjects():get(i)
+            local name = o:getSprite() and o:getSprite():getName()
+            if name and string.sub(name, 1, #SHEET) == SHEET then obj = o end
+        end
+        local props = obj and ISMoveableSpriteProps.fromObject(obj)
+        local can = props and props:canScrapObject(player())
+        if can and can.canScrap then props:scrapObject(player()) end
+        local left = 0
+        for i = 0, s:getObjects():size() - 1 do
+            local name = s:getObjects():get(i):getSprite() and s:getObjects():get(i):getSprite():getName()
+            if name and string.sub(name, 1, #SHEET) == SHEET then left = left + 1 end
+        end
+        local scrap = {}
+        for i = 0, s:getWorldObjects():size() - 1 do
+            scrap[#scrap + 1] = s:getWorldObjects():get(i):getItem():getFullType()
+        end
+        rec(can ~= nil and can.canScrap == true and left == 0 and entryAt(at) == nil,
+            "the game's Disassemble takes the automatic sprinkler off the square and out of the network",
+            "material " .. tostring(props and props.material) .. " canScrap " .. tostring(can and can.canScrap)
+                .. " tiles left " .. left .. " scrap " .. table.concat(scrap, " "))
+        return true
+    end)
+
     if visual then visualSteps("sprinkler closed") end
+
+    -- ADR-006 D06-D08: the network keeps working while nobody is near. The sprinkler valve is opened again with
+    -- the crop dry, the player goes 300 squares west, inland (the chunks of the layout unload; east of the test ponds
+    -- is the river, where the game quit without a result on 2026-11-18), two real ten-minute steps
+    -- run, the player comes back: the crop got water, the sprinkler is served and drawn spraying.
+    addStep("sprinkler valve opened again before going away (switchValve)", function()
+        local e = entryAt(S.L.sprinkler)
+        if not S.awayOpenSent then
+            S.awayOpenSent = true
+            goNear(S.L.sprinkler)
+            send("switchValve", { x = S.L.sprinkler.x, y = S.L.sprinkler.y, z = 0 })
+            return false
+        end
+        if not (e and e.data and e.data.valve and e.data.valve.open == true) then return false end
+        local pl = plantAt(S.L.crop)
+        pl.waterLvl = 0
+        pl:saveData()
+        rec(true, "sprinkler valve opened again before going away (switchValve)")
+        return true
+    end, 20)
+
+    addStep("player 300 squares away, layout unloaded", function()
+        local L = S.L
+        if not S.awaySent then
+            S.awaySent = true
+            player():teleportTo(L.sprinkler.x - 299.5, L.sprinkler.y + 0.5, 0)
+            return false
+        end
+        if sq(L.sprinkler.x, L.sprinkler.y, 0) or sq(L.pump.x, L.pump.y, 0) then return false end
+        rec(true, "player 300 squares away, layout unloaded")
+        return true
+    end, 60)
+
+    addStep("two ten-minute steps away from the layout", waitSteps(2), stepSec * 2)
+
+    addStep("back at the layout: crop watered, sprinkler served and spraying", function()
+        local L = S.L
+        if not S.backSent then
+            S.backSent = true
+            S.awaySeen = seenText()
+            local pl = plantAt(L.crop)
+            S.awayLevel = pl and pl.waterLvl or -1
+            goNear(L.sprinkler)
+            return false
+        end
+        if not sq(L.sprinkler.x, L.sprinkler.y, 0) then return false end
+        local spr = entryAt(L.sprinkler)
+        local sstate = spr and spr.data and spr.data.outlet and spr.data.outlet.state
+        info("away: " .. tostring(S.awaySeen))
+        rec(S.awayLevel > 0, "the crop was watered while the player was away", "water level " .. tostring(S.awayLevel))
+        rec(sstate == "served", "the sprinkler was served while the player was away", "state " .. tostring(sstate))
+        local name = spriteOf(L.sprinkler, "LiveWater:Sprinkler")
+        local index = name and tonumber(string.match(name, "_(%d+)$")) or -1
+        rec(index >= 52 and index <= 55, "back: the sprinkler is drawn spraying", tostring(name))
+        return true
+    end, 60)
 
     addStep("no Lua error recorded", function()
         local n = getLuaDebuggerErrorCount and getLuaDebuggerErrorCount() or 0
@@ -1574,7 +2039,7 @@ end
 -- Server hooks: the authority searches the layout around client 1, sets the fixtures and the moveables down
 -- (placeMoveable on the server, what ISMoveablesAction:complete runs there), then asks client 1 by test messages
 -- (module LWTTest) to act; client 1 acts only through the real commands (sendClientCommand, module LiveWater:
--- lay, switchValve, fitFilter), teleported by /teleportto. The authority checks its state after real
+-- switchValve, fitFilter), teleported by /teleportto. The authority checks its state after real
 -- EveryTenMinutes steps; client 1 checks what reached it (pipe sprites, inlet sprite).
 
 local TEST = "LWTTest"
@@ -1671,7 +2136,7 @@ local function serverSteps(ctx)
         local L, pl = S.L, mpPlayer()
         pl:setGodMod(true)
         pl:setInvisible(true)
-        giveItems(pl, { { "LiveWater.PipeSection", 80 }, { "LiveWater.WaterFilter", 1 }, { "Base.PipeWrench", 1 },
+        giveItems(pl, { { "Base.Mov_LiveWater_Pipe", 80 }, { "LiveWater.WaterFilter", 1 }, { "Base.PipeWrench", 1 },
             { "Base.Mov_LiveWater_PondPump", 1 }, { "Base.Mov_LiveWater_HouseInlet", 1 },
             { "Base.Mov_LiveWater_Sprinkler", 1 }, { "Base.Mov_LiveWater_Valve", 1 } })
         S.gen = makeGenerator(L.gen)
@@ -1688,16 +2153,20 @@ local function serverSteps(ctx)
             .. tostring(e1 and e1.data.intake and e1.data.intake.source))
         rec(ok2 and ok3 and e2 ~= nil and e3 ~= nil, "house inlet and sprinkler set down (server placement)",
             tostring(w2 or "") .. " " .. tostring(w3 or ""))
-        tell("lay", layoutArgs(L))
+        for i = 1, #L.pipes do
+            local ok, why = placeMoveable(pl, PIPE_SPRITE, L.pipes[i])
+            if not ok then info("pipe " .. key(L.pipes[i].x, L.pipes[i].y) .. ": " .. tostring(why)) end
+        end
+        tell("pipes", layoutArgs(L))
         return true
     end)
 
-    addStep("pipes laid by client 1 (lay commands)", function()
+    addStep("pipes set down (server placement)", function()
         for i = 1, #S.L.pipes do
             if not entryAt(S.L.pipes[i]) then return false end
         end
-        rec(true, "pipes laid by client 1 (lay commands)", #S.L.pipes .. " pipes")
-        local ok, why = placeMoveable(mpPlayer(), VALVE_SPRITE, S.L.valve)
+        rec(true, "pipes set down (server placement)", #S.L.pipes .. " pipes")
+        local ok, why = placeMoveable(mpPlayer(), alongAxis(VALVE_SPRITE, S.L.valveAxis), S.L.valve, VALVE_SPRITE)
         local e = entryAt(S.L.valve)
         rec(ok and e ~= nil and e.type == VALVE, "inline valve set down between two pipes (server placement)",
             tostring(why or ""))
@@ -1748,10 +2217,10 @@ local function serverSteps(ctx)
         return true
     end)
 
-    addStep("filter fitted by client 1", function()
-        local f = entryAt(S.L.pump).data.filter
+    addStep("filter fitted in the house inlet by client 1", function()
+        local f = entryAt(S.L.inlet).data.filter
         if not (f and f.fitted == true) then return false end
-        rec(true, "filter fitted by client 1 (fitFilter)")
+        rec(true, "filter fitted in the house inlet by client 1 (fitFilter)")
         return true
     end, 60)
 
@@ -1791,7 +2260,8 @@ local function serverSteps(ctx)
         rec(not seen.inlet.served and amount <= 0.001, "closed inline valve stops the house inlet (server)",
             "litres " .. amount)
         local pl = plantAt(L.crop)
-        rec(seen.sprinkler.served and pl and pl.waterLvl > 0, "the sprinkler upstream still waters (server)",
+        rec(seen.sprinkler.served and not seen.sprinkler.idle and pl and pl.waterLvl > 0,
+            "the sprinkler upstream still waters, served at every step (server)",
             "level " .. tostring(pl and pl.waterLvl))
         tell("close")
         return true
@@ -1901,13 +2371,19 @@ end
 
 local function clientChecks()
     local L = C.L
-    local wrong = 0
+    local wrong, which = 0, {}
     for i = 1, #L.pipes do
-        if clientSpriteOf(L.pipes[i], PIPE) ~= SHEET .. expectedMask(L, L.pipes[i]) then wrong = wrong + 1 end
+        local p = L.pipes[i]
+        local got, want = clientSpriteOf(p, PIPE), SHEET .. expectedMask(L, p)
+        if got ~= want then
+            wrong = wrong + 1
+            which[#which + 1] = key(p.x, p.y) .. " " .. tostring(got) .. " (expected " .. want .. ")"
+        end
     end
-    rec(wrong == 0, "client 1 sees the pipe sprites by side mask", #L.pipes .. " pipes, wrong " .. wrong)
+    rec(wrong == 0, "client 1 sees the pipe sprites by side mask",
+        #L.pipes .. " pipes, wrong " .. wrong .. (#which > 0 and (": " .. table.concat(which, "; ")) or ""))
     local isprite = clientSpriteOf(L.inlet, "LiveWater:HouseInlet")
-    rec(isprite == SHEET .. "40", "client 1 sees the house inlet green (filtered)", tostring(isprite))
+    rec(isprite == SHEET .. INLET_FILTER_GREEN, "client 1 sees the house inlet green with its filter", tostring(isprite))
     local vs = clientSpriteOf(L.valve, VALVE)
     rec(vs == SHEET .. valveIndex(L, false), "client 1 sees the inline valve closed", tostring(vs))
     local ssprite = clientSpriteOf(L.sprinkler, "LiveWater:Sprinkler")
@@ -1951,26 +2427,15 @@ local function clientDone(ctx)
             rec(false, "client 1 layout place", "no candidate place left")
             return true
         end
-    elseif msg.command == "lay" then
+    elseif msg.command == "pipes" then
         C.L = { pump = a.pump, inlet = a.inlet, sprinkler = a.sprinkler, crop = a.crop, valve = a.valve,
             pipes = tableList(a.pipes, a.count) }
-        C.pi = 0
         C.action = function()
-            if C.current then
-                if clientSpriteOf(C.current, PIPE) or nowMs() - C.sentAt > 10000 then C.current = nil end
-                return false
+            for i = 1, #C.L.pipes do
+                if not clientSpriteOf(C.L.pipes[i], PIPE) then return false end
             end
-            local p = C.L.pipes[C.pi + 1]
-            if not p then
-                rec(true, "client 1 sent the lay commands", #C.L.pipes .. " pipes")
-                return true
-            end
-            actNear(p, function()
-                C.pi = C.pi + 1
-                sendClientCommand(cplayer(), MODULE, "lay", { x = p.x, y = p.y, z = 0, part = PIPE })
-                C.current, C.sentAt = p, nowMs()
-            end)
-            return false
+            rec(true, "client 1 sees the pipes set down", #C.L.pipes .. " pipes")
+            return true
         end
     elseif msg.command == "inline" then
         local v = C.L.valve
@@ -1983,7 +2448,7 @@ local function clientDone(ctx)
             return actNear(s, function() sendClientCommand(cplayer(), MODULE, "switchValve", { x = s.x, y = s.y, z = 0 }) end)
         end
     elseif msg.command == "filter" then
-        local p = C.L.pump
+        local p = C.L.inlet
         C.action = function()
             return actNear(p, function() sendClientCommand(cplayer(), MODULE, "fitFilter", { x = p.x, y = p.y, z = 0 }) end)
         end
@@ -2021,7 +2486,7 @@ function H.client.done(ctx)
     local finished = runSteps()
     if finished then
         Events.EveryTenMinutes.Remove(onTen)
-        setGameSpeed(1)
+        fastForward(false)
     end
     return finished
 end

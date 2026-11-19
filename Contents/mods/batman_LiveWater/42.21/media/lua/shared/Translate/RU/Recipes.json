@@ -7,5 +7,16 @@
     "LWTBuildHouseInlet": "Собрать ввод воды в дом",
     "LWTBuildSprinkler": "Собрать дождеватель",
     "LWTUpgradeSprinkler": "Добавить таймер к дождевателю",
-    "LWTBuildBarrelFitting": "Собрать врезку для бочки"
+    "LWTBuildBarrelFitting": "Собрать врезку для бочки",
+    "LWTMakeDripLine": "Сделать капельные шланги",
+    "LWTDismantlePipe": "Разобрать водопроводную трубу",
+    "LWTDismantleValve": "Разобрать запорный вентиль",
+    "LWTDismantleFlowMeter": "Разобрать счётчик воды",
+    "LWTDismantleHouseInlet": "Разобрать ввод воды в дом",
+    "LWTDismantlePondPump": "Разобрать насос для пруда",
+    "LWTDismantleSprinkler": "Разобрать дождеватель",
+    "LWTDismantleSprinklerAuto": "Разобрать автоматический дождеватель",
+    "LWTDismantleBarrelFitting": "Разобрать врезку для бочки",
+    "LWTDismantleDripLine": "Разобрать капельный шланг",
+    "LWTDismantleWaterFilter": "Разобрать фильтрующий картридж"
 }

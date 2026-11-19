@@ -43,7 +43,8 @@ class Well(unittest.TestCase):
         lua.execute('NEED["1,0"] = 20 EMITTED = {} CLOCK:tick()')
         d = lua.eval('emitted("waterDelivered")')
         self.assertEqual((d[1][3], d[1][4]), (20, "clean"))
-        self.assertEqual(lua.eval("LiveWater.Parts:lines(REG:at(0, 0, 0))[5][1]"), "IGUI_LWT_Source_well")
+        lines = lua.eval("LiveWater.Parts:lines(REG:at(0, 0, 0))")
+        self.assertIn("IGUI_LWT_Source_well", [l[1] for l in lines.values()])
 
     def test_the_well_wins_over_natural_water(self):
         lua = bench()

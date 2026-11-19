@@ -1,7 +1,7 @@
 """E25: containers filled by the network (ADR-001 L08, D26, D28): a barrel fitting set to Fill works with any
 registered container, whatever its size: barrels and rain collectors (20 L or more), water coolers by default, the
 names (sprite or entity script) listed in a sandbox string option, and those registered through the API; a drinking
-container (water cooler) takes clean water only."""
+container (water cooler) is filled like a barrel, with tainted water (ADR-005 D07)."""
 import os
 import re
 import unittest
@@ -20,19 +20,18 @@ def call(lua, expr):
 
 
 class Registry(unittest.TestCase):
-    def test_water_coolers_are_registered_by_default_and_take_clean_water(self):
+    def test_water_coolers_are_registered_by_default(self):
         lua = new_lua(API)
         self.assertTrue(lua.eval('LiveWater.Containers:admits(15, nil, "WaterDispenser", {})'))
-        self.assertTrue(lua.eval('LiveWater.Containers:find(nil, "WaterDispenser").clean'))
 
     def test_barrels_by_size_listed_and_registered_names(self):
         lua = new_lua(API)
         self.assertTrue(lua.eval('LiveWater.Containers:admits(400, "carpentry_02_122", nil, {})'))
         self.assertFalse(lua.eval('LiveWater.Containers:admits(5, "my_jug_0", nil, {})'))
         self.assertTrue(lua.eval('LiveWater.Containers:admits(5, "my_jug_0", nil, { my_jug_0 = true })'))
-        self.assertEqual(call(lua, 'LiveWater.API.registerContainer("Mod:Tank", { clean = true })'), (True, None))
+        self.assertEqual(call(lua, 'LiveWater.API.registerContainer("Mod:Tank", { shape = "low" })'), (True, None))
         self.assertTrue(lua.eval('LiveWater.Containers:admits(5, nil, "Mod:Tank", {})'))
-        self.assertEqual(call(lua, 'LiveWater.API.registerContainer("Mod:Bad", { clean = 3 })'),
+        self.assertEqual(call(lua, 'LiveWater.API.registerContainer("Mod:Bad", { shape = 3 })'),
                          (False, "invalid_definition"))
 
     def test_the_sandbox_list_is_parsed(self):
@@ -42,8 +41,10 @@ class Registry(unittest.TestCase):
         self.assertEqual(len(lua.eval('require("LiveWater/LWT_Containers").parseList(nil)')), 0)
 
 
-class CleanOnly(unittest.TestCase):
-    def test_a_cooler_refuses_unfiltered_water_and_takes_filtered_water(self):
+class FilledWaterIsTainted(unittest.TestCase):
+    """ADR-005 D07: a fitting set to Fill always pours tainted water, and a water cooler takes it."""
+
+    def test_a_cooler_is_filled_with_tainted_water_from_a_pond_or_a_well(self):
         lua = services(new_lua, POND, FITTING)
         lua.execute(BENCH)
         lua.execute(r"""
@@ -56,12 +57,36 @@ class CleanOnly(unittest.TestCase):
         CONT["2,-1"] = { amount = 0, capacity = 15 }
         tick()
         """)
-        self.assertEqual(lua.eval("state(2, 0)"), "unfiltered")
-        self.assertEqual(lua.eval('CONT["2,-1"].amount'), 0)
-        lua.execute('REG:at(0, 0, 0).data.filter = { fitted = true, used = 0, capacity = 500 } tick()')
         self.assertEqual(lua.eval("state(2, 0)"), "served")
         self.assertEqual(lua.eval('CONT["2,-1"].amount'), 15)
-        self.assertEqual(lua.eval('CONT["2,-1"].fluid'), "clean")
+        self.assertEqual(lua.eval('CONT["2,-1"].fluid'), "tainted")
+        lua.execute('CONT["2,-1"] = { amount = 0, capacity = 15 }'
+                    ' CLOCK.ctx.sources = LiveWater.Sources REG:at(0, 0, 0).data.intake.source = "well" tick()')
+        self.assertEqual(lua.eval("state(2, 0)"), "served")
+        self.assertEqual(lua.eval('CONT["2,-1"].fluid'), "tainted")
+
+    def test_a_barrel_filled_from_a_clean_well_gets_tainted_water(self):
+        lua = services(new_lua, POND, FITTING)
+        lua.execute(BENCH)
+        lua.execute('CONT["2,-1"] = { amount = 0, capacity = 400, sprite = "carpentry_02_122" }'
+                    ' CLOCK.ctx.sources = LiveWater.Sources REG:at(0, 0, 0).data.intake.source = "well" tick()')
+        delivered = lua.eval('emitted("waterDelivered")')
+        self.assertEqual(delivered[1][4], "clean")
+        self.assertEqual(lua.eval("state(2, 0)"), "served")
+        self.assertEqual(lua.eval('CONT["2,-1"].amount'), 50)
+        self.assertEqual(lua.eval('CONT["2,-1"].fluid'), "tainted")
+
+    def test_a_barrel_of_fuel_still_receives_fuel(self):
+        lua = services(new_lua, POND, FITTING)
+        lua.execute(BENCH)
+        lua.execute(r"""
+        LiveWater.Parts:call(FIT, "setFittingMode", "pump")
+        CONT["2,-1"] = { amount = 100, capacity = 600, fluid = "fuel" }
+        place("LiveWater:BarrelFitting", 1, 1, "batman_livewater_01_66")
+        CONT["1,2"] = { amount = 0, capacity = 400 }
+        tick()
+        """)
+        self.assertEqual(lua.eval('CONT["1,2"].fluid'), "fuel")
 
 
 class Texts(unittest.TestCase):

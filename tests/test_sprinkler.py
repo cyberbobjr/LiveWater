@@ -1,7 +1,8 @@
 """E11: manual sprinkler (ADR-001 D19, P13, P14, D08a): part LiveWater:Sprinkler (outlet sprinkler, valve placed
-closed, manual controller, spray), radius by definition times a sandbox multiplier, only the plants that need water,
-200 ml doses really taken from the network, closed valve = nothing; valve command; the client jet (the only per-frame
-subscription, D08a)."""
+closed, manual controller, spray), radius by definition times a sandbox multiplier; open, it draws its flow at every
+step, thirsty plants or not (ADR-006 D01-D03: sandbox SprinklerFlow, 10 L, a quarter lost in the air), the plants
+that need water take 200 ml doses of the rest, nearest first; closed valve = nothing; valve command; the client jet
+(the only per-frame subscription, D08a)."""
 import json
 import os
 import unittest
@@ -32,7 +33,7 @@ class SprinklerPart(unittest.TestCase):
         self.assertFalse(caps.valve.open)
         self.assertEqual(caps.controller.mode, "manual")
         self.assertEqual((caps.spray.radius, caps.spray.dose), (2, 0.2))
-        self.assertEqual((caps.spray.jetFirst, caps.spray.jetFrames), (80, 6))
+        self.assertEqual((caps.spray.jetFirst, caps.spray.jetFrames), (128, 8))
 
     def test_the_look_follows_the_last_step(self):
         lua = new_lua(API, SPRINKLER)
@@ -47,10 +48,28 @@ class SprinklerPart(unittest.TestCase):
         self.assertEqual(call(lua, 'LiveWater.Parts:first(PART, "spray", CTX)'), (5, 0.2))
         self.assertEqual(call(lua, 'LiveWater.Parts:first(PART, "spray")'), (2, 0.2))
 
+    def test_the_flow_is_the_sandbox_option_or_ten_litres(self):
+        # ADR-006 D02: SprinklerFlow litres per ten-minute step (10 by default), a quarter lost in the air
+        lua = new_lua(API, SPRINKLER)
+        lua.execute('PART = { type = "LiveWater:Sprinkler", data = {} }')
+        spray = lua.eval('{ LiveWater.Parts:first(PART, "spray") }')
+        self.assertEqual((spray[3], spray[4]), (0.25, 10))
+        spray = lua.eval('{ LiveWater.Parts:first(PART, "spray", { scale = function(n)'
+                         ' return n == "SprinklerFlow" and 4 or nil end }) }')
+        self.assertEqual(spray[4], 4)
+
+    def test_a_part_may_set_its_own_flow(self):
+        lua = new_lua(API)
+        lua.execute('LiveWater.API.registerPart("T:S", { sprites = { [0] = "ts" }, capabilities = { spray = { flow = 3 } } })')
+        spray = lua.eval('{ LiveWater.Parts:first({ type = "T:S", data = {} }, "spray", { scale = function() return 20 end }) }')
+        self.assertEqual(spray[4], 3)
+        self.assertFalse(lua.eval('(LiveWater.API.registerPart("T:Bad", { sprites = { [0] = "tb" },'
+                                  ' capabilities = { spray = { flow = -1 } } }))'))
+
     def test_the_jet_hook_gives_the_frames_and_whether_it_sprays(self):
         lua = new_lua(API, SPRINKLER)
         t = lua.eval('{ LiveWater.Parts:first({ type = "LiveWater:Sprinkler", data = { spray = { on = true } } }, "jet") }')
-        self.assertEqual((t[1], t[2], t[3], t[4]), (TILE, 80, 6, True))
+        self.assertEqual((t[1], t[2], t[3], t[4]), (TILE, 128, 8, True))
 
     def test_api_revision_8_and_the_valve_hooks(self):
         lua = new_lua(API, SPRINKLER)
@@ -79,8 +98,8 @@ function plant(x, y, level, needed, alive)
     FARM.plants[x .. "," .. y] = { alive = alive ~= false, level = level, needed = needed }
 end
 SCALE = {}
-PLANTS = require("LiveWater/LWT_Plants").new({ catalog = LiveWater.Parts, farming = FARM,
-    scale = function(n) return SCALE[n] end })
+PLANTS = require("LiveWater/LWT_Plants").new({ farming = FARM,
+    area = require("LiveWater/LWT_SprayArea").reach(LiveWater.Parts, function(n) return SCALE[n] end) })
 OUTLETS = require("LiveWater/LWT_Outlets").new(LiveWater.Parts)
 OUTLETS:register("sprinkler", PLANTS)
 LiveWater.Events.on("waterDelivered", function(part, litres, quality) OUTLETS:deliver(part, litres, quality) end)
@@ -144,7 +163,8 @@ class Watering(unittest.TestCase):
         lua.execute('LiveWater.Parts:call(SPR, "open", true)')
         lua.execute("plant(3, 0, 45, 70) plant(2, 1, 80, 70) plant(1, 1, 0, 70, false)")
         litres = lua.eval("delivered()")
-        self.assertAlmostEqual(litres, 0.6)
+        # ADR-006 D01: it draws its flow (10 L), 7.5 L reach the area, the plant takes its 3 doses, the rest is lost
+        self.assertAlmostEqual(litres, 10)
         self.assertEqual(lua.eval("FARM.watered['3,0']"), 3)
         self.assertIsNone(lua.eval("FARM.watered['2,1']"))
         self.assertIsNone(lua.eval("FARM.watered['1,1']"))
@@ -152,30 +172,65 @@ class Watering(unittest.TestCase):
         self.assertTrue(lua.eval("SPR.data.spray.on"))
         self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "55")   # on, turned W to its pipe
 
-    def test_only_the_plants_in_the_radius(self):
+    def test_only_the_plants_in_the_square_of_the_radius(self):
+        # ADR-003 D01: radius 2 around the sprinkler at (2, 0) is the 5 x 5 square, corners included
         lua = bench()
-        lua.execute('LiveWater.Parts:call(SPR, "open", true) plant(5, 0, 0, 10) plant(4, 1, 0, 10) plant(4, 0, 0, 10)')
+        lua.execute('LiveWater.Parts:call(SPR, "open", true) plant(5, 0, 0, 10) plant(4, 1, 0, 10) plant(4, 0, 0, 10)'
+                    ' plant(4, 2, 0, 10) plant(2, 3, 0, 10)')
         lua.execute("delivered()")
         self.assertIsNone(lua.eval("FARM.watered['5,0']"))
-        self.assertIsNone(lua.eval("FARM.watered['4,1']"))
+        self.assertIsNone(lua.eval("FARM.watered['2,3']"))
+        self.assertEqual(lua.eval("FARM.watered['4,1']"), 1)
+        self.assertEqual(lua.eval("FARM.watered['4,2']"), 1)
         self.assertEqual(lua.eval("FARM.watered['4,0']"), 1)
         lua.execute('SCALE.SprinklerRadiusMultiplier = 1.5 delivered()')
         self.assertEqual(lua.eval("FARM.watered['5,0']"), 1)
 
-    def test_nothing_needed_is_idle_and_the_sprite_goes_off(self):
+    def test_open_without_thirsty_plants_it_still_sprays_its_flow(self):
+        # ADR-006 D01, D03: no more "idle" because no plant is thirsty, the water is lost
         lua = bench()
-        lua.execute('LiveWater.Parts:call(SPR, "open", true) plant(3, 0, 0, 20)')
-        lua.execute("delivered()")
+        lua.execute('LiveWater.Parts:call(SPR, "open", true)')
+        self.assertAlmostEqual(lua.eval("delivered()"), 10)
+        self.assertEqual(lua.eval("SPR.data.outlet.state"), "served")
         self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "55")   # on, turned W to its pipe
+        self.assertAlmostEqual(lua.eval("delivered()"), 10)
+
+    def test_closed_again_the_sprite_goes_off(self):
+        lua = bench()
+        lua.execute('LiveWater.Parts:call(SPR, "open", true) delivered() LiveWater.Parts:call(SPR, "open", false)')
         self.assertEqual(lua.eval("delivered()"), 0)
-        self.assertEqual(lua.eval("SPR.data.outlet.state"), "idle")
+        self.assertEqual(lua.eval("SPR.data.outlet.state"), "closed")
         self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "51")   # off, turned W
+
+    def test_the_flow_option_sets_what_it_draws_and_the_plants_share_it_nearest_first(self):
+        lua = bench()
+        lua.execute('SCALE.SprinklerFlow = 4 LiveWater.Parts:call(SPR, "open", true)'
+                    ' plant(3, 0, 0, 100) plant(4, 0, 0, 100)')
+        self.assertAlmostEqual(lua.eval("delivered()"), 4)
+        # 4 L drawn, 3 L reach the area: 15 doses, 10 to the nearest plant, 5 to the next one
+        self.assertEqual((lua.eval("FARM.watered['3,0']"), lua.eval("FARM.watered['4,0']")), (10, 5))
 
     def test_short_water_gives_whole_doses_only(self):
         lua = bench()
         lua.execute('LiveWater.Parts:call(SPR, "open", true) plant(3, 0, 0, 100)')
-        lua.execute("PLANTS:deliver(SPR, 0.5, 'tainted')")
+        # 0.6 L drawn, a quarter lost in the air: 0.45 L reach the plant, two whole doses of 0.2 L
+        lua.execute("PLANTS:deliver(SPR, 0.6, 'tainted')")
         self.assertEqual(lua.eval("FARM.watered['3,0']"), 2)
+
+    def test_a_pump_short_of_water_gives_the_last_sprinkler_what_is_left(self):
+        # ADR-006 consequences: one pond pump (50 L a step) feeds two 20 L sprinklers fully, the third gets 10 L
+        lua = bench()
+        lua.execute("""
+        SCALE.SprinklerFlow = 20
+        place("Test:Pipe", 0, 1) place("Test:Pipe", 0, 2) place("LiveWater:Sprinkler", 1, 2, "batman_livewater_01_48")
+        place("Test:Pipe", 0, -1) place("LiveWater:Sprinkler", 0, -2, "batman_livewater_01_48")
+        for _, at in ipairs({ { 2, 0 }, { 1, 2 }, { 0, -2 } }) do LiveWater.Parts:call(REG:at(at[1], at[2], 0), "open", true) end
+        EMITTED = {} CLOCK:tick()
+        GOT = {}
+        for _, e in ipairs(emitted("waterDelivered")) do table.insert(GOT, e[3]) end
+        table.sort(GOT)
+        """)
+        self.assertEqual(list(lua.eval("GOT").values()), [10, 20, 20])
 
 
 COMMAND = r"""
@@ -249,7 +304,7 @@ function frame() fire("OnTick") end
 
 class Sound(unittest.TestCase):
     """P14: a running sprinkler plays the vanilla watering sound for the players, through the same state change
-    that starts and stops its jet (Publisher.present after a step); zombies hear nothing of it."""
+    that starts and stops its jet (Publisher.present after a step); zombies hear it while it sprays (ADR-004 D06)."""
 
     def bench(self):
         lua = bench()
@@ -280,8 +335,8 @@ class Sound(unittest.TestCase):
         loops = [tuple(e.values()) for e in lua.eval("SOUNDS.log").values() if e[1] == "loop"]
         self.assertIn(("loop", 2, 0, "WaterCrops"), loops)
         noises = [tuple(e.values()) for e in lua.eval("SOUNDS.log").values() if e[1] == "noise"]
-        self.assertTrue(all(n[3] == 0 for n in noises if (n[1], n[2]) == (2, 0)))
-        lua.execute("SOUNDS.log = {} delivered()")
+        self.assertIn(("noise", 2, 0, 10), noises)
+        lua.execute('SOUNDS.log = {} LiveWater.Parts:call(SPR, "open", false) delivered()')
         loops = [tuple(e.values()) for e in lua.eval("SOUNDS.log").values() if e[1] == "loop"]
         self.assertIn(("loop", 2, 0, False), loops)
 
@@ -304,15 +359,15 @@ class Jet(unittest.TestCase):
         lua.execute('fire("LoadGridsquare", SQ) fire("LoadGridsquare", SQ)')
         self.assertEqual(lua.eval("ticks()"), 1)
         self.assertTrue(lua.eval("OBJ.animating"))
-        self.assertEqual(list(lua.eval("OBJ.anims").values()), [TILE + "81"])
+        self.assertEqual(list(lua.eval("OBJ.anims").values()), [TILE + "129"])
 
     def test_at_most_six_frames_per_second_facing_kept(self):
         lua = self.bench()
         lua.execute('fire("LoadGridsquare", SQ)')
         lua.execute("NOW = 100 frame()")
-        self.assertEqual(list(lua.eval("OBJ.anims").values()), [TILE + "81"])
+        self.assertEqual(list(lua.eval("OBJ.anims").values()), [TILE + "129"])
         lua.execute("NOW = 170 frame()")
-        self.assertEqual(list(lua.eval("OBJ.anims").values()), [TILE + "85"])
+        self.assertEqual(list(lua.eval("OBJ.anims").values()), [TILE + "133"])
         lua.execute("for i = 1, 60 do NOW = NOW + 1000 / 60 frame() end")
         self.assertEqual(lua.eval("JET.swaps"), 6)
 
@@ -339,7 +394,7 @@ class Jet(unittest.TestCase):
         lua = self.bench(animated=False)
         lua.execute('fire("LoadGridsquare", SQ)')
         self.assertEqual(lua.eval("ticks()"), 0)
-        self.assertEqual(list(lua.eval("OBJ.anims").values()), [TILE + "81"])
+        self.assertEqual(list(lua.eval("OBJ.anims").values()), [TILE + "129"])
 
     def test_a_placed_running_sprinkler_is_seen(self):
         lua = self.bench()
@@ -354,7 +409,10 @@ class Texts(unittest.TestCase):
         with open(os.path.join(MEDIA, "scripts", "LWT_recipes.txt"), encoding="ascii") as f:
             self.assertRegex(f.read(), r"(?s)craftRecipe LWTBuildSprinkler\s*\{.*?item 1 Base\.Mov_LiveWater_Sprinkler,")
         with open(os.path.join(MEDIA, "sandbox-options.txt"), encoding="ascii") as f:
-            self.assertRegex(f.read(), r"option LiveWater\.SprinklerRadiusMultiplier\s*\{\s*type = double,[^}]*default = 1\.0,")
+            text = f.read()
+        self.assertRegex(text, r"option LiveWater\.SprinklerRadiusMultiplier\s*\{\s*type = double,[^}]*default = 1\.0,")
+        self.assertRegex(text, r"option LiveWater\.SprinklerFlow\s*\{\s*type = double,[^}]*default = 10\.0,")
+        self.assertRegex(text, r"option LiveWater\.DripFlow\s*\{\s*type = double,[^}]*default = 0\.5,")
         tr = os.path.join(MEDIA, "lua", "shared", "Translate")
         for lang in ("EN", "FR"):
             def load(name):
@@ -363,6 +421,9 @@ class Texts(unittest.TestCase):
             self.assertIn("ContextMenu_LWT_OpenValve", load("ContextMenu.json"), lang)
             self.assertIn("IGUI_LWT_Valve_Closed", load("IG_UI.json"), lang)
             self.assertIn("Sandbox_LWT_SprinklerRadiusMultiplier", load("Sandbox.json"), lang)
+            for key in ("Sandbox_LWT_SprinklerFlow", "Sandbox_LWT_SprinklerFlow_tooltip", "Sandbox_LWT_DripFlow",
+                        "Sandbox_LWT_DripFlow_tooltip"):
+                self.assertIn(key, load("Sandbox.json"), lang)
             self.assertIn("LWTBuildSprinkler", load("Recipes.json"), lang)
             self.assertIn("UI_LWT_AnimatedJet", load("UI.json"), lang)
 

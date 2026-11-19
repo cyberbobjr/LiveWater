@@ -1,6 +1,12 @@
 {
-    "LiveWater.PipeSection": "Section de tuyau",
+    "Base.Mov_LiveWater_Pipe": "Tuyau d'eau",
     "Base.Mov_LiveWater_PondPump": "Pompe d'étang",
     "LiveWater.WaterFilter": "Cartouche filtrante",
-    "Base.Mov_LiveWater_FlowMeter": "Compteur d'eau"
+    "Base.Mov_LiveWater_FlowMeter": "Compteur d'eau",
+    "Base.Mov_LiveWater_DripLine": "Ligne de goutte-à-goutte",
+    "Base.Mov_LiveWater_Valve": "Vanne d'arrêt",
+    "Base.Mov_LiveWater_HouseInlet": "Arrivée d'eau de la maison",
+    "Base.Mov_LiveWater_Sprinkler": "Arroseur",
+    "Base.Mov_LiveWater_SprinklerAuto": "Arroseur automatique",
+    "Base.Mov_LiveWater_BarrelFitting": "Raccord de baril"
 }

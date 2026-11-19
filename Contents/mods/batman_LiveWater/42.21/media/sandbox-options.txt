@@ -42,6 +42,18 @@ option LiveWater.SprinklerRadiusMultiplier
     page = LiveWater, translation = LWT_SprinklerRadiusMultiplier,
 }
 
+option LiveWater.SprinklerFlow
+{
+    type = double, min = 0.0, max = 100.0, default = 10.0,
+    page = LiveWater, translation = LWT_SprinklerFlow,
+}
+
+option LiveWater.DripFlow
+{
+    type = double, min = 0.0, max = 10.0, default = 0.5,
+    page = LiveWater, translation = LWT_DripFlow,
+}
+
 option LiveWater.SprinklerTimerMin
 {
     type = integer, min = 1, max = 168, default = 1,

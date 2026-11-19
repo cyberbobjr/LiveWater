@@ -1,6 +1,4 @@
 {
-    "ContextMenu_LWT_Lay": "Poser : %1",
-    "ContextMenu_LWT_Dismantle": "Démonter : %1",
     "ContextMenu_LWT_FitFilter": "Monter la cartouche filtrante",
     "ContextMenu_LWT_ReplaceFilter": "Remplacer la cartouche filtrante",
     "ContextMenu_LWT_RemoveFilter": "Retirer la cartouche filtrante",
@@ -20,7 +18,12 @@
     "ContextMenu_LWT_EveryHours": "Toutes les %1 h",
     "ContextMenu_LWT_ShowNetwork": "Afficher le réseau d'eau",
     "ContextMenu_LWT_HideNetwork": "Masquer le réseau d'eau",
+    "ContextMenu_LWT_ShowAllAreas": "Afficher toutes les zones arrosées",
+    "ContextMenu_LWT_HideArea": "Masquer la zone arrosée",
     "ContextMenu_LWT_FittingToPump": "Régler sur Pomper",
     "ContextMenu_LWT_FittingToFill": "Régler sur Remplir",
-    "ContextMenu_LWT_RemoveMod": "Retirer LiveWater de ce monde (admin)"
+    "ContextMenu_LWT_RemoveMod": "Retirer LiveWater de ce monde (admin)",
+    "ContextMenu_LWT_Debug": "LiveWater (debug)",
+    "ContextMenu_LWT_DebugKit": "Donner le kit de test",
+    "ContextMenu_LWT_Water": "Eau : %1 L / %2 L"
 }

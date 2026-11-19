@@ -12,7 +12,7 @@ module LiveWater
         timedAction = SawSmallItemMetal,
         time = 160,
         Tags = AnySurfaceCraft,
-        category = Metalworking,
+        category = LiveWater,
         inputs
         {
             item 1 [Base.MetalPipe],
@@ -20,7 +20,7 @@ module LiveWater
         }
         outputs
         {
-            item 4 LiveWater.PipeSection,
+            item 4 Base.Mov_LiveWater_Pipe,
         }
     }
 
@@ -31,7 +31,7 @@ module LiveWater
         timedAction = MakingElectrical,
         time = 300,
         Tags = AnySurfaceCraft,
-        category = Electrical,
+        category = LiveWater,
         SkillRequired = Electricity:2,
         xpAward = Electricity:15,
         inputs
@@ -55,8 +55,8 @@ module LiveWater
     {
         timedAction = Making,
         time = 100,
-        Tags = InHandCraft;AnySurfaceCraft,
-        category = Miscellaneous,
+        Tags = AnySurfaceCraft,
+        category = LiveWater,
         inputs
         {
             item 2 tags[base:charcoal],
@@ -74,11 +74,11 @@ module LiveWater
         timedAction = Making,
         time = 120,
         Tags = AnySurfaceCraft,
-        category = Metalworking,
+        category = LiveWater,
         inputs
         {
             item 1 tags[base:pipewrench] mode:keep flags[MayDegradeLight],
-            item 1 [LiveWater.PipeSection],
+            item 1 [Base.Mov_LiveWater_Pipe],
             item 1 [Base.ScrapMetal],
         }
         outputs
@@ -93,11 +93,11 @@ module LiveWater
         timedAction = Making,
         time = 150,
         Tags = AnySurfaceCraft,
-        category = Metalworking,
+        category = LiveWater,
         inputs
         {
             item 1 tags[base:screwdriver] mode:keep flags[Prop1;MayDegradeLight],
-            item 1 [LiveWater.PipeSection],
+            item 1 [Base.Mov_LiveWater_Pipe],
             item 1 [Base.SmallSheetMetal],
             item 2 [Base.Screws],
         }
@@ -112,11 +112,11 @@ module LiveWater
         timedAction = Making,
         time = 200,
         Tags = AnySurfaceCraft,
-        category = Metalworking,
+        category = LiveWater,
         inputs
         {
             item 1 tags[base:pipewrench] mode:keep flags[MayDegradeLight],
-            item 2 [LiveWater.PipeSection],
+            item 2 [Base.Mov_LiveWater_Pipe],
             item 1 [Base.SmallSheetMetal],
             item 4 [Base.Screws],
         }
@@ -133,11 +133,11 @@ module LiveWater
         timedAction = Making,
         time = 150,
         Tags = AnySurfaceCraft,
-        category = Metalworking,
+        category = LiveWater,
         inputs
         {
             item 1 tags[base:pipewrench] mode:keep flags[MayDegradeLight],
-            item 2 [LiveWater.PipeSection],
+            item 2 [Base.Mov_LiveWater_Pipe],
             item 1 [Base.ScrapMetal],
             item 1 [Base.Plank],
         }
@@ -153,7 +153,7 @@ module LiveWater
         timedAction = MakingElectrical,
         time = 200,
         Tags = AnySurfaceCraft,
-        category = Electrical,
+        category = LiveWater,
         SkillRequired = Electricity:2,
         xpAward = Electricity:10,
         inputs
@@ -175,16 +175,36 @@ module LiveWater
         timedAction = Making,
         time = 120,
         Tags = AnySurfaceCraft,
-        category = Metalworking,
+        category = LiveWater,
         inputs
         {
             item 1 tags[base:pipewrench] mode:keep flags[MayDegradeLight],
-            item 1 [LiveWater.PipeSection],
+            item 1 [Base.Mov_LiveWater_Pipe],
             item 1 [Base.RubberHose],
         }
         outputs
         {
             item 1 Base.Mov_LiveWater_BarrelFitting,
+        }
+    }
+
+    /* Drip lines (ADR-004 D07): a rubber hose pierced with a knife, its holes taped, cut into four
+       lengths of one square each. */
+    craftRecipe LWTMakeDripLine
+    {
+        timedAction = Making,
+        time = 100,
+        Tags = AnySurfaceCraft,
+        category = LiveWater,
+        inputs
+        {
+            item 1 [Base.RubberHose],
+            item 2 [Base.DuctTape],
+            item 1 tags[base:sharpknife] mode:keep flags[MayDegradeLight],
+        }
+        outputs
+        {
+            item 4 Base.Mov_LiveWater_DripLine,
         }
     }
 }

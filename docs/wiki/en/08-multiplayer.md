@@ -4,7 +4,7 @@
 
 - The **server decides everything**: it moves the water every 10 minutes, saves the networks and checks every action
   (distance, items, tools, admin rights). Players only send requests from their right-click menus.
-- Every player sees the same tiles: pump on or off, filter, inlet light, sprinkler jet.
+- Every player sees the same tiles: pump on or off, inlet light and filter, sprinkler jet.
 - Add LiveWater to the server's `Mods=` line and to `WorkshopItems=`. The tiles (`batman_livewater_01`) come with the mod.
 - LiveWater is **incompatible** with *LG Extended Plumbing* and *LG Connect To Water Supply*: both change the water
   source of fixtures, and two such mods would fill the same sink twice. LiveWater covers what they do.

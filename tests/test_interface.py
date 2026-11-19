@@ -36,14 +36,6 @@ class TimedActions(unittest.TestCase):
         self.assertEqual(lua.eval("QUEUED[1].maxTime"), 60)
         self.assertEqual(lua.eval("SENT[1][2]"), "switchValve")
 
-    def test_laying_a_pipe_is_a_longer_timed_action(self):
-        from test_commands import MENU as PIPE_MENU
-        lua = new_lua(API, "shared/LiveWater/Parts/LWT_PartPipe.lua", "client/LiveWater/LWT_PipeMenu.lua")
-        lua.execute(PIPE_MENU)
-        lua.execute('click({ "floors_01_0" }, { ["LiveWater.PipeSection"] = true }) OPTIONS[1].run(unpack(OPTIONS[1].args))')
-        self.assertEqual(lua.eval("QUEUED[1].maxTime"), 150)
-        self.assertEqual(lua.eval("SENT[1][3].part"), "LiveWater:PipeGalvanized")
-
 
 class PlacementRefusal(unittest.TestCase):
     def test_the_cursor_refuses_a_square_that_already_holds_a_part(self):
@@ -180,6 +172,7 @@ class NetworkView(unittest.TestCase):
         hide = lua.eval('option("ContextMenu_LWT_HideNetwork")')
         self.assertIn("IGUI_LWT_View_no_pressure|1", hide.toolTip.description)
         self.assertIn("IGUI_LWT_View_unfiltered|1", hide.toolTip.description)
+        self.assertIsNone(lua.eval('option("ContextMenu_LWT_ShowNetwork")'))
         lua.execute('local o = option("ContextMenu_LWT_HideNetwork") o.run(unpack(o.args))')
         self.assertFalse(lua.eval("SPR.highlighted"))
         self.assertFalse(lua.eval("INLET.highlighted"))

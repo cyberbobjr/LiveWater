@@ -63,7 +63,7 @@ class PondPumpPart(unittest.TestCase):
     def test_definition_follows_the_tile_contract_and_the_adr(self):
         lua = new_lua(API, POND)
         d = lua.eval('LiveWater.API.part("LiveWater:PondPump")')
-        for key, base in (("off", 24), ("on", 28), ("filter_on", 32), ("filter_off", 36)):
+        for key, base in (("off", 24), ("on", 28)):
             self.assertEqual([d.variants[key][i] for i in range(1, 5)], [TILE + str(base + k) for k in range(4)], key)
         self.assertEqual((d.capabilities.pump.flow, d.capabilities.pump.watts), (50, 250))
         self.assertIsNotNone(d.capabilities.intake)
@@ -238,8 +238,8 @@ class LiveWirePower(unittest.TestCase):
         self.assertEqual(lua.eval("newPower(fakeLiveWire(6))"), 2)
         sprites = lua.eval('REGISTERED["LiveWater_LiveWater_PondPump"].sprites')
         names = [sprites[i] for i in range(1, len(sprites) + 1)]
-        self.assertEqual(len(names), 16)
-        self.assertIn(TILE + "33", names)
+        self.assertEqual(len(names), 8)
+        self.assertIn(TILE + "29", names)
 
     def test_250_w_running_and_0_stopped(self):
         lua = self.lw()

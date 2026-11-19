@@ -14,10 +14,14 @@
     "Sandbox_LWT_WasherFix_tooltip": "Em um servidor, as máquinas de lavar alimentadas por uma entrada da casa mostram aos jogadores o estado real: conectadas, e paradas quando ficam sem água.",
     "Sandbox_LWT_SprinklerRadiusMultiplier": "Alcance dos aspersores",
     "Sandbox_LWT_SprinklerRadiusMultiplier_tooltip": "Multiplica a distância em que um aspersor rega as plantas (2 casas em 1,0; no máximo 10).",
+    "Sandbox_LWT_SprinklerFlow": "Vazão dos aspersores",
+    "Sandbox_LWT_SprinklerFlow_tooltip": "Litros que um aspersor aberto puxa a cada 10 minutos, com ou sem plantas com sede (10 L por padrão). Um quarto se perde no ar; as plantas ao alcance pegam o que precisam, o resto se perde.",
+    "Sandbox_LWT_DripFlow": "Vazão das linhas de gotejamento",
+    "Sandbox_LWT_DripFlow_tooltip": "Litros que cada casa de linha de gotejamento puxa a cada 10 minutos enquanto a rede lhe dá água (0,5 L por padrão). Nada se perde no ar; as plantas ao lado pegam o que precisam, o resto se perde.",
     "Sandbox_LWT_SprinklerTimerMin": "Temporizador do aspersor: intervalo mais curto",
     "Sandbox_LWT_SprinklerTimerMin_tooltip": "Menor número de horas que um jogador pode definir entre duas regas de um aspersor automático.",
     "Sandbox_LWT_SprinklerTimerMax": "Temporizador do aspersor: intervalo mais longo",
     "Sandbox_LWT_SprinklerTimerMax_tooltip": "Maior número de horas que um jogador pode definir entre duas regas de um aspersor automático.",
     "Sandbox_LWT_FillContainers": "Recipientes que uma conexão para barril pode encher",
-    "Sandbox_LWT_FillContainers_tooltip": "Nomes de scripts de entidade ou sprites, separados por ; (bebedouros: WaterDispenser). Eles são enchidos por uma conexão para barril ajustada para Encher, qualquer que seja o tamanho, somente com água limpa. Barris e coletores de chuva sempre funcionam."
+    "Sandbox_LWT_FillContainers_tooltip": "Nomes de scripts de entidade ou sprites, separados por ; (bebedouros: WaterDispenser). Eles são enchidos por uma conexão para barril ajustada para Encher, qualquer que seja o tamanho, com água contaminada, como um barril. Barris e coletores de chuva sempre funcionam."
 }

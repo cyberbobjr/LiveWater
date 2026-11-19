@@ -1,6 +1,4 @@
 {
-    "ContextMenu_LWT_Lay": "Поставить: %1",
-    "ContextMenu_LWT_Dismantle": "Разобрать: %1",
     "ContextMenu_LWT_FitFilter": "Установить фильтрующий картридж",
     "ContextMenu_LWT_ReplaceFilter": "Заменить фильтрующий картридж",
     "ContextMenu_LWT_RemoveFilter": "Снять фильтрующий картридж",
@@ -20,7 +18,12 @@
     "ContextMenu_LWT_EveryHours": "Каждые %1 ч",
     "ContextMenu_LWT_ShowNetwork": "Показать водопроводную сеть",
     "ContextMenu_LWT_HideNetwork": "Скрыть водопроводную сеть",
+    "ContextMenu_LWT_ShowAllAreas": "Показать все зоны полива",
+    "ContextMenu_LWT_HideArea": "Скрыть зону полива",
     "ContextMenu_LWT_FittingToPump": "Врезка: откачка",
     "ContextMenu_LWT_FittingToFill": "Врезка: наполнение",
-    "ContextMenu_LWT_RemoveMod": "Убрать LiveWater из этого мира (админ)"
+    "ContextMenu_LWT_RemoveMod": "Убрать LiveWater из этого мира (админ)",
+    "ContextMenu_LWT_Debug": "LiveWater (отладка)",
+    "ContextMenu_LWT_DebugKit": "Выдать тестовый набор",
+    "ContextMenu_LWT_Water": "Вода: %1 л / %2 л"
 }

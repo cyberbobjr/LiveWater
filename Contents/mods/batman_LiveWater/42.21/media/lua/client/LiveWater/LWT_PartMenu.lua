@@ -4,12 +4,16 @@
 -- capabilities for their actions (`actions` hook) and lines (`lines` hook); a chosen action walks the
 -- player to the square and runs a short timed action that sends the command (LWT_PartAction, E13);
 -- the server checks everything and answers a refusal with a note (LWT_NoticeClient).
+-- A part whose capability names a window face (`panel` hook, ADR-008: the water meter, the pump's
+-- LCD) opens that window from "Information" (LWT_Panels); the others keep the tooltip.
 -- An action that needs an item is offered only when the player carries one; an action with
 -- `choices` (a timer's hours) opens a submenu whose choice sends its args with the command. The
 -- information is the tooltip of an "Information" option: nothing is drawn per frame by LiveWater.
 
 require "LiveWater/LWT_API"
 local Mirror = require "LiveWater/LWT_Mirror"
+local PartText = require "LiveWater/LWT_PartText"
+local Panels = require "LiveWater/LWT_Panels"
 require "LiveWater/LWT_PartAction"
 
 local PartMenu = {}
@@ -40,27 +44,22 @@ function PartMenu.partsOn(sq, catalog)
     return out
 end
 
--- Argument of a line as text: a whole number without a decimal part (a Lua number reaches
--- Java's getText as a Double, "50.0").
-local function asText(v)
-    if type(v) == "number" and v % 1 == 0 then return string.format("%d", v) end
-    return tostring(v)
-end
+local asText = PartText.asText
 
 -- Text of the information lines of a part (`lines` hooks, P08), one per line of the tooltip.
 function PartMenu.describe(catalog, part)
-    local lines, out = catalog:lines(part), {}
-    for i = 1, #lines do
-        local l, args = lines[i], {}
-        for j = 2, #l do args[j - 1] = asText(l[j]) end
-        out[i] = getText(l[1], unpack(args))
-    end
-    return table.concat(out, " <LINE> ")
+    return table.concat(PartText.texts(catalog, part), " <LINE> ")
 end
 
--- "Information" option: its tooltip shows the lines; choosing it does nothing more.
-local function addInformation(context, catalog, part)
-    if #catalog:lines(part) == 0 then return end
+-- "Information" option: opens the part's window when its capability names a registered face,
+-- else its tooltip shows the lines and choosing it does nothing more.
+local function addInformation(context, catalog, part, player)
+    if #catalog:lines(part, PartText.CTX) == 0 then return end
+    local face = catalog:first(part, "panel")
+    if Panels.get(face) then
+        context:addOption(getText("ContextMenu_LWT_Info"), player, Panels.open, face, part)
+        return
+    end
     local option = context:addOption(getText("ContextMenu_LWT_Info"), nil, nil)
     local tooltip = ISToolTip:new()
     tooltip:initialise()
@@ -106,7 +105,7 @@ function PartMenu.fill(playerNum, context, worldobjects, test)
                 addAction(context, player, sq, a)
             end
         end
-        if not test then addInformation(context, catalog, parts[i]) end
+        if not test then addInformation(context, catalog, parts[i], player) end
     end
 end
 

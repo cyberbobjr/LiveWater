@@ -6,12 +6,13 @@ Bir gün musluklar kurur. Suyu kendi ellerinizle geri getirin: nehir kenarına b
 
 [h2]Neler inşa edebilirsiniz[/h2]
 [list]
-[*][b]Boru parçaları[/b]: bir Metal Boruyu 4'e kesin. Sağ tık menüsünden kare başına birer tane yerleştirin; borular kendiliğinden birleşir ve şeklini alır. Boru Anahtarıyla sökün.
+[*][b]Su boruları[/b]: bir Metal Boruyu 4'e kesin. Diğer her parça gibi, eşyanın sağ tık menüsündeki "Yerleştir" ile kare başına birer tane koyun; borular kendiliğinden birleşir ve şeklini alır. Bir anahtarla toplayın.
 [*][b]Gölet pompası[/b] (Elektrikçilik 2): bir göl, gölet, nehir ya da kuyunun yanına koyun. Bir çıkış su istediği sürece 10 dakikada bir 50 L. Elektrik gerekir (jeneratör, şebeke ya da LiveWire). Anahtar, aşınma, arızalar, hurda metalle onarım, zombileri çeken gürültü.
-[*][b]Su filtre kartuşu[/b]: mangal kömürü ve bez, yaklaşık 500 L temiz su. Gölet suyu filtrelenmez; kuyu suyu temizdir.
+[*][b]Su filtre kartuşu[/b]: mangal kömürü ve bez, yaklaşık 500 L temiz su. Ev su girişine takılır ve yalnızca eve giren suyu temizler. Gölet suyu filtrelenmez; kuyu suyu temizdir.
 [*][b]Ev su girişi[/b]: bir evin dış duvarına dayayın ve pompaya bağlayın. Tesisat döşediğiniz lavabolar, küvetler, duşlar, tuvaletler ve çamaşır makineleri, 3 kat yukarıya ve bodruma kadar akan su alır. Yeşil ışık: temiz su. Turuncu ışık: filtrelenmemiş su, ev hiç su almaz.
-[*][b]Yağmurlayıcı[/b]: vanasını açın; 2 kare çapındaki su isteyen bitkileri hareketli bir jetle sular.
-[*][b]Otomatik yağmurlayıcı[/b] (Elektrikçilik 2): bir zamanlayıcı onu 6 saatte bir açar (1 ila 24 saat). Biraz elektrik gerektirir.
+[*][b]Yağmurlayıcı[/b]: vanasını açın; çevresindeki 5 × 5 karelik alana her 10 dakikada 10 L püskürtür, jeti tam tur döner; su isteyen bitkiler paylarını alır, kalanı kaybolur. Sulanan alanı görmek için sağ tıklayın. Suyunun dörtte biri havada kaybolur ve zombiler onu duyar. Bahçe sulanınca kapatın.
+[*][b]Otomatik yağmurlayıcı[/b] (Elektrikçilik 2): bir zamanlayıcı onu 6 saatte bir 30 dakikalığına açar (1 ila 24 saat). Biraz elektrik gerektirir.
+[*][b]Damla sulama hortumu[/b] (kauçuk hortum, koli bandı, bıçak): sıralarınızın arasına döşeyin; iki yanındaki kareleri sessizce sular, her 10 dakikada kare başına 0,5 L, havada hiçbir şey kaybolmaz. Temiz olsun olmasın her su işe yarar. Pompa yok mu? "Pompalamaya ayarla" konumundaki bir varil tesisatı onu yerçekimiyle besler.
 [*][b]Varil tesisatı[/b]: bir boru ile bir varil arasına. "Doldurmaya ayarla": borular varili ya da bir su soğutucusunu doldurur. "Pompalamaya ayarla": pompa varilden çeker. Benzinle de çalışır, yalnızca varillerde.
 [*][b]Su sayacı[/b]: bir borunun üzerine hat olarak takılır; son 10 dakikanın litre değerini gösterir.
 [/list]
@@ -28,7 +29,7 @@ Bir gün musluklar kurur. Suyu kendi ellerinizle geri getirin: nehir kenarına b
 
 [h2]Seçenekler ve uyumluluk[/h2]
 [list]
-[*]Sandbox seçenekleri: pompa debisi ve aşınması, filtre ömrü, su girişi menzilleri, yağmurlayıcı menzili ve zamanlayıcı sınırları, doldurulacak kaplar, çok oyunculudaki çamaşır makinesi düzeltmesi.
+[*]Sandbox seçenekleri: pompa debisi ve aşınması, filtre ömrü, su girişi menzilleri, yağmurlayıcı menzili, debisi ve zamanlayıcı sınırları, damla sulama debisi, doldurulacak kaplar, çok oyunculudaki çamaşır makinesi düzeltmesi.
 [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] isteğe bağlıdır: pompa o zaman kendi invertöründen (250 W) çalışır ve yazılımında görünür.
 [*]LG Extended Plumbing ve LG Connect To Water Supply ile uyumlu değildir (LiveWater onların yaptığını kapsar).
 [*]Güvenli kaldırma: bir yönetici, abonelikten çıkmadan önce "LiveWater'ı bu dünyadan kaldır (admin)" seçeneğini seçer.

@@ -4,13 +4,9 @@
 local Reasons = {
     KEYS = {
         invalid = "IGUI_LWT_Invalid",
-        not_layable = "IGUI_LWT_NotLayable",
         too_far = "IGUI_LWT_TooFar",
-        not_loaded = "IGUI_LWT_TooFar",
-        blocked = "IGUI_LWT_Blocked",
         occupied = "IGUI_LWT_Occupied",
         ports_full = "IGUI_LWT_PortsFull",
-        no_item = "IGUI_LWT_NoItem",
         need_tool = "IGUI_LWT_NeedTool",
         nothing_here = "IGUI_LWT_NothingHere",
         no_source = "IGUI_LWT_NoSource",

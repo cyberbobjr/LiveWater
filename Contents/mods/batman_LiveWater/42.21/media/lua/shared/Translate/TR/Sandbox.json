@@ -14,10 +14,14 @@
     "Sandbox_LWT_WasherFix_tooltip": "Bir sunucuda, ev su girişiyle beslenen çamaşır makineleri oyunculara gerçek durumlarını gösterir: bağlı ve su bitince durur.",
     "Sandbox_LWT_SprinklerRadiusMultiplier": "Yağmurlayıcı menzili",
     "Sandbox_LWT_SprinklerRadiusMultiplier_tooltip": "Bir yağmurlayıcının bitkileri sulama mesafesini çarpar (1,0'da 2 kare; en çok 10).",
+    "Sandbox_LWT_SprinklerFlow": "Yağmurlayıcı debisi",
+    "Sandbox_LWT_SprinklerFlow_tooltip": "Açık bir yağmurlayıcının bitkiler susuz olsun ya da olmasın her 10 dakikada çektiği litre (varsayılan 10 L). Dörtte biri havada kaybolur; menzildeki bitkiler ihtiyaçları kadarını alır, kalanı kaybolur.",
+    "Sandbox_LWT_DripFlow": "Damla sulama debisi",
+    "Sandbox_LWT_DripFlow_tooltip": "Ağ su verdiği sürece damla sulama hortumunun her karesinin her 10 dakikada çektiği litre (varsayılan 0,5 L). Havada hiçbir şey kaybolmaz; yanındaki bitkiler ihtiyaçları kadarını alır, kalanı kaybolur.",
     "Sandbox_LWT_SprinklerTimerMin": "Yağmurlayıcı zamanlayıcısı: en kısa aralık",
     "Sandbox_LWT_SprinklerTimerMin_tooltip": "Bir otomatik yağmurlayıcının iki sulaması arasında oyuncunun ayarlayabileceği en az saat.",
     "Sandbox_LWT_SprinklerTimerMax": "Yağmurlayıcı zamanlayıcısı: en uzun aralık",
     "Sandbox_LWT_SprinklerTimerMax_tooltip": "Bir otomatik yağmurlayıcının iki sulaması arasında oyuncunun ayarlayabileceği en çok saat.",
     "Sandbox_LWT_FillContainers": "Varil tesisatının doldurabileceği kaplar",
-    "Sandbox_LWT_FillContainers_tooltip": "Varlık betiklerinin veya sprite'ların adları, ; ile ayrılmış (su sebilleri: WaterDispenser). Boyutları ne olursa olsun, yalnızca temiz suyla, Doldur ayarındaki bir varil tesisatından doldurulurlar. Varillar ve yağmur suyu toplayıcılar her zaman çalışır."
+    "Sandbox_LWT_FillContainers_tooltip": "Varlık betiklerinin veya sprite'ların adları, ; ile ayrılmış (su sebilleri: WaterDispenser). Boyutları ne olursa olsun, bir varil gibi kirli suyla, Doldur ayarındaki bir varil tesisatından doldurulurlar. Varillar ve yağmur suyu toplayıcılar her zaman çalışır."
 }

@@ -1,6 +1,6 @@
 """E12: automatic sprinkler (ADR-001 D19, D20): recipe LWTUpgradeSprinkler (Electrical 2) turns the manual sprinkler
 into LiveWater:SprinklerAuto; its timer opens it once per slice of X hours (slice number compared, not the minute),
-for the time to serve the plants; the timer is an electric consumer (a few W, through LWT_Power): no current, no
+for 30 minutes (three ten-minute steps, controller setting `duration`, ADR-006 D03), drawing its flow; the timer is an electric consumer (a few W, through LWT_Power): no current, no
 trigger; opening it by hand stays possible; the interval is set on the sprinkler within sandbox bounds."""
 import json
 import os
@@ -32,6 +32,7 @@ class AutoPart(unittest.TestCase):
             self.assertEqual([d.variants[key][i] for i in range(1, 5)], [TILE + str(base + k) for k in range(4)], key)
         caps = d.capabilities
         self.assertEqual((caps.controller.mode, caps.controller.every, caps.controller.watts), ("timer", 6, 5))
+        self.assertEqual(caps.controller.duration, 3)
         self.assertEqual(caps.outlet.type, "sprinkler")
         self.assertFalse(caps.valve.open)
         self.assertEqual(caps.spray.radius, 2)
@@ -63,25 +64,52 @@ def bench():
 
 
 class Timer(unittest.TestCase):
-    def test_once_per_slice_for_the_time_to_serve_the_plants(self):
+    def test_once_per_slice_for_thirty_minutes(self):
+        # ADR-006 D03: three steps of its flow (10 L each), thirsty plants or not, then closed until the next slice
         lua = bench()
         lua.execute("plant(3, 0, 40, 70)")
-        self.assertAlmostEqual(lua.eval("delivered()"), 0.6)
+        self.assertAlmostEqual(lua.eval("delivered()"), 10)
+        self.assertEqual(lua.eval("FARM.watered['3,0']"), 3)
         self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "63")   # on, turned W to its pipe
         self.assertTrue(lua.eval("SPR.data.controller.watering"))
-        self.assertEqual(lua.eval("delivered()"), 0)
+        self.assertAlmostEqual(lua.eval("delivered()"), 10)
+        self.assertEqual(lua.eval("SPR.data.outlet.state"), "served")
+        self.assertAlmostEqual(lua.eval("delivered()"), 10)
         self.assertFalse(lua.eval("SPR.data.controller.watering"))
+        self.assertEqual(lua.eval("delivered()"), 0)
+        self.assertEqual(lua.eval("SPR.data.outlet.state"), "closed")
         self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "59")   # off, turned W
-        lua.execute("FARM.plants['3,0'].level = 40 HOURS = 5.9")
+        lua.execute("HOURS = 5.9")
         self.assertEqual(lua.eval("delivered()"), 0)
         lua.execute("HOURS = 6")
-        self.assertAlmostEqual(lua.eval("delivered()"), 0.6)
+        self.assertAlmostEqual(lua.eval("delivered()"), 10)
+
+    def test_the_duration_is_a_controller_setting(self):
+        lua = new_lua(API)
+        lua.execute('LiveWater.API.registerPart("T:Auto", { sprites = { [0] = "ta" }, capabilities = {'
+                    ' valve = { open = false }, controller = { mode = "timer", duration = 1 } } })'
+                    ' PART = { type = "T:Auto", data = {} }'
+                    ' LiveWater.Parts:call(PART, "prepare", { hours = 0 })')
+        self.assertFalse(lua.eval("LiveWater.Parts:closed(PART)"))
+        lua.execute('LiveWater.Parts:call(PART, "stepped", { outlet = "served" })')
+        self.assertTrue(lua.eval("LiveWater.Parts:closed(PART)"))
+        self.assertFalse(lua.eval('(LiveWater.API.registerPart("T:Bad", { sprites = { [0] = "tb" },'
+                                  ' capabilities = { controller = { mode = "timer", duration = 0 } } }))'))
+
+    def test_the_thirty_minutes_run_even_when_the_water_is_short(self):
+        # the timer counts steps, not water: a dry step still uses one of its three
+        lua = bench()
+        lua.execute("REG:at(0, 0, 0).data.pump = { on = false } delivered() delivered()")
+        lua.execute("REG:at(0, 0, 0).data.pump.on = true")
+        self.assertAlmostEqual(lua.eval("delivered()"), 10)
+        self.assertEqual(lua.eval("delivered()"), 0)
 
     def test_the_interval_set_on_the_sprinkler_is_used(self):
         lua = bench()
-        lua.execute('plant(3, 0, 40, 70) LiveWater.Parts:call(SPR, "setTimer", 2) delivered() delivered()')
-        lua.execute("FARM.plants['3,0'].level = 40 HOURS = 2")
-        self.assertAlmostEqual(lua.eval("delivered()"), 0.6)
+        lua.execute('LiveWater.Parts:call(SPR, "setTimer", 2) delivered() delivered() delivered()')
+        self.assertEqual(lua.eval("delivered()"), 0)
+        lua.execute("HOURS = 2")
+        self.assertAlmostEqual(lua.eval("delivered()"), 10)
         self.assertEqual(lua.eval('(LiveWater.Parts:first(SPR, "timer"))'), 2)
 
     def test_no_current_no_trigger(self):
@@ -95,7 +123,7 @@ class Timer(unittest.TestCase):
     def test_opening_by_hand_stays_possible_without_current(self):
         lua = bench()
         lua.execute('plant(3, 0, 40, 70) POWERED = false LiveWater.Parts:call(SPR, "open", true)')
-        self.assertAlmostEqual(lua.eval("delivered()"), 0.6)
+        self.assertAlmostEqual(lua.eval("delivered()"), 10)  # its flow (ADR-006 D01)
 
 
 COMMAND = r"""

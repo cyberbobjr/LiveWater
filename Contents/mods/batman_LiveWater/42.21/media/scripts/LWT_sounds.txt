@@ -1,0 +1,18 @@
+module Base
+{
+    /* LiveWater: valve opened or closed by hand (ADR-008 D10). Two takes each, the game picks one at random
+       (GameSound.getRandomClip). Mono, generated for the mod. */
+    sound LWT_ValveOpen
+    {
+        category = World,
+        clip { file = media/sound/LWT_ValveOpen1.ogg, distanceMax = 15, volume = 0.8, }
+        clip { file = media/sound/LWT_ValveOpen2.ogg, distanceMax = 15, volume = 0.8, }
+    }
+
+    sound LWT_ValveClose
+    {
+        category = World,
+        clip { file = media/sound/LWT_ValveClose1.ogg, distanceMax = 15, volume = 0.8, }
+        clip { file = media/sound/LWT_ValveClose2.ogg, distanceMax = 15, volume = 0.8, }
+    }
+}

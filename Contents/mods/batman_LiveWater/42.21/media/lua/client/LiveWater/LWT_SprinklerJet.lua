@@ -5,7 +5,7 @@
 --   * the jet frame changes at most 6 times per real second (getTimestampMs), no game work: no data
 --     written, no command sent;
 --   * the frame is an attached sprite of the tileset (jet frames of the part's `spray` capability,
---     tuiles-contrat.md: 80 + 4 * frame + facing), and the object is marked animating while it runs
+--     tuiles-contrat.md: 128 + 4 * frame + facing, a full turn, ADR-003 D03), and the object is marked animating while it runs
 --     (the B42 chunk render cache only redraws an object every frame when isAnimating(),
 --     FBORenderCell.java, knowledge base "Calque anime (AttachAnim)"); stopped: frame removed,
 --     animating false.

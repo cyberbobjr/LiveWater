@@ -6,8 +6,8 @@
 
 **LiveWater** (mod id `batman_LiveWater`) is a Project Zomboid **Build 42.22** mod. The
 taps run dry one day; LiveWater lets you bring the water back yourself: a pond pump next to a lake, a river or a well,
-pipes you lay on the ground, a house water inlet that feeds the sinks, showers, toilets and washing machines, barrels
-you connect to the house, and sprinklers that water the crops on their own.
+pipes you set down on the ground, a house water inlet that feeds the sinks, showers, toilets and washing machines, barrels
+you connect to the house, and sprinklers and drip lines that water the crops on their own.
 
 ![Example network: pond, pump, pipes, house and garden](../../images/art/planche-reseau-exemple.png)
 
@@ -18,7 +18,7 @@ New here? Start with [Getting started](01-getting-started.md).
 
 ## Pages
 
-- [Getting started](01-getting-started.md): every part, from the first pipe section to the automatic sprinkler.
+- [Getting started](01-getting-started.md): every part, from the first water pipe to the automatic sprinkler and the drip line.
 - [Player base](02-player-base.md): running water in a base you built yourself.
 - [Diagnostics](03-diagnostics.md): the network view, the Information lines and why a tap has no water.
 - [LiveWire](04-livewire.md): the optional integration with LiveWire.

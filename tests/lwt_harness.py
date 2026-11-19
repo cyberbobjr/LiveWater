@@ -47,6 +47,8 @@ function ISBaseTimedAction.new(self, character)
 end
 function ISBaseTimedAction:perform() end
 function ISBaseTimedAction:setActionAnim() end
+-- A game without LiveWater sandbox options (tests that need some define their own getSandboxOptions).
+function getSandboxOptions() return { getOptionByName = function() return nil end } end
 QUEUED, WALKED = {}, {}
 ISTimedActionQueue = { add = function(action) table.insert(QUEUED, action) action:perform() return action end }
 luautils = { walkAdj = function(player, sq) table.insert(WALKED, sq) return true end }

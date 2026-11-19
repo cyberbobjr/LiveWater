@@ -113,8 +113,6 @@ class PipePart(unittest.TestCase):
         self.assertEqual([d.sprites[m] for m in range(16)], ["batman_livewater_01_%d" % m for m in range(16)])
         self.assertEqual(d.sides, 15)
         self.assertIsNotNone(d.capabilities.conduit)
-        self.assertEqual(d.capabilities.layable.item, "LiveWater.PipeSection")
-        self.assertEqual(d.capabilities.layable.tool, "base:pipewrench")
 
 
 GAME = r"""
@@ -130,10 +128,17 @@ local function fakeObject(sprite, sq)
     function o:transmitModData() end
     function o:getSprite() return self.spriteObj end
     function o:getFluidContainer() return self.fc end
+    -- sprite flags of the object (o.flags = { WallN = true, ... })
+    function o:getProperties()
+        local flags = self.flags or {}
+        return { has = function(_, f) return flags[f] == true end }
+    end
     return o
 end
 function instanceof() return false end
 IsoFlagType = { waterPiped = "waterPiped" }
+for _, f in ipairs({ "cutN", "cutW", "WallN", "WallW", "WallNW", "WallNTrans", "WallWTrans", "HoppableN", "HoppableW",
+    "TallHoppableN", "TallHoppableW" }) do IsoFlagType[f] = f end
 -- A water fixture: its sprite carries the waterPiped flag.
 function addFixture(x, y, z)
     local o = addObject("fixtures_sinks_01_0", x, y, z)
@@ -219,6 +224,32 @@ class Wiring(unittest.TestCase):
         """)
         self.assertEqual(list(lua.eval("TOUCHED").values()), ["3,4", "3,4"])
         self.assertEqual(list(lua.eval("CHUNKS").values()), ["16,24,8"])
+
+    def test_a_wall_set_down_then_taken_away_cuts_then_joins_the_pipes(self):
+        lua = self.server()
+        lua.execute("""
+        fire("OnInitGlobalModData", true)
+        A = addObject("batman_livewater_01_0", 0, 0, 0) fire("OnObjectAdded", A)
+        B = addObject("batman_livewater_01_0", 0, 1, 0) fire("OnObjectAdded", B)
+        W = addObject("walls_exterior_house_01_1", 0, 1, 0) W.flags = { WallN = true, cutN = true }
+        fire("OnObjectAdded", W)
+        """)
+        self.assertEqual(lua.eval("A.sprite"), "batman_livewater_01_0")
+        self.assertEqual(lua.eval("B.sprite"), "batman_livewater_01_0")
+        lua.execute('fire("OnObjectAboutToBeRemoved", W)')
+        self.assertEqual(lua.eval("A.sprite"), "batman_livewater_01_4")
+        self.assertEqual(lua.eval("B.sprite"), "batman_livewater_01_1")
+
+    def test_a_fence_lets_the_pipes_join(self):
+        lua = self.server()
+        lua.execute("""
+        fire("OnInitGlobalModData", true)
+        F = addObject("fencing_01_0", 1, 0, 0) F.flags = { WallW = true, HoppableW = true }
+        A = addObject("batman_livewater_01_0", 0, 0, 0) fire("OnObjectAdded", A)
+        B = addObject("batman_livewater_01_0", 1, 0, 0) fire("OnObjectAdded", B)
+        """)
+        self.assertEqual(lua.eval("A.sprite"), "batman_livewater_01_2")
+        self.assertEqual(lua.eval("LiveWater.Server.world:edge(1, 0, 0, false)"), "fence")
 
     def test_events_before_init_are_ignored(self):
         lua = self.server()

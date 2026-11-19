@@ -1,5 +1,5 @@
-"""E07: the ten-minute clock on the authority (ADR-001 D06, D08, D09): only networks whose pressurizing part
-stands on a loaded square are stepped, the outlet need comes from an injected provider (0 by default), served
+"""E07: the ten-minute clock on the authority (ADR-001 D06, D08, D09; ADR-006 D06): every network with a part
+where water starts is stepped, loaded or not, the outlet need comes from an injected provider (0 by default), served
 outlets announce waterDelivered; the server subscribes exactly one EveryTenMinutes handler and no per-frame
 event."""
 import unittest
@@ -41,18 +41,20 @@ class Step(unittest.TestCase):
         e = delivered[1]
         self.assertEqual((e[2].x, e[3], e[4]), (2, 3, "tainted"))
 
-    def test_only_networks_with_a_loaded_pump_are_stepped(self):
+    def test_every_network_with_a_pump_is_stepped_loaded_or_not(self):
+        # ADR-006 D06: an unloaded network keeps running; a network without any part where water starts does not
         lua = bench()
         lua.execute("""
         place("Test:Pump", 0, 0) place("Test:Spr", 1, 0)
         place("Test:Pump", 10, 0) place("Test:Spr", 11, 0)
         place("Test:Pipe", 20, 0)
         NEED["1,0"], NEED["11,0"] = 1, 1
-        WORLD.unloaded["10,0,0"] = true
+        WORLD.unloaded["10,0,0"] = true WORLD.unloaded["11,0,0"] = true
         STEPPED = CLOCK:tick()
         """)
-        self.assertEqual(list(lua.eval("ids(STEPPED)").values()), [lua.eval("NET:networkAt(0, 0, 0)")])
-        self.assertEqual(len(lua.eval('emitted("waterDelivered")')), 1)
+        self.assertEqual(list(lua.eval("ids(STEPPED)").values()),
+                         sorted([lua.eval("NET:networkAt(0, 0, 0)"), lua.eval("NET:networkAt(10, 0, 0)")]))
+        self.assertEqual(len(lua.eval('emitted("waterDelivered")')), 2)
 
     def test_default_need_delivers_nothing(self):
         lua = bench()

@@ -1,10 +1,10 @@
 -- LiveWater part "LiveWater:SprinklerAuto": automatic sprinkler, the manual sprinkler with a hose
 -- timer (recipe LWTUpgradeSprinkler, Electrical 2), moveable Base.Mov_LiveWater_SprinklerAuto,
 -- ADR-001 D19, D20. Its timer opens it every 6 hours by default (set on the sprinkler, sandbox bounds)
--- for the time to serve the plants; the timer draws 5 W (Live Wire consumer, or the vanilla rule):
--- without current it triggers nothing; opening it by hand stays possible. Drawn by its state and
+-- for 30 minutes (controller duration 3 steps, ADR-006 D03), drawing its flow; the timer draws 5 W
+-- (Live Wire consumer, or the vanilla rule): without current it triggers nothing; opening it by hand stays possible. Drawn by its state and
 -- facing (tileset batman_livewater_01, docs/annexes/conception/tuiles-contrat.md): 56-59 at rest,
--- 60-63 watering (jet frames 80-103 drawn by the clients, D08a); facings S, E, N, W.
+-- 60-63 watering (jet frames 128-159 drawn by the clients, D08a, ADR-003 D03); facings S, E, N, W.
 
 require "LiveWater/LWT_API"
 local Tiles = require "LiveWater/LWT_Tiles"

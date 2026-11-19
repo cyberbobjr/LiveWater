@@ -7,5 +7,16 @@
     "LWTBuildHouseInlet": "Fabriquer une arrivée d'eau de maison",
     "LWTBuildSprinkler": "Fabriquer un arroseur",
     "LWTUpgradeSprinkler": "Ajouter une minuterie à un arroseur",
-    "LWTBuildBarrelFitting": "Fabriquer un raccord de baril"
+    "LWTBuildBarrelFitting": "Fabriquer un raccord de baril",
+    "LWTMakeDripLine": "Fabriquer des lignes de goutte-à-goutte",
+    "LWTDismantlePipe": "Démonter un tuyau d'eau",
+    "LWTDismantleValve": "Démonter une vanne d'arrêt",
+    "LWTDismantleFlowMeter": "Démonter un compteur d'eau",
+    "LWTDismantleHouseInlet": "Démonter une arrivée d'eau de maison",
+    "LWTDismantlePondPump": "Démonter une pompe d'étang",
+    "LWTDismantleSprinkler": "Démonter un arroseur",
+    "LWTDismantleSprinklerAuto": "Démonter un arroseur automatique",
+    "LWTDismantleBarrelFitting": "Démonter un raccord de baril",
+    "LWTDismantleDripLine": "Démonter une ligne de goutte-à-goutte",
+    "LWTDismantleWaterFilter": "Démonter une cartouche filtrante"
 }

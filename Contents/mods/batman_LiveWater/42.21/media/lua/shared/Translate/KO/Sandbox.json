@@ -14,10 +14,14 @@
     "Sandbox_LWT_WasherFix_tooltip": "서버에서 집 급수구의 물을 받는 세탁기가 플레이어에게 실제 상태를 보여 줍니다: 배관됨, 물이 떨어지면 멈춤.",
     "Sandbox_LWT_SprinklerRadiusMultiplier": "스프링클러 범위",
     "Sandbox_LWT_SprinklerRadiusMultiplier_tooltip": "스프링클러가 식물에 물을 주는 거리에 곱해지는 배율입니다 (1.0일 때 2칸, 최대 10칸).",
+    "Sandbox_LWT_SprinklerFlow": "스프링클러 유량",
+    "Sandbox_LWT_SprinklerFlow_tooltip": "열린 스프링클러가 식물이 목마르든 아니든 10분마다 끌어오는 리터입니다 (기본 10 L). 4분의 1은 공중에서 사라지고, 범위 안의 식물이 필요한 만큼 가져가며 나머지는 버려집니다.",
+    "Sandbox_LWT_DripFlow": "점적 호스 유량",
+    "Sandbox_LWT_DripFlow_tooltip": "배관망이 물을 주는 동안 점적 호스 한 칸이 10분마다 끌어오는 리터입니다 (기본 0.5 L). 공중에서 사라지는 물은 없고, 옆의 식물이 필요한 만큼 가져가며 나머지는 버려집니다.",
     "Sandbox_LWT_SprinklerTimerMin": "스프링클러 타이머: 최소 간격",
     "Sandbox_LWT_SprinklerTimerMin_tooltip": "자동 스프링클러의 두 번 급수 사이에 플레이어가 설정할 수 있는 최소 시간(시간)입니다.",
     "Sandbox_LWT_SprinklerTimerMax": "스프링클러 타이머: 최대 간격",
     "Sandbox_LWT_SprinklerTimerMax_tooltip": "자동 스프링클러의 두 번 급수 사이에 플레이어가 설정할 수 있는 최대 시간(시간)입니다.",
     "Sandbox_LWT_FillContainers": "배럴 연결구가 채울 수 있는 용기",
-    "Sandbox_LWT_FillContainers_tooltip": "엔티티 이름 또는 스프라이트 이름을 ; 로 구분해 입력합니다 (정수기: WaterDispenser). '채우기'로 설정된 배럴 연결구를 통해 크기와 상관없이 깨끗한 물만 채워집니다. 배럴과 빗물 수집통은 항상 작동합니다."
+    "Sandbox_LWT_FillContainers_tooltip": "엔티티 이름 또는 스프라이트 이름을 ; 로 구분해 입력합니다 (정수기: WaterDispenser). '채우기'로 설정된 배럴 연결구를 통해 크기와 상관없이 배럴처럼 오염된 물로 채워집니다. 배럴과 빗물 수집통은 항상 작동합니다."
 }

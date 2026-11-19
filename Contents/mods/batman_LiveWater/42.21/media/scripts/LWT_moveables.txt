@@ -4,11 +4,22 @@ module Base
        batman_livewater_01. The name comes from Moveables.json (GroupName CustomName), the weight
        from PickUpWeight (Moveable.ReadFromWorldSprite). */
 
+    /* Pipe: one per square, its shape follows the neighbours; every pipe sprite gives this item
+       back (CustomItem). The cursor shows the straight E-W pipe (mask 10). */
+    item Mov_LiveWater_Pipe
+    {
+        DisplayCategory = Furniture,
+        ItemType = base:moveable,
+        Icon = LWT_Pipe,
+        Weight = 0.4,
+        WorldObjectSprite = batman_livewater_01_10,
+    }
+
     item Mov_LiveWater_PondPump
     {
         DisplayCategory = Furniture,
         ItemType = base:moveable,
-        Icon = default,
+        Icon = LWT_PondPump,
         Weight = 15.0,
         WorldObjectSprite = batman_livewater_01_24,
     }
@@ -17,7 +28,7 @@ module Base
     {
         DisplayCategory = Furniture,
         ItemType = base:moveable,
-        Icon = default,
+        Icon = LWT_Valve,
         Weight = 3.0,
         WorldObjectSprite = batman_livewater_01_16,
     }
@@ -26,7 +37,7 @@ module Base
     {
         DisplayCategory = Furniture,
         ItemType = base:moveable,
-        Icon = default,
+        Icon = LWT_FlowMeter,
         Weight = 4.0,
         WorldObjectSprite = batman_livewater_01_20,
     }
@@ -35,7 +46,7 @@ module Base
     {
         DisplayCategory = Furniture,
         ItemType = base:moveable,
-        Icon = default,
+        Icon = LWT_HouseInlet,
         Weight = 6.0,
         WorldObjectSprite = batman_livewater_01_40,
     }
@@ -44,7 +55,7 @@ module Base
     {
         DisplayCategory = Furniture,
         ItemType = base:moveable,
-        Icon = default,
+        Icon = LWT_Sprinkler,
         Weight = 3.0,
         WorldObjectSprite = batman_livewater_01_48,
     }
@@ -53,7 +64,7 @@ module Base
     {
         DisplayCategory = Furniture,
         ItemType = base:moveable,
-        Icon = default,
+        Icon = LWT_SprinklerAuto,
         Weight = 3.5,
         WorldObjectSprite = batman_livewater_01_56,
     }
@@ -62,8 +73,19 @@ module Base
     {
         DisplayCategory = Furniture,
         ItemType = base:moveable,
-        Icon = default,
+        Icon = LWT_BarrelFitting,
         Weight = 1.5,
         WorldObjectSprite = batman_livewater_01_64,
+    }
+
+    /* Drip line (ADR-004 D01): one per square, its shape follows the neighbours like a pipe; laid
+       and picked up by hand. The cursor shows the straight E-W line (mask 10). */
+    item Mov_LiveWater_DripLine
+    {
+        DisplayCategory = Furniture,
+        ItemType = base:moveable,
+        Icon = LWT_DripLine,
+        Weight = 0.2,
+        WorldObjectSprite = batman_livewater_01_170,
     }
 }

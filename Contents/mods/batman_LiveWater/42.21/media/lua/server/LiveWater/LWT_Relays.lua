@@ -8,11 +8,18 @@ if isClient() then return end
 -- Survey on events only (D10): the fixtures of an inlet are scanned again at the next step only
 -- when it is new or loaded again, when something touched or loaded near it (within the larger of
 -- its two ranges), or when the city water stopped or came back; never on a timer.
---   need(part)             litres missing in the inlet's relays that feed a plumbed fixture
+--   need(part)             litres missing in the inlet's relays that feed a plumbed fixture; 0
+--                          while the inlet's square is not loaded (the relays wait for the
+--                          player's return, ADR-006 D06)
 --   deliver(part, litres)  fills those relays
 --   release(part)          the inlet left: its relays are removed
 --   mark(part, why)        the inlet's empty relays carry the reason (LWT_Diagnosis), the others none
 --   positions(part)        squares of the inlet's relays, sorted: list of { x, y, z }
+--   fixtureStates(part)    fixtures of the inlet's area and how they get water (network view,
+--                          ADR-008 D06): list of { x, y, z, status }, status "fed" (plumbed, fed by
+--                          one of LiveWater's relays that holds water), "dry" (plumbed, LiveWater's
+--                          relay empty or not placed yet), "notPlumbed", "other" (another tank: a
+--                          Live Wire relay, a barrel)
 -- A relay is an invisible 25 L tank one level above a fixture (LWT_RelayPlan), marked with the
 -- ModData key LiveWaterRelay and its inlet; relays of Live Wire (LiveWireRelay) or of anything
 -- else are never placed over, filled nor removed (D21).
@@ -24,11 +31,12 @@ if isClient() then return end
 local Grid = require "LiveWater/LWT_Grid"
 local InletArea = require "LiveWater/LWT_InletArea"
 local RelayPlan = require "LiveWater/LWT_RelayPlan"
+local WaterObjects = require "LiveWater/LWT_WaterObjects"
 
 local Relays = {}
 Relays.__index = Relays
 
-Relays.CAPACITY = 25
+Relays.CAPACITY = WaterObjects.RELAY_LITRES
 -- Version of the persisted relay and orphan records (D04).
 Relays.SCHEMA = 1
 Relays.EPSILON = 0.001
@@ -148,6 +156,7 @@ function Relays:feeding(part)
 end
 
 function Relays:need(part)
+    if not self.world:isLoaded(part.x, part.y, part.z) then return 0 end
     self:refresh(part)
     local list, total = self:feeding(part), 0
     for i = 1, #list do total = total + list[i].free end
@@ -190,6 +199,29 @@ function Relays:positions(part)
     local own, out = self:own(Grid.key(part.x, part.y, part.z)), {}
     local keys = sortedKeys(own)
     for i = 1, #keys do out[i] = own[keys[i]] end
+    return out
+end
+
+-- How a fixture of the area { plumbed, source } gets water.
+function Relays:fixtureStatus(f)
+    if not f.plumbed then return "notPlumbed" end
+    local src = f.source
+    if src == "other" then return "other" end
+    local relay = type(src) == "table" and self.plumbing:relay(src.x, src.y, src.z)
+    if relay and relay.amount > Relays.EPSILON then return "fed" end
+    return "dry"
+end
+
+function Relays:fixtureStates(part)
+    local key, out = Grid.key(part.x, part.y, part.z), {}
+    local area = self:areaOf(part)
+    local found = area and self.plumbing:fixtures(area) or {}
+    for i = 1, #found do
+        local f = found[i]
+        if area:serves(f, key) then
+            out[#out + 1] = { x = f.x, y = f.y, z = f.z, status = self:fixtureStatus(f) }
+        end
+    end
     return out
 end
 

@@ -131,16 +131,32 @@ class Repair(unittest.TestCase):
 
 
 class Sound(unittest.TestCase):
-    def test_the_loop_starts_and_stops_with_the_pump_and_zombies_hear_it_each_step(self):
+    def test_the_loop_follows_the_current_and_zombies_hear_only_the_pumping(self):
+        # ADR-008 D11: a pump switched on with current hums even without demand; zombies hear it pump only
         lua = bench()
         lua.execute('NEED["1,0"] = 5 SOUNDS.log = {} delivered()')
         self.assertEqual(lua.eval('soundLog("noise")'), 1)
         self.assertEqual(lua.eval("SOUNDS.log[#SOUNDS.log][4]"), "GeneratorLoop")
         lua.execute('NEED["1,0"] = 0 SOUNDS.log = {} delivered()')
         self.assertEqual(lua.eval('soundLog("noise")'), 0)
-        self.assertEqual(lua.eval("SOUNDS.log[1][4]"), False)
-        lua.execute("SOUNDS.log = {} delivered()")
-        self.assertEqual(lua.eval("#SOUNDS.log"), 0)
+        self.assertEqual(lua.eval('soundLog("loop")'), 1)
+        self.assertEqual(lua.eval("SOUNDS.log[#SOUNDS.log][4]"), "GeneratorLoop")
+
+    def test_the_current_lost_stops_the_hum_at_once_and_back_starts_it(self):
+        lua = bench()
+        lua.execute('NEED["1,0"] = 5 delivered()')
+        lua.execute("POWER.powered = function() return false end SOUNDS.log = {} CLOCK:powerChanged()")
+        self.assertEqual(lua.eval("SOUNDS.log[#SOUNDS.log][4]"), False)
+        self.assertEqual(lua.eval('soundLog("noise")'), 0)
+        lua.execute("POWER.powered = function() return true end SOUNDS.log = {} CLOCK:powerChanged()")
+        self.assertEqual(lua.eval("SOUNDS.log[#SOUNDS.log][4]"), "GeneratorLoop")
+        self.assertEqual(lua.eval('soundLog("noise")'), 0)
+
+    def test_a_pump_switched_off_is_silent(self):
+        lua = bench()
+        lua.execute('NEED["1,0"] = 5 delivered()')
+        lua.execute('SOUNDS.log = {} cmd("switchPump")')
+        self.assertEqual(lua.eval("SOUNDS.log[#SOUNDS.log][4]"), False)
 
     def test_the_client_plays_one_loop_per_pump_and_stops_it(self):
         lua = new_lua("shared/LiveWater/LWT_API.lua", "client/LiveWater/LWT_PumpSounds.lua")
@@ -157,6 +173,49 @@ class Sound(unittest.TestCase):
         self.assertEqual(lua.eval("STOPPED"), 1)
         lua.execute('fire("OnServerCommand", "Other", "sound", { x = 1, y = 2, z = 0, name = "X" })')
         self.assertEqual(lua.eval("STARTED"), 1)
+
+    def test_a_one_shot_sound_plays_each_time_and_leaves_the_loop_alone(self):
+        # ADR-008 D10: valve sounds are one-shots on their own emitter
+        lua = new_lua("shared/LiveWater/LWT_API.lua", "client/LiveWater/LWT_PumpSounds.lua")
+        lua.execute(r"""
+        STARTED, STOPPED, NAMES = 0, 0, {}
+        local emitter = { playSoundImpl = function(_, name) STARTED = STARTED + 1 table.insert(NAMES, name) return STARTED end,
+            stopSound = function(_, id) STOPPED = STOPPED + 1 end, isPlaying = function() return true end }
+        function getWorld() return { getFreeEmitter = function() return emitter end } end
+        function send(args) fire("OnServerCommand", "LiveWater", "sound", args) end
+        """)
+        lua.execute('send({ x = 1, y = 2, z = 0, name = "GeneratorLoop" })')
+        lua.execute('send({ x = 1, y = 2, z = 0, name = "LWT_ValveOpen", once = true })')
+        lua.execute('send({ x = 1, y = 2, z = 0, name = "LWT_ValveOpen", once = true })')
+        self.assertEqual(lua.eval("STARTED"), 3)
+        self.assertEqual(lua.eval("STOPPED"), 0)
+        lua.execute("send({ x = 1, y = 2, z = 0 })")
+        self.assertEqual(lua.eval("STOPPED"), 1)
+
+
+class ValveSound(unittest.TestCase):
+    def test_opening_and_closing_a_valve_tells_the_players_once(self):
+        lua = new_lua("shared/LiveWater/LWT_API.lua", "server/LiveWater/LWT_ValveSounds.lua")
+        lua.execute(r"""
+        LOG = {}
+        local sounds = { once = function(_, x, y, z, name) table.insert(LOG, { x, y, z, name }) end }
+        VS = require("LiveWater/LWT_ValveSounds").new(sounds)
+        VS:changed({ x = 3, y = 4, z = 0 }, true)
+        VS:changed({ x = 3, y = 4, z = 0 }, false)
+        """)
+        self.assertEqual(lua.eval("#LOG"), 2)
+        self.assertEqual(lua.eval("LOG[1][4]"), "LWT_ValveOpen")
+        self.assertEqual(lua.eval("LOG[2][4]"), "LWT_ValveClose")
+        self.assertEqual(lua.eval("LOG[1][1]"), 3)
+
+    def test_the_sounds_are_declared_with_two_takes_each(self):
+        text = open(os.path.join(MEDIA, "scripts", "LWT_sounds.txt"), encoding="utf-8").read()
+        for name in ("LWT_ValveOpen", "LWT_ValveClose"):
+            self.assertIn("sound " + name, text)
+            for take in (1, 2):
+                path = "media/sound/%s%d.ogg" % (name, take)
+                self.assertIn(path, text)
+                self.assertTrue(os.path.isfile(os.path.join(MEDIA, "..", path)), path)
 
 
 MENU = r"""

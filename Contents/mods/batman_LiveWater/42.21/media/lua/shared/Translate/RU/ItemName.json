@@ -1,6 +1,12 @@
 {
-    "LiveWater.PipeSection": "Отрезок трубы",
+    "Base.Mov_LiveWater_Pipe": "Водопроводная труба",
     "Base.Mov_LiveWater_PondPump": "Насос для пруда",
     "LiveWater.WaterFilter": "Фильтрующий картридж для воды",
-    "Base.Mov_LiveWater_FlowMeter": "Счётчик воды"
+    "Base.Mov_LiveWater_FlowMeter": "Счётчик воды",
+    "Base.Mov_LiveWater_DripLine": "Капельный шланг",
+    "Base.Mov_LiveWater_Valve": "Запорный вентиль",
+    "Base.Mov_LiveWater_HouseInlet": "Ввод воды в дом",
+    "Base.Mov_LiveWater_Sprinkler": "Дождеватель",
+    "Base.Mov_LiveWater_SprinklerAuto": "Автоматический дождеватель",
+    "Base.Mov_LiveWater_BarrelFitting": "Врезка для бочки"
 }

@@ -7,5 +7,16 @@
     "LWTBuildHouseInlet": "Hauswassereinlass bauen",
     "LWTBuildSprinkler": "Sprinkler bauen",
     "LWTUpgradeSprinkler": "Zeitschaltuhr an einen Sprinkler anbauen",
-    "LWTBuildBarrelFitting": "Fassanschluss bauen"
+    "LWTBuildBarrelFitting": "Fassanschluss bauen",
+    "LWTMakeDripLine": "Tropfschläuche herstellen",
+    "LWTDismantlePipe": "Wasserrohr zerlegen",
+    "LWTDismantleValve": "Absperrventil zerlegen",
+    "LWTDismantleFlowMeter": "Wasserzähler zerlegen",
+    "LWTDismantleHouseInlet": "Hauswassereinlass zerlegen",
+    "LWTDismantlePondPump": "Teichpumpe zerlegen",
+    "LWTDismantleSprinkler": "Sprinkler zerlegen",
+    "LWTDismantleSprinklerAuto": "Automatischen Sprinkler zerlegen",
+    "LWTDismantleBarrelFitting": "Fassanschluss zerlegen",
+    "LWTDismantleDripLine": "Tropfschlauch zerlegen",
+    "LWTDismantleWaterFilter": "Filterkartusche zerlegen"
 }

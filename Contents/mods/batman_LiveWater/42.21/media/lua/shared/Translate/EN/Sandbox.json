@@ -14,10 +14,14 @@
     "Sandbox_LWT_WasherFix_tooltip": "On a server, the washing machines fed by a house water inlet show their real state to the players: plumbed, and stopped when they run out of water.",
     "Sandbox_LWT_SprinklerRadiusMultiplier": "Sprinkler reach",
     "Sandbox_LWT_SprinklerRadiusMultiplier_tooltip": "Multiplies how far a sprinkler waters the plants (2 squares at 1.0, 10 at most).",
+    "Sandbox_LWT_SprinklerFlow": "Sprinkler flow",
+    "Sandbox_LWT_SprinklerFlow_tooltip": "Litres an open sprinkler draws every 10 minutes, whether the plants are thirsty or not (10 L by default). A quarter is lost in the air; the plants in reach take what they need, the rest is lost.",
+    "Sandbox_LWT_DripFlow": "Drip line flow",
+    "Sandbox_LWT_DripFlow_tooltip": "Litres each drip line square draws every 10 minutes while the network gives it water (0.5 L by default). Nothing is lost in the air; the plants beside it take what they need, the rest is lost.",
     "Sandbox_LWT_SprinklerTimerMin": "Sprinkler timer: shortest interval",
     "Sandbox_LWT_SprinklerTimerMin_tooltip": "Fewest hours a player may set between two waterings of an automatic sprinkler.",
     "Sandbox_LWT_SprinklerTimerMax": "Sprinkler timer: longest interval",
     "Sandbox_LWT_SprinklerTimerMax_tooltip": "Most hours a player may set between two waterings of an automatic sprinkler.",
     "Sandbox_LWT_FillContainers": "Containers a barrel fitting may fill",
-    "Sandbox_LWT_FillContainers_tooltip": "Names of entity scripts or sprites, separated by ; (water coolers: WaterDispenser). They are filled through a barrel fitting set to Fill, whatever their size, with clean water only. Barrels and rain collectors always work."
+    "Sandbox_LWT_FillContainers_tooltip": "Names of entity scripts or sprites, separated by ; (water coolers: WaterDispenser). They are filled through a barrel fitting set to Fill, whatever their size, with tainted water, like a barrel. Barrels and rain collectors always work."
 }

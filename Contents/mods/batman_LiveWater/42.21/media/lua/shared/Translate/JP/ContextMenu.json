@@ -1,6 +1,4 @@
 {
-    "ContextMenu_LWT_Lay": "%1を設置する",
-    "ContextMenu_LWT_Dismantle": "%1を解体する",
     "ContextMenu_LWT_FitFilter": "浄水フィルターを取り付ける",
     "ContextMenu_LWT_ReplaceFilter": "浄水フィルターを交換する",
     "ContextMenu_LWT_RemoveFilter": "浄水フィルターを外す",
@@ -20,7 +18,12 @@
     "ContextMenu_LWT_EveryHours": "%1時間ごと",
     "ContextMenu_LWT_ShowNetwork": "水道網を表示する",
     "ContextMenu_LWT_HideNetwork": "水道網を非表示にする",
+    "ContextMenu_LWT_ShowAllAreas": "すべての散水範囲を表示する",
+    "ContextMenu_LWT_HideArea": "散水範囲を非表示にする",
     "ContextMenu_LWT_FittingToPump": "汲み上げに設定",
     "ContextMenu_LWT_FittingToFill": "満たすに設定",
-    "ContextMenu_LWT_RemoveMod": "この世界からLiveWaterを取り除く（管理者）"
+    "ContextMenu_LWT_RemoveMod": "この世界からLiveWaterを取り除く（管理者）",
+    "ContextMenu_LWT_Debug": "LiveWater（デバッグ）",
+    "ContextMenu_LWT_DebugKit": "テストキットを受け取る",
+    "ContextMenu_LWT_Water": "水: %1 L / %2 L"
 }

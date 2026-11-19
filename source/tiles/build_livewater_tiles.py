@@ -1,7 +1,8 @@
 """Provisional tiles of LiveWater, for the D23 presentation board (plan step E06).
 
 Board validated by the user on 2026-11-17 (ADR-001 D23), packed into the mod since E06.
-The sprinkler jet is a separate 6-frame overlay (indices 80-103) that the client swaps
+The sprinkler jet is a separate 8-frame overlay turning all the way round (indices 128-159,
+ADR-003 D03; 80-103 left unused) that the client swaps
 itself (ADR-001 D08a): the engine never advances the frames of a tile overlay.
 
 Look: 1990s rural hardware drawn like vanilla tile art. Galvanised pipe of one colour
@@ -28,7 +29,7 @@ Needs pz-sprite-forge (MIT) and the game (PZ_MEDIA) for the style pass.
        python source/tiles/build_livewater_tiles.py package <out> .
    -> Contents/mods/batman_LiveWater/common/media/texturepacks/batman_livewater_01.pack,
       common/media/batman_livewater_01.tiles, common/media/tileGeometry.txt,
-      42.21/media/textures/Item_LWT_PipeSection.png, Item_LWT_WaterFilter.png
+      42.21/media/textures/Item_LWT_WaterFilter.png
 4. Depth map (skill pz-blender-assets, scripts/build_depthmap.py):
        blender -b --factory-startup -P <skill>/scripts/build_depthmap.py -- source/tiles/build_livewater_tiles.py <out>/depth.json
        python <skill>/scripts/build_depthmap.py <out>/depth.json
@@ -91,7 +92,12 @@ PAINTS = {
     "box": ("metal", (0.36, 0.37, 0.33), {"tex": "metal", "hue": _same}),
     "rubber": ("fabric", (0.025, 0.025, 0.025), {}),
     "hose": ("fabric", (0.05, 0.15, 0.06), {}),
+    # drip line: the light brown rubber of the vanilla siphon hose (media/textures/WorldItems/Hose.png, about
+    # (214, 189, 142); the style pass caps it near (148, 135, 105))
+    "drip_hose": ("fabric", (1.0, 0.80, 0.45), {}),
     "plastic": ("fabric", (0.13, 0.17, 0.13), {}),
+    "emitter": ("fabric", (0.42, 0.44, 0.40), {}),
+    "wet": ("fabric", (0.11, 0.085, 0.06), {}),
     "bowl": ("fabric", (0.30, 0.42, 0.50), {}),
     "dial": ("fabric", (0.62, 0.60, 0.52), {}),
     "needle": ("fabric", (0.45, 0.04, 0.03), {}),
@@ -329,6 +335,74 @@ def build_pipe(k: Kit, mask):
         fitting(k, sides)
 
 
+#: First sprite index of the pipes crossing a fence (ADR-002 D03).
+CROSSING_FIRST = 104
+
+
+def crossings() -> list[tuple[int, int, int]]:
+    """(mask, edges, index) of every pipe shape crossing a fence carried by its own N edge (edges 1), W edge (8)
+    or both (9): masks in ascending order, for each N, then W, then both. Same order as LWT_PartPipe.lua."""
+    out, index = [], CROSSING_FIRST
+    for m in range(16):
+        for edges in (N, W, N | W):
+            if m & edges == edges:
+                out.append((m, edges, index))
+                index += 1
+    return out
+
+
+def sleeve(k: Kit, side):
+    """Dark collar where the pipe passes under a fence on the tile edge `side` (inside the tile)."""
+    k.cyl(f"sleeve{side}", _along(side, 0.455), COUP_R * 1.18, 0.09, "galv_dark", "x" if DIRS[side][0] else "y", 16)
+
+
+def build_pipe_crossing(k: Kit, mask, edges):
+    build_pipe(k, mask)
+    for side in (N, W):
+        if edges & side:
+            sleeve(k, side)
+
+
+# --------------------------------------------------------------------------- #
+# Drip line (ADR-004 D01): a thin hose lying on the ground, emitters along it
+# --------------------------------------------------------------------------- #
+
+#: First sprite index of the drip line shapes (160 + side mask).
+DRIP_FIRST = 160
+HOSE_R = 0.016    # 16 mm drip hose, drawn about twice real size: thinner than the galvanised pipe (0.034)
+HOSE_Z = HOSE_R + 0.002   # lying on the ground
+
+
+def drip_arm(k: Kit, side, index):
+    """Hose from the centre to the tile edge on `side`, one emitter on top and a wet spot beside it."""
+    axis = "x" if DIRS[side][0] else "y"
+    k.cyl(f"hose{side}", _along(side, 0.25, HOSE_Z), HOSE_R, 0.5, "drip_hose", axis, 12)
+    ex, ey, _ = _along(side, 0.27)
+    k.cyl(f"emitter{side}", (ex, ey, 2 * HOSE_R), HOSE_R * 0.75, 0.014, "emitter", segs=8)
+    px, py = (0, 1) if axis == "x" else (1, 0)
+    sign = 1 if index % 2 == 0 else -1
+    for j, (d, off, r) in enumerate(((0.27, 0.08, 0.04), (0.12, 0.065, 0.025))):
+        wx, wy, _ = _along(side, d)
+        k.cyl(f"wet{side}_{j}", (wx + sign * off * px, wy + sign * off * py, 0.0015), r, 0.003, "wet", segs=12)
+        sign = -sign
+
+
+def build_drip(k: Kit, mask):
+    sides = [s for s in (N, E, S, W) if mask & s]
+    if not sides:
+        # Short coil left on the ground, two loops.
+        k.torus("coil", (0, 0, HOSE_R), 0.15, HOSE_R, "drip_hose", 24, 8)
+        k.torus("coil_in", (0.02, -0.01, 3 * HOSE_R), 0.11, HOSE_R, "drip_hose", 24, 8)
+        return
+    for i, s in enumerate(sides):
+        drip_arm(k, s, i)
+    if len(sides) == 1:
+        # Loose end folded and capped at the centre.
+        k.cyl("end_cap", (0, 0, HOSE_Z), HOSE_R * 1.3, 0.035, "emitter", "x" if DIRS[sides[0]][0] else "y", 10)
+    elif mask not in (N | S, E | W):
+        k.ball("tee", (0, 0, HOSE_Z), HOSE_R * 1.45, "emitter", 10)
+
+
 # --------------------------------------------------------------------------- #
 # Inline parts
 # --------------------------------------------------------------------------- #
@@ -444,10 +518,15 @@ def build_pump_lit(k: Kit, with_filter=False):
 
 INLET_Y = WALL_Y - 0.075
 INLET_LAMP = (0.07, INLET_Y - 0.052, 0.66)
+#: Filter canister beside the riser (ADR-005 D01): head on a nipple off the riser, bowl hanging below.
+INLET_FILTER = (0.155, INLET_Y - 0.045, 0.44)
+#: House inlet with a filter cartridge fitted (ADR-005 D04): 176-179 green lamp, 180-183 amber lamp.
+INLET_FILTER_FIRST = 176
 
 
-def build_house_inlet(k: Kit):
-    """Feed pipe over the S edge, riser with a brass hose bib, steel box, pipe into the wall."""
+def build_house_inlet(k: Kit, with_filter=False):
+    """Feed pipe over the S edge, riser with a brass hose bib, steel box, pipe into the wall;
+    `with_filter`: a cartridge canister on the riser under the box."""
     k.box("backboard", (0, WALL_Y - 0.01, 0.52), (0.36, 0.02, 0.62), "board")
     py = INLET_Y - 0.03
     k.cyl("feed", (0, (-0.5 + py) / 2, PIPE_Z), PIPE_R, 0.5 + py, "galv", "y")
@@ -469,11 +548,17 @@ def build_house_inlet(k: Kit):
     k.cyl("to_wall_nipple", (0, py, 0.83), PIPE_R, 0.08, "galv")
     k.ball("to_wall_elbow", (0, py, 0.87), COUP_R, "galv")
     k.cyl("to_wall", (0, (py + 0.5) / 2, 0.87), PIPE_R, 0.5 - py, "galv", "y")
+    if with_filter:
+        fx, fy, fz = INLET_FILTER
+        k.cyl("filter_nipple", (fx / 2, py, fz), PIPE_R * 0.8, fx, "galv", "x", 12)
+        k.box("filter_head", (fx, fy, fz), (0.13, 0.11, 0.05), "iron")
+        k.cyl("filter_ring", (fx, fy, fz - 0.045), 0.078, 0.035, "iron", segs=16)
+        k.cyl("filter_bowl", (fx, fy, fz - 0.16), 0.07, 0.20, "bowl", segs=16, r2=0.072)
 
 
-def build_house_inlet_lit(colour):
+def build_house_inlet_lit(colour, with_filter=False):
     def fn(k: Kit):
-        build_house_inlet(k)
+        build_house_inlet(k, with_filter)
         mark_holdout(k.anchor)
         return [k.cyl("lamp_on", (INLET_LAMP[0], INLET_LAMP[1] - 0.0015, INLET_LAMP[2]), 0.019, 0.006,
                       f"lit_{colour}", "y", 12)]
@@ -485,30 +570,40 @@ def build_house_inlet_lit(colour):
 # --------------------------------------------------------------------------- #
 
 SPR_TOP = 0.46
+#: Feed valve or hose timer of a sprinkler, on the feed pipe (y).
+SPR_VALVE_Y = -0.22
+#: Status lamp on top of the hose timer (ADR-008 D09): lit green while it waters (overlay `__lit`).
+SPR_LAMP = (0.032, SPR_VALVE_Y + 0.015, PIPE_Z + 0.088)
+SPR_LAMP_R = 0.026
 
 
 def build_sprinkler(k: Kit, active, automatic):
     """Fed over the S edge: ball valve (manual) or hose timer (automatic) on the feed,
-    elbow up, 1/2 in riser tied to a stake, brass impact head."""
+    elbow up, 1/2 in riser tied to a stake, brass impact head. The valve lever and the timer
+    lamp tell open from closed at play distance (ADR-008 D09)."""
     arm(k, S, start=0.0)
     k.ball("elbow", (0, 0, PIPE_Z), COUP_R, "galv")
     k.cyl("riser", (0, 0, (PIPE_Z + SPR_TOP) / 2), 0.022, SPR_TOP - PIPE_Z, "galv", segs=10)
     k.box("stake", (0.05, 0.035, 0.23), (0.032, 0.032, 0.46), "wood")
     for zt in (0.16, 0.36):
         k.cyl(f"tie{zt}", (0.025, 0.017, zt), 0.042, 0.012, "iron", segs=10)
-    vy = -0.22
+    vy = SPR_VALVE_Y
     if automatic:
         k.box("timer", (0, vy, PIPE_Z + 0.025), (0.12, 0.10, 0.11), "plastic")
-        k.cyl("timer_dial", (0, vy, PIPE_Z + 0.085), 0.038, 0.014, "dial", segs=16)
-        k.box("timer_mark", (0.012, vy - 0.01, PIPE_Z + 0.093), (0.03, 0.006, 0.004), "rubber",
+        k.cyl("timer_dial", (-0.026, vy - 0.012, PIPE_Z + 0.085), 0.030, 0.014, "dial", segs=16)
+        k.box("timer_mark", (-0.017, vy - 0.022, PIPE_Z + 0.093), (0.027, 0.006, 0.004), "rubber",
               (0, 0, -0.9 if active else 0.5))
+        k.cyl("timer_lamp_ring", (SPR_LAMP[0], SPR_LAMP[1], SPR_LAMP[2] - 0.004), SPR_LAMP_R + 0.005, 0.008, "iron",
+              segs=12)
+        k.ball("timer_lamp", SPR_LAMP, SPR_LAMP_R, "lamp", 12)
     else:
         k.cyl("valve_body", (0, vy, PIPE_Z), 0.045, 0.09, "brass", "y", 12)
-        k.cyl("valve_stem", (0, vy, PIPE_Z + 0.05), 0.012, 0.03, "brass", segs=8)
-        # Quarter-turn lever: along the pipe when open, across when closed.
-        size = (0.018, 0.12, 0.012) if active else (0.12, 0.018, 0.012)
-        off = (0, -0.05, 0) if active else (0.05, 0, 0)
-        k.box("valve_lever", (off[0], vy + off[1], PIPE_Z + 0.068), size, "red")
+        k.cyl("valve_stem", (0, vy, PIPE_Z + 0.05), 0.014, 0.03, "brass", segs=8)
+        # Quarter-turn lever, twice the real size to read at play distance: along the pipe when
+        # open, across when closed.
+        size = (0.034, 0.24, 0.024) if active else (0.24, 0.034, 0.024)
+        off = (0, -0.10, 0) if active else (0.10, 0, 0)
+        k.box("valve_lever", (off[0], vy + off[1], PIPE_Z + 0.074), size, "red")
     # Impact head: bearing, body, angled nozzle, swinging arm with spoon and counterweight.
     d = Vector((-1.0, -0.5, 0.0)).normalized()
     k.cyl("head_bearing", (0, 0, SPR_TOP + 0.015), 0.026, 0.03, "brass", segs=12)
@@ -524,50 +619,84 @@ def build_sprinkler(k: Kit, active, automatic):
     return tip, d
 
 
-JET_FRAMES = 6
-#: Part-circle sweep of the impact head, degrees each side of the nozzle direction.
-JET_SWEEP = 36.0
+def build_sprinkler_lit(k: Kit):
+    """Light overlay of the automatic sprinkler watering: its timer lamp, lit green."""
+    build_sprinkler(k, True, True)
+    mark_holdout(k.anchor)
+    return [k.ball("timer_lamp_on", SPR_LAMP, SPR_LAMP_R * 1.06, "lit_green", 12)]
+
+
+#: The jet turns all the way round in JET_FRAMES frames (ADR-003 D03), drawn at JET_FIRST + 4 * frame + facing.
+JET_FRAMES = 8
+JET_FIRST = 128
+
+
+#: Largest reach of the jet inside its tile (metres from the tile centre, at a world side N, E, S or W): a sprite
+#: is one square wide (128 px) and cannot draw beyond it (ADR-003 D03), so the reach shrinks on the diagonals.
+JET_REACH = 0.86
+#: Top of the arc above the line from the nozzle to the ground (metres).
+JET_HEIGHT = 0.34
+
+
+def jet_reach(d, tip):
+    """Reach of a jet leaving `tip` towards the horizontal unit vector `d`, kept inside the tile picture: the
+    camera looks from the SE at 45 degrees, so the left/right edge of the picture bounds |x + y| and |x - y|."""
+    m = max(abs(d.x + d.y), abs(d.x - d.y), 1e-6)
+    t = max(abs(tip.x + tip.y), abs(tip.x - tip.y))
+    return max(0.25, (JET_REACH - t) / m)
 
 
 def jet_parts(k: Kit, tip, d, frame):
-    """Water of one animation frame. The jet steps across the sweep (one tick per frame,
-    then the fast return of a part-circle impact sprinkler); on odd frames the arm's spoon
-    is in the stream: the jet is cut short and bursts into spray near the nozzle."""
-    ang = math.radians(-JET_SWEEP + 2 * JET_SWEEP * frame / (JET_FRAMES - 1))
+    """Water of one animation frame. The jet turns all the way round, an eighth of a turn per
+    frame (ADR-003 D03: it shows every side the sprinkler waters), thrown as far and as high as its
+    tile allows; on odd frames the arm's spoon is in the stream: the jet is shorter and bursts into
+    a wide fan of spray near the nozzle."""
+    ang = 2 * math.pi * frame / JET_FRAMES
     d = Vector((d.x * math.cos(ang) - d.y * math.sin(ang), d.x * math.sin(ang) + d.y * math.cos(ang), 0))
     side = Vector((-d.y, d.x, 0))
     struck = frame % 2 == 1
-    reach = 0.26 if struck else 0.40
+    full = jet_reach(d, tip)
+    reach = full * (0.72 if struck else 1.0)
+    height = JET_HEIGHT * (0.7 if struck else 1.0)
 
     def arc(t):
-        return tip + d * (reach * t) + Vector((0, 0, 0.16 * t - 0.30 * t * t))
+        z = tip.z * (1 - t) + 0.02 * t + 4 * height * t * (1 - t)
+        return Vector((tip.x, tip.y, 0)) + d * (reach * t) + Vector((0, 0, z))
 
-    parts = [k.tube("jet", [tuple(arc(t)) for t in (0, 0.25, 0.5, 0.75, 1.0)], 0.011, "water_jet", 8, 10,
-                    r_end=0.006)]
+    parts = [k.tube("jet", [tuple(arc(t)) for t in (0, 0.15, 0.3, 0.45, 0.6, 0.75, 0.9, 1.0)], 0.016,
+                    "water_jet", 8, 14, r_end=0.008)]
     if struck:
-        # Spoon strike: a short fan of spray out of the side of the nozzle.
-        for i, (u, s_, z) in enumerate(((0.10, 0.10, 0.02), (0.14, 0.05, -0.04), (0.12, -0.06, 0.0),
-                                        (0.08, 0.13, -0.08), (0.16, 0.0, -0.10))):
+        # Spoon strike: a wide fan of spray out of the side of the nozzle.
+        for i in range(8):
+            a = -0.9 + 1.8 * i / 7
+            u = 0.12 + 0.06 * (i % 3)
             a_ = tip + d * 0.03
-            b_ = tip + d * u + side * s_ + Vector((0, 0, z))
-            parts.append(k.tube(f"burst{i}", [tuple(a_), tuple((a_ + b_) / 2 + Vector((0, 0, 0.02))), tuple(b_)],
-                                0.005, "water_mist", 6, 5, r_end=0.002))
-    end = arc(1.0)
-    strands = ((0.70, -0.03, 0.5), (0.80, 0.04, 0.8), (0.90, -0.05, 0.6), (0.98, 0.02, 1.0),
-               (1.05, -0.02, 0.9), (1.10, 0.05, 0.7))
-    for i, (t, s_, fall) in enumerate(strands):
-        a_ = arc(min(t, 1.0)) + d * (reach * max(0.0, t - 1.0)) + side * (s_ * (1 + 0.5 * (frame % 3)))
-        b_ = a_ + d * 0.05 + side * (s_ * 0.6) + Vector((0, 0, -(a_.z - 0.02) * fall))
+            b_ = tip + (d * math.cos(a) + side * math.sin(a)) * u + Vector((0, 0, 0.04 - 0.03 * (i % 4)))
+            parts.append(k.tube(f"burst{i}", [tuple(a_), tuple((a_ + b_) / 2 + Vector((0, 0, 0.03))), tuple(b_)],
+                                0.006, "water_mist", 6, 5, r_end=0.002))
+    # Strands peeling off the stream along its way down, wider apart further out.
+    for i in range(10):
+        t = 0.45 + 0.06 * i
+        s_ = (0.025 + 0.012 * i) * (1 if i % 2 else -1) * (1 + 0.4 * (frame % 3))
+        a_ = arc(t) + side * s_
+        b_ = a_ + d * 0.04 + side * (s_ * 0.5) + Vector((0, 0, -(a_.z - 0.02) * (0.5 + 0.05 * i)))
         parts.append(k.tube(f"strand{i}", [tuple(a_), tuple((a_ + b_) / 2 + d * 0.02), tuple(b_)],
-                            0.005, "water_mist", 6, 6, r_end=0.003))
-    # Drops at heights that change every frame, so the falling water flickers when cycled.
-    for i in range(4):
-        t = 0.75 + 0.12 * i
-        z = 0.04 + ((frame * 0.07 + i * 0.13) % 0.22)
-        p = end + d * (reach * (t - 0.9)) + side * (0.07 * (1 if i % 2 else -1))
-        p = Vector((p.x, p.y, z))
-        parts.append(k.tube(f"drop{i}", [tuple(p), tuple(p + Vector((0, 0, -0.03)))], 0.005,
+                            0.006, "water_mist", 6, 6, r_end=0.003))
+    # Rain of drops over the far end, at heights that change every frame (flicker when cycled).
+    end = arc(1.0)
+    for i in range(8):
+        t = 0.55 + 0.06 * i
+        z = 0.03 + ((frame * 0.09 + i * 0.11) % 0.30)
+        p = arc(t) + side * (0.05 * (i % 3 - 1))
+        p = Vector((p.x, p.y, min(z, arc(t).z)))
+        parts.append(k.tube(f"drop{i}", [tuple(p), tuple(p + Vector((0, 0, -0.04)))], 0.006,
                             "water_jet", 6, 2, r_end=0.003))
+    # Splash where the stream lands.
+    for i in range(4):
+        a = 2 * math.pi * i / 4 + frame
+        q = end + Vector((math.cos(a) * 0.04, math.sin(a) * 0.04, 0.0))
+        parts.append(k.tube(f"splash{i}", [tuple(end + Vector((0, 0, 0.01))), tuple(q + Vector((0, 0, 0.05)))],
+                            0.005, "water_mist", 6, 3, r_end=0.002))
     return parts
 
 
@@ -591,23 +720,50 @@ def build_jet(frame):
 RIM = {"tall": (0.59, 0.80), "low": (0.50, 0.62)}
 
 
-def build_barrel_connector(k: Kit, mode, rim="tall"):
+#: Barrel fittings by mode: render key, mode, collector shape (straight sprites 64, 68, 72).
+BARREL_MODES = [("barrel_fill", "fill", "tall"), ("barrel_fill_low", "fill", "low"), ("barrel_pump", "pump", "tall")]
+#: Branched barrel fittings (ADR-008 D01, D01b): shape -> sides of the S model the pipes come from, and
+#: first index of each mode of BARREL_MODES. On the S model the front is S, E the facing next to it
+#: (+1: E, N, W, S as the forge turns the model) and W the one before it (+3); the barrel stays N.
+#: LWT_PartBarrelFitting.lua `branches` and docs/annexes/conception/tuiles-contrat.md.
+BARREL_SHAPES = {
+    "bend1": ((E,), (184, 192, 200)),
+    "bend3": ((W,), (188, 196, 204)),
+    "tee": ((E, W), (208, 224, 240)),
+    "front1": ((S, E), (212, 228, 244)),
+    "front3": ((S, W), (216, 232, 248)),
+    "cross": ((S, E, W), (220, 236, 252)),
+}
+#: How far north the valve moves on a branched fitting, to leave the centre to the elbow, tee or cross.
+BEND_SHIFT = 0.11
+
+
+def build_barrel_connector(k: Kit, mode, rim="tall", pipes=(S,)):
     """Fill: the hose hooks over the rim of the collector on the N tile and pours in. Pump: the
-    hose screws onto the spigot at the foot of the collector and draws from it."""
-    arm(k, S, start=0.06)
-    k.cyl("valve_body", (0, 0, PIPE_Z), 0.045, 0.10, "brass", "y", 12)
-    k.cyl("valve_stem", (0, 0, PIPE_Z + 0.05), 0.012, 0.03, "brass", segs=8)
-    k.box("valve_lever", (0, -0.05, PIPE_Z + 0.068), (0.018, 0.12, 0.012), "red")
-    k.cyl("hose_barb", (0, 0.07, PIPE_Z), 0.022, 0.05, "brass", "y", 10)
-    k.cyl("hose_collar", (0, 0.10, PIPE_Z), 0.03, 0.025, "galv", "y", 10)
+    hose screws onto the spigot at the foot of the collector and draws from it. `pipes`: the sides
+    the pipes come from; other than S alone, they meet the valve in an elbow, tee or cross at the
+    centre, the valve moved north of it; the hose to the collector is the same."""
+    if tuple(pipes) == (S,):
+        arm(k, S, start=0.06)
+        y = 0.0
+    else:
+        for side in pipes:
+            arm(k, side, start=0.045)
+        fitting(k, tuple(pipes) + (N,), "elbow")
+        y = BEND_SHIFT
+    k.cyl("valve_body", (0, y, PIPE_Z), 0.045, 0.10, "brass", "y", 12)
+    k.cyl("valve_stem", (0, y, PIPE_Z + 0.05), 0.012, 0.03, "brass", segs=8)
+    k.box("valve_lever", (0, y - 0.05, PIPE_Z + 0.068), (0.018, 0.12, 0.012), "red")
+    k.cyl("hose_barb", (0, y + 0.07, PIPE_Z), 0.022, 0.05, "brass", "y", 10)
+    k.cyl("hose_collar", (0, y + 0.10, PIPE_Z), 0.03, 0.025, "galv", "y", 10)
     if mode == "fill":
         fy, fz = RIM[rim]
-        path = [(0, 0.11, PIPE_Z), (0.02, 0.24, 0.07), (0.03, fy - 0.14, fz * 0.45), (0.02, fy - 0.04, fz - 0.02),
-                (0.0, fy + 0.02, fz + 0.07), (0.0, fy + 0.08, fz + 0.03)]
+        path = [(0, y + 0.11, PIPE_Z), (0.02, 0.24 + y * 0.6, 0.07), (0.03, fy - 0.14, fz * 0.45),
+                (0.02, fy - 0.04, fz - 0.02), (0.0, fy + 0.02, fz + 0.07), (0.0, fy + 0.08, fz + 0.03)]
         k.tube("hose", path, 0.024, "hose", 10)
         k.cyl("nozzle", (0, fy + 0.09, fz - 0.01), 0.026, 0.06, "brass", segs=10)
     else:
-        path = [(0, 0.11, PIPE_Z), (0.03, 0.30, 0.04), (0.02, 0.48, 0.06), (0.0, 0.58, 0.10)]
+        path = [(0, y + 0.11, PIPE_Z), (0.03, 0.30 + y * 0.5, 0.04), (0.02, 0.48, 0.06), (0.0, 0.58, 0.10)]
         k.tube("hose", path, 0.024, "hose", 10)
         k.cyl("spigot_nut", (0, 0.60, 0.10), 0.03, 0.04, "brass", "y", 10)
         k.cyl("spigot", (0, 0.645, 0.10), 0.02, 0.05, "brass", "y", 10)
@@ -616,15 +772,6 @@ def build_barrel_connector(k: Kit, mode, rim="tall"):
 # --------------------------------------------------------------------------- #
 # Inventory items
 # --------------------------------------------------------------------------- #
-
-def build_item_pipe(k: Kit):
-    k.cyl("pipe", (0, 0, 0.05), 0.05, 0.86, "galv", "x", 20)
-    for x in (-0.405, 0.405):
-        for i in range(3):
-            k.cyl(f"thread{x}{i}", (x + (0.012 * i if x < 0 else -0.012 * i), 0, 0.05), 0.052, 0.006,
-                  "galv_dark", "x", 20)
-    k.cyl("coupling", (0.45, 0, 0.05), 0.064, 0.09, "galv_dark", "x", 20)
-
 
 def build_item_filter(k: Kit):
     """Pleated paper cartridge between black end caps."""
@@ -638,8 +785,7 @@ def build_item_filter(k: Kit):
     k.cyl("hole", (0, 0, 0.484), 0.05, 0.004, "iron", segs=20)
 
 
-ITEMS = [("pipe_section", build_item_pipe, (0, 0, 0.05), 2.2),
-         ("water_filter", build_item_filter, (0, 0, 0.25), 1.6)]
+ITEMS = [("water_filter", build_item_filter, (0, 0, 0.25), 1.6)]
 
 
 # --------------------------------------------------------------------------- #
@@ -652,13 +798,15 @@ def tile_groups() -> list[dict]:
     `indices`: sprite index of each facing, in forge order S, E[, N, W]. `lit` builds a light
     overlay (base as holdout) composited onto the styled base, its pixels pushed toward the
     `glow` colour. `overlay` groups are sprites of their own drawn over another tile (the
-    animated sprinkler jet): not styled, kept as rendered."""
-    def g(key, first, build, lit=None, glow=None, facings=4, overlay=False):
+    animated sprinkler jet): not styled, kept as rendered. `show`: the group stands in the
+    showcase (build); of the shapes that follow the neighbours, one at most."""
+    def g(key, first, build, lit=None, glow=None, facings=4, overlay=False, show=True):
         return {"key": key, "indices": list(range(first, first + facings)), "build": build, "lit": lit,
-                "glow": glow, "overlay": overlay}
+                "glow": glow, "overlay": overlay, "show": show and not overlay}
 
     green, amber = (70, 255, 90), (255, 170, 30)
-    groups = [g(f"pipe_m{m:02d}", m, (lambda m: lambda k: build_pipe(k, m))(m), facings=1) for m in range(16)]
+    groups = [g(f"pipe_m{m:02d}", m, (lambda m: lambda k: build_pipe(k, m))(m), facings=1, show=False)
+              for m in range(16)]
     groups += [
         g("valve_open_ew", 16, lambda k: build_valve(k, False, True), facings=1),
         g("valve_open_ns", 17, lambda k: build_valve(k, False, False), facings=1),
@@ -672,15 +820,27 @@ def tile_groups() -> list[dict]:
         g("pump_filter_off", 36, lambda k: build_pump(k, True)),
         g("house_inlet", 40, build_house_inlet, build_house_inlet_lit("green"), green),
         g("house_inlet_unfiltered", 44, build_house_inlet, build_house_inlet_lit("amber"), amber),
+        g("house_inlet_filter", INLET_FILTER_FIRST, lambda k: build_house_inlet(k, True),
+          build_house_inlet_lit("green", True), green),
+        g("house_inlet_filter_unfiltered", INLET_FILTER_FIRST + 4, lambda k: build_house_inlet(k, True),
+          build_house_inlet_lit("amber", True), amber),
         g("sprinkler_manual_off", 48, lambda k: build_sprinkler(k, False, False)),
         g("sprinkler_manual_on", 52, lambda k: build_sprinkler(k, True, False)),
         g("sprinkler_auto_off", 56, lambda k: build_sprinkler(k, False, True)),
-        g("sprinkler_auto_on", 60, lambda k: build_sprinkler(k, True, True)),
+        g("sprinkler_auto_on", 60, lambda k: build_sprinkler(k, True, True), build_sprinkler_lit, green),
         g("barrel_fill", 64, lambda k: build_barrel_connector(k, "fill", "tall")),
         g("barrel_fill_low", 68, lambda k: build_barrel_connector(k, "fill", "low")),
         g("barrel_pump", 72, lambda k: build_barrel_connector(k, "pump")),
     ]
-    groups += [g(f"sprinkler_jet{f}", 80 + 4 * f, build_jet(f), overlay=True) for f in range(JET_FRAMES)]
+    groups += [g(f"{key}_{shape}", firsts[i],
+                 (lambda m, r, p: lambda k: build_barrel_connector(k, m, r, p))(mode, rim, pipes), show=False)
+               for shape, (pipes, firsts) in BARREL_SHAPES.items()
+               for i, (key, mode, rim) in enumerate(BARREL_MODES)]
+    groups += [g(f"sprinkler_jet{f}", JET_FIRST + 4 * f, build_jet(f), overlay=True) for f in range(JET_FRAMES)]
+    groups += [g(f"pipe_m{m:02d}_x{e}", i, (lambda m, e: lambda k: build_pipe_crossing(k, m, e))(m, e), facings=1,
+                 show=False) for m, e, i in crossings()]
+    groups += [g(f"drip_m{m:02d}", DRIP_FIRST + m, (lambda m: lambda k: build_drip(k, m))(m), facings=1,
+                 show=m == E | W) for m in range(16)]
     return groups
 
 
@@ -701,7 +861,7 @@ def lit_key(key: str) -> str:
 def build(subject, mats) -> None:
     """Showcase of every part in a row (editable .blend, depth tools)."""
     k = Kit(subject, mats)
-    for i, group in enumerate(g for g in tile_groups()[16:] if not g["overlay"]):
+    for i, group in enumerate(g for g in tile_groups() if g["show"]):
         group["build"](k.empty(f"show_{group['key']}", (i * 1.2, 0, 0)))
 
 
@@ -871,31 +1031,54 @@ def style(out: Path, only=()) -> None:
 SHEET = "batman_livewater_01"
 TILEDEF_ID = 7176
 MOD_ID = "batman_LiveWater"
-TOTAL = 104
+TOTAL = 256
 FACING_NAMES = ["S", "E", "N", "W"]
 #: Plumbing parts are taken up and set down with a pipe wrench, like vanilla sinks.
 _TOOLS = {"PickUpTool": "Wrench", "PlaceTool": "Wrench"}
 _GROUP = {"GroupName": "Live Water"}
 
 
-def _moveable(name, item, weight, **extra):
-    return {**_GROUP, "CustomName": name, "IsMoveAble": "", "Material": "MetalPlates", "PickUpWeight": str(weight),
-            "CustomItem": f"Base.Mov_LiveWater_{item}", **_TOOLS, **extra}
+#: In-world dismantling (ADR-007 D02): ScrapSize of each part dismantled in the world, by part name. Mirror of
+#: `scrap` and of the material names (MATERIAL_PREFIX .. name) of the table
+#: Contents/mods/batman_LiveWater/42.21/media/lua/shared/LiveWater/LWT_Dismantle.lua, which declares the materials
+#: at boot; tests/test_dismantle.py checks both agree. The drip line, laid by hand, is not dismantled in the world.
+SCRAP_MATERIAL_PREFIX = "LiveWater"
+SCRAP_SIZES = {"Pipe": "Small", "Valve": "Small", "FlowMeter": "Small", "BarrelFitting": "Small", "Sprinkler": "Small",
+               "HouseInlet": "Medium", "SprinklerAuto": "Medium", "PondPump": "Large"}
+
+
+def _scrap(item) -> dict:
+    """Scrap properties of the tiles of part `item`: its own material, or the plain metal one when not scrapped."""
+    size = SCRAP_SIZES.get(item)
+    if size is None:
+        return {"Material": "MetalPlates"}
+    return {"CanScrap": "", "Material": SCRAP_MATERIAL_PREFIX + item, "ScrapSize": size}
+
+
+def _moveable(name, item, weight, tools=_TOOLS, **extra):
+    """Properties of a moveable tile; `tools` = {} for a part taken up and set down by hand."""
+    return {**_GROUP, "CustomName": name, "IsMoveAble": "", **_scrap(item), "PickUpWeight": str(weight),
+            "CustomItem": f"Base.Mov_LiveWater_{item}", **tools, **extra}
 
 
 #: (first index, count, faces, properties). faces 4: S E N W; 2: the ew / ns pair of an inline
-#: part (ew drawn as Facing E, ns as Facing S); 1: no rotation (pipes, laid by a build action).
-#: Overlays (80-103) and reserved indices get no properties.
-KINDS = [(m, 1, 1, {**_GROUP, "CustomName": "Water Pipe", "Material": "MetalPlates"}) for m in range(16)] + [
+#: part (ew drawn as Facing E, ns as Facing S); 1: no rotation (pipes: the shape follows the neighbours).
+#: Jet overlays (128-159), the unused 80-103 and reserved indices get no properties. Drip line shapes
+#: (160-175) are laid by hand: no tool.
+KINDS = [(m, 1, 1, _moveable("Water Pipe", "Pipe", 4)) for m in range(16)] + [
+    (i, 1, 1, _moveable("Water Pipe", "Pipe", 4)) for _, _, i in crossings()] + [
     (16, 2, 2, _moveable("Shut-off Valve", "Valve", 30)),
     (18, 2, 2, _moveable("Shut-off Valve", "Valve", 30)),
     (20, 2, 2, _moveable("Water Meter", "FlowMeter", 40)),
 ] + [(b, 4, 4, _moveable("Pond Pump", "PondPump", 150, solidtrans="", BlocksPlacement=""))
      for b in (24, 28, 32, 36)] + [
-    (b, 4, 4, _moveable("House Water Inlet", "HouseInlet", 60, BlocksPlacement="")) for b in (40, 44)] + [
+    (b, 4, 4, _moveable("House Water Inlet", "HouseInlet", 60, BlocksPlacement=""))
+    for b in (40, 44, INLET_FILTER_FIRST, INLET_FILTER_FIRST + 4)] + [
     (b, 4, 4, _moveable("Sprinkler", "Sprinkler", 30, BlocksPlacement="")) for b in (48, 52)] + [
     (b, 4, 4, _moveable("Automatic Sprinkler", "SprinklerAuto", 35, BlocksPlacement="")) for b in (56, 60)] + [
-    (b, 4, 4, _moveable("Barrel Fitting", "BarrelFitting", 15)) for b in (64, 68, 72)]
+    (b, 4, 4, _moveable("Barrel Fitting", "BarrelFitting", 15))
+    for b in [64, 68, 72] + [first for _, firsts in BARREL_SHAPES.values() for first in firsts]] + [
+    (DRIP_FIRST + m, 1, 1, _moveable("Drip Line", "DripLine", 2, tools={})) for m in range(16)]
 
 #: Face offsets toward the sister sprites (rotation while placing: ISMoveableSpriteProps).
 _OFFSETS = {4: [{"Eoffset": 1, "Noffset": 2, "Woffset": 3}, {"Soffset": -1, "Noffset": 1, "Woffset": 2},
@@ -951,7 +1134,7 @@ def package(out: Path, project: Path) -> None:
     sheet.image().save(out / f"{SHEET}_sheet.png")
     textures = mod / "42.21" / "media" / "textures"
     textures.mkdir(parents=True, exist_ok=True)
-    for name, icon in (("pipe_section", "Item_LWT_PipeSection"), ("water_filter", "Item_LWT_WaterFilter")):
+    for name, icon in (("water_filter", "Item_LWT_WaterFilter"),):
         Image.open(out / "styled_items" / f"{name}.png").convert("RGBA").save(textures / f"{icon}.png")
     print(f"packed {len(images)} sprites into {media} (tiledef {TILEDEF_ID})")
 

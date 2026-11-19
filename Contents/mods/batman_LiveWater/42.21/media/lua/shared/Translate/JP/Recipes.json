@@ -7,5 +7,16 @@
     "LWTBuildHouseInlet": "家の給水口を作る",
     "LWTBuildSprinkler": "スプリンクラーを作る",
     "LWTUpgradeSprinkler": "スプリンクラーにタイマーを付ける",
-    "LWTBuildBarrelFitting": "樽の取り付け部を作る"
+    "LWTBuildBarrelFitting": "樽の取り付け部を作る",
+    "LWTMakeDripLine": "点滴チューブを作る",
+    "LWTDismantlePipe": "水道管を分解する",
+    "LWTDismantleValve": "止水バルブを分解する",
+    "LWTDismantleFlowMeter": "水道メーターを分解する",
+    "LWTDismantleHouseInlet": "家の給水口を分解する",
+    "LWTDismantlePondPump": "池のポンプを分解する",
+    "LWTDismantleSprinkler": "スプリンクラーを分解する",
+    "LWTDismantleSprinklerAuto": "自動スプリンクラーを分解する",
+    "LWTDismantleBarrelFitting": "樽の取り付け部を分解する",
+    "LWTDismantleDripLine": "点滴チューブを分解する",
+    "LWTDismantleWaterFilter": "浄水カートリッジを分解する"
 }

@@ -1,6 +1,6 @@
 if isClient() then return end
 -- LiveWater command "fitFilter" { x, y, z }: put a cartridge of the player's inventory into the
--- part (pond pump). A cartridge already in comes out first (LWT_CmdCartridge.takeOut). The new
+-- part (house water inlet, ADR-005). A cartridge already in comes out first (LWT_CmdCartridge.takeOut). The new
 -- one keeps the wear its condition shows. Checks: those of LWT_CmdCartridge.find, then the
 -- cartridge in the inventory (no_cartridge).
 

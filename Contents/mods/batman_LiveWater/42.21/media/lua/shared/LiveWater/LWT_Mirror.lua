@@ -1,8 +1,8 @@
 -- LiveWater: the state of a part mirrored on its game object (ADR-001 D11), both sides. The
 -- authority writes it (LWT_Publisher through LWT_GameWorld) and sends it to the clients; menus
 -- and Live Wire read it. It lives in the object's movableData, which the vanilla furniture
--- pickup copies into the item and the placement copies back (ISMoveableSpriteProps), so a pump
--- carried elsewhere keeps its wear and its filter.
+-- pickup copies into the item and the placement copies back (ISMoveableSpriteProps), so a part
+-- carried elsewhere keeps its state (pump wear, the inlet's filter).
 --   ModData.movableData.LiveWater = { v, type = part type id, data = { [kind] = state } }
 
 local Mirror = {}

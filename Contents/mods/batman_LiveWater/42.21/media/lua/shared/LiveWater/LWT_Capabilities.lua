@@ -14,8 +14,6 @@
 --   outlet(p, d)       pressure cost and "needs clean water" of a part water leaves by (flow)
 --   purifies(p, d, ctx) the part makes the water going through it clean now (flow)
 --   wear(p, d, litres, ctx) litres went through the part; d is created when absent (flow)
---   layable(p, d)      full type of the item the part is laid with and tag of the tool that
---                      dismantles it (server commands)
 -- Revision 2 (pond pump, power):
 --   look(p, d)         token of the part's look ("on", "filter"); the tokens of all its
 --                      capabilities, joined by "_" in kind order, name the variant drawn
@@ -27,7 +25,8 @@
 --                      the part, quality = of that water (revision 5: per part; the network's
 --                      water when none went through) } (d created)
 --   output(p, d)       litres the part gave the network last step (Live Wire summary)
---   lines(p, d)        text lines { { key, arg, ..., rank = n } } (information, Live Wire)
+--   lines(p, d, ctx)   text lines { { key, arg, ..., rank = n } } (information, Live Wire); ctx
+--                      (optional, revision 16): { scale } for the sandbox values (watering flow)
 -- Revision 3 (filter cartridge, part menu):
 --   cartridge(p, d, ctx)  removable cartridge: item full type, fitted (bool), share left 0..1
 --   fit(p, d, share, ctx) a cartridge with `share` left goes in (d created)
@@ -44,7 +43,8 @@
 --   stepped carries `outlet` = what the step did with an outlet ("served", "idle", "closed",
 --   "no_water", "unfiltered", "no_pressure"; nil for a part that is not one).
 -- Revision 8 (sprinklers, valves):
---   spray(p, d, ctx)      a part that waters plants: radius (squares) and litres of a dose
+--   spray(p, d, ctx)      a part that waters plants: radius (squares) and litres of a dose (revision
+--                         15: share lost in the air; revision 16: litres drawn per step, ADR-006)
 --   jet(p, d)             frames of the animated jet the clients draw: sprite prefix, first index,
 --                         frame count, and whether it sprays now (D08a)
 --   opened(p, d)          a valve: open now (true/false), else nil
@@ -66,6 +66,18 @@
 --   sense(p, d, info)     the authority tells what the part's container holds (d created)
 --   fittingMode(p, d)     a barrel fitting: its mode ("fill", "pump") and its state
 --   setFittingMode(p, d, mode)
+-- Revision 15 (drip line, ADR-004):
+--   costGroup(p, d)       an outlet: name of the group whose outlets of a network pay their pressure
+--                         cost once per step together, else nil
+--   byGravity(p, d)       an outlet that works on gravity pressure (network without pump)
+--   gravity(p, d, ctx)    pressure the part gives a network without any part that pressurizes, else
+--                         nil: water starts there, only for the outlets that work on gravity (flow)
+--   drip(p, d, ctx)       a part that waters the squares beside it: litres of a dose (revision 16:
+--                         and litres drawn per step by the square, ADR-006)
+-- Revision 17 (readouts, ADR-008 D03, D07):
+--   panel(p, d)           "Information" opens a window instead of the tooltip: name of the window
+--                         face the client registered ("counter", "lcd"), translation key of its
+--                         title, and its reading (a counter: whole litres), else nil
 -- ctx is the context of the step: { need, hours (revision 9: world age in hours), scale = function(optionName) -> multiplier,
 -- random = function() -> 0..1 (breakdowns; none without it), sources = registry of source kinds
 -- (revision 6, LWT_Sources) }.
@@ -73,10 +85,11 @@
 local Check = require "LiveWater/LWT_Check"
 
 local HOOKS = { "define", "carries", "blocks", "pressurizes", "ports", "supply", "source", "outlet", "purifies",
-    "wear", "layable", "look", "attach", "power", "powered", "stepped", "output", "lines",
+    "wear", "look", "attach", "power", "powered", "stepped", "output", "lines",
     "cartridge", "fit", "unfit", "actions", "switchable", "switch", "repairable", "repair", "sound",
     "spray", "jet", "opened", "open", "prepare", "opens", "timer", "setTimer",
-    "status", "draw", "sense", "fittingMode", "setFittingMode" }
+    "status", "draw", "sense", "fittingMode", "setFittingMode", "costGroup", "byGravity", "gravity", "drip",
+    "panel" }
 
 local Capabilities = {}
 Capabilities.__index = Capabilities

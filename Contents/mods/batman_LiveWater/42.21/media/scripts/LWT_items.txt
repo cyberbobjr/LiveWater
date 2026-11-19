@@ -5,16 +5,7 @@ module LiveWater
         Base,
     }
 
-    /* Inventory items. Pipes are not moveables: one PipeSection is laid per square and given
-       back when the pipe is dismantled with a pipe wrench (ADR-001 Q01). */
-
-    item PipeSection
-    {
-        DisplayCategory = Material,
-        ItemType = base:normal,
-        Weight = 0.4,
-        Icon = LWT_PipeSection,
-    }
+    /* Inventory items. Pipes are moveables (LWT_moveables.txt, ADR-001 Q01 updated 2026-11-18). */
 
     /* Charcoal cartridge of the pond pump (ADR-001 D17, Q02): 500 L each. Its condition is the
        share left: a cartridge taken out of a pump keeps its wear. */

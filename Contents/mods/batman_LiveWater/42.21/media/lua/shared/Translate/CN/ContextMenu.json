@@ -1,6 +1,4 @@
 {
-    "ContextMenu_LWT_Lay": "放置%1",
-    "ContextMenu_LWT_Dismantle": "拆除%1",
     "ContextMenu_LWT_FitFilter": "安装滤芯",
     "ContextMenu_LWT_ReplaceFilter": "更换滤芯",
     "ContextMenu_LWT_RemoveFilter": "取出滤芯",
@@ -20,7 +18,12 @@
     "ContextMenu_LWT_EveryHours": "每%1小时",
     "ContextMenu_LWT_ShowNetwork": "显示供水管网",
     "ContextMenu_LWT_HideNetwork": "隐藏供水管网",
+    "ContextMenu_LWT_ShowAllAreas": "显示所有浇灌范围",
+    "ContextMenu_LWT_HideArea": "隐藏浇灌范围",
     "ContextMenu_LWT_FittingToPump": "设为抽水",
     "ContextMenu_LWT_FittingToFill": "设为注入",
-    "ContextMenu_LWT_RemoveMod": "从此世界移除 LiveWater（管理员）"
+    "ContextMenu_LWT_RemoveMod": "从此世界移除 LiveWater（管理员）",
+    "ContextMenu_LWT_Debug": "LiveWater（调试）",
+    "ContextMenu_LWT_DebugKit": "给予测试套件",
+    "ContextMenu_LWT_Water": "水：%1升 / %2升"
 }

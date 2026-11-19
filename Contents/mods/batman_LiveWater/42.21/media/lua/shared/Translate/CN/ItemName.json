@@ -1,6 +1,12 @@
 {
-    "LiveWater.PipeSection": "管段",
+    "Base.Mov_LiveWater_Pipe": "水管",
     "Base.Mov_LiveWater_PondPump": "池塘水泵",
     "LiveWater.WaterFilter": "净水滤芯",
-    "Base.Mov_LiveWater_FlowMeter": "水表"
+    "Base.Mov_LiveWater_FlowMeter": "水表",
+    "Base.Mov_LiveWater_DripLine": "滴灌带",
+    "Base.Mov_LiveWater_Valve": "截止阀",
+    "Base.Mov_LiveWater_HouseInlet": "房屋进水口",
+    "Base.Mov_LiveWater_Sprinkler": "喷灌器",
+    "Base.Mov_LiveWater_SprinklerAuto": "自动喷灌器",
+    "Base.Mov_LiveWater_BarrelFitting": "水桶接头"
 }

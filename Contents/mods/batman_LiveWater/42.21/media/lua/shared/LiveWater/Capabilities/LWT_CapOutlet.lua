@@ -2,7 +2,12 @@
 --   type          required name of the outlet ("houseInlet", "sprinkler", or a new one)
 --   pressureCost  pressure the outlet takes from the budget (default by type, else 1)
 --   needsClean    tainted water is refused without a filter (default by type, else false)
--- Defaults by type are data (D14, D17); any other type gets GENERIC.
+--   costGroup     optional name (API revision 15): the outlets of a network with the same group pay
+--                 their pressure cost once per step, together (default by type: "drip", ADR-004 D04)
+--   byGravity     the outlet works on the gravity pressure of a network without pump (revision 15,
+--                 default by type, else false; ADR-004 D04)
+-- Defaults by type are data (D14, D17); any other type gets GENERIC. Irrigation (sprinkler, drip)
+-- takes any water, clean or tainted, and no other fluid (ADR-005 D03).
 -- State (revision 7): { state = what the last step did with it: "served", "idle", "closed",
 -- "no_water", "unfiltered", "no_pressure" (LWT_Flow) }. An outlet that needs clean water looks
 -- "unfiltered" after a step that refused tainted water, else "filtered" (house inlet sprites, D17).
@@ -13,8 +18,9 @@ local Check = require "LiveWater/LWT_Check"
 local TYPES = {
     houseInlet = { pressureCost = 2, needsClean = true, lines = "IGUI_LWT_Outlet_" },
     sprinkler = { pressureCost = 1, needsClean = false, lines = "IGUI_LWT_Sprinkler_" },
+    drip = { pressureCost = 1, needsClean = false, costGroup = "drip", byGravity = true, lines = "IGUI_LWT_Drip_" },
 }
-local GENERIC = { pressureCost = 1, needsClean = false, lines = "IGUI_LWT_Outlet_" }
+local GENERIC = { pressureCost = 1, needsClean = false, byGravity = false, lines = "IGUI_LWT_Outlet_" }
 
 local Outlet = {}
 
@@ -24,6 +30,8 @@ function Outlet.define(params)
     local out, field = Check.fields(params, {
         pressureCost = Check.number(0, 1000, defaults.pressureCost),
         needsClean = Check.boolean(defaults.needsClean),
+        costGroup = { default = defaults.costGroup, valid = Check.isName },
+        byGravity = Check.boolean(defaults.byGravity == true),
     })
     if out then out.type = params.type end
     return out, field
@@ -32,6 +40,16 @@ end
 -- Pressure cost, "needs clean water" and (revision 7) the outlet type.
 function Outlet.outlet(p)
     return p.pressureCost, p.needsClean, p.type
+end
+
+-- Group whose outlets pay their pressure cost once per step together, or nil (revision 15).
+function Outlet.costGroup(p)
+    return p.costGroup
+end
+
+-- Does the outlet work on gravity pressure alone (revision 15)?
+function Outlet.byGravity(p)
+    return p.byGravity
 end
 
 function Outlet.stepped(p, d, outcome)

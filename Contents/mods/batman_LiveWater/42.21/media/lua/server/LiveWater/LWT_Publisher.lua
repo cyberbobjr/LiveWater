@@ -9,8 +9,11 @@ if isClient() then return end
 --   again (players who came near since).
 --   a part with a jet (`jet` hook, sprinkler, D08a) tells the clients when it starts or stops
 --   spraying, after its state is mirrored: they read it again and animate the jet.
+-- A part whose square is not loaded is not presented (no sprite, mirror, sound, noise nor jet:
+-- nobody is there, ADR-006 D06); it waits in `away` until chunkLoaded(x, y, size) says its
+-- square was loaded again, then shows the state it has now (only those parts are looked at).
 -- No game API here; dependencies are injected: { catalog, sprites (LWT_Sprites), mirror (port:
--- writeState(x, y, z, typeId, state)), sounds (optional port: loop(x, y, z, name or nil),
+-- writeState(x, y, z, typeId, state), isLoaded(x, y, z)), sounds (optional port: loop(x, y, z, name or nil),
 -- noise(x, y, z, radius, volume)), visuals (optional port: jet(x, y, z)) }.
 
 local Grid = require "LiveWater/LWT_Grid"
@@ -23,7 +26,7 @@ Publisher.SCHEMA = 1
 
 function Publisher.new(deps)
     return setmetatable({ catalog = deps.catalog, sprites = deps.sprites, mirror = deps.mirror, sounds = deps.sounds,
-        visuals = deps.visuals, sent = {}, playing = {}, spraying = {} }, Publisher)
+        visuals = deps.visuals, sent = {}, playing = {}, spraying = {}, away = {} }, Publisher)
 end
 
 -- Text of a value with sorted keys: two equal states give the same text.
@@ -52,7 +55,7 @@ function Publisher:sound(part, key, stepped)
     if not self.sounds then return end
     local name, radius, volume = self.catalog:first(part, "sound")
     if name then
-        if stepped then self.sounds:noise(part.x, part.y, part.z, radius, volume) end
+        if stepped and radius and radius > 0 then self.sounds:noise(part.x, part.y, part.z, radius, volume) end
         if stepped or self.playing[key] ~= name then
             self.sounds:loop(part.x, part.y, part.z, name)
             self.playing[key] = name
@@ -77,8 +80,13 @@ end
 -- A part without state (a pipe) is never mirrored.
 function Publisher:present(part, stepped)
     local x, y, z = part.x, part.y, part.z
-    self.sprites:show(x, y, z)
     local key = Grid.key(x, y, z)
+    if not self.mirror:isLoaded(x, y, z) then
+        self.away[key] = part
+        return
+    end
+    self.away[key] = nil
+    self.sprites:show(x, y, z)
     self:sound(part, key, stepped)
     local data = part.data or {}
     if self.sent[key] == nil and isEmpty(data) then return end
@@ -90,10 +98,21 @@ function Publisher:present(part, stepped)
     self:jet(part, key)
 end
 
+-- The squares x..x+size-1, y..y+size-1 were loaded: the parts not presented while away there
+-- show their state now.
+function Publisher:chunkLoaded(x, y, size)
+    local back = {}
+    for _, part in pairs(self.away) do
+        if part.x >= x and part.x < x + size and part.y >= y and part.y < y + size then back[#back + 1] = part end
+    end
+    for i = 1, #back do self:present(back[i]) end
+end
+
 -- The part left its square: the next one there is presented anew.
 function Publisher:forget(part)
     local key = Grid.key(part.x, part.y, part.z)
     self.sent[key] = nil
+    self.away[key] = nil
     if self.playing[key] then
         self.sounds:loop(part.x, part.y, part.z, nil)
         self.playing[key] = nil

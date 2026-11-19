@@ -3,7 +3,9 @@ if isClient() then return end
 -- global ModData table, injected by the adapter (a plain table in tests); this module calls
 -- no game API. Layout:
 --   store.seq                 last placement order given (orders are never reused)
---   store.parts["x,y,z"]      entry = { v, type, x, y, z, order, data = { [kind] = state } }
+--   store.parts["x,y,z"]      entry = { v, type, x, y, z, order, data = { [kind] = state }, facing?,
+--                             cuts?, apart? } (facing of the sprite set down, ADR-008 D08; sides a
+--                             wall cuts or kept apart, ADR-002, ADR-006: recorded by the topology)
 -- Entries are kept as they are: fields this version does not know (newer schema, absent
 -- capability) stay untouched. A part whose type is not registered (mod removed) stays in the
 -- store, inert, and is active again when its type is registered again.

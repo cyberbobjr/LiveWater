@@ -14,10 +14,14 @@
     "Sandbox_LWT_WasherFix_tooltip": "在服务器上，由房屋进水口供水的洗衣机会向玩家显示真实状态：已接管，并在没水时停止。",
     "Sandbox_LWT_SprinklerRadiusMultiplier": "喷灌器范围",
     "Sandbox_LWT_SprinklerRadiusMultiplier_tooltip": "乘以喷灌器浇灌植物的距离（1.0时为2格，最多10格）。",
+    "Sandbox_LWT_SprinklerFlow": "喷灌器流量",
+    "Sandbox_LWT_SprinklerFlow_tooltip": "打开的喷灌器每 10 分钟取用的升数，无论植物是否缺水（默认 10 升）。四分之一散失在空中；范围内的植物取其所需，其余浪费。",
+    "Sandbox_LWT_DripFlow": "滴灌带流量",
+    "Sandbox_LWT_DripFlow_tooltip": "管网供水时，滴灌带每格每 10 分钟取用的升数（默认 0.5 升）。不会散失在空中；旁边的植物取其所需，其余浪费。",
     "Sandbox_LWT_SprinklerTimerMin": "喷灌定时器：最短间隔",
     "Sandbox_LWT_SprinklerTimerMin_tooltip": "玩家可为自动喷灌器设置的两次浇水之间的最少小时数。",
     "Sandbox_LWT_SprinklerTimerMax": "喷灌定时器：最长间隔",
     "Sandbox_LWT_SprinklerTimerMax_tooltip": "玩家可为自动喷灌器设置的两次浇水之间的最多小时数。",
     "Sandbox_LWT_FillContainers": "水桶接头可注满的容器",
-    "Sandbox_LWT_FillContainers_tooltip": "实体脚本或贴图的名称，用 ; 分隔（饮水机：WaterDispenser）。通过设为注入的水桶接头注满它们，无论大小，只注入干净的水。水桶和雨水收集桶始终有效。"
+    "Sandbox_LWT_FillContainers_tooltip": "实体脚本或贴图的名称，用 ; 分隔（饮水机：WaterDispenser）。通过设为注入的水桶接头注满它们，无论大小，都像水桶一样注入受污染的水。水桶和雨水收集桶始终有效。"
 }

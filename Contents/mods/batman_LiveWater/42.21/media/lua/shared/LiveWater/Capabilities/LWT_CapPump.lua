@@ -11,11 +11,13 @@
 --   repairItem       full type of the material of a repair (default "Base.ScrapMetal", P05)
 --   repairCount      how many (default 2)
 --   repairTool       optional item tag of the tool of a repair ("base:wrench")
---   sound            sound loop played while running (default "GeneratorLoop", P15)
---   noiseRadius, noiseVolume  noise zombies hear each running step (default 20, 20)
+--   sound            sound loop played while the pump works: switched on, powered and not broken,
+--                    with or without demand (default "GeneratorLoop", P15, ADR-008 D11)
+--   noiseRadius, noiseVolume  noise zombies hear each step it really pumps (default 20, 20)
 -- State: { on = switch (nil: on), powered = current this step (nil: never asked), running = gave
 --          water last step, litres = its share of the water delivered last step, efficiency
---          (nil: 100), broken = stopped by a breakdown until repaired }.
+--          (nil: 100), broken = stopped by a breakdown until repaired, total = litres pumped since
+--          it was set down (nil: 0; kept by a pump picked up and set down again, ADR-008 D07) }.
 -- A pump works when switched on, powered, not broken and above 0 %; it runs only while an
 -- outlet takes water (auto-stop). A breakdown only stops it (Q05: no fire).
 
@@ -91,6 +93,8 @@ end
 
 function Pump.powered(p, d, on)
     d.powered = on == true
+    -- current lost between two steps (ADR-008 D11): it stops pumping at once
+    if not d.powered then d.running = false end
 end
 
 -- Wear of a running step, then maybe a breakdown (P04).
@@ -107,7 +111,10 @@ end
 function Pump.stepped(p, d, outcome, ctx)
     d.running = works(p, d) and outcome.through > 0
     d.litres = d.running and outcome.through or 0
-    if d.running then wear(p, d, ctx) end
+    if d.running then
+        d.total = (d.total or 0) + d.litres
+        wear(p, d, ctx)
+    end
 end
 
 function Pump.output(p, d)
@@ -148,8 +155,10 @@ function Pump.repair(p, d)
     d.broken = false
 end
 
+-- The hum follows the current (ADR-008 D11); zombies hear only a pump that pumps.
 function Pump.sound(p, d)
-    if not running(d) then return nil end
+    if not works(p, d) then return nil end
+    if not running(d) then return p.sound, 0, 0 end
     return p.sound, p.noiseRadius, p.noiseVolume
 end
 
@@ -161,13 +170,30 @@ local function stateKey(p, d)
     return "IGUI_LWT_Pump_Standby"
 end
 
--- State, flow, efficiency (P08).
-function Pump.lines(p, d)
+-- Litres per step the pump would give now if it works: nominal flow times efficiency.
+local function possible(p, d, ctx)
+    return p.flow * efficiency(d) / FULL * Settings.scale(ctx, "PumpFlowMultiplier")
+end
+
+local function whole(v)
+    return math.floor(v + 0.5)
+end
+
+-- State, possible flow, flow of the last step, total, efficiency (P08, ADR-008 D07); the intake
+-- adds the source (rank 40).
+function Pump.lines(p, d, ctx)
     return {
         { stateKey(p, d), rank = 10 },
-        { "IGUI_LWT_Pump_Flow", math.floor((d and d.litres or 0) + 0.5), rank = 20 },
-        { "IGUI_LWT_Pump_Efficiency", math.floor(efficiency(d) + 0.5), rank = 25 },
+        { "IGUI_LWT_Pump_Possible", whole(possible(p, d, ctx)), rank = 15 },
+        { "IGUI_LWT_Pump_Flow", whole(d and d.litres or 0), rank = 20 },
+        { "IGUI_LWT_Pump_Total", whole(d and d.total or 0), rank = 22 },
+        { "IGUI_LWT_Pump_Efficiency", whole(efficiency(d)), rank = 25 },
     }
+end
+
+-- "Information" opens the pump's LCD screen (ADR-008 D07): its lines on a backlit screen.
+function Pump.panel(p, d)
+    return "lcd", "IGUI_LWT_Window_Pump"
 end
 
 function Pump.actions(p, d)

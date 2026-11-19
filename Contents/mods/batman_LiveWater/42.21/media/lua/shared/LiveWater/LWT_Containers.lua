@@ -3,22 +3,23 @@
 -- its entity script ("RainCollector"); its definition is data:
 --   shape  "tall" (round barrel, drum, default) or "low" (wide crate collector): picks the sprite
 --          of the fitting set to Fill (barrel_fill or barrel_fill_low, tuiles-contrat.md)
---   clean  true: a drinking container (water cooler) takes clean water only (default false)
+-- Every container takes the network's water like a barrel, tainted (ADR-005 D07); another field of a
+-- definition (`clean` of revision 12) is ignored.
 -- A fitting works with (admits) any object holding a FluidContainer of MIN_LITRES or more (barrels,
 -- rain collectors), and with a smaller one when it is registered (water coolers by default, E25) or
--- listed in the sandbox string option FillContainers (names separated by ";", taking clean water
--- only). An unknown container is tall. Other mods add theirs with LiveWater.API.registerContainer.
+-- listed in the sandbox string option FillContainers (names separated by ";"). An unknown
+-- container is tall. Other mods add theirs with LiveWater.API.registerContainer.
 
 local SHAPES = { tall = true, low = true }
 
 -- Litres from which any fluid container is a barrel (same rule as LWT_WaterObjects.isBarrel).
 local MIN_LITRES = 20
 
--- Registered by default whatever their size (vanilla 42.22 entity WaterDispenser, 15 L): drinking.
-local DEFAULT_DRINKING = { "WaterDispenser" }
+-- Registered by default whatever their size (vanilla 42.22 entity WaterDispenser, 15 L).
+local DEFAULT_SMALL = { "WaterDispenser" }
 
 -- Definition of a container listed in the sandbox option.
-local LISTED = { shape = "tall", clean = true }
+local LISTED = { shape = "tall" }
 
 -- Vanilla 42.22 low wide rain collectors (wooden crate with a tarp): entities RainCollector
 -- (carpentry_02_54) and RainCollector_Tarp (carpentry_02_120), and their older neighbours.
@@ -30,8 +31,8 @@ Containers.__index = Containers
 
 function Containers.new()
     local self = setmetatable({ byName = {}, sealed = false }, Containers)
-    for i = 1, #LOW_SPRITES do self.byName[LOW_SPRITES[i]] = { shape = "low", clean = false } end
-    for i = 1, #DEFAULT_DRINKING do self.byName[DEFAULT_DRINKING[i]] = { shape = "tall", clean = true } end
+    for i = 1, #LOW_SPRITES do self.byName[LOW_SPRITES[i]] = { shape = "low" } end
+    for i = 1, #DEFAULT_SMALL do self.byName[DEFAULT_SMALL[i]] = { shape = "tall" } end
     return self
 end
 
@@ -43,11 +44,10 @@ end
 function Containers:register(name, def)
     if self.sealed then return false, "registration_closed" end
     if not isName(name) then return false, "invalid_name" end
-    if type(def) ~= "table" or (def.shape ~= nil and not SHAPES[def.shape])
-        or (def.clean ~= nil and type(def.clean) ~= "boolean") then
+    if type(def) ~= "table" or (def.shape ~= nil and not SHAPES[def.shape]) then
         return false, "invalid_definition"
     end
-    self.byName[name] = { shape = def.shape or "tall", clean = def.clean == true }
+    self.byName[name] = { shape = def.shape or "tall" }
     return true
 end
 
@@ -84,12 +84,6 @@ end
 function Containers:shapeOf(sprite, entity, listed)
     local def = self:find(sprite, entity, listed)
     return def and def.shape or "tall"
-end
-
--- Does the container take clean water only?
-function Containers:cleanOnly(sprite, entity, listed)
-    local def = self:find(sprite, entity, listed)
-    return def ~= nil and def.clean == true
 end
 
 return Containers

@@ -14,10 +14,14 @@
     "Sandbox_LWT_WasherFix_tooltip": "En un servidor, las lavadoras alimentadas por una entrada de agua de casa muestran a los jugadores su estado real: conectadas y paradas cuando se quedan sin agua.",
     "Sandbox_LWT_SprinklerRadiusMultiplier": "Alcance de los aspersores",
     "Sandbox_LWT_SprinklerRadiusMultiplier_tooltip": "Multiplica la distancia a la que un aspersor riega las plantas (2 casillas con 1,0; 10 como máximo).",
+    "Sandbox_LWT_SprinklerFlow": "Caudal de los aspersores",
+    "Sandbox_LWT_SprinklerFlow_tooltip": "Litros que un aspersor abierto toma cada 10 minutos, tengan sed las plantas o no (10 L por defecto). Una cuarta parte se pierde en el aire; las plantas a su alcance toman lo que necesitan, el resto se pierde.",
+    "Sandbox_LWT_DripFlow": "Caudal de las líneas de goteo",
+    "Sandbox_LWT_DripFlow_tooltip": "Litros que toma cada casilla de línea de goteo cada 10 minutos mientras la red le da agua (0,5 L por defecto). No se pierde nada en el aire; las plantas de al lado toman lo que necesitan, el resto se pierde.",
     "Sandbox_LWT_SprinklerTimerMin": "Temporizador de aspersor: intervalo más corto",
     "Sandbox_LWT_SprinklerTimerMin_tooltip": "Las horas mínimas que un jugador puede poner entre dos riegos de un aspersor automático.",
     "Sandbox_LWT_SprinklerTimerMax": "Temporizador de aspersor: intervalo más largo",
     "Sandbox_LWT_SprinklerTimerMax_tooltip": "Las horas máximas que un jugador puede poner entre dos riegos de un aspersor automático.",
     "Sandbox_LWT_FillContainers": "Recipientes que puede llenar una conexión de barril",
-    "Sandbox_LWT_FillContainers_tooltip": "Nombres de scripts de entidad o sprites, separados por ; (dispensadores de agua: WaterDispenser). Se llenan con una conexión de barril en Llenar, sea cual sea su tamaño, solo con agua limpia. Los barriles y los recolectores de lluvia siempre funcionan."
+    "Sandbox_LWT_FillContainers_tooltip": "Nombres de scripts de entidad o sprites, separados por ; (dispensadores de agua: WaterDispenser). Se llenan con una conexión de barril en Llenar, sea cual sea su tamaño, con agua contaminada, como un barril. Los barriles y los recolectores de lluvia siempre funcionan."
 }

@@ -5,7 +5,7 @@
 - Le **serveur décide de tout** : il fait avancer l'eau toutes les 10 minutes, sauvegarde les réseaux et vérifie
   chaque action (distance, objets, outils, droits d'administration). Les joueurs envoient seulement des demandes depuis
   leurs menus au clic droit.
-- Tous les joueurs voient les mêmes tuiles : pompe en marche ou arrêtée, filtre, voyant de l'arrivée d'eau, jet des
+- Tous les joueurs voient les mêmes tuiles : pompe en marche ou arrêtée, voyant et filtre de l'arrivée d'eau, jet des
   arroseurs.
 - Ajoutez LiveWater à la ligne `Mods=` du serveur et à `WorkshopItems=`. Les tuiles (`batman_livewater_01`) viennent
   avec le mod.

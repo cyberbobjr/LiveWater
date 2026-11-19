@@ -1,6 +1,4 @@
 {
-    "ContextMenu_LWT_Lay": "Colocar %1",
-    "ContextMenu_LWT_Dismantle": "Desmontar %1",
     "ContextMenu_LWT_FitFilter": "Instalar filtro de agua",
     "ContextMenu_LWT_ReplaceFilter": "Cambiar filtro de agua",
     "ContextMenu_LWT_RemoveFilter": "Quitar filtro de agua",
@@ -20,7 +18,12 @@
     "ContextMenu_LWT_EveryHours": "Cada %1 h",
     "ContextMenu_LWT_ShowNetwork": "Mostrar la red de agua",
     "ContextMenu_LWT_HideNetwork": "Ocultar la red de agua",
+    "ContextMenu_LWT_ShowAllAreas": "Mostrar todas las zonas regadas",
+    "ContextMenu_LWT_HideArea": "Ocultar la zona regada",
     "ContextMenu_LWT_FittingToPump": "Ajustar a bombeo",
     "ContextMenu_LWT_FittingToFill": "Ajustar a llenado",
-    "ContextMenu_LWT_RemoveMod": "Quitar LiveWater de este mundo (admin)"
+    "ContextMenu_LWT_RemoveMod": "Quitar LiveWater de este mundo (admin)",
+    "ContextMenu_LWT_Debug": "LiveWater (depuración)",
+    "ContextMenu_LWT_DebugKit": "Dar el kit de prueba",
+    "ContextMenu_LWT_Water": "Agua: %1 L / %2 L"
 }

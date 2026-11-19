@@ -26,7 +26,7 @@ PLOT = {(4, 4), (5, 4), (6, 4), (4, 5), (5, 5), (6, 5)}
 
 #: (i, j, styled sprite or "vanilla:<name>"), drawn after the floors of the same tile.
 LAYOUT = [
-    (1, 3, "pump_filter_on_S"),
+    (1, 3, "pump_on_S"),
     (1, 2, "pipe_m06_S"),              # S | E
     (2, 2, "valve_open_ew_S"),
     (3, 2, "pipe_m11_S"),              # N | E | W
@@ -35,7 +35,7 @@ LAYOUT = [
     (4, 2, "flowmeter_ew_S"),
     (5, 2, "pipe_m15_S"),              # cross
     (5, 1, "vanilla:" + WALL_N), (6, 1, "vanilla:" + WALL_N), (7, 1, "vanilla:" + WALL_N),
-    (5, 1, "house_inlet_S"),
+    (5, 1, "house_inlet_filter_S"),
     (6, 2, "pipe_m08_S"),              # W, capped
     (5, 3, "pipe_m13_S"),              # N | S | W
     (5, 4, "sprinkler_manual_on_N"),

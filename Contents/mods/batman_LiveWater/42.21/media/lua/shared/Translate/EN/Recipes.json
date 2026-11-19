@@ -7,5 +7,16 @@
     "LWTBuildHouseInlet": "Build House Water Inlet",
     "LWTBuildSprinkler": "Build Sprinkler",
     "LWTUpgradeSprinkler": "Add a Timer to a Sprinkler",
-    "LWTBuildBarrelFitting": "Build Barrel Fitting"
+    "LWTBuildBarrelFitting": "Build Barrel Fitting",
+    "LWTMakeDripLine": "Make Drip Lines",
+    "LWTDismantlePipe": "Dismantle Water Pipe",
+    "LWTDismantleValve": "Dismantle Shut-off Valve",
+    "LWTDismantleFlowMeter": "Dismantle Water Meter",
+    "LWTDismantleHouseInlet": "Dismantle House Water Inlet",
+    "LWTDismantlePondPump": "Dismantle Pond Pump",
+    "LWTDismantleSprinkler": "Dismantle Sprinkler",
+    "LWTDismantleSprinklerAuto": "Dismantle Automatic Sprinkler",
+    "LWTDismantleBarrelFitting": "Dismantle Barrel Fitting",
+    "LWTDismantleDripLine": "Dismantle Drip Line",
+    "LWTDismantleWaterFilter": "Dismantle Water Filter"
 }

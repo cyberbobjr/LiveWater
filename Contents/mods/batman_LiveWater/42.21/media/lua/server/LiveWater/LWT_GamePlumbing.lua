@@ -8,8 +8,9 @@ if isClient() then return end
 --   fixtures(area)             water fixtures (sprite flag waterPiped) of the area that use, or may
 --                              use, an outside source: plumbed (getUsesExternalWaterSource), set
 --                              down by a player (ModData canBeWaterPiped) or after the city water
---                              shut-off; { x, y, z, source, mapBuilding } (source: see
---                              LWT_RelayPlan; mapBuilding: its square is in a map building)
+--                              shut-off; { x, y, z, source, mapBuilding, plumbed } (source: see
+--                              LWT_RelayPlan; mapBuilding: its square is in a map building;
+--                              plumbed: getUsesExternalWaterSource)
 --   relay(x, y, z)             our relay on the square: { owner, amount, free, feeds, why }, or nil
 --                              (feeds: a plumbed fixture below draws from it)
 --   placeRelay(x, y, z, owner, litres)   invisible tank (IsoThumpable + FluidContainer)
@@ -109,8 +110,10 @@ function GamePlumbing:fixtures(area)
         for x = area.minX, area.maxX do
             for y = area.minY, area.maxY do
                 local sq = area:contains(x, y, z) and squareAt(x, y, z)
-                if sq and fixtureOn(sq) then
-                    out[#out + 1] = { x = x, y = y, z = z, source = sourceOf(sq), mapBuilding = inMapBuilding(sq) }
+                local obj = sq and fixtureOn(sq)
+                if obj then
+                    out[#out + 1] = { x = x, y = y, z = z, source = sourceOf(sq), mapBuilding = inMapBuilding(sq),
+                        plumbed = obj:getUsesExternalWaterSource() }
                 end
             end
         end

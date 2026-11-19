@@ -7,9 +7,22 @@
 --                 "filter_off"), list index = facing 1..4 (S, E, N, W). Never redrawn by the mask.
 --                 A sprite belongs to one part type only (sprites and variants together).
 --   facings       optional (API revision 13): { [mask] = facing 1..4 } the variant facing drawn
---                 for a side mask (an inline part turned along its pipe: a valve); a mask without
+--                 for a side mask (a part turned towards its pipe: a sprinkler); a mask without
 --                 one keeps the facing the part shows
+--   crossings     optional (API revision 14, ADR-002 D03-D04): { [mask] = { [edges] = spriteName } }
+--                 the shape drawn when the part crosses a fence carried by its own N edge
+--                 (edges 1), W edge (8) or both (9); edges within the mask
+--   branches      optional (API revision 18, ADR-008 D01, D01b): { [relative mask] = suffix } the
+--                 variant drawn by the sides linked relative to the facing: relative mask 1..15,
+--                 bit 1 front (the side of the facing), 2 the next facing (+1), 4 behind, 8 the
+--                 previous facing (+3); the look .. "_" .. suffix (a barrel fitting branched on its
+--                 pipes); only the sides some entry names count, a mask without entry draws the
+--                 look itself. Parts:branch, Parts:followsLinks
 --   sides         optional: mask of the sides the part may connect by (default 15)
+--   sidesByFacing optional (API revision 19, ADR-008 D08): { [facing 1..4] = side mask } the sides a
+--                 part placed with that facing may connect by, in place of `sides` (an inline part
+--                 keeps the two sides of the axis it shows: a meter, a valve); the facing is the one of
+--                 the sprite it was set down with, recorded on the part (`part.facing`). Parts:sidesOf
 --   capabilities  required: { kind = params or true }, every kind registered, params checked
 --                 by the kind's define hook
 -- Placed parts carry their type in `part.type`; this registry is also the catalog the domain
@@ -76,10 +89,66 @@ local function copyFacings(src)
     return out
 end
 
+-- Copy of the sides by facing ({} when absent), or nil when invalid.
+local function copySidesByFacing(src)
+    if src == nil then return {} end
+    if type(src) ~= "table" then return nil end
+    local out = {}
+    for facing, mask in pairs(src) do
+        if not Check.isInteger(facing, 1, Parts.MAX_FACINGS) or not Check.isInteger(mask, 0, Grid.ALL) then return nil end
+        out[facing] = mask
+    end
+    return out
+end
+
+-- Bit of each relative side 0..3 (front, +1, behind, +3) in a relative mask (field `branches`).
+local RELATIVE_BITS = { 1, 2, 4, 8 }
+
+-- Copy of the branches ({} when absent) and the relative sides they name (mask, 0 when none), or nil
+-- when invalid.
+local function copyBranches(src)
+    if src == nil then return {}, 0 end
+    if type(src) ~= "table" then return nil end
+    local out, named = {}, 0
+    for relative, suffix in pairs(src) do
+        if not Check.isInteger(relative, 1, Grid.ALL) or not Check.isName(suffix) then return nil end
+        out[relative] = suffix
+        for i = 1, #RELATIVE_BITS do
+            local bit = RELATIVE_BITS[i]
+            if Grid.has(relative, bit) and not Grid.has(named, bit) then named = named + bit end
+        end
+    end
+    return out, named
+end
+
+local CROSSING_EDGES = { [Grid.N] = true, [Grid.W] = true, [Grid.N + Grid.W] = true }
+
+-- Copy of the crossings ({} when absent), or nil when invalid.
+local function copyCrossings(src)
+    if src == nil then return {} end
+    if type(src) ~= "table" then return nil end
+    local out = {}
+    for mask, byEdges in pairs(src) do
+        if not Check.isInteger(mask, 0, Grid.ALL) or type(byEdges) ~= "table" then return nil end
+        local copy = {}
+        for edges, name in pairs(byEdges) do
+            if not CROSSING_EDGES[edges] or not isSpriteName(name) then return nil end
+            if (Grid.has(edges, Grid.N) and not Grid.has(mask, Grid.N))
+                or (Grid.has(edges, Grid.W) and not Grid.has(mask, Grid.W)) then return nil end
+            copy[edges] = name
+        end
+        out[mask] = copy
+    end
+    return out
+end
+
 -- Every sprite name of a definition: list of { name, facing or nil }.
-local function allSprites(sprites, variants)
+local function allSprites(sprites, variants, crossings)
     local list = {}
     for _, s in pairs(sprites) do list[#list + 1] = { s } end
+    for _, byEdges in pairs(crossings or {}) do
+        for _, s in pairs(byEdges) do list[#list + 1] = { s } end
+    end
     for _, l in pairs(variants) do
         for i = 1, #l do list[#list + 1] = { l[i], i } end
     end
@@ -105,7 +174,7 @@ end
 
 -- Returns true, or false, a reason and sometimes a detail: "registration_closed",
 -- "invalid_id", "duplicate_part", "invalid_definition", "invalid_sprites", "invalid_variants",
--- "duplicate_sprite", "invalid_facings", "invalid_sides", "invalid_capabilities", "unknown_capability", "invalid_field".
+-- "duplicate_sprite", "invalid_facings", "invalid_branches", "invalid_sides", "invalid_sides_by_facing", "invalid_capabilities", "unknown_capability", "invalid_field".
 function Parts:register(id, def)
     if self.sealed then return false, "registration_closed" end
     if not Check.isNamespaced(id) then return false, "invalid_id" end
@@ -118,18 +187,25 @@ function Parts:register(id, def)
         if def.sprites ~= nil or variantCount == 0 then return false, "invalid_sprites" end
         sprites = {}
     end
-    local names = allSprites(sprites, variants)
+    local crossings = copyCrossings(def.crossings)
+    if not crossings then return false, "invalid_crossings" end
+    local names = allSprites(sprites, variants, crossings)
     for i = 1, #names do
         if self.bySprite[names[i][1]] then return false, "duplicate_sprite", names[i][1] end
     end
     local facings = copyFacings(def.facings)
     if not facings then return false, "invalid_facings" end
+    local branches, branchSides = copyBranches(def.branches)
+    if not branches then return false, "invalid_branches" end
     local sides = def.sides
     if sides == nil then sides = Grid.ALL end
     if not Check.isInteger(sides, 0, Grid.ALL) then return false, "invalid_sides" end
+    local sidesByFacing = copySidesByFacing(def.sidesByFacing)
+    if not sidesByFacing then return false, "invalid_sides_by_facing" end
     local caps, reason, detail = self:copyCapabilities(def.capabilities)
     if not caps then return false, reason, detail end
-    self.defs[id] = { sprites = sprites, variants = variants, facings = facings, sides = sides, caps = caps }
+    self.defs[id] = { sprites = sprites, variants = variants, crossings = crossings, facings = facings,
+        branches = branches, branchSides = branchSides, sides = sides, sidesByFacing = sidesByFacing, caps = caps }
     for i = 1, #names do
         self.bySprite[names[i][1]] = id
         if names[i][2] then self.facing[names[i][1]] = names[i][2] end
@@ -156,9 +232,12 @@ end
 -- A placed part is { type = id, data = { [kind] = state } , ... }; a part whose type is not
 -- registered answers nothing (inert, D03).
 
-function Parts:sides(id)
-    local def = self.defs[id]
-    return def and def.sides or 0
+-- Sides a placed part may connect by: those of its recorded facing (`sidesByFacing`), else the
+-- sides of its type (0 for a type not registered).
+function Parts:sidesOf(part)
+    local def = self.defs[part.type]
+    if not def then return 0 end
+    return part.facing ~= nil and def.sidesByFacing[part.facing] or def.sides
 end
 
 -- Sprite of the type for a side mask: sprites[mask], else sprites[0] (nil when neither).
@@ -166,6 +245,13 @@ function Parts:sprite(id, mask)
     local def = self.defs[id]
     if not def then return nil end
     return def.sprites[mask] or def.sprites[0]
+end
+
+-- Sprite of the shape `mask` crossing fences on the edges `edges` (1 N, 8 W, 9 both), or nil.
+function Parts:crossing(id, mask, edges)
+    local def = self.defs[id]
+    local byEdges = def and def.crossings[mask]
+    return byEdges and byEdges[edges] or nil
 end
 
 -- Does the type draw its own sprite for this mask (a pipe shape)? A type that does not keeps
@@ -191,6 +277,31 @@ function Parts:facingFor(id, mask)
     return def and def.facings[mask] or nil
 end
 
+-- Is the type redrawn by its state when its side mask changes (a facing or branches for the links)?
+function Parts:followsLinks(id, mask)
+    local def = self.defs[id]
+    return def ~= nil and (def.facings[mask] ~= nil or def.branchSides > 0)
+end
+
+-- Variant key a type draws for the look `key` at `facing` with the side mask `mask` (field
+-- `branches`): the look .. "_" .. suffix of the relative mask of its linked sides (the sides the
+-- branches name), or the look itself when that mask has no entry or its variant does not exist.
+function Parts:branch(id, key, facing, mask)
+    local def = self.defs[id]
+    if not def or def.branchSides == 0 or not facing then return key end
+    local relative = 0
+    for side = 0, Parts.MAX_FACINGS - 1 do
+        local bit = RELATIVE_BITS[side + 1]
+        if Grid.has(def.branchSides, bit) and Grid.has(mask, Grid.FACINGS[(facing - 1 + side) % Parts.MAX_FACINGS + 1]) then
+            relative = relative + bit
+        end
+    end
+    local suffix = def.branches[relative]
+    local shaped = suffix and key .. "_" .. suffix
+    if shaped and def.variants[shaped] then return shaped end
+    return key
+end
+
 -- Sprite of the variant `key` of a type for a facing (the first facing when it has fewer), or nil.
 function Parts:variant(id, key, facing)
     local def = self.defs[id]
@@ -203,7 +314,7 @@ end
 function Parts:spritesOf(id)
     local def, seen, list = self.defs[id], {}, {}
     if not def then return list end
-    local names = allSprites(def.sprites, def.variants)
+    local names = allSprites(def.sprites, def.variants, def.crossings)
     for i = 1, #names do
         if not seen[names[i][1]] then
             seen[names[i][1]] = true
@@ -326,14 +437,14 @@ end
 
 -- Text lines the part shows (information, Live Wire): { { key, arg, ... }, ... } gathered from
 -- the `lines` hooks, sorted by their `rank` field (default 50, then kind order), rank dropped.
-function Parts:lines(part)
+function Parts:lines(part, ctx)
     local def = self.defs[part.type]
     local found = {}
     if not def then return found end
     for i = 1, #def.caps do
         local c = def.caps[i]
         local fn = c.impl.lines
-        local list = fn and fn(c.params, stateOf(part, c.kind)) or {}
+        local list = fn and fn(c.params, stateOf(part, c.kind), ctx) or {}
         for j = 1, #list do
             found[#found + 1] = { line = list[j], rank = list[j].rank or 50, n = #found }
         end
@@ -378,7 +489,8 @@ function Parts:describe(id)
     local caps = {}
     for i = 1, #def.caps do caps[def.caps[i].kind] = deepCopy(def.caps[i].params) end
     return { sprites = deepCopy(def.sprites), variants = deepCopy(def.variants),
-        facings = deepCopy(def.facings), sides = def.sides, capabilities = caps }
+        facings = deepCopy(def.facings), branches = deepCopy(def.branches), sides = def.sides,
+        sidesByFacing = deepCopy(def.sidesByFacing), capabilities = caps }
 end
 
 return Parts

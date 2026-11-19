@@ -5,6 +5,13 @@
 -- remove). Parts are kept by reference: the owner's state changes (valve) are seen here.
 -- Water starts at the parts that pressurize, goes through parts that carry and do not
 -- block; a reached part that does not carry (outlet) or blocks (closed valve) ends a path.
+-- A part may carry `cuts`, the mask of its sides a solid wall cuts (ADR-002 D01, recorded by the
+-- topology when the square is loaded, kept in the registry): a side cut on either part is no link.
+-- A part may also carry `apart`, the mask of its sides kept apart because a link that appeared there
+-- (a wall taken away) would overflow a port (ADR-006 D05: the part placed later loses); it is read
+-- like `cuts` and kept in the registry, so a rebuild gives the same graph.
+-- The sides a part offers are asked to the catalog for the placed part (Parts:sidesOf: its type and
+-- the `facing` recorded when it was set down, ADR-008 D08), so an inline part links on its axis only.
 
 local Grid = require "LiveWater/LWT_Grid"
 
@@ -16,20 +23,24 @@ function Network.new(catalog)
         Network)
 end
 
+local function cut(part, bit)
+    return (part.cuts ~= nil and Grid.has(part.cuts, bit)) or (part.apart ~= nil and Grid.has(part.apart, bit))
+end
+
 local function keyOf(part)
     return Grid.key(part.x, part.y, part.z)
 end
 
 -- Links of `part` (stored or not) to the stored parts around it: list of { bit, key }.
 function Network:linksOf(part)
-    local links, sides = {}, self.catalog:sides(part.type)
+    local links, sides = {}, self.catalog:sidesOf(part)
     for i = 1, #Grid.SIDES do
         local side = Grid.SIDES[i]
-        if Grid.has(sides, side.bit) then
+        if Grid.has(sides, side.bit) and not cut(part, side.bit) then
             local key = Grid.key(part.x + side.dx, part.y + side.dy, part.z)
             local other = self.parts[key]
-            if other and Grid.has(self.catalog:sides(other.type), side.opposite) then
-                links[#links + 1] = { bit = side.bit, key = key }
+            if other and Grid.has(self.catalog:sidesOf(other), side.opposite) and not cut(other, side.opposite) then
+                links[#links + 1] = { bit = side.bit, key = key, opposite = side.opposite }
             end
         end
     end
@@ -115,6 +126,18 @@ function Network:add(part)
     return true, self.netOf[key]
 end
 
+-- A part leaves: its neighbours kept apart from it (ADR-006 D05) may link on that side again.
+function Network:forget(part)
+    for i = 1, #Grid.SIDES do
+        local side = Grid.SIDES[i]
+        local other = self.parts[Grid.key(part.x + side.dx, part.y + side.dy, part.z)]
+        if other and other.apart and Grid.has(other.apart, side.opposite) then
+            other.apart = other.apart - side.opposite
+            if other.apart == 0 then other.apart = nil end
+        end
+    end
+end
+
 -- Remove the part of a square. Returns it, or nil when the square is empty. The rest of its
 -- network splits when the part held it together; the first neighbour keeps the network id.
 function Network:remove(x, y, z)
@@ -122,6 +145,7 @@ function Network:remove(x, y, z)
     local part = self.parts[key]
     if not part then return nil end
     local links = self:linksOf(part)
+    self:forget(part)
     local old = self.netOf[key]
     for member in pairs(self.sets[old]) do self.netOf[member] = nil end
     self.sets[old] = nil
@@ -171,23 +195,135 @@ function Network:mask(x, y, z)
     return mask
 end
 
+-- Keys of the square (x, y, z) and of its four neighbours.
+local function around(x, y, z)
+    local squares = { Grid.key(x, y, z) }
+    for i = 1, #Grid.SIDES do
+        local side = Grid.SIDES[i]
+        squares[#squares + 1] = Grid.key(x + side.dx, y + side.dy, z)
+    end
+    return squares
+end
+
+-- Side masks of the links of the square (x, y, z) and of its four neighbours, by key: the links
+-- before an edge changes, given back to relink.
+function Network:masksAround(x, y, z)
+    local out, squares = {}, around(x, y, z)
+    for i = 1, #squares do
+        local part = self.parts[squares[i]]
+        if part then out[squares[i]] = self:mask(part.x, part.y, part.z) end
+    end
+    return out
+end
+
+-- Links of `squares` that are not in `before` (key -> side mask), each once: list of { newer = the
+-- part placed later, bit = its side facing the other, other }, newest first.
+function Network:freshLinks(squares, before)
+    local fresh, seen = {}, {}
+    for i = 1, #squares do
+        local part = self.parts[squares[i]]
+        local links = part and self:linksOf(part) or {}
+        for j = 1, #links do
+            local link = links[j]
+            if not Grid.has(before[squares[i]] or 0, link.bit) then
+                local other = self.parts[link.key]
+                local newer, bit, older = part, link.bit, other
+                if other.order > part.order then newer, bit, older = other, link.opposite, part end
+                local id = keyOf(newer) .. "/" .. bit
+                if not seen[id] then
+                    seen[id] = true
+                    fresh[#fresh + 1] = { newer = newer, bit = bit, other = older }
+                end
+            end
+        end
+    end
+    table.sort(fresh, function(a, b)
+        if a.newer.order ~= b.newer.order then return a.newer.order > b.newer.order end
+        return a.bit < b.bit
+    end)
+    return fresh
+end
+
+-- Links that appeared since `before` and overflow a port of one of their two parts are not made
+-- (ADR-006 D05): the part placed later keeps that side apart, newest links judged first.
+function Network:holdPorts(squares, before)
+    local fresh = self:freshLinks(squares, before)
+    for i = 1, #fresh do
+        local f = fresh[i]
+        if #self:linksOf(f.newer) > self:limitOf(f.newer) or #self:linksOf(f.other) > self:limitOf(f.other) then
+            f.newer.apart = (f.newer.apart or 0) + f.bit
+        end
+    end
+end
+
+-- Links around the square (x, y, z) were maybe changed (a wall or fence set down or taken away,
+-- ADR-002 D05): the networks of the square and of its four neighbours are labelled again (split or
+-- merge). `before` (optional, masksAround taken before the change): a link that appeared and
+-- overflows a port is not made (ADR-006 D05). Returns the ids of the networks they now belong to
+-- (sorted, may be empty).
+function Network:relink(x, y, z, before)
+    local squares = around(x, y, z)
+    if before then self:holdPorts(squares, before) end
+    local old, members = {}, {}
+    for i = 1, #squares do
+        local id = self.netOf[squares[i]]
+        if id and not old[id] then
+            old[id] = true
+            for key in pairs(self.sets[id]) do members[#members + 1] = key end
+            self.sets[id] = nil
+        end
+    end
+    for i = 1, #members do self.netOf[members[i]] = nil end
+    table.sort(members, function(a, b) return self.parts[a].order < self.parts[b].order end)
+    local reuse = {}
+    for id in pairs(old) do reuse[#reuse + 1] = id end
+    table.sort(reuse)
+    local now, ids = {}, {}
+    for i = 1, #members do
+        if not self.netOf[members[i]] then
+            local id = table.remove(reuse, 1) or self:newId()
+            self:label(members[i], id)
+            if not now[id] then now[id] = true ids[#ids + 1] = id end
+        end
+    end
+    for id in pairs(self.sets) do
+        if isEmpty(self.sets[id]) then self.sets[id] = nil end
+    end
+    table.sort(ids)
+    return ids
+end
+
 -- Sprite the part on a square shows for its links (ADR-001 D12).
 function Network:sprite(x, y, z)
     local part = self:part(x, y, z)
     return part and self.catalog:sprite(part.type, self:mask(x, y, z)) or nil
 end
 
--- Where water gets in a network: pipe distance from the nearest part that pressurizes.
+-- Zone of a root key in the union-find table `zones` (key -> key of the zone it joined).
+local function zoneOf(zones, key)
+    while zones[key] ~= key do
+        zones[key] = zones[zones[key]]
+        key = zones[key]
+    end
+    return key
+end
+
+-- Where water gets in a network: pipe distance from the nearest part that pressurizes (or that
+-- answers the hook `rootHook` when given, e.g. "gravity", ADR-004 D04).
 -- Returns the reached parts as a list in service order (distance, then placement order) and
 -- the same nodes by key; node = { key, part, dist, from = key of the previous node, root = true
--- for a part that pressurizes }.
-function Network:reach(id)
-    local catalog, byKey, queue, head = self.catalog, {}, {}, 1
-    local members = self:members(id)
+-- for a part where the water starts, zone = key of its zone: the roots whose water meets through
+-- open parts (a part reached from two roots that is not closed joins them; a closed valve between
+-- two pumps keeps two zones, ADR-001 D02) }.
+function Network:reach(id, rootHook)
+    local catalog, byKey, queue, head, zones = self.catalog, {}, {}, 1, {}
+    local members, hook = self:members(id), rootHook or "pressurizes"
     for i = 1, #members do
         local part = members[i]
-        if catalog:any(part, "pressurizes") then
+        if catalog:any(part, hook) then
             local node = { key = keyOf(part), part = part, dist = 0, root = true }
+            node.origin = node.key
+            zones[node.key] = node.key
             byKey[node.key] = node
             queue[#queue + 1] = node
         end
@@ -200,14 +336,19 @@ function Network:reach(id)
             local links = self:linksOf(part)
             for i = 1, #links do
                 local key = links[i].key
-                if not byKey[key] then
-                    local child = { key = key, part = self.parts[key], dist = node.dist + 1, from = node.key }
+                local other = byKey[key]
+                if not other then
+                    local child = { key = key, part = self.parts[key], dist = node.dist + 1, from = node.key,
+                        origin = node.origin }
                     byKey[key] = child
                     queue[#queue + 1] = child
+                elseif not catalog:closed(other.part) then
+                    zones[zoneOf(zones, other.origin)] = zoneOf(zones, node.origin)
                 end
             end
         end
     end
+    for i = 1, #queue do queue[i].zone = zoneOf(zones, queue[i].origin) end
     table.sort(queue, function(a, b)
         if a.dist ~= b.dist then return a.dist < b.dist end
         return a.part.order < b.part.order

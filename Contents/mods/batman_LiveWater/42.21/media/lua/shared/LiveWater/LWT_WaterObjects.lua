@@ -1,6 +1,7 @@
 -- LiveWater: rules on the game objects that hold or give water (ADR-001 D18, D21, D28). Both sides:
 -- the server adapters and the client menus ask the same rules.
 --   RELAY_KEY, BARREL_KEY   ModData keys of LiveWater's relay tanks and connected barrels
+--   RELAY_LITRES            capacity of a relay tank (LWT_Relays places them, menus show it)
 --   WASHER_KEY              ModData key of a washer known plumbed (multiplayer fix, E28)
 --   FOREIGN_KEYS            marks of other mods' objects never taken (Live Wire relays, barrels)
 --   isFixture(obj)          a water fixture: its sprite carries the waterPiped flag
@@ -22,6 +23,7 @@ WaterObjects.BARREL_KEY = "LiveWaterBarrel"
 WaterObjects.WASHER_KEY = "LiveWaterWasher"
 WaterObjects.FOREIGN_KEYS = { "LiveWireRelay", "LiveWireBarrel" }
 WaterObjects.MIN_BARREL_LITRES = 20
+WaterObjects.RELAY_LITRES = 25
 WaterObjects.EPSILON = 0.001
 
 function WaterObjects.isFixture(obj)

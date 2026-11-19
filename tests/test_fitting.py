@@ -4,9 +4,10 @@ their intake); sprite by mode and by the shape of the container (data table, ext
 tall); one fluid per network: a fuel network serves only fittings set to Fill whose barrel is empty or holds fuel."""
 import json
 import os
+import sys
 import unittest
 
-from lwt_fakes import services
+from lwt_fakes import CONTAINERS, services
 from lwt_harness import ROOT, new_lua
 
 API = "shared/LiveWater/LWT_API.lua"
@@ -53,25 +54,7 @@ class Shapes(unittest.TestCase):
                          (False, "invalid_definition"))
 
 
-BENCH = r"""
-CONT = {}
-CONTAINERS = {}
-function CONTAINERS:at(x, y, z)
-    local c = CONT[x .. "," .. y]
-    if not c then return nil end
-    return { fluid = c.amount > 0 and c.fluid or nil, amount = c.amount, free = c.capacity - c.amount, sprite = c.sprite }
-end
-function CONTAINERS:add(x, y, z, litres, quality)
-    local c = CONT[x .. "," .. y]
-    c.amount = c.amount + litres
-    c.fluid = quality
-    return litres
-end
-function CONTAINERS:take(x, y, z, litres)
-    local c = CONT[x .. "," .. y]
-    c.amount = c.amount - litres
-    return litres
-end
+BENCH = CONTAINERS + r"""
 NEED = {}
 PUB = require("LiveWater/LWT_Publisher").new({ catalog = LiveWater.Parts, sprites = SPRITES, mirror = WORLD })
 FITTINGS = require("LiveWater/LWT_Fittings").new({ catalog = LiveWater.Parts, registry = REG, world = WORLD,
@@ -107,12 +90,12 @@ class Fill(unittest.TestCase):
         self.assertEqual(lua.eval('CONT["2,-1"].amount'), 50)
         self.assertEqual(lua.eval('CONT["2,-1"].fluid'), "tainted")
         self.assertEqual(lua.eval('state(2, 0)'), "served")
-        self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "64")
+        self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "188")   # pipe from the W: bent
 
     def test_a_low_crate_collector_draws_the_low_sprite(self):
         lua = bench()
         lua.execute('CONT["2,-1"] = { amount = 0, capacity = 400, sprite = "carpentry_02_54" } tick()')
-        self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "68")
+        self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "196")
 
     def test_no_leak_a_full_barrel_or_none_takes_nothing(self):
         lua = bench()
@@ -137,7 +120,7 @@ class Pump(unittest.TestCase):
         d = lua.eval('emitted("waterDelivered")')
         self.assertEqual((d[1][3], d[1][4]), (20, "clean"))
         self.assertEqual(lua.eval('CONT["2,-1"].amount'), 10)
-        self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "72")
+        self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "204")
         self.assertTrue(lua.eval("REG:at(0, 0, 0).data.pump.running"))
         self.assertEqual(lua.eval('#emitted("waterDrawn")'), 1)
 
@@ -260,6 +243,132 @@ class Texts(unittest.TestCase):
                         "IGUI_LWT_Fluid_fuel", "IGUI_LWT_Fitting_Content"):
                 self.assertIn(key, ui, lang)
             self.assertIn("LWTBuildBarrelFitting", load("Recipes.json"), lang)
+
+
+#: Branch shapes of the fitting (ADR-008 D01, D01b): mask of the relative sides linked (1 front, 2 side +1, 8 side +3;
+#: the barrel behind, 4, is not drawn) -> variant suffix, and first index of the four facings of each mode.
+SHAPES = {2: "bend1", 8: "bend3", 10: "tee", 3: "front1", 9: "front3", 11: "cross"}
+FIRST = {
+    "fill": {"bend1": 184, "bend3": 188, "tee": 208, "front1": 212, "front3": 216, "cross": 220},
+    "fill_low": {"bend1": 192, "bend3": 196, "tee": 224, "front1": 228, "front3": 232, "cross": 236},
+    "pump": {"bend1": 200, "bend3": 204, "tee": 240, "front1": 244, "front3": 248, "cross": 252},
+}
+STRAIGHT = {"fill": 64, "fill_low": 68, "pump": 72}
+#: Offset of the square on each facing 1..4 (S, E, N, W).
+OFFSET = {1: (0, 1), 2: (1, 0), 3: (0, -1), 4: (-1, 0)}
+
+
+def side_square(facing, rel):
+    """Square on the relative side `rel` (0 front, 1, 2 behind, 3) of a fitting at (0, 0) with `facing`."""
+    return OFFSET[(facing - 1 + rel) % 4 + 1]
+
+
+def lone_fitting(facing):
+    lua = services(new_lua, FITTING)
+    lua.execute('place("LiveWater:BarrelFitting", 0, 0, "%s%d")' % (TILE, 63 + facing))
+    return lua
+
+
+class Branches(unittest.TestCase):
+    def test_definition_declares_the_shapes_by_relative_mask(self):
+        lua = new_lua(API, FITTING)
+        d = lua.eval('LiveWater.API.part("LiveWater:BarrelFitting")')
+        self.assertEqual({m: d.branches[m] for m in SHAPES}, SHAPES)
+        for mode, firsts in FIRST.items():
+            for shape, base in firsts.items():
+                key = "%s_%s" % (mode, shape)
+                self.assertEqual([d.variants[key][i] for i in range(1, 5)], [TILE + str(base + k) for k in range(4)],
+                                 key)
+                for facing in range(1, 5):
+                    self.assertEqual(lua.eval('LiveWater.Parts:facingOf("%s%d")' % (TILE, base + facing - 1)), facing)
+
+    def test_every_combination_of_front_and_side_pipes_on_every_facing(self):
+        for facing in range(1, 5):
+            for mask in (0, 1, 2, 3, 8, 9, 10, 11):
+                lua = lone_fitting(facing)
+                for rel in (0, 1, 3):
+                    if mask & (1 << rel):
+                        lua.execute('place("Test:Pipe", %d, %d)' % side_square(facing, rel))
+                base = FIRST["fill"][SHAPES[mask]] if mask in SHAPES else STRAIGHT["fill"]
+                self.assertEqual(lua.eval("WORLD:sprite(0, 0, 0)"), TILE + str(base + facing - 1), (facing, mask))
+
+    def test_a_pipe_behind_is_not_drawn(self):
+        lua = lone_fitting(1)
+        lua.execute('place("Test:Pipe", 0, -1)')
+        self.assertEqual(lua.eval("WORLD:sprite(0, 0, 0)"), TILE + "64")
+        lua.execute('place("Test:Pipe", -1, 0) place("Test:Pipe", 1, 0)')
+        self.assertEqual(lua.eval("WORLD:sprite(0, 0, 0)"), TILE + "208")
+
+    def test_the_shape_follows_the_pipes_that_come_and_go(self):
+        lua = lone_fitting(1)
+        lua.execute('place("Test:Pipe", -1, 0)')
+        self.assertEqual(lua.eval("WORLD:sprite(0, 0, 0)"), TILE + "188")
+        lua.execute('place("Test:Pipe", 1, 0)')
+        self.assertEqual(lua.eval("WORLD:sprite(0, 0, 0)"), TILE + "208")
+        lua.execute('place("Test:Pipe", 0, 1)')
+        self.assertEqual(lua.eval("WORLD:sprite(0, 0, 0)"), TILE + "220")
+        lua.execute("TOPO:remove(-1, 0, 0) WORLD:removePart(-1, 0, 0, 'Test:Pipe')")
+        self.assertEqual(lua.eval("WORLD:sprite(0, 0, 0)"), TILE + "212")
+        lua.execute("TOPO:remove(1, 0, 0) WORLD:removePart(1, 0, 0, 'Test:Pipe')")
+        self.assertEqual(lua.eval("WORLD:sprite(0, 0, 0)"), TILE + "64")
+
+    def test_the_shape_follows_the_mode(self):
+        lua = lone_fitting(2)
+        lua.execute('place("Test:Pipe", 0, 1)'
+                    ' FIT = REG:at(0, 0, 0) LiveWater.Parts:call(FIT, "setFittingMode", "pump") SPRITES:show(0, 0, 0)')
+        self.assertEqual(lua.eval("WORLD:sprite(0, 0, 0)"), TILE + "205")
+        lua.execute('place("Test:Pipe", 0, -1)')
+        self.assertEqual(lua.eval("WORLD:sprite(0, 0, 0)"), TILE + "241")
+        self.assertEqual(lua.eval('LiveWater.Parts:facingOf(WORLD:sprite(0, 0, 0))'), 2)
+
+    def test_the_part_and_the_tile_recipe_agree(self):
+        sys.path.insert(0, os.path.join(ROOT, "source", "tiles"))
+        try:
+            import build_livewater_tiles as tiles
+        finally:
+            sys.path.pop(0)
+        self.assertEqual(tiles.TOTAL, 256)
+        groups = {g["key"]: g["indices"] for g in tiles.tile_groups()}
+        for mode, firsts in FIRST.items():
+            for shape, base in firsts.items():
+                self.assertEqual(groups["barrel_%s_%s" % (mode, shape)], list(range(base, base + 4)))
+                for facing in range(4):
+                    self.assertEqual(tiles.tile_props(base + facing), tiles.tile_props(STRAIGHT[mode] + facing),
+                                     base + facing)
+        self.assertEqual(tiles.tile_props(255)["CustomItem"], "Base.Mov_LiveWater_BarrelFitting")
+
+    def test_invalid_branches_are_refused(self):
+        for bad in ('"x"', '{ [16] = "b" }', '{ [0] = "b" }', '{ [1] = 5 }', '{ [1] = "no space" }'):
+            lua = new_lua(API)
+            ok = lua.eval('{ LiveWater.API.registerPart("T:Bad", { variants = { on = { "b" } }, branches = %s,'
+                          ' capabilities = { conduit = true } }) }' % bad)
+            self.assertEqual((ok[1], ok[2]), (False, "invalid_branches"), bad)
+
+
+class Through(unittest.TestCase):
+    """D01b: the water goes through the fitting from one pipe to the next, the fitting still fills or gives."""
+
+    def test_water_goes_through_a_fitting_set_to_fill_to_a_sprinkler_downstream(self):
+        lua = bench()
+        lua.execute('place("Test:Pipe", 3, 0) place("Test:Spr", 4, 0) NEED["4,0"] = 20'
+                    ' CONT["2,-1"] = { amount = 380, capacity = 400, fluid = "tainted" } tick()')
+        self.assertEqual(lua.eval('state(2, 0)'), "served")
+        self.assertEqual(lua.eval('CONT["2,-1"].amount'), 400)
+        self.assertEqual(lua.eval('REG:at(4, 0, 0).data.outlet.state'), "served")
+        self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "208")
+
+    def test_a_fitting_set_to_pump_in_line_gives_its_barrel_to_the_outlets_beyond_it(self):
+        lua = bench()
+        lua.execute(r"""
+        place("Test:Pipe", 3, 0) place("Test:Spr", 4, 0) NEED["4,0"] = 20
+        CONT["2,-1"] = { amount = 30, capacity = 600, fluid = "clean" }
+        LiveWater.Parts:call(FIT, "setFittingMode", "pump")
+        tick()
+        """)
+        self.assertEqual(lua.eval('REG:at(4, 0, 0).data.outlet.state'), "served")
+        d = lua.eval('emitted("waterDelivered")')
+        self.assertEqual((d[1][3], d[1][4]), (20, "clean"))
+        self.assertEqual(lua.eval('CONT["2,-1"].amount'), 10)
 
 
 if __name__ == "__main__":

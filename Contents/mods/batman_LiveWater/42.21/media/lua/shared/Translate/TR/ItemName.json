@@ -1,6 +1,12 @@
 {
-    "LiveWater.PipeSection": "Boru Parçası",
+    "Base.Mov_LiveWater_Pipe": "Su Borusu",
     "Base.Mov_LiveWater_PondPump": "Gölet Pompası",
     "LiveWater.WaterFilter": "Su Filtre Kartuşu",
-    "Base.Mov_LiveWater_FlowMeter": "Su Sayacı"
+    "Base.Mov_LiveWater_FlowMeter": "Su Sayacı",
+    "Base.Mov_LiveWater_DripLine": "Damla Sulama Hortumu",
+    "Base.Mov_LiveWater_Valve": "Kapatma Vanası",
+    "Base.Mov_LiveWater_HouseInlet": "Ev Su Girişi",
+    "Base.Mov_LiveWater_Sprinkler": "Yağmurlayıcı",
+    "Base.Mov_LiveWater_SprinklerAuto": "Otomatik Yağmurlayıcı",
+    "Base.Mov_LiveWater_BarrelFitting": "Varil Tesisatı"
 }

@@ -1,10 +1,12 @@
-"""E09: house water inlet (ADR-001 D17, D18, D21): part LiveWater:HouseInlet drawn filtered or unfiltered; the area it
+"""E09: house water inlet (ADR-001 D17, D18, D21; ADR-005 D01, D04): part LiveWater:HouseInlet drawn filtered or
+unfiltered, with or without the filter cartridge it carries; the area it
 serves (the map building it touches, a range, up to 3 floors above); invisible 25 L relay tanks one level above the
 plumbed fixtures (ModData LiveWaterRelay), shared by neighbouring fixtures; a fixture fed by something else (a Live Wire
 relay, a vanilla barrel) is left alone; the inlet's need is the litres missing in its relays, delivered water fills
 them; unfiltered water fills nothing; the relays leave with the inlet."""
 import json
 import os
+import sys
 import unittest
 
 from lwt_fakes import services
@@ -68,7 +70,7 @@ function FakePlumbing:fixtures(area)
     for _, f in ipairs(self.list) do
         if area:contains(f.x, f.y, f.z) then
             table.insert(out, { x = f.x, y = f.y, z = f.z, source = self:sourceOf(f.x, f.y, f.z),
-                mapBuilding = self:inside(f.x, f.y, f.z) })
+                mapBuilding = self:inside(f.x, f.y, f.z), plumbed = f.plumbed })
         end
     end
     return out
@@ -150,10 +152,18 @@ class HouseInletPart(unittest.TestCase):
     def test_definition_follows_the_tile_contract(self):
         lua = new_lua(API, INLET)
         d = lua.eval('LiveWater.API.part("LiveWater:HouseInlet")')
-        for key, base in (("filtered", 40), ("unfiltered", 44)):
+        for key, base in (("filtered", 40), ("unfiltered", 44), ("filter_filtered", 176), ("filter_unfiltered", 180)):
             self.assertEqual([d.variants[key][i] for i in range(1, 5)], [TILE + str(base + k) for k in range(4)], key)
         self.assertEqual(d.capabilities.outlet.type, "houseInlet")
         self.assertEqual((d.capabilities.outlet.pressureCost, d.capabilities.outlet.needsClean), (2, True))
+        self.assertEqual((d.capabilities.filter.item, d.capabilities.filter.capacity), ("LiveWater.WaterFilter", 500))
+
+    def test_the_inlet_shows_its_cartridge_green_while_it_cleans_amber_once_worn(self):
+        lua = new_lua(API, INLET)
+        lua.execute('P = { type = "LiveWater:HouseInlet", data = {} } LiveWater.Parts:call(P, "fit", 1, {})')
+        self.assertEqual(lua.eval('LiveWater.Parts:look(P)'), "filter_filtered")
+        lua.execute('LiveWater.Parts:call(P, "stepped", { through = 0, outlet = "unfiltered" })')
+        self.assertEqual(lua.eval('LiveWater.Parts:look(P)'), "filter_unfiltered")
 
     def test_the_inlet_looks_unfiltered_after_a_step_refused_for_unfiltered_water(self):
         lua = new_lua(API, INLET)
@@ -162,6 +172,28 @@ class HouseInletPart(unittest.TestCase):
                     ' LiveWater.Parts:call(P, "stepped", { through = 0, outlet = "unfiltered" })')
         self.assertEqual(lua.eval('LiveWater.Parts:look(P)'), "unfiltered")
         self.assertEqual(lua.eval('LiveWater.Parts:lines(P)[1][1]'), "IGUI_LWT_Outlet_unfiltered")
+
+    def test_the_part_and_the_tile_recipe_agree(self):
+        sys.path.insert(0, os.path.join(ROOT, "source", "tiles"))
+        try:
+            import build_livewater_tiles as tiles
+        finally:
+            sys.path.pop(0)
+        self.assertEqual(tiles.TOTAL, 256)
+        groups = {g["key"]: g for g in tiles.tile_groups()}
+        lua = new_lua(API, INLET)
+        for group, key, base in (("house_inlet", "filtered", 40), ("house_inlet_unfiltered", "unfiltered", 44),
+                                 ("house_inlet_filter", "filter_filtered", 176),
+                                 ("house_inlet_filter_unfiltered", "filter_unfiltered", 180)):
+            self.assertEqual(groups[group]["indices"], list(range(base, base + 4)), group)
+            self.assertIsNotNone(groups[group]["lit"], group)
+            for facing in range(1, 5):
+                self.assertEqual(lua.eval('LiveWater.Parts:variant("LiveWater:HouseInlet", "%s", %d)' % (key, facing)),
+                                 TILE + str(base + facing - 1))
+                props = tiles.tile_props(base + facing - 1)
+                ref = tiles.tile_props(40 + facing - 1)
+                self.assertEqual(props, ref, base + facing - 1)
+            self.assertEqual(tiles.tile_props(base)["CustomItem"], "Base.Mov_LiveWater_HouseInlet")
 
     def test_a_sprinkler_outlet_has_no_filter_look(self):
         lua = new_lua(API)
@@ -323,6 +355,18 @@ class Delivery(unittest.TestCase):
         self.assertEqual(lua.eval("OUTLETS:need(REG:at(5, 9, 0))"), 50)
         lua.execute('PLUMB.list[2].plumbed = false')
         self.assertEqual(lua.eval("OUTLETS:need(REG:at(5, 9, 0))"), 25)
+
+    def test_the_inlet_takes_nothing_while_its_square_is_unloaded(self):
+        # ADR-006 D06: the relay tanks of the house wait for the player's return
+        lua = bench()
+        self.setup(lua)
+        lua.execute("RELAYS:refresh(REG:at(5, 9, 0))")
+        lua.execute('WORLD.unloaded["5,9,0"] = true')
+        self.assertEqual(lua.eval("OUTLETS:need(REG:at(5, 9, 0))"), 0)
+        lua.execute('WORLD.unloaded["0,9,0"] = true CLOCK:tick()')
+        self.assertEqual(lua.eval("relayAt(2, 12, 1).amount + relayAt(6, 16, 1).amount"), 0)
+        lua.execute('WORLD.unloaded = {}')
+        self.assertEqual(lua.eval("OUTLETS:need(REG:at(5, 9, 0))"), 50)
 
     def test_clean_water_delivered_fills_the_relays(self):
         lua = bench()

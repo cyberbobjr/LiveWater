@@ -22,10 +22,10 @@ local STARTING_CAPABILITIES = {
     filter = "LWT_CapFilter",
     outlet = "LWT_CapOutlet",
     controller = "LWT_CapController",
-    layable = "LWT_CapLayable",
     meter = "LWT_CapMeter",
     spray = "LWT_CapSpray",
     fitting = "LWT_CapFitting",
+    drip = "LWT_CapDrip",
 }
 
 -- Starting source kinds (D16, D17): kind -> file under LiveWater/Sources.
@@ -71,10 +71,26 @@ LiveWater.Events = EventBus.new(EventBus.NAMES)
 -- Revision 11: capability "fitting" (barrel fitting, Fill or Pump), hooks draw, sense, fittingMode,
 -- setFittingMode, fourth result of `outlet` (fluid taken), event waterDrawn, fluid "fuel",
 -- registerContainer.
--- Revision 12: registerContainer field `clean`; registered containers of any size (E25).
+-- Revision 12: registerContainer field `clean` (ignored since ADR-005 D07); registered containers of
+-- any size (E25).
 -- Revision 13: part definition field `facings` (variant facing by side mask, Parts:facingFor),
 -- valve field `look` (drawn by the valve state: variants "open", "closed"), spray field `sound`.
-local API = { revision = 13 }
+-- Revision 14 (pipes and barriers, ADR-002): part definition field `crossings` (sleeve sprites of a
+-- shape crossing a fence, Parts:crossing).
+-- Revision 15 (drip line, ADR-004): capability "drip" (hook drip), outlet fields costGroup and
+-- byGravity (hooks costGroup, byGravity), fitting field gravity (hook gravity: a barrel set to Pump
+-- on a network without pump gives a gravity pressure the outlets that work on gravity use), spray
+-- fields loss, noiseRadius and noiseVolume.
+-- Revision 16 (flow, ADR-006): spray field flow and drip field flow (litres an irrigation outlet
+-- draws per step, thirsty plants or not; absent: sandbox SprinklerFlow, DripFlow), spray `loss` is a
+-- share of the water drawn, controller field duration (steps a timer holds its part open).
+-- Revision 17 (network readability, ADR-008): readout hooks of the capabilities (LWT_Capabilities, D03,
+-- D07); part definition field `bends` (D01), replaced in revision 18.
+-- Revision 18 (ADR-008 D01b): part definition field `branches` (variant drawn by the mask of the sides
+-- linked relative to the facing, Parts:branch, Parts:followsLinks) in place of `bends`.
+-- Revision 19 (ADR-008 D08): part definition field `sidesByFacing` (sides a part may connect by for
+-- the facing of the sprite it was set down with, recorded on the part: Parts:sidesOf).
+local API = { revision = 19 }
 LiveWater.API = API
 
 local function answer(call, id, ok, reason, detail)
@@ -103,8 +119,9 @@ function API.registerSource(kind, definition)
 end
 
 -- Container a barrel fitting works with (revision 11), see LWT_Containers.lua: `name` is the sprite
--- of its object or the name of its entity script; definition { shape = "tall" or "low", clean =
--- true for a drinking container (revision 12) }; a registered container is used whatever its size:
+-- of its object or the name of its entity script; definition { shape = "tall" or "low" }; a
+-- registered container is used whatever its size and filled like a barrel, with tainted water
+-- (ADR-005 D07; the field `clean` of revision 12 is ignored):
 --   LiveWater.API.registerContainer("mymod_tanks_0", { shape = "low" })
 -- Returns true, or false and "registration_closed", "invalid_name", "invalid_definition".
 function API.registerContainer(name, definition)

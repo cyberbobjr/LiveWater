@@ -7,5 +7,16 @@
     "LWTBuildHouseInlet": "Montar Entrada de Água da Casa",
     "LWTBuildSprinkler": "Montar Aspersor",
     "LWTUpgradeSprinkler": "Adicionar Temporizador a um Aspersor",
-    "LWTBuildBarrelFitting": "Montar Conexão para Barril"
+    "LWTBuildBarrelFitting": "Montar Conexão para Barril",
+    "LWTMakeDripLine": "Fazer linhas de gotejamento",
+    "LWTDismantlePipe": "Desmontar Cano de Água",
+    "LWTDismantleValve": "Desmontar Válvula de Corte",
+    "LWTDismantleFlowMeter": "Desmontar Medidor de Água",
+    "LWTDismantleHouseInlet": "Desmontar Entrada de Água da Casa",
+    "LWTDismantlePondPump": "Desmontar Bomba de Lagoa",
+    "LWTDismantleSprinkler": "Desmontar Aspersor",
+    "LWTDismantleSprinklerAuto": "Desmontar Aspersor Automático",
+    "LWTDismantleBarrelFitting": "Desmontar Conexão para Barril",
+    "LWTDismantleDripLine": "Desmontar linha de gotejamento",
+    "LWTDismantleWaterFilter": "Desmontar Cartucho Filtrante"
 }

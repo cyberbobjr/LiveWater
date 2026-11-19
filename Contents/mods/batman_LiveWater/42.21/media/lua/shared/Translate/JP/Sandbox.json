@@ -14,10 +14,14 @@
     "Sandbox_LWT_WasherFix_tooltip": "サーバーでは、家の給水口から水を受ける洗濯機が、プレイヤーに実際の状態を表示します。配管済みであり、水がなくなると停止します。",
     "Sandbox_LWT_SprinklerRadiusMultiplier": "スプリンクラーの散水距離",
     "Sandbox_LWT_SprinklerRadiusMultiplier_tooltip": "スプリンクラーが植物に水をやる距離に掛ける倍率です（1.0 で 2 マス、最大 10 マス）。",
+    "Sandbox_LWT_SprinklerFlow": "スプリンクラーの流量",
+    "Sandbox_LWT_SprinklerFlow_tooltip": "開いたスプリンクラーが 10 分ごとに使う水の量です（植物が水を必要としていなくても使います。初期値 10 L）。四分の一は空中で失われ、範囲内の植物が必要な分を受け取り、残りは失われます。",
+    "Sandbox_LWT_DripFlow": "点滴チューブの流量",
+    "Sandbox_LWT_DripFlow_tooltip": "配管から水が来ているあいだ、点滴チューブ 1 マスが 10 分ごとに使う水の量です（初期値 0.5 L）。空中で失われる水はなく、隣の植物が必要な分を受け取り、残りは失われます。",
     "Sandbox_LWT_SprinklerTimerMin": "スプリンクラーのタイマー: 最短間隔",
     "Sandbox_LWT_SprinklerTimerMin_tooltip": "自動スプリンクラーの2回の散水の間に、プレイヤーが設定できる最短の時間（時間）です。",
     "Sandbox_LWT_SprinklerTimerMax": "スプリンクラーのタイマー: 最長間隔",
     "Sandbox_LWT_SprinklerTimerMax_tooltip": "自動スプリンクラーの2回の散水の間に、プレイヤーが設定できる最長の時間（時間）です。",
     "Sandbox_LWT_FillContainers": "樽の取り付け部が満たせる容器",
-    "Sandbox_LWT_FillContainers_tooltip": "エンティティ名またはスプライト名を ; で区切って入力します（ウォーターサーバー: WaterDispenser）。「満たす」に設定した樽の取り付け部で、大きさに関係なく、きれいな水だけを満たせます。樽と雨水収集器は常に使えます。"
+    "Sandbox_LWT_FillContainers_tooltip": "エンティティ名またはスプライト名を ; で区切って入力します（ウォーターサーバー: WaterDispenser）。「満たす」に設定した樽の取り付け部で、大きさに関係なく、樽と同じく汚染された水で満たされます。樽と雨水収集器は常に使えます。"
 }

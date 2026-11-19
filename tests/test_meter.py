@@ -1,5 +1,5 @@
 """E16: flow meter (ADR-001 D24, P12): part LiveWater:FlowMeter (conduit, two ports, capability meter), drawn along
-its pipe (ew / ns), records the litres that went through it each step and the fluid; the part menu shows them."""
+the axis chosen at placement (ew / ns, ADR-008 D08), records the litres that went through it each step and the fluid; the part menu shows them."""
 import json
 import os
 import unittest
@@ -19,7 +19,7 @@ PUB = require("LiveWater/LWT_Publisher").new({ catalog = LiveWater.Parts, sprite
 CLOCK = require("LiveWater/LWT_Clock").new({ network = NET, flow = require("LiveWater/LWT_Flow").new(LiveWater.Parts),
     catalog = LiveWater.Parts, world = WORLD, events = LiveWater.Events, power = POWER, publisher = PUB,
     need = function(part) return NEED[part.x .. "," .. part.y] or 0 end })
-place("LiveWater:PondPump", 0, 0) place("LiveWater:FlowMeter", 1, 0, "batman_livewater_01_21") place("Test:Spr", 2, 0)
+place("LiveWater:PondPump", 0, 0) place("LiveWater:FlowMeter", 1, 0, "batman_livewater_01_20") place("Test:Spr", 2, 0)
 METER = REG:at(1, 0, 0)
 """
 
@@ -34,16 +34,16 @@ class Part(unittest.TestCase):
     def test_definition(self):
         lua = new_lua("shared/LiveWater/LWT_API.lua", METER)
         d = lua.eval('LiveWater.API.part("LiveWater:FlowMeter")')
-        self.assertEqual((d.sprites[10], d.sprites[5]), (TILE + "20", TILE + "21"))
-        self.assertIsNone(d.sprites[0])
+        # variant facings: 1 = S (the ns tile), 2 = E (the ew tile); sides of each axis (ADR-008 D08)
+        self.assertEqual((d.variants.straight[1], d.variants.straight[2]), (TILE + "21", TILE + "20"))
+        self.assertEqual((d.sidesByFacing[1], d.sidesByFacing[2]), (5, 10))
         self.assertEqual(d.capabilities.conduit.ports, 2)
         self.assertIsNotNone(d.capabilities.meter)
 
-    def test_drawn_along_its_pipe_and_two_ports_only(self):
+    def test_linked_on_its_axis_only(self):
         lua = bench()
         self.assertEqual(lua.eval("WORLD:sprite(1, 0, 0)"), TILE + "20")
-        lua.execute('place("Test:Pipe", 1, 1)')
-        self.assertEqual(lua.eval('{ TOPO:canAdd("Test:Pipe", 1, -1, 0) }')[2], "ports_full")
+        self.assertEqual(lua.eval("NET:mask(1, 0, 0)"), 10)
 
 
 class Measure(unittest.TestCase):
@@ -59,9 +59,10 @@ class Measure(unittest.TestCase):
         self.assertEqual(lua.eval("METER.data.meter.litres"), 0)
         self.assertEqual(lua.eval("#LiveWater.Parts:lines(METER)"), 1)
 
-    def test_clean_after_a_filter(self):
+    def test_clean_water_from_a_well(self):
         lua = bench()
-        lua.execute('LiveWater.Parts:call(REG:at(0, 0, 0), "fit", 1) NEED["2,0"] = 10 CLOCK:tick()')
+        lua.execute('CLOCK.ctx.sources = LiveWater.Sources REG:at(0, 0, 0).data.intake.source = "well"'
+                    ' NEED["2,0"] = 10 CLOCK:tick()')
         self.assertEqual(lua.eval("METER.data.meter.quality"), "clean")
 
     def test_only_the_water_going_through_it_counts(self):

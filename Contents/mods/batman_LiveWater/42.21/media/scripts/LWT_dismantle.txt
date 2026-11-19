@@ -1,0 +1,192 @@
+module LiveWater
+{
+    imports
+    {
+        Base,
+    }
+
+    /* Dismantling (ADR-007 D01, D03): one recipe per equipment, outputs = the table
+       shared/LiveWater/LWT_Dismantle.lua (tests/test_dismantle.py checks they agree). Names are the
+       keys of Recipes.json. */
+
+    craftRecipe LWTDismantlePipe
+    {
+        timedAction = Making,
+        time = 60,
+        Tags = AnySurfaceCraft,
+        category = LiveWater,
+        inputs
+        {
+            item 1 tags[base:pipewrench;base:wrench] mode:keep flags[MayDegradeLight],
+            item 1 [Base.Mov_LiveWater_Pipe] mode:destroy,
+        }
+        outputs
+        {
+            item 1 Base.IronPiece,
+        }
+    }
+
+    craftRecipe LWTDismantleValve
+    {
+        timedAction = Making,
+        time = 100,
+        Tags = AnySurfaceCraft,
+        category = LiveWater,
+        inputs
+        {
+            item 1 tags[base:pipewrench;base:wrench] mode:keep flags[MayDegradeLight],
+            item 1 [Base.Mov_LiveWater_Valve] mode:destroy,
+        }
+        outputs
+        {
+            item 1 Base.ScrapMetal,
+            item 1 Base.IronPiece,
+        }
+    }
+
+    craftRecipe LWTDismantleFlowMeter
+    {
+        timedAction = Making,
+        time = 100,
+        Tags = AnySurfaceCraft,
+        category = LiveWater,
+        inputs
+        {
+            item 1 tags[base:pipewrench;base:wrench] mode:keep flags[MayDegradeLight],
+            item 1 [Base.Mov_LiveWater_FlowMeter] mode:destroy,
+        }
+        outputs
+        {
+            item 2 Base.IronPiece,
+            item 1 Base.Screws,
+        }
+    }
+
+    craftRecipe LWTDismantleHouseInlet
+    {
+        timedAction = Making,
+        time = 150,
+        Tags = AnySurfaceCraft,
+        category = LiveWater,
+        inputs
+        {
+            item 1 tags[base:pipewrench;base:wrench] mode:keep flags[MayDegradeLight],
+            item 1 [Base.Mov_LiveWater_HouseInlet] mode:destroy,
+        }
+        outputs
+        {
+            item 1 Base.ScrapMetal,
+            item 1 Base.IronPiece,
+            item 2 Base.Screws,
+        }
+    }
+
+    craftRecipe LWTDismantlePondPump
+    {
+        timedAction = DismantleElectrical,
+        time = 200,
+        Tags = AnySurfaceCraft,
+        category = LiveWater,
+        inputs
+        {
+            item 1 tags[base:screwdriver] mode:keep flags[Prop1;MayDegradeLight],
+            item 1 [Base.Mov_LiveWater_PondPump] mode:destroy,
+        }
+        outputs
+        {
+            item 2 Base.ScrapMetal,
+            item 2 Base.Screws,
+            item 2 Base.ElectronicsScrap,
+            item 1 Base.ElectricWire,
+        }
+    }
+
+    craftRecipe LWTDismantleSprinkler
+    {
+        timedAction = Making,
+        time = 100,
+        Tags = AnySurfaceCraft,
+        category = LiveWater,
+        inputs
+        {
+            item 1 tags[base:pipewrench;base:wrench] mode:keep flags[MayDegradeLight],
+            item 1 [Base.Mov_LiveWater_Sprinkler] mode:destroy,
+        }
+        outputs
+        {
+            item 1 Base.ScrapMetal,
+            item 2 Base.IronPiece,
+        }
+    }
+
+    craftRecipe LWTDismantleSprinklerAuto
+    {
+        timedAction = DismantleElectrical,
+        time = 150,
+        Tags = AnySurfaceCraft,
+        category = LiveWater,
+        inputs
+        {
+            item 1 tags[base:screwdriver] mode:keep flags[Prop1;MayDegradeLight],
+            item 1 [Base.Mov_LiveWater_SprinklerAuto] mode:destroy,
+        }
+        outputs
+        {
+            item 1 Base.ScrapMetal,
+            item 2 Base.IronPiece,
+            item 1 Base.ElectronicsScrap,
+            item 1 Base.ElectricWire,
+        }
+    }
+
+    craftRecipe LWTDismantleBarrelFitting
+    {
+        timedAction = Making,
+        time = 80,
+        Tags = AnySurfaceCraft,
+        category = LiveWater,
+        inputs
+        {
+            item 1 tags[base:pipewrench;base:wrench] mode:keep flags[MayDegradeLight],
+            item 1 [Base.Mov_LiveWater_BarrelFitting] mode:destroy,
+        }
+        outputs
+        {
+            item 1 Base.IronPiece,
+        }
+    }
+
+    craftRecipe LWTDismantleDripLine
+    {
+        timedAction = Making,
+        time = 40,
+        Tags = AnySurfaceCraft,
+        category = LiveWater,
+        inputs
+        {
+            item 1 tags[base:sharpknife] mode:keep flags[Prop1;MayDegradeLight],
+            item 1 [Base.Mov_LiveWater_DripLine] mode:destroy,
+        }
+        outputs
+        {
+            item 1 Base.RubberBand,
+        }
+    }
+
+    craftRecipe LWTDismantleWaterFilter
+    {
+        timedAction = Making,
+        time = 40,
+        Tags = AnySurfaceCraft,
+        category = LiveWater,
+        inputs
+        {
+            item 1 tags[base:sharpknife] mode:keep flags[Prop1;MayDegradeLight],
+            item 1 [LiveWater.WaterFilter] mode:destroy flags[AllowDestroyedItem],
+        }
+        outputs
+        {
+            item 1 Base.RippedSheets,
+        }
+    }
+}

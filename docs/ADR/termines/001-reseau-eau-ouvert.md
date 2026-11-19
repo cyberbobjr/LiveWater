@@ -3,7 +3,7 @@
 | Champ | Valeur |
 |---|---|
 | Identifiant | `ADR-001-RESEAU-EAU-OUVERT` |
-| Date de création et de mise à jour | 2026-11-13, 2026-11-17 |
+| Date de création et de mise à jour | 2026-11-13, 2026-11-17, 2026-11-18 (Q01 ; D17 : emplacement du filtre remplacé par ADR-005) |
 | Statut | Accepté (2026-11-17) |
 | Avancement | Terminé le 2026-11-18 (E18 et E24 annulées) ; voir le [plan 001](../../ADR-plans/termines/plan-001-reseau-eau-ouvert.md) |
 | Décideur | l'utilisateur |
@@ -283,6 +283,14 @@ fichiers installés, confirmé statiquement) ; « LG Connect To Water Supply » 
 - **Q01 — Matière et coût d'un tuyau** : rendu le 2026-11-13 par l'utilisateur (« une section de tuyau par case :
   ok »). Objet `LiveWater.PipeSection`, 1 par case, fabriqué à partir d'un `Base.MetalPipe` (4 sections, scie à
   métaux), rendu au démontage à la clé à tuyau.
+  **Mise à jour du 2026-11-18** (demande de l'utilisateur : « je préfère poser des tuyaux avec le menu "placer" d'un
+  équipement normal, sinon ça fait 2 chemins pour placer des équipements LiveWater »). Décision précédente : une
+  `LiveWater.PipeSection` posée par un clic droit sur la case (capacité `layable`, commandes `lay` et `dismantle`).
+  Elle est remplacée : le tuyau est un objet posable `Base.Mov_LiveWater_Pipe`, placé avec le curseur de mobilier
+  vanilla (« Placer ») et ramassé avec la même clé que les autres pièces, comme la vanne. Les 16 sprites de D12
+  portent tous `CustomItem = Base.Mov_LiveWater_Pipe` ; la forme suit toujours les voisins. La recette donne 4 tuyaux
+  par `Base.MetalPipe`. La capacité `layable`, les commandes `lay` et `dismantle` et l'objet `LiveWater.PipeSection`
+  sont retirés (mod non publié : rien à reprendre).
 - **Q02 — Objet et recette du filtre** : rendu le 2026-11-13 par l'utilisateur (« filtre : ok »). Cartouche
   `LiveWater.WaterFilter`, fabriquée avec du charbon de bois et du tissu, 500 L par cartouche.
 

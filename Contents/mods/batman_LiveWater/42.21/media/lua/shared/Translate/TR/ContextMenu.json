@@ -1,6 +1,4 @@
 {
-    "ContextMenu_LWT_Lay": "Yerleştir: %1",
-    "ContextMenu_LWT_Dismantle": "Sök: %1",
     "ContextMenu_LWT_FitFilter": "Filtre kartuşu tak",
     "ContextMenu_LWT_ReplaceFilter": "Filtre kartuşunu değiştir",
     "ContextMenu_LWT_RemoveFilter": "Filtre kartuşunu çıkar",
@@ -20,7 +18,12 @@
     "ContextMenu_LWT_EveryHours": "Her %1 saatte bir",
     "ContextMenu_LWT_ShowNetwork": "Su ağını göster",
     "ContextMenu_LWT_HideNetwork": "Su ağını gizle",
+    "ContextMenu_LWT_ShowAllAreas": "Tüm sulanan alanları göster",
+    "ContextMenu_LWT_HideArea": "Sulanan alanı gizle",
     "ContextMenu_LWT_FittingToPump": "Pompalamaya ayarla",
     "ContextMenu_LWT_FittingToFill": "Doldurmaya ayarla",
-    "ContextMenu_LWT_RemoveMod": "LiveWater'ı bu dünyadan kaldır (admin)"
+    "ContextMenu_LWT_RemoveMod": "LiveWater'ı bu dünyadan kaldır (admin)",
+    "ContextMenu_LWT_Debug": "LiveWater (hata ayıklama)",
+    "ContextMenu_LWT_DebugKit": "Test setini ver",
+    "ContextMenu_LWT_Water": "Su: %1 L / %2 L"
 }

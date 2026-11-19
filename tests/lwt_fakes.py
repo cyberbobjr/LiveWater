@@ -2,7 +2,8 @@
 server services around them. They stand for LWT_GameWorld and LWT_GamePlayers, which call the game.
 
 Test part types:
-  Test:Pipe   16 sprites t_pipe_0..15, conduit, layable with Test.Section (tool tag base:pipewrench)
+  Test:Pipe   16 sprites t_pipe_0..15, conduit; sleeves t_pipe_<mask>_x<edges> for masks with N (edges 1), W (8),
+              both (9), except mask 5 (N + S) which has none
   Test:Pump   one sprite t_pump, intake + pump (ports given by PUMP_PORTS, default 4)
   Test:Spr    one sprite t_spr, sprinkler outlet
 """
@@ -10,8 +11,18 @@ Test part types:
 PARTS = r"""
 local pipe = {}
 for m = 0, 15 do pipe[m] = "t_pipe_" .. m end
-LiveWater.API.registerPart("Test:Pipe", { sprites = pipe,
-    capabilities = { conduit = true, layable = { item = "Test.Section" } } })
+local crossings = {}
+for m = 0, 15 do
+    if m ~= 5 then
+        local c = {}
+        if m % 2 == 1 then c[1] = "t_pipe_" .. m .. "_x1" end
+        if m >= 8 then c[8] = "t_pipe_" .. m .. "_x8" end
+        if m % 2 == 1 and m >= 8 then c[9] = "t_pipe_" .. m .. "_x9" end
+        if next(c) then crossings[m] = c end
+    end
+end
+LiveWater.API.registerPart("Test:Pipe", { sprites = pipe, crossings = crossings,
+    capabilities = { conduit = true } })
 LiveWater.API.registerPart("Test:Pump", { sprites = { [0] = "t_pump" },
     capabilities = { intake = true, pump = { ports = PUMP_PORTS or 4 } } })
 LiveWater.API.registerPart("Test:Spr", { sprites = { [0] = "t_spr" },
@@ -24,9 +35,12 @@ local function k(x, y, z) return x .. "," .. y .. "," .. z end
 FakeWorld = {}
 FakeWorld.__index = FakeWorld
 function FakeWorld.new(catalog)
-    return setmetatable({ catalog = catalog, unloaded = {}, blocked = {}, objects = {}, sets = 0, dry = {}, near = {},
-        unpowered = {}, states = {}, writes = 0, things = {} }, FakeWorld)
+    return setmetatable({ catalog = catalog, unloaded = {}, objects = {}, sets = 0, dry = {}, near = {},
+        unpowered = {}, generators = {}, gridOff = false, states = {}, writes = 0, things = {}, edges = {} }, FakeWorld)
 end
+-- Edges port (ADR-002 D04): kind of the N (north = true) or W edge of a square, "wall", "fence" or nil.
+function FakeWorld:setEdge(x, y, z, north, kind) self.edges[k(x, y, z) .. (north and "N" or "W")] = kind end
+function FakeWorld:edge(x, y, z, north) return self.edges[k(x, y, z) .. (north and "N" or "W")] end
 -- Neighbourhood probe of a square: natural water everywhere unless dry[key]; near[key] = set of sprites around.
 function FakeWorld:site(x, y, z)
     local world, key = self, k(x, y, z)
@@ -37,7 +51,18 @@ function FakeWorld:site(x, y, z)
     function probe:source() return LiveWater.Sources:find(self) end
     return probe
 end
-function FakeWorld:hasPower(x, y, z) return not self.unpowered[k(x, y, z)] end
+-- Current of a loaded square: a generator in range (generators[key]) and the public grid there (unless
+-- unpowered[key] or the grid is off everywhere, gridOff); nil when not loaded.
+function FakeWorld:powerAt(x, y, z)
+    local key = k(x, y, z)
+    if self.unloaded[key] then return nil end
+    return self.generators[key] == true, not self.unpowered[key] and not self.gridOff
+end
+function FakeWorld:gridRuns() return not self.gridOff end
+function FakeWorld:hasPower(x, y, z)
+    local key = k(x, y, z)
+    return self.generators[key] == true or (not self.unpowered[key] and not self.gridOff)
+end
 -- Stand-in of the game object of a part (one per square and type), with the mirrored state.
 function FakeWorld:object(x, y, z, typeId)
     local key = k(x, y, z) .. "," .. typeId
@@ -72,7 +97,6 @@ function FakeWorld:list(x, y, z)
     return l
 end
 function FakeWorld:isLoaded(x, y, z) return not self.unloaded[k(x, y, z)] end
-function FakeWorld:isFree(x, y, z) return not self.blocked[k(x, y, z)] end
 function FakeWorld:spriteOf(x, y, z, typeId)
     if self.unloaded[k(x, y, z)] then return nil end
     for _, s in ipairs(self:list(x, y, z)) do
@@ -140,13 +164,36 @@ function newServices(store)
     NET = require("LiveWater/LWT_Network").new(LiveWater.Parts)
     SPRITES = require("LiveWater/LWT_Sprites").new(NET, LiveWater.Parts, WORLD)
     TOPO = require("LiveWater/LWT_Topology").new({ registry = REG, network = NET, catalog = LiveWater.Parts,
-        events = LiveWater.Events, sprites = SPRITES, sites = WORLD, log = function(m) table.insert(LOGS, m) end })
+        events = LiveWater.Events, sprites = SPRITES, sites = WORLD, edges = WORLD, log = function(m) table.insert(LOGS, m) end })
 end
 
 -- A part placed as the game would: its object on the square, then the topology.
 function place(t, x, y, sprite)
     WORLD:createPart(x, y, 0, sprite or LiveWater.Parts:sprite(t, 0))
-    return TOPO:add(t, x, y, 0)
+    return TOPO:add(t, x, y, 0, nil, LiveWater.Parts:facingOf(sprite or ""))
+end
+"""
+
+
+# Containers port of the barrel fittings (LWT_GameContainers): CONT["x,y"] = { amount, capacity, fluid, sprite }.
+CONTAINERS = r"""
+CONT = {}
+CONTAINERS = {}
+function CONTAINERS:at(x, y, z)
+    local c = CONT[x .. "," .. y]
+    if not c then return nil end
+    return { fluid = c.amount > 0 and c.fluid or nil, amount = c.amount, free = c.capacity - c.amount, sprite = c.sprite }
+end
+function CONTAINERS:add(x, y, z, litres, quality)
+    local c = CONT[x .. "," .. y]
+    c.amount = c.amount + litres
+    c.fluid = quality
+    return litres
+end
+function CONTAINERS:take(x, y, z, litres)
+    local c = CONT[x .. "," .. y]
+    c.amount = c.amount - litres
+    return litres
 end
 """
 

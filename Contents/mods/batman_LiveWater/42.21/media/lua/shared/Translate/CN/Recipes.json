@@ -7,5 +7,16 @@
     "LWTBuildHouseInlet": "制作房屋进水口",
     "LWTBuildSprinkler": "制作喷灌器",
     "LWTUpgradeSprinkler": "给喷灌器加装定时器",
-    "LWTBuildBarrelFitting": "制作水桶接头"
+    "LWTBuildBarrelFitting": "制作水桶接头",
+    "LWTMakeDripLine": "制作滴灌带",
+    "LWTDismantlePipe": "拆解水管",
+    "LWTDismantleValve": "拆解截止阀",
+    "LWTDismantleFlowMeter": "拆解水表",
+    "LWTDismantleHouseInlet": "拆解房屋进水口",
+    "LWTDismantlePondPump": "拆解池塘水泵",
+    "LWTDismantleSprinkler": "拆解喷灌器",
+    "LWTDismantleSprinklerAuto": "拆解自动喷灌器",
+    "LWTDismantleBarrelFitting": "拆解水桶接头",
+    "LWTDismantleDripLine": "拆解滴灌带",
+    "LWTDismantleWaterFilter": "拆解净水滤芯"
 }

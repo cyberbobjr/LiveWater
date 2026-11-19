@@ -1,6 +1,12 @@
 {
-    "LiveWater.PipeSection": "Tramo de tubería",
+    "Base.Mov_LiveWater_Pipe": "Tubería de agua",
     "Base.Mov_LiveWater_PondPump": "Bomba de estanque",
     "LiveWater.WaterFilter": "Cartucho filtrante de agua",
-    "Base.Mov_LiveWater_FlowMeter": "Contador de agua"
+    "Base.Mov_LiveWater_FlowMeter": "Contador de agua",
+    "Base.Mov_LiveWater_DripLine": "Línea de goteo",
+    "Base.Mov_LiveWater_Valve": "Válvula de cierre",
+    "Base.Mov_LiveWater_HouseInlet": "Entrada de agua de la casa",
+    "Base.Mov_LiveWater_Sprinkler": "Aspersor",
+    "Base.Mov_LiveWater_SprinklerAuto": "Aspersor automático",
+    "Base.Mov_LiveWater_BarrelFitting": "Conexión de barril"
 }

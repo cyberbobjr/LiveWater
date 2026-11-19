@@ -2,15 +2,16 @@
 --   mode     "manual" (default): only a player opens and closes the valve;
 --            "timer": the part is also held open once per slice of `every` hours (slice number
 --            floor(world hours / every) compared with the last one watered, never a minute test,
---            D09), for the time to serve its outlet: it stays open while the outlet is served,
---            and closes as soon as a step is not ("idle", no water, no pressure...)
+--            D09), for `duration` ten-minute steps, served or not (ADR-006 D03)
 --   every    hours between two openings of a timer (default 6); a player sets it on the part
 --            within the sandbox bounds SprinklerTimerMin and SprinklerTimerMax (command setTimer)
 --   watts    power a timer draws (default 5): an electric consumer (LWT_Power, D20); without
 --            current it triggers nothing; opening the valve by hand stays possible
 --   choices  hours offered in the menu (default 1, 2, 3, 4, 6, 8, 12, 24)
+--   duration ten-minute steps a timer holds the part open (API revision 16, 1..144, default 3:
+--            30 minutes, ADR-006 D03)
 -- State: { every (set by a player, nil: as defined), slice (last slice watered), watering (held
--- open now), powered (current this step) }.
+-- open now), left (steps left of this watering), powered (current this step) }.
 -- Revision 9: hooks prepare (start of a step), opens (held open), timer, setTimer.
 
 local Check = require "LiveWater/LWT_Check"
@@ -31,6 +32,7 @@ local SPEC = {
     every = Check.integer(1, MAX_HOURS, 6),
     watts = Check.number(0, 1000, 5),
     choices = { default = DEFAULT_CHOICES, valid = isChoices },
+    duration = Check.integer(1, 144, 3),
 }
 
 local Controller = {}
@@ -70,6 +72,7 @@ function Controller.prepare(p, d, ctx)
     if slice ~= d.slice then
         d.slice = slice
         d.watering = true
+        d.left = p.duration
     end
 end
 
@@ -77,8 +80,14 @@ function Controller.opens(p, d)
     return isTimer(p) and d ~= nil and d.watering == true
 end
 
+-- Each step of a watering is used, served or not; after the last one the part closes.
 function Controller.stepped(p, d, outcome)
-    if d.watering then d.watering = outcome.outlet == "served" end
+    if not d.watering then return end
+    d.left = (d.left or p.duration) - 1
+    if d.left <= 0 then
+        d.watering = false
+        d.left = nil
+    end
 end
 
 -- Hours between two openings of a timer, or nil.

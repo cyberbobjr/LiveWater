@@ -1,6 +1,12 @@
 {
-    "LiveWater.PipeSection": "Rohrstück",
+    "Base.Mov_LiveWater_Pipe": "Wasserrohr",
     "Base.Mov_LiveWater_PondPump": "Teichpumpe",
     "LiveWater.WaterFilter": "Filterkartusche",
-    "Base.Mov_LiveWater_FlowMeter": "Wasserzähler"
+    "Base.Mov_LiveWater_FlowMeter": "Wasserzähler",
+    "Base.Mov_LiveWater_DripLine": "Tropfschlauch",
+    "Base.Mov_LiveWater_Valve": "Absperrventil",
+    "Base.Mov_LiveWater_HouseInlet": "Hauswassereinlass",
+    "Base.Mov_LiveWater_Sprinkler": "Sprinkler",
+    "Base.Mov_LiveWater_SprinklerAuto": "Automatischer Sprinkler",
+    "Base.Mov_LiveWater_BarrelFitting": "Fassanschluss"
 }

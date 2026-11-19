@@ -18,14 +18,16 @@ end
 
 -- A tile with this sprite appeared on a square. Returns true (added, or already known), or
 -- false and "not_a_part" or a refusal of the topology ("occupied", "ports_full"), logged:
--- the tile then stays a plain decoration.
+-- the tile then stays a plain decoration. The facing of the sprite (Parts:facingOf, nil for a
+-- shape) is recorded on the part: the axis an inline part shows (ADR-008 D08).
 function Placement:added(spriteName, x, y, z)
     local partType = self.catalog:typeOfSprite(spriteName)
     if not partType then return false, "not_a_part" end
     local entry = self.topology:at(x, y, z)
     if entry and entry.type == partType then return true end
     local carried = self.states and self.states:stateOf(x, y, z, partType)
-    local ok, reason = self.topology:add(partType, x, y, z, carried and carried.data)
+    local ok, reason = self.topology:add(partType, x, y, z, carried and carried.data,
+        self.catalog:facingOf(spriteName))
     if not ok then
         self.log("LiveWater: " .. partType .. " placed at " .. x .. "," .. y .. "," .. z
             .. " is not connected: " .. tostring(reason))
@@ -33,6 +35,12 @@ function Placement:added(spriteName, x, y, z)
         return false, reason
     end
     return true
+end
+
+-- A wall or a fence appeared on, or is about to leave, a square (ADR-002 D05): the links of the
+-- parts around are judged again. Returns how many networks changed.
+function Placement:edgeChanged(x, y, z)
+    return self.topology:relink(x, y, z)
 end
 
 -- A tile with this sprite is about to leave a square. Returns true when its part left, or

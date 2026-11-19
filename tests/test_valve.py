@@ -1,6 +1,6 @@
 """E22 (P11): inline shut-off valve, part LiveWater:Valve (conduit with two ports, valve open when placed, manual
-controller), set down between two pipes with the furniture cursor (moveable Base.Mov_LiveWater_Valve). Drawn along its
-pipe by its state (open 16 ew / 17 ns, closed 18 ew / 19 ns); closed, it cuts the water after it (ADR-001 D02, D13)."""
+controller), set down between two pipes with the furniture cursor (moveable Base.Mov_LiveWater_Valve). Drawn along the
+axis chosen at placement (ADR-008 D08) by its state (open 16 ew / 17 ns, closed 18 ew / 19 ns); closed, it cuts the water after it (ADR-001 D02, D13)."""
 import glob
 import json
 import os
@@ -21,7 +21,7 @@ PUB = require("LiveWater/LWT_Publisher").new({ catalog = LiveWater.Parts, sprite
 CLOCK = require("LiveWater/LWT_Clock").new({ network = NET, flow = require("LiveWater/LWT_Flow").new(LiveWater.Parts),
     catalog = LiveWater.Parts, world = WORLD, events = LiveWater.Events, power = POWER, publisher = PUB,
     need = function(part) return NEED[part.x .. "," .. part.y] or 0 end })
-place("LiveWater:PondPump", 0, 0) place("LiveWater:Valve", 1, 0, "batman_livewater_01_17") place("Test:Spr", 2, 0)
+place("LiveWater:PondPump", 0, 0) place("LiveWater:Valve", 1, 0, "batman_livewater_01_16") place("Test:Spr", 2, 0)
 VALVE = REG:at(1, 0, 0)
 """
 
@@ -39,24 +39,16 @@ class Part(unittest.TestCase):
         # variant facings: 1 = S (the ns tile), 2 = E (the ew tile), as the tiles' Facing property
         self.assertEqual((d.variants.open[1], d.variants.open[2]), (TILE + "17", TILE + "16"))
         self.assertEqual((d.variants.closed[1], d.variants.closed[2]), (TILE + "19", TILE + "18"))
-        self.assertEqual((d.facings[10], d.facings[5], d.facings[2], d.facings[4]), (2, 1, 2, 1))
+        self.assertEqual((d.sidesByFacing[1], d.sidesByFacing[2]), (5, 10))
         self.assertEqual(d.capabilities.conduit.ports, 2)
         self.assertTrue(d.capabilities.valve.open)
         self.assertTrue(d.capabilities.valve.look)
         self.assertEqual(d.capabilities.controller.mode, "manual")
 
-    def test_drawn_along_its_pipe_and_two_ports_only(self):
+    def test_drawn_along_its_axis_and_linked_on_it(self):
         lua = bench()
         self.assertEqual(lua.eval("WORLD:sprite(1, 0, 0)"), TILE + "16")
-        # linked west (pump) and east (sprinkler): a third pipe is refused
-        self.assertEqual(lua.eval('{ TOPO:canAdd("Test:Pipe", 1, 1, 0) }')[2], "ports_full")
-
-    def test_turns_with_the_pipe_on_a_north_south_run(self):
-        lua = services(new_lua, VALVE)
-        lua.execute('place("Test:Pipe", 0, 0) place("LiveWater:Valve", 0, 1, "batman_livewater_01_16")')
-        self.assertEqual(lua.eval("WORLD:sprite(0, 1, 0)"), TILE + "17")
-        lua.execute('place("Test:Pipe", 0, 2)')
-        self.assertEqual(lua.eval("WORLD:sprite(0, 1, 0)"), TILE + "17")
+        self.assertEqual(lua.eval("NET:mask(1, 0, 0)"), 10)
 
     def test_closed_shows_the_closed_tile_along_its_axis(self):
         lua = bench()
@@ -107,14 +99,6 @@ class Facings(unittest.TestCase):
         res = lua.eval('{ LiveWater.Parts:register("T:W", { variants = { a = { "y1" } }, facings = "x",'
                        ' capabilities = { conduit = true } }) }')
         self.assertEqual((res[1], res[2]), (False, "invalid_facings"))
-
-    def test_a_mask_without_a_facing_keeps_the_facing_it_was_set_down_with(self):
-        lua = services(new_lua, VALVE)
-        lua.execute('place("LiveWater:Valve", 0, 0, "batman_livewater_01_17")')
-        self.assertEqual(lua.eval("WORLD:sprite(0, 0, 0)"), TILE + "17")
-        lua.execute('place("Test:Pipe", 1, 0) place("Test:Pipe", 0, 1)')
-        # a bend (E + S): no facing for its mask, the valve keeps its last tile
-        self.assertEqual(lua.eval("WORLD:sprite(0, 0, 0)"), TILE + "16")
 
 
 def script(name):

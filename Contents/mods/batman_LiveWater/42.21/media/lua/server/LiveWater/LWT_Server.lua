@@ -6,14 +6,20 @@ if isClient() then return end
 --                                                or set down again: LWT_HouseBarrels, L12)
 --   OnObjectAdded / OnObjectAboutToBeRemoved of a fixture or a water tank, LoadChunk
 --                                             -> LWT_Relays (fixtures surveyed again, D10)
+--   LoadChunk                                 -> LWT_Fittings (count kept while away written
+--                                                to the barrel), LWT_Publisher (parts stepped
+--                                                while away show their state, ADR-006 D06)
 --   OnClientCommand (module LiveWater)        -> LWT_Commands
 --   EveryTenMinutes                           -> LWT_Clock (the only clock, ADR-001 D09)
 --   OnInitWorld                               -> LWT_Power:register (Live Wire consumers, D20)
 --   LiveWater.Events partAdded / partRemoved  -> LWT_Publisher (sprite by state, mirrored state)
 --   LiveWater.Events waterDelivered / partRemoved -> LWT_Outlets (relay tanks of the house inlets,
---                                                plants of the sprinklers: LWT_Plants, barrels of
+--                                                plants of the sprinklers and the drip lines:
+--                                                LWT_Plants with an area strategy, barrels of
 --                                                the fittings set to Fill: LWT_Fittings)
 --   LiveWater.Events waterDrawn                   -> LWT_Fittings (barrels set to Pump)
+--   LiveWater.Events networkChanged               -> LWT_Clock:settle (a network left without pump
+--                                                stops showing water)
 -- No per-frame event (D08). Events before the first OnInitGlobalModData are ignored.
 -- LiveWater.Server holds the services of the current game (nil before), for later adapters.
 
@@ -31,6 +37,7 @@ local GameWorld = require "LiveWater/LWT_GameWorld"
 local GamePlayers = require "LiveWater/LWT_GamePlayers"
 local GameSettings = require "LiveWater/LWT_GameSettings"
 local GameSounds = require "LiveWater/LWT_GameSounds"
+local ValveSounds = require "LiveWater/LWT_ValveSounds"
 local Power = require "LiveWater/LWT_Power"
 local Publisher = require "LiveWater/LWT_Publisher"
 local Outlets = require "LiveWater/LWT_Outlets"
@@ -41,6 +48,8 @@ local WaterObjects = require "LiveWater/LWT_WaterObjects"
 local Diagnostics = require "LiveWater/LWT_Diagnostics"
 local WasherFix = require "LiveWater/LWT_WasherFix"
 local Plants = require "LiveWater/LWT_Plants"
+local SprayArea = require "LiveWater/LWT_SprayArea"
+local DripArea = require "LiveWater/LWT_DripArea"
 local GameFarming = require "LiveWater/LWT_GameFarming"
 local GameVisuals = require "LiveWater/LWT_GameVisuals"
 local Broadcast = require "LiveWater/LWT_GameBroadcast"
@@ -53,8 +62,6 @@ local Reasons = require "LiveWater/LWT_Reasons"
 
 -- Command name -> handler file under LiveWater/Commands.
 local COMMANDS = {
-    [Protocol.LAY] = "LWT_CmdLay",
-    [Protocol.DISMANTLE] = "LWT_CmdDismantle",
     [Protocol.FIT_FILTER] = "LWT_CmdFitFilter",
     [Protocol.REMOVE_FILTER] = "LWT_CmdRemoveFilter",
     [Protocol.SWITCH_PUMP] = "LWT_CmdSwitchPump",
@@ -120,16 +127,20 @@ local function build()
     local sprites = Sprites.new(network, catalog, world)
     local removal
     local topology = Topology.new({ registry = registry, network = network, catalog = catalog,
-        events = LiveWater.Events, sprites = sprites, sites = world, log = log,
+        events = LiveWater.Events, sprites = sprites, sites = world, edges = world, log = log,
         closed = function() return removal ~= nil and removal:started() end })
-    local publisher = Publisher.new({ catalog = catalog, sprites = sprites, mirror = world, sounds = GameSounds.new(),
+    local sounds = GameSounds.new()
+    local publisher = Publisher.new({ catalog = catalog, sprites = sprites, mirror = world, sounds = sounds,
         visuals = GameVisuals.new() })
     local plumbing = GamePlumbing.new()
     local relays = Relays.new({ store = store, plumbing = plumbing, world = world,
         setting = GameSettings.scale, catalog = catalog, registry = registry, log = log })
     local outlets = Outlets.new(catalog)
     outlets:register("houseInlet", relays)
-    outlets:register("sprinkler", Plants.new({ catalog = catalog, farming = GameFarming.new(), scale = GameSettings.scale }))
+    local farming = GameFarming.new()
+    outlets:register("sprinkler", Plants.new({ farming = farming, area = SprayArea.reach(catalog, GameSettings.scale) }))
+    outlets:register("drip", Plants.new({ farming = farming,
+        area = DripArea.reach(catalog, network, GameSettings.scale) }))
     local function listed() return Containers.parseList(GameSettings.scale("FillContainers")) end
     local fittings = Fittings.new({ catalog = catalog, registry = registry, world = world,
         containers = GameContainers.new({ registry = LiveWater.Containers, listed = listed }),
@@ -144,18 +155,21 @@ local function build()
     removal = Removal.new({ store = store, registry = registry, topology = topology, world = world, log = log })
     local commands = Commands.new({ topology = topology, catalog = catalog, world = world,
         players = players, publisher = publisher, scale = GameSettings.scale, barrels = barrels,
-        plumbing = plumbing, events = LiveWater.Events, replies = replies, removal = removal })
+        plumbing = plumbing, events = LiveWater.Events, replies = replies, removal = removal, relays = relays })
     for name, file in pairs(COMMANDS) do
         commands:register(name, require("LiveWater/Commands/" .. file))
     end
+    -- walls and fences built without an event (ADR-002 D05): judged again at each clock step
+    local edgeWatch = { tick = function() topology:refreshCuts(function(x, y, z) return world:isLoaded(x, y, z) end) end }
     local server = {
+        world = world,
         registry = registry, network = network, topology = topology, commands = commands,
         publisher = publisher, power = power, outlets = outlets, relays = relays, barrels = barrels,
-        fittings = fittings,
+        fittings = fittings, valveSounds = ValveSounds.new(sounds),
         placement = Placement.new(topology, catalog, log, world, notifier(players)),
-        clock = Clock.new({ network = network, flow = Flow.new(catalog), catalog = catalog, world = world,
+        clock = Clock.new({ network = network, flow = Flow.new(catalog), catalog = catalog,
             events = LiveWater.Events, power = power, publisher = publisher, scale = GameSettings.scale,
-            random = randomShare, hours = gameHours, sources = LiveWater.Sources, chores = { removal, relays, barrels, diagnostics, washerFix, fittings },
+            random = randomShare, hours = gameHours, sources = LiveWater.Sources, chores = { removal, relays, barrels, diagnostics, washerFix, fittings, edgeWatch },
             need = function(part) return outlets:need(part) end }),
     }
     local count = topology:rebuild()
@@ -181,6 +195,7 @@ local function onObjectAdded(obj)
     local name, x, y, z = whereIs(obj)
     if not name then return end
     server.placement:added(name, x, y, z)
+    if world:isEdgeObject(obj) then server.placement:edgeChanged(x, y, z) end
     if WaterObjects.changesSources(obj) then server.relays:touched(x, y, z) end
     if WaterObjects.mark(obj, WaterObjects.BARREL_KEY) then server.barrels:placed(x, y, z) end
     if WaterObjects.mark(obj, WaterObjects.WASHER_KEY) then
@@ -196,6 +211,9 @@ local function onObjectAboutToBeRemoved(obj)
     local name, x, y, z = whereIs(obj)
     if not name then return end
     server.placement:removed(name, x, y, z)
+    if world:isEdgeObject(obj) then
+        world:without(obj, function() server.placement:edgeChanged(x, y, z) end)
+    end
     if WaterObjects.changesSources(obj) then server.relays:touched(x, y, z) end
     if WaterObjects.mark(obj, WaterObjects.BARREL_KEY) then server.barrels:disconnect(x, y, z) end
 end
@@ -206,7 +224,11 @@ local CHUNK_SQUARES = 8
 local function onLoadChunk(chunk)
     local server = LiveWater.Server
     local sq = server and chunk and chunk:getGridSquare(0, 0, 0)
-    if sq then server.relays:chunkLoaded(sq:getX(), sq:getY(), CHUNK_SQUARES) end
+    if not sq then return end
+    local x, y = sq:getX(), sq:getY()
+    server.relays:chunkLoaded(x, y, CHUNK_SQUARES)
+    server.fittings:chunkLoaded(x, y, CHUNK_SQUARES)
+    server.publisher:chunkLoaded(x, y, CHUNK_SQUARES)
 end
 
 local function onClientCommand(module, command, player, args)
@@ -244,6 +266,22 @@ local function onWaterDrawn(part, litres)
     if server then server.fittings:drawn(part, litres) end
 end
 
+local function onNetworkChanged(id)
+    local server = LiveWater.Server
+    if server then server.clock:settle(id) end
+end
+
+local function onValveChanged(part, open)
+    local server = LiveWater.Server
+    if server then server.valveSounds:changed(part, open) end
+end
+
+-- A generator started or stopped, or the public grid went off (ADR-008 D11).
+local function onElectricityChanged()
+    local server = LiveWater.Server
+    if server then server.clock:powerChanged() end
+end
+
 local function onTenMinutes()
     local server = LiveWater.Server
     if server then server.clock:tick() end
@@ -255,6 +293,9 @@ LiveWater.Events.on("partAdded", onPartAdded)
 LiveWater.Events.on("partRemoved", onPartRemoved)
 LiveWater.Events.on("waterDelivered", onWaterDelivered)
 LiveWater.Events.on("waterDrawn", onWaterDrawn)
+LiveWater.Events.on("networkChanged", onNetworkChanged)
+LiveWater.Events.on("valveChanged", onValveChanged)
+Events.OnElectricityChanged.Add(onElectricityChanged)
 Events.OnObjectAdded.Add(onObjectAdded)
 Events.OnObjectAboutToBeRemoved.Add(onObjectAboutToBeRemoved)
 Events.LoadChunk.Add(onLoadChunk)

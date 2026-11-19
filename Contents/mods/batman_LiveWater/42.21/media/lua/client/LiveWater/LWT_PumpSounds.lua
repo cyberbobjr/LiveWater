@@ -26,6 +26,11 @@ function PumpSounds.onServerCommand(module, command, args)
     if not (isCoordinate(x) and isCoordinate(y) and isCoordinate(z)) then return end
     local key = x .. "," .. y .. "," .. z
     local name = args.name
+    if args.once == true then
+        -- one-shot (a valve, ADR-008 D10): its own emitter, never kept, the loop of the square untouched
+        if type(name) == "string" then getWorld():getFreeEmitter(x + 0.5, y + 0.5, z):playSoundImpl(name, false, nil) end
+        return
+    end
     if type(name) ~= "string" then
         stop(key)
         return

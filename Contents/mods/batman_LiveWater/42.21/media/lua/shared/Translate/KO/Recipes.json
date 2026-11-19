@@ -7,5 +7,16 @@
     "LWTBuildHouseInlet": "집 급수구 만들기",
     "LWTBuildSprinkler": "스프링클러 만들기",
     "LWTUpgradeSprinkler": "스프링클러에 타이머 달기",
-    "LWTBuildBarrelFitting": "배럴 연결구 만들기"
+    "LWTBuildBarrelFitting": "배럴 연결구 만들기",
+    "LWTMakeDripLine": "점적 호스 만들기",
+    "LWTDismantlePipe": "수도 배관 분해하기",
+    "LWTDismantleValve": "차단 밸브 분해하기",
+    "LWTDismantleFlowMeter": "수도 계량기 분해하기",
+    "LWTDismantleHouseInlet": "집 급수구 분해하기",
+    "LWTDismantlePondPump": "연못 펌프 분해하기",
+    "LWTDismantleSprinkler": "스프링클러 분해하기",
+    "LWTDismantleSprinklerAuto": "자동 스프링클러 분해하기",
+    "LWTDismantleBarrelFitting": "배럴 연결구 분해하기",
+    "LWTDismantleDripLine": "점적 호스 분해하기",
+    "LWTDismantleWaterFilter": "정수 필터 카트리지 분해하기"
 }
