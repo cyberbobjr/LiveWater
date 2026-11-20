@@ -10,6 +10,8 @@
     "Sandbox_LWT_InletRange_tooltip": "Distance (en cases) jusqu'à laquelle les points d'eau raccordés du bâtiment reçoivent l'eau d'une arrivée d'eau, jusqu'à 3 étages au-dessus d'elle.",
     "Sandbox_LWT_BaseRange": "Portée de l'arrivée d'eau d'une base",
     "Sandbox_LWT_BaseRange_tooltip": "Hors d'un bâtiment de la carte (base construite), distance (en cases) jusqu'à laquelle une arrivée d'eau dessert les points d'eau raccordés, jusqu'à 3 étages au-dessus d'elle.",
+    "Sandbox_LWT_RelayMaxLitres": "Taille maximale des réservoirs relais",
+    "Sandbox_LWT_RelayMaxLitres_tooltip": "LiveWater garde un réservoir invisible au-dessus de chaque point d'eau raccordé : 25 L, ou ce que le point d'eau demande d'un coup quand un mod l'indique (une douche de Take a Bath and Shower : 80 L, sa baignoire : la contenance de sa cuve). Aucun réservoir ne dépasse cette taille, en litres.",
     "Sandbox_LWT_WasherFix": "Corriger les lave-linge raccordés (multijoueur)",
     "Sandbox_LWT_WasherFix_tooltip": "Sur un serveur, les lave-linge alimentés par une arrivée d'eau montrent leur état réel aux joueurs : raccordés, et arrêtés quand ils n'ont plus d'eau.",
     "Sandbox_LWT_SprinklerRadiusMultiplier": "Portée des arroseurs",

@@ -21,3 +21,6 @@
 | [017](017-pompe-reliee-a-un-onduleur-livewire.md) | Pompe à eau reliée par fil à un onduleur LiveWire | Accepté (2026-11-20) | [plan-017](../ADR-plans/plan-017-pompe-reliee-a-un-onduleur-livewire.md) | aucune étape commencée (attend le plan 004 de LiveWire) |
 | [018](018-eau-des-le-raccordement.md) | L'eau arrive dès qu'un point d'eau est raccordé | Accepté (2026-11-20) | [plan-018](../ADR-plans/plan-018-eau-des-le-raccordement.md) | En cours (passage en jeu E03 à faire) |
 | [019](019-modeles-3d-viewpoint.md) | Modèles 3D de LiveWater pour Viewpoint (sous-mod) | Accepté (2026-11-20) | [plan-019](../ADR-plans/plan-019-modeles-3d-viewpoint.md) | En cours (passage en jeu E03 à faire) |
+| [020](020-tuyaux-enterres.md) | Tuyaux enterrés : une tuile de terre tout juste visible | Proposé | [plan-020](../ADR-plans/plan-020-tuyaux-enterres.md) | aucune étape commencée |
+| [021](021-plein-des-groupes-electrogenes.md) | Le raccord de remplissage fait le plein d'un groupe électrogène | Proposé | [plan-021](../ADR-plans/plan-021-plein-des-groupes-electrogenes.md) | aucune étape commencée |
+| [022](termines/022-reservoir-a-la-mesure-du-point-d-eau.md) | Réservoir relais à la mesure du point d'eau | Accepté (2026-11-20) | [plan-022](../ADR-plans/termines/plan-022-reservoir-a-la-mesure-du-point-d-eau.md) | Terminé le 2026-11-20 |

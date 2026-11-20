@@ -23,8 +23,10 @@ if isClient() then return end
 --                          one of LiveWater's relays that holds water), "dry" (plumbed, LiveWater's
 --                          relay empty or not placed yet), "notPlumbed", "other" (another tank: a
 --                          Live Wire relay, a barrel)
--- A relay is an invisible 25 L tank one level above a fixture (LWT_RelayPlan), marked with the
--- ModData key LiveWaterRelay and its inlet; relays of Live Wire (LiveWireRelay) or of anything
+-- A relay is an invisible tank one level above a fixture (LWT_RelayPlan), marked with the
+-- ModData key LiveWaterRelay and its inlet. It holds 25 L, or the largest need of the fixtures it
+-- serves (fixture field `need`, LWT_FixtureNeeds, ADR-022 D02), at most the sandbox option
+-- RelayMaxLitres; a relay of another size is resized at the survey (D05); relays of Live Wire (LiveWireRelay) or of anything
 -- else are never placed over, filled nor removed (D21).
 -- No game API here; dependencies are injected: { store (persistent table: relays by inlet,
 -- orphans), plumbing (port, LWT_GamePlumbing), world (isLoaded),
@@ -45,6 +47,7 @@ Relays.SCHEMA = 1
 Relays.EPSILON = 0.001
 Relays.DEFAULT_RANGE = 20
 Relays.DEFAULT_BASE_RANGE = 12
+Relays.DEFAULT_MAX_LITRES = 300
 
 function Relays.new(deps)
     local store = deps.store
@@ -112,6 +115,20 @@ local function keep(own, rkey, pos)
     own[rkey] = { v = Relays.SCHEMA, x = pos.x, y = pos.y, z = pos.z }
 end
 
+-- Litres the relay at `pos` must hold: the largest need of the served fixtures that draw, or will
+-- draw, from it (on the floor below, its square or the 8 around, no other tank), 25 L at least,
+-- RelayMaxLitres at most (ADR-022 D02, D04).
+function Relays:size(pos, served)
+    local litres = Relays.CAPACITY
+    for i = 1, #served do
+        local f, src = served[i], served[i].source
+        local below = f.z == pos.z - 1 and math.abs(f.x - pos.x) <= 1 and math.abs(f.y - pos.y) <= 1
+        local mine = src == nil or (type(src) == "table" and src.x == pos.x and src.y == pos.y and src.z == pos.z)
+        if below and mine and type(f.need) == "number" and f.need > litres then litres = f.need end
+    end
+    return math.min(litres, math.max(Relays.CAPACITY, self:option("RelayMaxLitres", Relays.DEFAULT_MAX_LITRES)))
+end
+
 -- Place the relays the inlet wants, remove the ones it no longer wants. Scans the fixtures when
 -- the inlet was never surveyed, was touched since, or `force`.
 function Relays:refresh(part, force)
@@ -130,10 +147,14 @@ function Relays:refresh(part, force)
     for i = 1, #keys do
         local pos = wanted[keys[i]]
         local relay = self.plumbing:relay(pos.x, pos.y, pos.z)
+        local litres = self:size(pos, served)
         if not relay then
-            self.plumbing:placeRelay(pos.x, pos.y, pos.z, key, Relays.CAPACITY)
+            self.plumbing:placeRelay(pos.x, pos.y, pos.z, key, litres)
             keep(own, keys[i], pos)
         elseif relay.owner == key then
+            if math.abs((relay.capacity or litres) - litres) > Relays.EPSILON then
+                self.plumbing:resizeRelay(pos.x, pos.y, pos.z, litres)
+            end
             keep(own, keys[i], pos)
         end
     end

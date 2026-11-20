@@ -10,6 +10,8 @@
     "Sandbox_LWT_InletRange_tooltip": "家の給水口から、同じ建物の配管された設備に水が届く距離（マス数）です。給水口より上の3階まで届きます。",
     "Sandbox_LWT_BaseRange": "基地の給水口の範囲",
     "Sandbox_LWT_BaseRange_tooltip": "マップ上の建物の外（自分で作った基地）では、家の給水口が配管された設備に水を届ける距離（マス数）です。給水口より上の3階まで届きます。",
+    "Sandbox_LWT_RelayMaxLitres": "中継タンクの最大容量",
+    "Sandbox_LWT_RelayMaxLitres_tooltip": "LiveWater は配管された各水回りの上に見えないタンクを置きます：25 L、またはモッドが指定した場合はその水回りが一度に必要とする量（Take a Bath and Shower のシャワー：80 L、浴槽：浴槽の容量）。どのタンクもこの容量（リットル）を超えません。",
     "Sandbox_LWT_WasherFix": "配管された洗濯機を修正（マルチプレイ）",
     "Sandbox_LWT_WasherFix_tooltip": "サーバーでは、家の給水口から水を受ける洗濯機が、プレイヤーに実際の状態を表示します。配管済みであり、水がなくなると停止します。",
     "Sandbox_LWT_SprinklerRadiusMultiplier": "スプリンクラーの散水距離",

@@ -23,6 +23,7 @@ utilise. Une nouvelle pièce est un fichier de données ; un nouveau comportemen
 | `LiveWater.API.registerSource(kind, definition)` | révision 6 : une sorte d'eau qu'un producteur peut puiser (une source à côté de la pompe) `{ quality = "clean" ou "tainted", flag = IsoFlagType d'une case voisine, sprites = { sprites d'objets voisins } }` |
 | `LiveWater.API.registerContainer(name, definition)` | révision 11 : un conteneur qu'un raccord de remplissage remplit, ou qu'une pompe puise (`vessel`), par sprite ou nom d'entité, `{ shape = "tall" ou "low" }` ; rempli comme un baril, d'eau souillée (ADR-005 D07 ; le champ `clean` de la révision 12 est ignoré) |
 | `LiveWater.API.registerOutlet(outletType, handler)` | révision 22 : un consommateur, `outletType` `"<VotreMod>:<Nom>"`, voir plus bas |
+| `LiveWater.API.registerFixtureNeed(id, fn)` | révision 25 : litres qu'un point d'eau de votre mod doit trouver d'un coup dans son réservoir ; `fn(obj)` reçoit l'objet du point d'eau sur l'autorité et rend des litres ou `nil` ; le réservoir invisible au-dessus prend le plus grand besoin (25 L au moins, option `RelayMaxLitres` au plus) |
 | `LiveWater.Events.on(nom, fn)` / `off(nom, fn)` | événements sur l'autorité : `partAdded`, `partRemoved`, `networkChanged`, `waterDelivered` (pièce, litres, qualité), `valveChanged`, `waterDrawn` (révision 11) |
 
 Capacités fournies : `conduit`, `meter`, `intake`, `pump`, `valve`, `spray`, `filter`, `outlet`, `controller`,

@@ -10,6 +10,8 @@
     "Sandbox_LWT_InletRange_tooltip": "Bir ev su girişinden, binasındaki bağlı tesisatların su alacağı uzaklık (kare cinsinden), üstte 3 kata kadar.",
     "Sandbox_LWT_BaseRange": "Temel su girişi menzili",
     "Sandbox_LWT_BaseRange_tooltip": "Harita binası dışında (kendi kurduğunuz bir üs), bir ev su girişinin bağlı tesisatlara hizmet ettiği uzaklık (kare cinsinden), üstte 3 kata kadar.",
+    "Sandbox_LWT_RelayMaxLitres": "Röle tankı azami boyutu",
+    "Sandbox_LWT_RelayMaxLitres_tooltip": "LiveWater, bağlı her su noktasının üstünde görünmez bir tank tutar: 25 L ya da bir mod bildirdiğinde su noktasının bir seferde ihtiyaç duyduğu miktar (Take a Bath and Shower duşu: 80 L, küveti: küvetin hacmi). Hiçbir tank bu boyutu aşmaz, litre olarak.",
     "Sandbox_LWT_WasherFix": "Bağlı çamaşır makinelerini düzelt (çok oyunculu)",
     "Sandbox_LWT_WasherFix_tooltip": "Bir sunucuda, ev su girişiyle beslenen çamaşır makineleri oyunculara gerçek durumlarını gösterir: bağlı ve su bitince durur.",
     "Sandbox_LWT_SprinklerRadiusMultiplier": "Yağmurlayıcı menzili",

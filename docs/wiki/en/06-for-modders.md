@@ -22,6 +22,7 @@ behaviour is a capability.
 | `LiveWater.API.registerSource(kind, definition)` | revision 6: a kind of water a producer can draw from (a source next to the pump) `{ quality = "clean" or "tainted", flag = IsoFlagType of a nearby square, sprites = { nearby object sprites } }` |
 | `LiveWater.API.registerContainer(name, definition)` | revision 11: a container a fill fitting fills, or a pump draws from (`vessel`), by sprite or entity name, `{ shape = "tall" or "low" }`; filled like a barrel, with tainted water (ADR-005 D07; the field `clean` of revision 12 is ignored) |
 | `LiveWater.API.registerOutlet(outletType, handler)` | revision 22: a consumer, `outletType` `"<YourMod>:<Name>"`, see below |
+| `LiveWater.API.registerFixtureNeed(id, fn)` | revision 25: litres a water fixture of your mod must find in its tank at once; `fn(obj)` gets the fixture object on the authority and returns litres or `nil`; the invisible tank above it takes the largest need (25 L at least, sandbox `RelayMaxLitres` at most) |
 | `LiveWater.Events.on(name, fn)` / `off(name, fn)` | events on the authority: `partAdded`, `partRemoved`, `networkChanged`, `waterDelivered` (part, litres, quality), `valveChanged`, `waterDrawn` (revision 11) |
 
 Built-in capabilities: `conduit`, `meter`, `intake`, `pump`, `valve`, `spray`, `filter`, `outlet`, `controller`,

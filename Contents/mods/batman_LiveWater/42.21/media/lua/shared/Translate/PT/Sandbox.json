@@ -10,6 +10,8 @@
     "Sandbox_LWT_InletRange_tooltip": "Distância (em quadrados) a que os pontos de água ligados do edifício recebem água de uma entrada de água da casa, até 3 andares acima dela.",
     "Sandbox_LWT_BaseRange": "Alcance da entrada de água na base",
     "Sandbox_LWT_BaseRange_tooltip": "Fora de um edifício do mapa (uma base construída), distância (em quadrados) a que uma entrada de água da casa serve os pontos de água ligados, até 3 andares acima dela.",
+    "Sandbox_LWT_RelayMaxLitres": "Tamanho máximo dos depósitos relé",
+    "Sandbox_LWT_RelayMaxLitres_tooltip": "O LiveWater mantém um depósito invisível por cima de cada ponto de água ligado: 25 L, ou o que o ponto de água precisa de uma vez quando um mod o indica (um duche de Take a Bath and Shower: 80 L; a sua banheira: a capacidade da tina). Nenhum depósito ultrapassa este tamanho, em litros.",
     "Sandbox_LWT_WasherFix": "Corrigir máquinas de lavar ligadas (multijogador)",
     "Sandbox_LWT_WasherFix_tooltip": "Num servidor, as máquinas de lavar alimentadas por uma entrada de água da casa mostram o seu estado real aos jogadores: ligadas e paradas quando ficam sem água.",
     "Sandbox_LWT_SprinklerRadiusMultiplier": "Alcance dos aspersores",

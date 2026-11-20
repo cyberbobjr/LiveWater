@@ -36,8 +36,8 @@ local function building(b)
     return b
 end
 function FakePlumbing:addBuilding(b) table.insert(self.buildings, building(b)) return b end
-function FakePlumbing:addFixture(x, y, z, plumbed)
-    table.insert(self.list, { x = x, y = y, z = z, plumbed = plumbed ~= false })
+function FakePlumbing:addFixture(x, y, z, plumbed, need)
+    table.insert(self.list, { x = x, y = y, z = z, plumbed = plumbed ~= false, need = need })
 end
 function FakePlumbing:building(x, y, z)
     for _, d in ipairs({ { 0, 0 }, { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } }) do
@@ -70,7 +70,7 @@ function FakePlumbing:fixtures(area)
     for _, f in ipairs(self.list) do
         if area:contains(f.x, f.y, f.z) then
             table.insert(out, { x = f.x, y = f.y, z = f.z, source = self:sourceOf(f.x, f.y, f.z),
-                mapBuilding = self:inside(f.x, f.y, f.z), plumbed = f.plumbed })
+                mapBuilding = self:inside(f.x, f.y, f.z), plumbed = f.plumbed, need = f.need })
         end
     end
     return out
@@ -84,7 +84,14 @@ function FakePlumbing:relay(x, y, z)
             and self:sourceOf(f.x, f.y, f.z)
         if type(s) == "table" and s.x == x and s.y == y then feeds = true end
     end
-    return { owner = r.owner, amount = r.amount, free = r.capacity - r.amount, feeds = feeds, why = r.why }
+    return { owner = r.owner, amount = r.amount, free = r.capacity - r.amount, feeds = feeds, why = r.why,
+        capacity = r.capacity }
+end
+function FakePlumbing:resizeRelay(x, y, z, litres)
+    local r = self.relays[k(x, y, z)]
+    r.capacity = litres
+    r.amount = math.min(r.amount, litres)
+    self.resized = (self.resized or 0) + 1
 end
 function FakePlumbing:placeRelay(x, y, z, owner, litres)
     self.relays[k(x, y, z)] = { owner = owner, amount = 0, capacity = litres }

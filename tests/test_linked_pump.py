@@ -63,7 +63,7 @@ class LinkField(unittest.TestCase):
         self.assertEqual(lua.eval('LiveWater.Parts:linkOf("Test:G").level'), 0)
 
     def test_revision_24(self):
-        self.assertEqual(new_lua(API).eval("LiveWater.API.revision"), 24)
+        self.assertGreaterEqual(new_lua(API).eval("LiveWater.API.revision"), 24)
 
 
 def authority():

@@ -13,6 +13,7 @@ local EventBus = require "LiveWater/LWT_Events"
 local Sources = require "LiveWater/LWT_Sources"
 local Containers = require "LiveWater/LWT_Containers"
 local OutletTypes = require "LiveWater/LWT_OutletTypes"
+local FixtureNeeds = require "LiveWater/LWT_FixtureNeeds"
 
 -- Starting capability kinds (D02): kind -> file under LiveWater/Capabilities.
 local STARTING_CAPABILITIES = {
@@ -54,6 +55,7 @@ LiveWater.Parts = parts
 LiveWater.Sources = sources
 LiveWater.Containers = Containers.new()
 LiveWater.OutletTypes = OutletTypes.new()
+LiveWater.FixtureNeeds = FixtureNeeds.new()
 LiveWater.Events = EventBus.new(EventBus.NAMES)
 
 -- Revision 2: part definition field `variants`, capability hooks look, attach, power, powered,
@@ -109,7 +111,9 @@ LiveWater.Events = EventBus.new(EventBus.NAMES)
 -- set by the first pump in placement order (outcome.otherFluid of the pumps that gave nothing).
 -- Revision 24 (ADR-017): part definition field `link` ({ level = 0..10 }: the part may be wired by
 -- electric wire to a Live Wire inverter, Live Wire API revision 9; Parts:linkOf).
-local API = { revision = 24 }
+-- Revision 25 (ADR-022): registerFixtureNeed (litres a water fixture must find in its tank at once:
+-- the relay tank above it is sized to the largest need, sandbox RelayMaxLitres at most).
+local API = { revision = 25 }
 LiveWater.API = API
 
 local function answer(call, id, ok, reason, detail)
@@ -157,6 +161,16 @@ function API.registerOutlet(outletType, handler)
     return answer("registerOutlet", outletType, LiveWater.OutletTypes:register(outletType, handler))
 end
 
+-- Litres a water fixture must find in its tank at once (revision 25, ADR-022 D01), see
+-- LWT_FixtureNeeds.lua. The provider gets the fixture object of the game on the authority and returns
+-- a number of litres, or nil when it does not know the fixture:
+--   LiveWater.API.registerFixtureNeed("MyMod:Shower", function(obj) return 80 end)
+-- Returns true, or false and "registration_closed", "invalid_id", "invalid_provider",
+-- "duplicate_provider".
+function API.registerFixtureNeed(id, fn)
+    return answer("registerFixtureNeed", id, LiveWater.FixtureNeeds:register(id, fn))
+end
+
 -- Copy of the checked definition of a part type, or nil.
 function API.part(id)
     return parts:describe(id)
@@ -168,6 +182,7 @@ Events.OnInitGlobalModData.Add(function()
     sources:seal()
     LiveWater.Containers:seal()
     LiveWater.OutletTypes:seal()
+    LiveWater.FixtureNeeds:seal()
 end)
 
 return API

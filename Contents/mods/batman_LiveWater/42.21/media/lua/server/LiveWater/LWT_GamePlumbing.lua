@@ -8,12 +8,15 @@ if isClient() then return end
 --   fixtures(area)             water fixtures (sprite flag waterPiped) of the area that use, or may
 --                              use, an outside source: plumbed (getUsesExternalWaterSource), set
 --                              down by a player (ModData canBeWaterPiped) or after the city water
---                              shut-off; { x, y, z, source, mapBuilding, plumbed } (source: see
---                              LWT_RelayPlan; mapBuilding: its square is in a map building;
---                              plumbed: getUsesExternalWaterSource)
---   relay(x, y, z)             our relay on the square: { owner, amount, free, feeds, why }, or nil
---                              (feeds: a plumbed fixture below draws from it)
+--                              shut-off; { x, y, z, source, mapBuilding, plumbed, need } (source:
+--                              see LWT_RelayPlan; mapBuilding: its square is in a map building;
+--                              plumbed: getUsesExternalWaterSource; need: litres the providers
+--                              of LWT_FixtureNeeds ask for it, or nil, ADR-022)
+--   relay(x, y, z)             our relay on the square: { owner, amount, free, capacity, feeds, why },
+--                              or nil (feeds: a plumbed fixture below draws from it)
 --   placeRelay(x, y, z, owner, litres)   invisible tank (IsoThumpable + FluidContainer)
+--   resizeRelay(x, y, z, litres)         new capacity, sent to the clients; a smaller one loses the
+--                                        water above it (FluidContainer.setCapacity, ADR-022 D05)
 --   removeRelay(x, y, z, owner)          true when done or nothing to do, false when not loaded
 --   fillRelay(x, y, z, litres, quality)  litres added (clean water, or tainted water)
 --   emptyRelay(x, y, z)        the relay's water is thrown away (a valve cut the house, ADR-010 D04)
@@ -39,8 +42,9 @@ GamePlumbing.RELAY_KEY = WaterObjects.RELAY_KEY
 GamePlumbing.RELAY_SPRITE = "batman_livewater_01_76"
 GamePlumbing.WASHER_KEY = WaterObjects.WASHER_KEY
 
-function GamePlumbing.new()
-    return setmetatable({}, GamePlumbing)
+-- needs: registry of the fixture need providers (LWT_FixtureNeeds), optional.
+function GamePlumbing.new(needs)
+    return setmetatable({ needs = needs }, GamePlumbing)
 end
 
 -- Square of `obj` when it is a water fixture that uses an outside water source (plumbed), else nil
@@ -119,7 +123,7 @@ function GamePlumbing:fixtures(area)
                 local obj = sq and fixtureOn(sq)
                 if obj then
                     out[#out + 1] = { x = x, y = y, z = z, source = sourceOf(sq), mapBuilding = inMapBuilding(sq),
-                        plumbed = obj:getUsesExternalWaterSource() }
+                        plumbed = obj:getUsesExternalWaterSource(), need = self.needs and self.needs:need(obj) or nil }
                 end
             end
         end
@@ -168,8 +172,16 @@ function GamePlumbing:relay(x, y, z)
     local fc = obj and obj:getFluidContainer()
     if not fc then return nil end
     local mark = markOf(obj)
-    return { owner = mark.inlet, amount = fc:getAmount(), free = fc:getFreeCapacity(), feeds = feeds(obj, x, y, z),
-        why = mark.why }
+    return { owner = mark.inlet, amount = fc:getAmount(), free = fc:getFreeCapacity(), capacity = fc:getCapacity(),
+        feeds = feeds(obj, x, y, z), why = mark.why }
+end
+
+function GamePlumbing:resizeRelay(x, y, z, litres)
+    local obj = relayObject(x, y, z)
+    local fc = obj and obj:getFluidContainer()
+    if not fc then return end
+    fc:setCapacity(litres)
+    obj:sync()
 end
 
 function GamePlumbing:placeRelay(x, y, z, owner, litres)

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0-beta6 — 2026-11-20
+
+- **Showers and bathtubs of other mods:** the invisible tank above a plumbed fixture now holds what the fixture needs at once. With Take a Bath and Shower, a shower gets 80 L (its own option) and a bathtub the size of its tub, so a shower no longer stops after 25 L. Sinks, toilets and washing machines keep 25 L. New sandbox option **Relay tank size limit** (300 L by default). Tanks already in place take their new size the next time the house is checked.
+- Modders (API revision 25): `LiveWater.API.registerFixtureNeed(id, fn)` tells LiveWater how many litres one of your fixtures needs at once.
+
 ## 1.0.0-beta5 — 2026-11-20
 
 - **Viewpoint:** new optional mod **LiveWater - Viewpoint 3D models** in the same Workshop item. With Viewpoint (first-person view) 0.1.7 or later, the pump, pipes, valves, water meter, house inlet, sprinklers, barrel fittings and drip lines show as 3D models instead of flat pictures; the lamps of a running pump, an inlet and an automatic sprinkler glow. Enable it next to LiveWater, then switch the pack on in Viewpoint's menu.

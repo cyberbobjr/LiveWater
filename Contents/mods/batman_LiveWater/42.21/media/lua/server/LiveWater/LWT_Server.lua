@@ -133,7 +133,7 @@ local function build()
     local sounds = GameSounds.new()
     local publisher = Publisher.new({ catalog = catalog, sprites = sprites, mirror = world, sounds = sounds,
         visuals = GameVisuals.new() })
-    local plumbing = GamePlumbing.new()
+    local plumbing = GamePlumbing.new(LiveWater.FixtureNeeds)
     local relays = Relays.new({ store = store, plumbing = plumbing, world = world,
         setting = GameSettings.scale, catalog = catalog, registry = registry, log = log })
     local outlets = Outlets.new(catalog)

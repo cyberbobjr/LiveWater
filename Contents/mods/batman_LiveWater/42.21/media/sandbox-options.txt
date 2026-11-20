@@ -30,6 +30,12 @@ option LiveWater.BaseRange
     page = LiveWater, translation = LWT_BaseRange,
 }
 
+option LiveWater.RelayMaxLitres
+{
+    type = integer, min = 25, max = 1000, default = 300,
+    page = LiveWater, translation = LWT_RelayMaxLitres,
+}
+
 option LiveWater.WasherFix
 {
     type = boolean, default = true,

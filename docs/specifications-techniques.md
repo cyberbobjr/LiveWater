@@ -306,7 +306,8 @@ lave-linge, raccords de remplissage, `edgeWatch` (murs et clôtures).
 ## Réservoirs relais des arrivées d'eau (`LWT_Relays`, D18, D21)
 
 - Objet : `IsoThumpable` traversable, sprite `batman_livewater_01_76` (tuile définie sans image), composant
-  `FluidContainer` de 25 L nommé `LiveWaterRelay`, ModData `LiveWaterRelay = { inlet = "x,y,z", why = raison }` ;
+  `FluidContainer` nommé `LiveWaterRelay` (25 L, ou le plus grand besoin des points d'eau qu'il sert d'après les
+  fournisseurs de `LWT_FixtureNeeds`, au plus l'option `RelayMaxLitres` ; redimensionné au relevé, ADR-022), ModData `LiveWaterRelay = { inlet = "x,y,z", why = raison }` ;
   posé un niveau au-dessus d'un point d'eau (le moteur y cherche la source : case au-dessus puis les 8 autour).
 - Points d'eau servis : sprite `waterPiped`, raccordés (`getUsesExternalWaterSource`) ou raccordables (ModData
   `canBeWaterPiped`, ou d'origine après la coupure de l'eau de la ville), dans la zone de l'arrivée d'eau

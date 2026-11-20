@@ -10,6 +10,8 @@
     "Sandbox_LWT_InletRange_tooltip": "Wie weit (in Feldern) von einem Hauswassereinlass die angeschlossenen Armaturen seines Gebäudes Wasser bekommen, bis zu 3 Etagen darüber.",
     "Sandbox_LWT_BaseRange": "Reichweite des Basis-Wassereinlasses",
     "Sandbox_LWT_BaseRange_tooltip": "Außerhalb eines Kartengebäudes (einer selbst gebauten Basis): wie weit (in Feldern) ein Hauswassereinlass die angeschlossenen Armaturen versorgt, bis zu 3 Etagen darüber.",
+    "Sandbox_LWT_RelayMaxLitres": "Höchstgröße der Relaistanks",
+    "Sandbox_LWT_RelayMaxLitres_tooltip": "LiveWater hält über jeder angeschlossenen Wasserstelle einen unsichtbaren Tank: 25 L, oder so viel, wie die Wasserstelle auf einmal braucht, wenn ein Mod es angibt (eine Dusche von Take a Bath and Shower: 80 L, ihre Badewanne: die Größe ihrer Wanne). Kein Tank wird größer als dieser Wert, in Litern.",
     "Sandbox_LWT_WasherFix": "Angeschlossene Waschmaschinen korrigieren (Mehrspieler)",
     "Sandbox_LWT_WasherFix_tooltip": "Auf einem Server zeigen die Waschmaschinen, die ein Hauswassereinlass versorgt, den Spielern ihren echten Zustand: angeschlossen, und angehalten, wenn kein Wasser mehr da ist.",
     "Sandbox_LWT_SprinklerRadiusMultiplier": "Reichweite der Sprinkler",
