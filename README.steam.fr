@@ -76,6 +76,7 @@ Le serveur vérifie chaque action ; réseaux, vannes et appareils sont sauvegard
 [list]
 [*]Options sandbox : débit et usure de la pompe, durée du filtre, portées de l'arrivée, portée et minuterie des arroseurs, débit du goutte-à-goutte, récipients à remplir.
 [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] est facultatif : raccordez la pompe par fil à un onduleur, même hors de sa zone (150 W, visible dans son logiciel).
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3809306528]Viewpoint[/url] (vue subjective) : activez le mod « LiveWater - Viewpoint 3D models » et son paquet dans Viewpoint : chaque pièce passe en 3D.
 [*]Tant que l'eau de la ville coule, un évier ou des toilettes que vous posez dans un bâtiment de la carte peuvent y être raccordés.
 [*]Incompatible avec LG Extended Plumbing, LG Connect To Water Supply et Plysken Irrigation Pipes (LiveWater couvre ce qu'ils font).
 [*]Ouvert aux autres mods : API publique pour les producteurs et les consommateurs.

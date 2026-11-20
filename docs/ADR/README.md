@@ -20,3 +20,4 @@
 | [016](016-retrait-debug-ou-admin.md) | « Retirer LiveWater de ce monde » : mode debug en solo, admin en multijoueur | Accepté (2026-11-19) | [plan-016](../ADR-plans/plan-016-retrait-debug-ou-admin.md) | En cours (passage en jeu à faire) |
 | [017](017-pompe-reliee-a-un-onduleur-livewire.md) | Pompe à eau reliée par fil à un onduleur LiveWire | Accepté (2026-11-20) | [plan-017](../ADR-plans/plan-017-pompe-reliee-a-un-onduleur-livewire.md) | aucune étape commencée (attend le plan 004 de LiveWire) |
 | [018](018-eau-des-le-raccordement.md) | L'eau arrive dès qu'un point d'eau est raccordé | Accepté (2026-11-20) | [plan-018](../ADR-plans/plan-018-eau-des-le-raccordement.md) | En cours (passage en jeu E03 à faire) |
+| [019](019-modeles-3d-viewpoint.md) | Modèles 3D de LiveWater pour Viewpoint (sous-mod) | Accepté (2026-11-20) | [plan-019](../ADR-plans/plan-019-modeles-3d-viewpoint.md) | En cours (passage en jeu E03 à faire) |

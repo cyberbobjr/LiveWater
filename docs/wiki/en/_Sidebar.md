@@ -10,5 +10,6 @@
 - [For modders](06-for-modders.md)
 - [Removing the mod](07-removing-the-mod.md)
 - [Multiplayer](08-multiplayer.md)
+- [Viewpoint](09-viewpoint.md)
 
 [Français](../fr/Home.md)

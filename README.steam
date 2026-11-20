@@ -76,6 +76,7 @@ The server checks every action; networks, valves and fixtures are saved and sync
 [list]
 [*]Sandbox options: pump flow and wear, filter life, inlet ranges, sprinkler reach and timer, drip line flow, containers to fill.
 [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] is optional: wire the pump to an inverter, even outside its powered area (150 W, shown in its software).
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3809306528]Viewpoint[/url] (first-person view): enable the "LiveWater - Viewpoint 3D models" mod, then its pack in Viewpoint, to see every part in 3D.
 [*]While the city water runs, a sink or toilet you set down in a map building can be connected to it.
 [*]Not compatible with LG Extended Plumbing, LG Connect To Water Supply and Plysken Irrigation Pipes (LiveWater covers what they do).
 [*]Open to other mods: public API for producers and consumers.

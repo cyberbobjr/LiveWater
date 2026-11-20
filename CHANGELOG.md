@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-beta5 — 2026-11-20
+
+- **Viewpoint:** new optional mod *LiveWater - Viewpoint 3D models* in the same Workshop item. With Viewpoint (first-person view) 0.1.7 or later, the pump, pipes, valves, water meter, house inlet, sprinklers, barrel fittings and drip lines show as 3D models instead of flat pictures; the lamps of a running pump, an inlet and an automatic sprinkler glow. Enable it next to LiveWater, then switch the pack on in Viewpoint's menu.
+
 ## 1.0.0-beta4 — 2026-11-20
 
 - **Water pump:** it now draws 150 W while running instead of 250 W, less than a freezer.

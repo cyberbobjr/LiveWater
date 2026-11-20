@@ -1,0 +1,7 @@
+name=LiveWater - Viewpoint 3D models
+id=batman_LiveWaterViewpoint
+description=3D models of the LiveWater equipment for Viewpoint (first-person view). Needs LiveWater; does nothing without Viewpoint.
+icon=icon.png
+require=\batman_LiveWater
+versionMin=42.21
+modversion=1.0.0-beta5

@@ -26,3 +26,4 @@ New here? Start with [Getting started](01-getting-started.md).
 - [For modders](06-for-modders.md): the public API and its revisions.
 - [Removing the mod](07-removing-the-mod.md): how to take LiveWater out of a world.
 - [Multiplayer](08-multiplayer.md): what to know on a server.
+- [Viewpoint](09-viewpoint.md): optional 3D models for the Viewpoint first-person view.

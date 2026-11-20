@@ -76,6 +76,7 @@ Sunucu her eylemi denetler; ağlar, vanalar ve tesisatlar kaydedilir ve senkroni
 [list]
 [*]Sandbox seçenekleri: pompa debisi ve aşınması, filtre ömrü, su girişi menzilleri, yağmurlayıcı menzili ve zamanlayıcısı, damla hortum debisi, doldurulacak kaplar.
 [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] isteğe bağlıdır: pompayı kabloyla bir invertöre bağlayın, alanı dışında bile (150 W, yazılımında görünür).
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3809306528]Viewpoint[/url] (birinci şahıs görünümü): her parçayı 3B görmek için "LiveWater - Viewpoint 3D models" modunu, ardından Viewpoint'te paketini etkinleştirin.
 [*]Şehir suyu akarken, haritadaki bir binaya koyduğunuz bir lavabo ya da tuvalet şehir suyuna bağlanabilir.
 [*]LG Extended Plumbing, LG Connect To Water Supply ve Plysken Irrigation Pipes ile uyumlu değildir (LiveWater onların yaptıklarını kapsar).
 [*]Üretici ve tüketiciler için genel API ile diğer modlara açıktır.

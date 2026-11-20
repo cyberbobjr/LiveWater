@@ -10,5 +10,6 @@
 - [Pour les moddeurs](06-pour-les-moddeurs.md)
 - [Retirer le mod](07-retirer-le-mod.md)
 - [Multijoueur](08-multijoueur.md)
+- [Viewpoint](09-viewpoint.md)
 
 [English](../en/Home.md)

@@ -1,0 +1,111 @@
+newmtl board
+Kd 1 1 1
+d 1
+map_Kd palette.png
+
+newmtl bowl
+Kd 1 1 1
+d 1
+map_Kd palette.png
+
+newmtl box
+Kd 1 1 1
+d 1
+map_Kd palette.png
+
+newmtl brass
+Kd 1 1 1
+d 1
+map_Kd palette.png
+
+newmtl dial
+Kd 1 1 1
+d 1
+map_Kd palette.png
+
+newmtl drip_hose
+Kd 1 1 1
+d 1
+map_Kd palette.png
+
+newmtl emitter
+Kd 1 1 1
+d 1
+map_Kd palette.png
+
+newmtl galv
+Kd 1 1 1
+d 1
+map_Kd palette.png
+
+newmtl galv_dark
+Kd 1 1 1
+d 1
+map_Kd palette.png
+
+newmtl hose
+Kd 1 1 1
+d 1
+map_Kd palette.png
+
+newmtl iron
+Kd 1 1 1
+d 1
+map_Kd palette.png
+
+newmtl lamp
+Kd 1 1 1
+d 1
+map_Kd palette.png
+
+newmtl lit_amber
+Kd 1 1 1
+d 1
+map_Kd palette.png
+Ke 1.000 0.620 0.100
+
+newmtl lit_green
+Kd 1 1 1
+d 1
+map_Kd palette.png
+Ke 0.300 1.000 0.350
+
+newmtl motor
+Kd 1 1 1
+d 1
+map_Kd palette.png
+
+newmtl needle
+Kd 1 1 1
+d 1
+map_Kd palette.png
+
+newmtl paper
+Kd 1 1 1
+d 1
+map_Kd palette.png
+
+newmtl plastic
+Kd 1 1 1
+d 1
+map_Kd palette.png
+
+newmtl red
+Kd 1 1 1
+d 1
+map_Kd palette.png
+
+newmtl rubber
+Kd 1 1 1
+d 1
+map_Kd palette.png
+
+newmtl wet
+Kd 1 1 1
+d 1
+map_Kd palette.png
+
+newmtl wood
+Kd 1 1 1
+d 1
+map_Kd palette.png

@@ -76,6 +76,7 @@
 [list]
 [*]沙盒选项：水泵流量与磨损、滤芯寿命、进水口范围、喷灌器范围与定时器、滴灌带流量、可注水的容器。
 [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] 为可选：可用电线将水泵接到逆变器，即使在其供电范围外（150 W，显示在其软件中）。
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3809306528]Viewpoint[/url]（第一人称视角）：启用“LiveWater - Viewpoint 3D models”模组，再在 Viewpoint 中启用其资源包，即可看到每个部件的 3D 模型。
 [*]城市供水期间，你在地图建筑中放置的水槽或马桶可以接入城市供水。
 [*]与 LG Extended Plumbing、LG Connect To Water Supply 和 Plysken Irrigation Pipes 不兼容（LiveWater 已涵盖它们的功能）。
 [*]向其他模组开放：为生产者和用水设施提供公开 API。

@@ -247,3 +247,7 @@ de LiveWater, 20 tuyaux, une clé à tuyau ; solo : ajout à l'inventaire, serve
   événements par image interdits).
 - Tuiles provisoires : `source/tiles/build_livewater_tiles.py` (Blender, sans interface) puis
   `tools/make_tile_board.py` (planche de présentation).
+- Modèles 3D pour Viewpoint (ADR-019) : `source/tiles/build_viewpoint_models.py` (Blender, sans interface, sans rendu)
+  réutilise les constructeurs de `build_livewater_tiles.py` et écrit le paquet de ressources du sous-mod
+  `batman_LiveWaterViewpoint` (`common/media/viewpoint/resourcepacks/batman-livewater/`), vérifié par
+  `tests/test_viewpoint_pack.py`.

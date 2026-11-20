@@ -28,3 +28,4 @@ Première fois ? Commencez par [Premiers pas](01-premiers-pas.md).
 - [Pour les moddeurs](06-pour-les-moddeurs.md) : l'API publique et ses révisions.
 - [Retirer le mod](07-retirer-le-mod.md) : comment sortir LiveWater d'un monde.
 - [Multijoueur](08-multijoueur.md) : ce qu'il faut savoir sur un serveur.
+- [Viewpoint](09-viewpoint.md) : modèles 3D facultatifs pour la vue à la première personne Viewpoint.
