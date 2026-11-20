@@ -1,18 +1,18 @@
 # Plan 019 — Modèles 3D de LiveWater pour Viewpoint (sous-mod)
 
-ADR : [ADR-019](../ADR/019-modeles-3d-viewpoint.md) (Accepté le 2026-11-20).
+ADR : [ADR-019](../../ADR/termines/019-modeles-3d-viewpoint.md) (Accepté le 2026-11-20).
 
 | # | Étape | Statut | Dépend de | Décisions ADR | Taille | Parallélisable avec |
 |---|---|---|---|---|---|---|
-| E01 | Test du paquet, générateur Blender, sous-mod `batman_LiveWaterViewpoint` produit | À valider (passage en jeu E03) | ADR accepté | D01-D05 | M | — |
+| E01 | Test du paquet, générateur Blender, sous-mod `batman_LiveWaterViewpoint` produit | Terminée (2026-11-20) | ADR accepté | D01-D05 | M | — |
 | E02 | CHANGELOG, wiki (Viewpoint EN/FR), pages Steam, architecture, README des ADR | Terminée (2026-11-20) | E01 | D01, D02 | S | — |
-| E03 | Passage en jeu par l'utilisateur : Viewpoint actif, paquet activé dans son menu, chaque équipement vu en 3D, bien orienté | À faire | E01 | D03, D04 | S | — |
+| E03 | Passage en jeu par l'utilisateur : Viewpoint actif, paquet activé dans son menu, chaque équipement vu en 3D, bien orienté | Terminée (2026-11-20) | E01 | D03, D04 | S | — |
 
 ## Fiches
 
 ### E01 — Paquet et générateur
 
-Statut : À valider (passage en jeu E03).
+Statut : Terminée (2026-11-20). Preuve : code présent, mod publié (1.0.0-beta6) et fonctionnel, validé par l'utilisateur le 2026-11-20.
 
 - `Contents/mods/batman_LiveWaterViewpoint/42.21/mod.info` (`require=\batman_LiveWater`, aucun Lua) et `icon.png`.
 - `source/tiles/build_viewpoint_models.py` : Blender sans interface ni rendu, réutilise `tile_groups()` et `Kit` de
@@ -47,7 +47,7 @@ Statut : Terminée (2026-11-20).
 
 ### E03 — Passage en jeu
 
-Statut : À faire. Protocole : Viewpoint 0.1.7 et ZombieBuddy actifs, LiveWater et « LiveWater - Viewpoint 3D models »
+Statut : Terminée (2026-11-20). Preuve : code présent, mod publié (1.0.0-beta6) et fonctionnel, validé par l'utilisateur le 2026-11-20.
 activés ; dans les réglages de Viewpoint, paquet LiveWater activé et portée des modèles au-dessus de 0. Poser une pompe
 contre l'eau (ses quatre orientations), quelques tuyaux (droit, coude, té), une vanne, une arrivée d'eau, un arroseur :
 chaque pièce apparaît en 3D, collée au mur ou au bord attendu, tournée comme sa tuile ; le voyant de la pompe en marche

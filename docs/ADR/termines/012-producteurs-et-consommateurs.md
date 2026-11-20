@@ -5,10 +5,10 @@
 | Identifiant | `ADR-012-PRODUCTEURS-ET-CONSOMMATEURS` |
 | Date de création et de mise à jour | 2026-11-19 |
 | Statut | Accepté (2026-11-19) |
-| Avancement | En cours ; voir le [plan 012](../ADR-plans/plan-012-producteurs-et-consommateurs.md) |
+| Avancement | Terminé le 2026-11-20 ; voir le [plan 012](../../ADR-plans/termines/plan-012-producteurs-et-consommateurs.md) |
 | Décideur | l'utilisateur |
 | Portée | `batman_LiveWater` : raccord de baril (mode Pomper retiré), écoulement par gravité retiré, distribution (`LWT_Flow`, `LWT_Clock`, `LWT_Network`), API publique des consommateurs, traductions, tests, scénario en jeu, documentation |
-| Documents liés | [ADR-001](termines/001-reseau-eau-ouvert.md) (D13 sorties, D20 Live Wire, D26 raccord), [ADR-004](termines/004-goutte-a-goutte.md) (D04 gravité, remplacée), [ADR-009](009-cartouche-rechargeable-et-barils.md) (D03 : partie « goutte-à-goutte sans pompe » remplacée), [ADR-011](011-pompe-sur-baril.md) (pompe contre un baril) |
+| Documents liés | [ADR-001](001-reseau-eau-ouvert.md) (D13 sorties, D20 Live Wire, D26 raccord), [ADR-004](004-goutte-a-goutte.md) (D04 gravité, remplacée), [ADR-009](009-cartouche-rechargeable-et-barils.md) (D03 : partie « goutte-à-goutte sans pompe » remplacée), [ADR-011](011-pompe-sur-baril.md) (pompe contre un baril) |
 | Références | `LWT_CapFitting`, `LWT_Flow:supply`, `LWT_Flow:gravity`, `LWT_Outlets`, `LWT_API`, `LWT_Power` (consommateurs Live Wire) |
 | Origine | demandes de l'utilisateur du 2026-11-19 : « une pompe doit prendre l'eau quelle que soit sa source (baril, étang, piscine, point d'eau, rivière) à côté et injecte ensuite l'eau dans le circuit. Une fois l'eau dans le circuit, les consommateurs en font ce qu'ils en veulent. C'est comme LiveWire : il y a les producteurs et les consommateurs. Et il faut une API ouverte » ; « supprime complètement le mode pomper. Si l'eau du baril doit aller dans le réseau, il faut placer une pompe à eau à côté » ; « n'oublie pas d'enregistrer la pompe à eau comme consommateur dans LiveWire si le mod est présent » |
 

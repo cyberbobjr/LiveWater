@@ -1,17 +1,17 @@
 # Plan 013 — Raccord de remplissage : barils, récupérateurs d'eau et mangeoires
 
-ADR : [ADR-013](../ADR/013-raccord-de-remplissage-et-abreuvoirs.md) (Accepté le 2026-11-19).
+ADR : [ADR-013](../../ADR/termines/013-raccord-de-remplissage-et-abreuvoirs.md) (Accepté le 2026-11-19).
 
 | # | Étape | Statut | Dépend de | Décisions ADR | Taille | Parallélisable avec |
 |---|---|---|---|---|---|---|
-| R01 | Nom « Raccord de remplissage », infobulle, mangeoires vanilla (`KINDS.trough`, tuile maîtresse, `addWater`, nourriture) ; traductions ; tests | À valider | ADR accepté | D01-D04 | M | — |
-| R02 | Passages en jeu (communs aux ADR-011 à 013), documentation | À valider | R01 | toutes | S | — |
+| R01 | Nom « Raccord de remplissage », infobulle, mangeoires vanilla (`KINDS.trough`, tuile maîtresse, `addWater`, nourriture) ; traductions ; tests | Terminée (2026-11-20) | ADR accepté | D01-D04 | M | — |
+| R02 | Passages en jeu (communs aux ADR-011 à 013), documentation | Terminée (2026-11-20) | R01 | toutes | S | — |
 
 ## Fiches
 
 ### R01 — Raccord de remplissage et mangeoires
 
-- Statut : À valider.
+- Statut : Terminée (2026-11-20). Preuve : code présent, mod publié (1.0.0-beta6) et fonctionnel, validé par l'utilisateur le 2026-11-20.
 - Fait : noms d'objet, de meuble et de recettes dans les 11 langues ; `Tooltip = Tooltip_LWT_FillFitting` sur
   `Mov_LiveWater_BarrelFitting` ; `LWT_GameContainers` : mangeoire (`IsoFeedingTrough`, tuile maîtresse,
   `addWater`/`removeWater` + `sendSyncEntity`, dessin d'eau), mangeoire plein de nourriture → `blocked = "feed"`,
@@ -20,7 +20,7 @@ ADR : [ADR-013](../ADR/013-raccord-de-remplissage-et-abreuvoirs.md) (Accepté le
 
 ### R02 — Preuves en jeu et documentation
 
-- Statut : À valider.
+- Statut : Terminée (2026-11-20). Preuve : code présent, mod publié (1.0.0-beta6) et fonctionnel, validé par l'utilisateur le 2026-11-20.
 - Correction du banc : le bloc pompe-sur-baril réutilisait `S.B` d'une étape antérieure (erreur Lua au premier
   passage, `runs/20261119-174052-sp-c648562b6dee`, 41/42) ; renommé `S.BP`.
 - Passages :

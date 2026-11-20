@@ -5,10 +5,10 @@
 | Identifiant | `ADR-011-POMPE-SUR-BARIL` |
 | Date de création et de mise à jour | 2026-11-19 |
 | Statut | Accepté (2026-11-19) |
-| Avancement | En cours ; voir le [plan 011](../ADR-plans/plan-011-pompe-sur-baril.md) |
+| Avancement | Terminé le 2026-11-20 ; voir le [plan 011](../../ADR-plans/termines/plan-011-pompe-sur-baril.md) |
 | Décideur | l'utilisateur |
 | Portée | `batman_LiveWater` : pose de la pompe (capacité intake, site de pose), nouvelle capacité de puisage dans un récipient voisin (API), traductions, tests, scénario en jeu, documentation |
-| Documents liés | [ADR-001](termines/001-reseau-eau-ouvert.md) (D16 sources, D26 raccord de baril), [ADR-009](009-cartouche-rechargeable-et-barils.md) (D03 : un baril n'alimente la maison que par une pompe), [ADR-010](010-pompe-a-eau-et-vanne-immediate.md) |
+| Documents liés | [ADR-001](001-reseau-eau-ouvert.md) (D16 sources, D26 raccord de baril), [ADR-009](009-cartouche-rechargeable-et-barils.md) (D03 : un baril n'alimente la maison que par une pompe), [ADR-010](010-pompe-a-eau-et-vanne-immediate.md) |
 | Références | `LWT_CapIntake`, `LWT_GameSite`, `LWT_Fittings`, `LWT_CapFitting` (`draw`, `sense`), `LWT_Flow:supply` (les puisages remplacent la source propre des pompes), `LWT_Containers:admits` |
 | Origine | demande de l'utilisateur du 2026-11-19 : « je veux que la pompe à eau puisse se connecter à un baril afin d'utiliser l'eau du baril pour alimenter le circuit d'eau dans les tuyaux » |
 

@@ -5,10 +5,10 @@
 | Identifiant | `ADR-016-RETRAIT-DEBUG-OU-ADMIN` |
 | Date de création et de mise à jour | 2026-11-19 |
 | Statut | Accepté (2026-11-19) |
-| Avancement | voir le [plan 016](../ADR-plans/plan-016-retrait-debug-ou-admin.md) |
+| Avancement | Terminé le 2026-11-20 ; voir le [plan 016](../../ADR-plans/termines/plan-016-retrait-debug-ou-admin.md) |
 | Décideur | l'utilisateur |
 | Portée | `batman_LiveWater` : menu client `LWT_AdminMenu.lua`, adaptateur serveur `LWT_GamePlayers.lua` (`isAdmin`), nouveau module partagé du droit de retrait, tests, wiki |
-| Documents liés | [ADR-001](termines/001-reseau-eau-ouvert.md) (P21, L14 : action de retrait), même règle que l'action « Retirer tous les relais d'eau » de LiveWire |
+| Documents liés | [ADR-001](001-reseau-eau-ouvert.md) (P21, L14 : action de retrait), même règle que l'action « Retirer tous les relais d'eau » de LiveWire |
 | Références | `Capability.UseDebugContextMenu` (rôle admin, vanilla `ClientCommands.lua`) ; `isDebugEnabled()` (option de lancement `-debug`) |
 | Origine | demande de l'utilisateur du 2026-11-19 : « le sous-menu "Retirer livewater" apparait tout le temps alors que je ne veux qu'il apparaisse qu'en mode débug ou pour l'admin sur un serveur mp... je te l'ai déjà dit » |
 

@@ -8,7 +8,7 @@
 | Avancement | voir le [plan 021](../ADR-plans/plan-021-plein-des-groupes-electrogenes.md) |
 | Décideur | l'utilisateur (« oui ok pour les 2 ADR », 2026-11-20) |
 | Portée | `batman_LiveWater` : nouveau genre de récipient « groupe électrogène » (`LWT_GameContainers`, `LWT_Containers`), compte pendant l'absence (`LWT_Fittings`), reprise au chargement de la case, textes d'information, traductions, tests, wiki, CHANGELOG |
-| Documents liés | [ADR-013](013-raccord-de-remplissage-et-abreuvoirs.md) (raccord de remplissage), [ADR-014](014-essence-dans-les-tuyaux.md) (D03 `takes`, D04 jamais de mélange), [ADR-006](termines/006-vision-debit.md) (D06 vie loin du joueur), [ADR-011](011-pompe-sur-baril.md) |
+| Documents liés | [ADR-013](termines/013-raccord-de-remplissage-et-abreuvoirs.md) (raccord de remplissage), [ADR-014](termines/014-essence-dans-les-tuyaux.md) (D03 `takes`, D04 jamais de mélange), [ADR-006](termines/006-vision-debit.md) (D06 vie loin du joueur), [ADR-011](termines/011-pompe-sur-baril.md) |
 | Références | Java 42.22 `IsoGenerator` : `getFuel`, `setFuel` (borné à `getMaxFuel` = 10, `IsoGenerator.java:439-460`), `getTotalPowerUsing` (:660), rattrapage des heures manquées à la première mise à jour (:185-239, `lastHour`), `setActivated(true)` remet `lastHour` à l'heure courante (:470-473) ; option de partie `GeneratorFuelConsumption` ; LiveWire `LW_Backup.restore` (même arrêt-relance pour annuler le rattrapage, `LW_Backup.lua:250-262`) |
 | Origine | suggestion d'un joueur sur la page Workshop (2026-11-20) : baril d'essence, pompe et tuyaux pour remplir le groupe électrogène tout seul, qui se vide très vite avec le profil « Realistic 1993 » de LiveWire |
 

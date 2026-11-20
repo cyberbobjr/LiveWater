@@ -1,18 +1,18 @@
 # Plan 009 — Cartouche rechargeable ; plus de baril raccordé directement à la maison
 
-ADR : [ADR-009](../ADR/009-cartouche-rechargeable-et-barils.md) (Accepté le 2026-11-19).
+ADR : [ADR-009](../../ADR/termines/009-cartouche-rechargeable-et-barils.md) (Accepté le 2026-11-19).
 
 | # | Étape | Statut | Dépend de | Décisions ADR | Taille | Parallélisable avec |
 |---|---|---|---|---|---|---|
-| C01 | Cartouche usée rendue, objet `WaterFilterSpent`, recette de recharge, démontage, icône, traductions ; tests | À valider | ADR accepté | D01, D02 | M | C02 |
-| C02 | Retrait du raccordement direct des barils à la maison (serveur, commandes, menu, diagnostic, traductions, tests) | À valider | ADR accepté | D03 | M | C01 |
-| C03 | Passages en jeu, documentation joueur | À valider | C01, C02 | toutes | S | — |
+| C01 | Cartouche usée rendue, objet `WaterFilterSpent`, recette de recharge, démontage, icône, traductions ; tests | Terminée (2026-11-20) | ADR accepté | D01, D02 | M | C02 |
+| C02 | Retrait du raccordement direct des barils à la maison (serveur, commandes, menu, diagnostic, traductions, tests) | Terminée (2026-11-20) | ADR accepté | D03 | M | C01 |
+| C03 | Passages en jeu, documentation joueur | Terminée (2026-11-20) | C01, C02 | toutes | S | — |
 
 ## Fiches
 
 ### C01 — Cartouche rechargeable
 
-- Statut : À valider.
+- Statut : Terminée (2026-11-20). Preuve : code présent, mod publié (1.0.0-beta6) et fonctionnel, validé par l'utilisateur le 2026-11-20.
 - Fait : objet `LiveWater.WaterFilterSpent` (`LWT_items.txt`, sans état, pas de butin), icône
   `Item_LWT_WaterFilterSpent.png` tirée de celle de la cartouche (`python source/tiles/make_item_icons.py --spent .`).
   Champ `spent` de la capacité filtre et quatrième résultat du crochet `cartridge` (API révision 20) ; l'arrivée
@@ -30,7 +30,7 @@ ADR : [ADR-009](../ADR/009-cartouche-rechargeable-et-barils.md) (Accepté le 202
 
 ### C02 — Barils
 
-- Statut : À valider.
+- Statut : Terminée (2026-11-20). Preuve : code présent, mod publié (1.0.0-beta6) et fonctionnel, validé par l'utilisateur le 2026-11-20.
 - Supprimés : `server/LiveWater/LWT_HouseBarrels.lua`, `shared/LiveWater/LWT_Reserve.lua`,
   `client/LiveWater/LWT_BarrelMenu.lua`, `Commands/LWT_CmdConnectBarrel.lua`, `LWT_CmdDisconnectBarrel.lua`,
   `LWT_CmdReserveBarrel.lua` ; leur câblage dans `LWT_Server.lua` (commandes, service `barrels`, tâche de
@@ -53,8 +53,7 @@ ADR : [ADR-009](../ADR/009-cartouche-rechargeable-et-barils.md) (Accepté le 202
 
 ### C03 — Preuves et documentation
 
-- Statut : À valider (la cartouche usée, sa recharge et la maison sans pompe ne sont pas encore jouées par le
-  scénario en jeu : à voir par l'utilisateur).
+- Statut : Terminée (2026-11-20). Preuve : code présent, mod publié (1.0.0-beta6) et fonctionnel, validé par l'utilisateur le 2026-11-20.
 - Passages de non-régression sur le code de l'ADR-009 :
   - solo, code 0, `summary=49/49 PASS`, `runs/20261119-140425-sp-bf0af9067719` ;
   - visuel FR, code 0, `summary=65/65 PASS`, `runs/20261119-140546-sp-e705b9e9f5a3` ;

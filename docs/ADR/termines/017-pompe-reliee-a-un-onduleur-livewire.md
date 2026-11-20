@@ -5,7 +5,7 @@
 | Identifiant | `ADR-017-POMPE-RELIEE-A-UN-ONDULEUR-LIVEWIRE` |
 | Date de création et de mise à jour | 2026-11-20 |
 | Statut | Accepté (2026-11-20) |
-| Avancement | voir le [plan 017](../ADR-plans/plan-017-pompe-reliee-a-un-onduleur-livewire.md) |
+| Avancement | Terminé le 2026-11-20 ; voir le [plan 017](../../ADR-plans/termines/plan-017-pompe-reliee-a-un-onduleur-livewire.md) |
 | Décideur | l'utilisateur (portée retenue : « Portée du câble », 2026-11-20) |
 | Portée | `batman_LiveWater` : inscription LiveWire de la pompe (`LWT_Power.lua`, passage en `shared`), règle « la pompe a du courant », wiki LiveWire EN/FR, descriptions Steam, CHANGELOG |
 | Documents liés | ADR-004 de LiveWire (consommateurs reliés par fil, API révision 9), [ADR-010](010-pompe-a-eau-et-vanne-immediate.md) |

@@ -1,12 +1,12 @@
 # Plan 015 — Expérience gagnée par les recettes : Travail des métaux et Électricité
 
-ADR : [ADR-015](../ADR/015-experience-des-recettes.md) (Accepté le 2026-11-19).
+ADR : [ADR-015](../../ADR/termines/015-experience-des-recettes.md) (Accepté le 2026-11-19).
 
 | # | Étape | Statut | Dépend de | Décisions ADR | Taille | Parallélisable avec |
 |---|---|---|---|---|---|---|
-| E01 | `xpAward` des recettes de fabrication et de démontage, test | À valider (passage en jeu E03) | ADR accepté | D01 à D04 | S | — |
+| E01 | `xpAward` des recettes de fabrication et de démontage, test | Terminée (2026-11-20) | ADR accepté | D01 à D04 | S | — |
 | E02 | Wiki EN/FR, CHANGELOG | Terminée (2026-11-19) | E01 | D01, D02 | S | — |
-| E03 | Passage en jeu par l'utilisateur | À faire | E01 | D01, D02 | S | — |
+| E03 | Passage en jeu par l'utilisateur | Terminée (2026-11-20) | E01 | D01, D02 | S | — |
 
 ## Fiches
 

@@ -5,10 +5,10 @@
 | Identifiant | `ADR-009-CARTOUCHE-RECHARGEABLE-ET-BARILS` |
 | Date de création et de mise à jour | 2026-11-19 |
 | Statut | Accepté (2026-11-19) |
-| Avancement | En cours ; voir le [plan 009](../ADR-plans/plan-009-cartouche-rechargeable-et-barils.md) |
+| Avancement | Terminé le 2026-11-20 ; voir le [plan 009](../../ADR-plans/termines/plan-009-cartouche-rechargeable-et-barils.md) |
 | Décideur | l'utilisateur |
 | Portée | `batman_LiveWater` : cartouche filtrante (objet, retrait, recettes, icône, traductions) ; raccordement direct des barils à l'arrivée d'eau (serveur, commandes, menu client, diagnostic, traductions, tests, documentation) |
-| Documents liés | [ADR-001](termines/001-reseau-eau-ouvert.md) (L01-L03, L06, L07, L12 remplacés ; P17, D26 raccord de baril), [ADR-004](termines/004-goutte-a-goutte.md) (D04 gravité), [ADR-005](termines/005-filtre-a-l-arrivee-d-eau.md) (cartouche à l'arrivée d'eau), [ADR-007](termines/007-demontage-et-butin.md) (démontage de la cartouche) |
+| Documents liés | [ADR-001](001-reseau-eau-ouvert.md) (L01-L03, L06, L07, L12 remplacés ; P17, D26 raccord de baril), [ADR-004](004-goutte-a-goutte.md) (D04 gravité), [ADR-005](005-filtre-a-l-arrivee-d-eau.md) (cartouche à l'arrivée d'eau), [ADR-007](007-demontage-et-butin.md) (démontage de la cartouche) |
 | Références | `IsoObject.createSampleAndPurifyWater` (`IsoObject.java:2777`, robinet vanilla qui purifie l'eau d'un réservoir au-dessus) ; `LWT_CmdCartridge.takeOut` |
 | Origine | questions de l'utilisateur du 2026-11-19 sur l'usure du filtre et les barils ; réponses : « solution B, pouvoir la recharger » et « sans pompe [un baril] ne peut pas envoyer l'eau dans la maison (pas de pression), un baril ne peut alimenter que le goutte à goutte sans pompe. Un baril ne peut pas être directement raccordé à une maison par le raccord LiveWater » |
 

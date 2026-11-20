@@ -1,18 +1,18 @@
 # Plan 018 — L'eau arrive dès qu'un point d'eau est raccordé
 
-ADR : [ADR-018](../ADR/018-eau-des-le-raccordement.md) (Accepté le 2026-11-20).
+ADR : [ADR-018](../../ADR/termines/018-eau-des-le-raccordement.md) (Accepté le 2026-11-20).
 
 | # | Étape | Statut | Dépend de | Décisions ADR | Taille | Parallélisable avec |
 |---|---|---|---|---|---|---|
-| E01 | Méthode de pas immédiat de `LWT_Clock` (vanne et raccordement), enveloppe de `ISPlumbItem.complete`, tests | À valider (passage en jeu E03) | ADR accepté | D01, D02, D03 | M | — |
+| E01 | Méthode de pas immédiat de `LWT_Clock` (vanne et raccordement), enveloppe de `ISPlumbItem.complete`, tests | Terminée (2026-11-20) | ADR accepté | D01, D02, D03 | M | — |
 | E02 | CHANGELOG, spécifications | Terminée (2026-11-20) | E01 | D01 | S | — |
-| E03 | Passage en jeu par l'utilisateur : raccorder un évier d'une maison déjà alimentée, l'eau coule tout de suite | À faire | E01 | D01 | S | — |
+| E03 | Passage en jeu par l'utilisateur : raccorder un évier d'une maison déjà alimentée, l'eau coule tout de suite | Terminée (2026-11-20) | E01 | D01 | S | — |
 
 ## Fiches
 
 ### E01 — Code
 
-Statut : À valider (passage en jeu E03).
+Statut : Terminée (2026-11-20). Preuve : code présent, mod publié (1.0.0-beta6) et fonctionnel, validé par l'utilisateur le 2026-11-20.
 
 - `server/LiveWater/LWT_Clock.lua` : `Clock:bringForward(id)` extrait de `switched` (seul pas immédiat, plafond
   `MAX_AHEAD`, D02) ; `Clock:hasten(parts)` avance une fois chaque réseau distinct ; `switched` appelle `bringForward`.

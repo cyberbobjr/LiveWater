@@ -1,26 +1,26 @@
 # Plan 008 — Lisibilité du réseau : raccord coudé, noms, compteur, pompe, appareils de la maison
 
-ADR : [ADR-008](../ADR/008-lisibilite-du-reseau.md) (Accepté le 2026-11-19).
+ADR : [ADR-008](../../ADR/termines/008-lisibilite-du-reseau.md) (Accepté le 2026-11-19).
 
 | # | Étape | Statut | Dépend de | Décisions ADR | Taille | Parallélisable avec |
 |---|---|---|---|---|---|---|
-| G01 | Noms des objets posables dans les onze langues ; test sur tout objet de script | À valider | ADR accepté | D02 | S | G02, G03, G04 |
-| G02 | Menus exclusifs (réseau, zone arrosée) | À valider | ADR accepté | D04 | S | G01, G03, G04 |
-| G03 | Raccord coudé : définition, choix du sprite, 24 tuiles, profondeur, contrat ; tests | À valider | ADR accepté | D01 | L | G01, G02, G04 |
-| G04 | Totaux du compteur et de la pompe, fenêtres compteur et LCD, eau des appareils, appareils dans la vue du réseau ; tests | À valider | G02 | D03, D05, D06, D07 | L | G03 |
-| G03b | Raccord embranchement : l'eau traverse le raccord, 48 tuiles (té, devant + côté, croix) ; tests | À valider | G03 | D01b | L | — |
-| G06 | Compteur et vanne en ligne : deux côtés sur l'axe montré, flancs jamais raccordés ; tests | À valider | G03b | D08 | M | — |
-| G07 | Arroseurs : manette agrandie, voyant du programmateur (tuiles 48-63) | À valider | — | D09 | M | G06 |
-| G08 | Bruit d'ouverture et de fermeture des vannes | À valider | G06 | D10 | S | G07 |
-| G09 | Bruit de la pompe lié au courant, à l'événement `OnElectricityChanged` | À valider | G06 | D11 | S | G07 |
-| G10 | Recettes : panneau seul, catégorie LiveWater, icônes des objets posables ; tests | À valider | — | D12 | S | — |
-| G05 | Passages en jeu (solo, visuel, multijoueur), documentation joueur | En cours | G01-G04 | toutes | M | — |
+| G01 | Noms des objets posables dans les onze langues ; test sur tout objet de script | Terminée (2026-11-20) | ADR accepté | D02 | S | G02, G03, G04 |
+| G02 | Menus exclusifs (réseau, zone arrosée) | Terminée (2026-11-20) | ADR accepté | D04 | S | G01, G03, G04 |
+| G03 | Raccord coudé : définition, choix du sprite, 24 tuiles, profondeur, contrat ; tests | Terminée (2026-11-20) | ADR accepté | D01 | L | G01, G02, G04 |
+| G04 | Totaux du compteur et de la pompe, fenêtres compteur et LCD, eau des appareils, appareils dans la vue du réseau ; tests | Terminée (2026-11-20) | G02 | D03, D05, D06, D07 | L | G03 |
+| G03b | Raccord embranchement : l'eau traverse le raccord, 48 tuiles (té, devant + côté, croix) ; tests | Terminée (2026-11-20) | G03 | D01b | L | — |
+| G06 | Compteur et vanne en ligne : deux côtés sur l'axe montré, flancs jamais raccordés ; tests | Terminée (2026-11-20) | G03b | D08 | M | — |
+| G07 | Arroseurs : manette agrandie, voyant du programmateur (tuiles 48-63) | Terminée (2026-11-20) | — | D09 | M | G06 |
+| G08 | Bruit d'ouverture et de fermeture des vannes | Terminée (2026-11-20) | G06 | D10 | S | G07 |
+| G09 | Bruit de la pompe lié au courant, à l'événement `OnElectricityChanged` | Terminée (2026-11-20) | G06 | D11 | S | G07 |
+| G10 | Recettes : panneau seul, catégorie LiveWater, icônes des objets posables ; tests | Terminée (2026-11-20) | — | D12 | S | — |
+| G05 | Passages en jeu (solo, visuel, multijoueur), documentation joueur | Terminée (2026-11-20) | G01-G04 | toutes | M | — |
 
 ## Fiches
 
 ### G01 — Noms
 
-- Statut : À valider (noms à voir dans l'inventaire en jeu, G05).
+- Statut : Terminée (2026-11-20). Preuve : passage en jeu validé par l'utilisateur le 2026-11-20 (G05).
 - Fait : `ItemName.json` des onze langues reçoit la vanne, l'arrivée d'eau, les deux arroseurs et le raccord, avec le
   nom de la tuile de la même langue (`Moveables.json`). Test `tests/test_item_names.py` : tout objet déclaré dans
   `media/scripts/*.txt` a un nom non vide dans chaque langue.
@@ -28,7 +28,7 @@ ADR : [ADR-008](../ADR/008-lisibilite-du-reseau.md) (Accepté le 2026-11-19).
 
 ### G02 — Menus exclusifs
 
-- Statut : À valider (menus à voir en jeu, G05).
+- Statut : Terminée (2026-11-20). Preuve : passage en jeu validé par l'utilisateur le 2026-11-20 (G05).
 - Fait : `LWT_NetworkView.fill` n'ajoute « Afficher le réseau d'eau » que si aucune vue n'est affichée, « Masquer »
   sinon ; `LWT_AreaView.fill` fait de même pour la zone arrosée. Tests : `test_interface.py` (Masquer seul quand le
   réseau est affiché), `test_area_view.py` (Masquer seul quand les zones sont allumées), rouges avant le correctif.
@@ -36,7 +36,7 @@ ADR : [ADR-008](../ADR/008-lisibilite-du-reseau.md) (Accepté le 2026-11-19).
 
 ### G03 — Raccord coudé
 
-- Statut : À valider (sprites coudés à voir en jeu sur les quatre orientations, G05).
+- Statut : Terminée (2026-11-20). Preuve : passage en jeu validé par l'utilisateur le 2026-11-20 (G05).
 - Fait : champ de définition `bends` (révision d'API 17, `shared/LiveWater/LWT_API.lua`) = suffixe de variante par
   côté relatif à l'orientation (1, 2 ou 3), validé dans `shared/LiveWater/LWT_Parts.lua` (`invalid_bends`) ;
   `Parts:bend` (devant prioritaire, puis +1, puis +3 ; repli sur la variante droite) et `Parts:followsLinks` ;
@@ -59,7 +59,7 @@ ADR : [ADR-008](../ADR/008-lisibilite-du-reseau.md) (Accepté le 2026-11-19).
 
 ### G03b — Raccord embranchement
 
-- Statut : À valider (formes et eau traversante à voir en jeu, G05).
+- Statut : Terminée (2026-11-20). Preuve : passage en jeu validé par l'utilisateur le 2026-11-20 (G05).
 - Fait : le raccord porte `conduit = true` (comme la vanne et le compteur) : `Network:reach` passe à travers lui
   (`carries`), il reste sortie `barrelFill` en Remplir (servi dans l'ordre de service, puis l'eau continue vers l'aval,
   `through` crédité comme un tuyau) et pièce qui `draw` en Pomper (ou racine de gravité) ; `LWT_Flow.lua` et
@@ -86,8 +86,7 @@ ADR : [ADR-008](../ADR/008-lisibilite-du-reseau.md) (Accepté le 2026-11-19).
 
 ### G04 — Compteur, pompe, appareils
 
-- Statut : À valider (fenêtres, eau des appareils et vue du réseau à voir en jeu, solo et multijoueur, G05 ; images du
-  cadran `media/textures/LWT_MeterFace.png` et de l'aiguille `LWT_MeterHand.png` à installer et caler).
+- Statut : Terminée (2026-11-20). Preuve : passage en jeu validé par l'utilisateur le 2026-11-20 (G05).
 - Fait : capacités `meter` et `pump` : champ `total` (litres depuis la pose, cumulé à chaque pas, gardé dans l'état
   mirroré donc au ramassage et à la repose, jamais remis à zéro), republié aux clients par `LWT_Publisher` dès qu'il
   change ; lignes de la pompe : état, débit possible (débit × rendement × multiplicateur), débit du dernier pas, total,
@@ -111,8 +110,7 @@ ADR : [ADR-008](../ADR/008-lisibilite-du-reseau.md) (Accepté le 2026-11-19).
 
 ### G06 — Pièces en ligne droites
 
-- Statut : À valider (flancs à voir en jeu : tuyau posé à côté d'un compteur et d'une vanne, sur les deux axes, puis
-  rechargement et multijoueur, G05).
+- Statut : Terminée (2026-11-20). Preuve : passage en jeu validé par l'utilisateur le 2026-11-20 (G05).
 - Fait : champ de définition `sidesByFacing` (révision d'API 19, `shared/LiveWater/LWT_API.lua`) = masque des côtés
   par orientation, validé dans `shared/LiveWater/LWT_Parts.lua` (`invalid_sides_by_facing`) ; `Parts:sidesOf(part)`
   remplace `Parts:sides(id)` et lit l'orientation enregistrée sur la pièce (`part.facing`, repli sur `sides`).
@@ -137,7 +135,7 @@ ADR : [ADR-008](../ADR/008-lisibilite-du-reseau.md) (Accepté le 2026-11-19).
 
 ### G07 — Arroseur lisible
 
-- Statut : À valider (lisibilité à juger en jeu à distance de jeu, G05).
+- Statut : Terminée (2026-11-20). Preuve : passage en jeu validé par l'utilisateur le 2026-11-20 (G05).
 - Fait : recette `source/tiles/build_livewater_tiles.py`, `build_sprinkler` : manette rouge de l'arroseur manuel deux
   fois plus longue et épaisse (0,24 × 0,034 × 0,024 m, tige 0,014), le long du tuyau ouvert, en travers fermé ;
   programmateur de l'arroseur automatique avec un voyant (`SPR_LAMP`, boule de 0,026 sur une bague, cadran décalé),
@@ -155,7 +153,7 @@ ADR : [ADR-008](../ADR/008-lisibilite-du-reseau.md) (Accepté le 2026-11-19).
 
 ### G08 — Bruit de vanne
 
-- Statut : À valider (son à entendre en jeu ; l'utilisateur a choisi de garder les deux prises de chaque son).
+- Statut : Terminée (2026-11-20). Preuve : passage en jeu validé par l'utilisateur le 2026-11-20 (G05).
 - Fait : quatre `.ogg` mono générés pour le mod (ElevenLabs, effets sonores), normalisés (`loudnorm` −18 LUFS, fondu
   de fin) dans `media/sound/LWT_Valve{Open,Close}{1,2}.ogg` ; scripts `sound LWT_ValveOpen` et `LWT_ValveClose`
   (`media/scripts/LWT_sounds.txt`), deux clips chacun, tirés au hasard par le jeu (`GameSound.getRandomClip`,
@@ -166,7 +164,7 @@ ADR : [ADR-008](../ADR/008-lisibilite-du-reseau.md) (Accepté le 2026-11-19).
 
 ### G09 — Bruit de la pompe et courant
 
-- Statut : À valider (passage en jeu en cours).
+- Statut : Terminée (2026-11-20). Preuve : passage en jeu validé par l'utilisateur le 2026-11-20 (G05).
 - Fait : `Pump.sound` rend la boucle tant que la pompe fonctionne (allumée, alimentée, en état), le bruit pour les
   zombies (rayon, volume) seulement quand elle pompe ; `Pump.powered` arrête le pompage dès que le courant tombe ;
   `Publisher:sound` ne fait de bruit pour les zombies qu'avec un rayon positif ; `Clock:powerChanged` relit le courant
@@ -180,7 +178,7 @@ ADR : [ADR-008](../ADR/008-lisibilite-du-reseau.md) (Accepté le 2026-11-19).
 
 ### G10 — Recettes rangées
 
-- Statut : À valider (panneau d'artisanat à voir en jeu).
+- Statut : Terminée (2026-11-20). Preuve : passage en jeu validé par l'utilisateur le 2026-11-20 (G05).
 - Fait : les 20 recettes (`LWT_recipes.txt`, `LWT_dismantle.txt`) ont `category = LiveWater` et la seule étiquette
   `AnySurfaceCraft` (plus d'`InHandCraft` : plus de doublon au menu contextuel de l'objet) ; la table de démontage
   (`LWT_Dismantle.lua`) donne la même catégorie ; clé `IGUI_CraftingCategories_LiveWater` (« LiveWater ») dans les
@@ -193,7 +191,7 @@ ADR : [ADR-008](../ADR/008-lisibilite-du-reseau.md) (Accepté le 2026-11-19).
 
 ### G05 — Preuves en jeu
 
-- Statut : En cours (documentation joueur en cours de rédaction).
+- Statut : Terminée (2026-11-20). Preuve : passage en jeu validé par l'utilisateur le 2026-11-20 (G05).
 - Scénario (`autotest/lwt_hooks.lua`) :
   - raccords du banc : tonneau entre deux tuyaux (té, index 208), caisse au croisement de trois tuyaux (croix,
     236) ;

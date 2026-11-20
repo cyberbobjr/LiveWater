@@ -5,10 +5,10 @@
 | Identifiant | `ADR-019-MODELES-3D-VIEWPOINT` |
 | Date de création et de mise à jour | 2026-11-20 |
 | Statut | Accepté (2026-11-20) |
-| Avancement | voir le [plan 019](../ADR-plans/plan-019-modeles-3d-viewpoint.md) |
+| Avancement | Terminé le 2026-11-20 ; voir le [plan 019](../../ADR-plans/termines/plan-019-modeles-3d-viewpoint.md) |
 | Décideur | l'utilisateur (« génère les mods du projet ViewPoint en 3D, fais ça dans un sous-mod de LiveWater », 2026-11-20) ; options recommandées appliquées par défaut |
 | Portée | nouveau mod `batman_LiveWaterViewpoint` dans `Contents/mods` (même objet Workshop), générateur `source/tiles/build_viewpoint_models.py`, tests `tests/test_viewpoint_pack.py`, CHANGELOG, wiki |
-| Documents liés | [ADR-001](termines/001-reseau-eau-ouvert.md) (tuiles, D23), [contrat des tuiles](../annexes/conception/tuiles-contrat.md) |
+| Documents liés | [ADR-001](001-reseau-eau-ouvert.md) (tuiles, D23), [contrat des tuiles](../../annexes/conception/tuiles-contrat.md) |
 | Références | Viewpoint 0.1.7 (2026-11-15, Workshop 3809306528), lu dans son `Viewpoint.jar` décompilé : `viewpoint.addons.Kind`, `ModScan`, `Descriptor`, `DescriptorCheck`, `Ids`, `PackContent` ; `viewpoint.packs.ModelPacks`, `PackManifest`, `ObjReader`, `PackLoads`, `PackBind` ; `viewpoint.world.PackGather`, `WorldMesher` ; `viewpoint.models.RigidCapture` |
 
 ## Contexte

@@ -5,10 +5,10 @@
 | Identifiant | `ADR-008-LISIBILITE-DU-RESEAU` |
 | Date de création et de mise à jour | 2026-11-19 |
 | Statut | Accepté (2026-11-19) |
-| Avancement | En cours ; voir le [plan 008](../ADR-plans/plan-008-lisibilite-du-reseau.md) |
+| Avancement | Terminé le 2026-11-20 ; voir le [plan 008](../../ADR-plans/termines/plan-008-lisibilite-du-reseau.md) |
 | Décideur | l'utilisateur |
 | Portée | `batman_LiveWater` : tuiles du raccord de baril (`source/tiles/`, `.pack`, `.tiles`, profondeur), choix des sprites (`LWT_Sprites`, `LWT_Parts`), traductions, compteur et pompe (capacités, fenêtres client), menus du client (vue du réseau, zone arrosée, appareils de la maison), commande `showNetwork`, tests, documentation |
-| Documents liés | [ADR-001](termines/001-reseau-eau-ouvert.md) (D11 sprites, D18 relais, D24 compteur, D26 raccord, L09 diagnostic), [ADR-003](termines/003-zone-arrosee-lisible.md) (menu de la zone arrosée), [ADR-006](termines/006-vision-debit.md) |
+| Documents liés | [ADR-001](001-reseau-eau-ouvert.md) (D11 sprites, D18 relais, D24 compteur, D26 raccord, L09 diagnostic), [ADR-003](003-zone-arrosee-lisible.md) (menu de la zone arrosée), [ADR-006](006-vision-debit.md) |
 | Références | `IsoObject.FindExternalWaterSource`, `IsoObject.getFluidAmount` (42.22) ; `ISUI/ISCollapsableWindow.lua` ; écran LCD de Live Wire (`LW_Lcd.lua`, modèle visuel seulement : LiveWater ne dépend pas de Live Wire) |
 | Origine | essai en jeu de l'utilisateur, 2026-11-19 : sept remarques (raccord est-ouest, noms non traduits, compteur, menus non exclusifs, eau des appareils, appareils reliés dans la vue du réseau, écran de la pompe) |
 

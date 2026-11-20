@@ -5,10 +5,10 @@
 | Identifiant | `ADR-015-EXPERIENCE-DES-RECETTES` |
 | Date de création et de mise à jour | 2026-11-19 |
 | Statut | Accepté (2026-11-19) |
-| Avancement | voir le [plan 015](../ADR-plans/plan-015-experience-des-recettes.md) |
+| Avancement | Terminé le 2026-11-20 ; voir le [plan 015](../../ADR-plans/termines/plan-015-experience-des-recettes.md) |
 | Décideur | l'utilisateur |
 | Portée | `batman_LiveWater` : `scripts/LWT_recipes.txt`, `scripts/LWT_dismantle.txt`, tests, wiki, CHANGELOG |
-| Documents liés | [ADR-007](termines/007-demontage-et-butin.md) (démontage), [ADR-010](010-pompe-a-eau-et-vanne-immediate.md) (pompe) |
+| Documents liés | [ADR-007](007-demontage-et-butin.md) (démontage), [ADR-010](010-pompe-a-eau-et-vanne-immediate.md) (pompe) |
 | Références | clé `xpAward` des `craftRecipe` (vanilla : `xpAward = MetalWelding:30`, recettes de métallurgie de `media/scripts/generated`) ; LiveWire : chaque recette, démontage compris, donne de l'expérience d'Électricité |
 | Origine | demande de l'utilisateur du 2026-11-19 : « il faut aligner le gain d'experience, "travail des metaux" et "éléctricité" (pompe à eau) pour l'expérience » |
 

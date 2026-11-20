@@ -1,18 +1,18 @@
 # Plan 010 — Pompe à eau ; une vanne agit tout de suite
 
-ADR : [ADR-010](../ADR/010-pompe-a-eau-et-vanne-immediate.md) (Accepté le 2026-11-19).
+ADR : [ADR-010](../../ADR/termines/010-pompe-a-eau-et-vanne-immediate.md) (Accepté le 2026-11-19).
 
 | # | Étape | Statut | Dépend de | Décisions ADR | Taille | Parallélisable avec |
 |---|---|---|---|---|---|---|
-| V01 | Nom affiché « Pompe à eau » dans les 11 langues, `mod.info`, README, descriptions Steam, wiki, spécifications, CHANGELOG | À valider | ADR accepté | D01 | S | V02 |
-| V02 | Manœuvre de vanne immédiate : pas avancé et sauté par l'horloge, coupure au-delà d'une heure d'avance, relais vidés ; tests | À valider | ADR accepté | D02, D03, D04 | M | V01 |
-| V03 | Passages en jeu, documentation joueur | À valider | V01, V02 | toutes | S | — |
+| V01 | Nom affiché « Pompe à eau » dans les 11 langues, `mod.info`, README, descriptions Steam, wiki, spécifications, CHANGELOG | Terminée (2026-11-20) | ADR accepté | D01 | S | V02 |
+| V02 | Manœuvre de vanne immédiate : pas avancé et sauté par l'horloge, coupure au-delà d'une heure d'avance, relais vidés ; tests | Terminée (2026-11-20) | ADR accepté | D02, D03, D04 | M | V01 |
+| V03 | Passages en jeu, documentation joueur | Terminée (2026-11-20) | V01, V02 | toutes | S | — |
 
 ## Fiches
 
 ### V01 — Pompe à eau
 
-- Statut : À valider.
+- Statut : Terminée (2026-11-20). Preuve : code présent, mod publié (1.0.0-beta6) et fonctionnel, validé par l'utilisateur le 2026-11-20.
 - Fait : valeurs des clés `Base.Mov_LiveWater_PondPump` (`ItemName.json`), `Live_Water_Pond_Pump` (`Moveables.json`),
   `LWTBuildPondPump`, `LWTDismantlePondPump` (`Recipes.json`), `IGUI_LWT_Window_Pump` (`IG_UI.json`) et l'infobulle
   de `Sandbox.json`, dans les 11 langues ; `description=` du `mod.info`, `README.md`, `workshop.txt`, `README.steam*`,
@@ -23,7 +23,7 @@ ADR : [ADR-010](../ADR/010-pompe-a-eau-et-vanne-immediate.md) (Accepté le 2026-
 
 ### V02 — Vanne immédiate
 
-- Statut : À valider.
+- Statut : Terminée (2026-11-20). Preuve : code présent, mod publié (1.0.0-beta6) et fonctionnel, validé par l'utilisateur le 2026-11-20.
 - Fait : `LWT_Clock` : `step(id)` (un pas d'un réseau, extrait de `tick`), `switched(part, open)`, `behindClosed(id)`,
   marque `ahead` par réseau (non sauvegardée), `Clock.MAX_AHEAD = 6` ; `tick` saute un réseau tant qu'il a de
   l'avance. `LWT_Outlets:cut(part)` (point d'extension facultatif), `LWT_Relays:cut(part)`,
@@ -38,7 +38,7 @@ ADR : [ADR-010](../ADR/010-pompe-a-eau-et-vanne-immediate.md) (Accepté le 2026-
 
 ### V03 — Preuves en jeu et documentation
 
-- Statut : À valider.
+- Statut : Terminée (2026-11-20). Preuve : code présent, mod publié (1.0.0-beta6) et fonctionnel, validé par l'utilisateur le 2026-11-20.
 - Scénario (`autotest/lwt_hooks.lua`) : l'arroseur ouvert arrose aussitôt (« opened sprinkler sprays at once ») ;
   la vanne de conduite fermée coupe la maison aussitôt, relais vidés par le mod (« closed inline valve cuts the house
   at once », solo et serveur MP ; l'ancien vidage par le banc est retiré) ; l'arroseur fermé s'arrête aussitôt.

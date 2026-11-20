@@ -1,12 +1,12 @@
 # Plan 016 — « Retirer LiveWater de ce monde » : mode debug en solo, admin en multijoueur
 
-ADR : [ADR-016](../ADR/016-retrait-debug-ou-admin.md) (Accepté le 2026-11-19).
+ADR : [ADR-016](../../ADR/termines/016-retrait-debug-ou-admin.md) (Accepté le 2026-11-19).
 
 | # | Étape | Statut | Dépend de | Décisions ADR | Taille | Parallélisable avec |
 |---|---|---|---|---|---|---|
-| E01 | Module partagé du droit de retrait ; menu et `GamePlayers:isAdmin` l'utilisent ; tests | À valider (passage en jeu E03) | ADR accepté | D01, D02 | S | — |
+| E01 | Module partagé du droit de retrait ; menu et `GamePlayers:isAdmin` l'utilisent ; tests | Terminée (2026-11-20) | ADR accepté | D01, D02 | S | — |
 | E02 | Wiki EN/FR, CHANGELOG | Terminée (2026-11-19) | E01 | D03 | S | — |
-| E03 | Passage en jeu par l'utilisateur | À faire | E01 | D01 | S | — |
+| E03 | Passage en jeu par l'utilisateur | Terminée (2026-11-20) | E01 | D01 | S | — |
 
 ## Fiches
 

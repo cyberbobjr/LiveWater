@@ -5,10 +5,10 @@
 | Identifiant | `ADR-014-ESSENCE-DANS-LES-TUYAUX` |
 | Date de création et de mise à jour | 2026-11-19 |
 | Statut | Accepté (2026-11-19) |
-| Avancement | En cours ; voir le [plan 014](../ADR-plans/plan-014-essence-dans-les-tuyaux.md) |
+| Avancement | Terminé le 2026-11-20 ; voir le [plan 014](../../ADR-plans/termines/plan-014-essence-dans-les-tuyaux.md) |
 | Décideur | l'utilisateur |
 | Portée | `batman_LiveWater` : pompe contre une pompe de station-service (récipients, capacité `vessel`, site de pose), liquide d'un réseau (`LWT_Flow`), liquides acceptés par les consommateurs (capacité `outlet`, raccord de remplissage, mangeoires), traductions, tests, scénario en jeu, documentation |
-| Documents liés | [ADR-011](011-pompe-sur-baril.md), [ADR-012](012-producteurs-et-consommateurs.md) (D04 API des consommateurs), [ADR-013](013-raccord-de-remplissage-et-abreuvoirs.md), [ADR-005](termines/005-filtre-a-l-arrivee-d-eau.md) (D03 familles de liquides) |
+| Documents liés | [ADR-011](011-pompe-sur-baril.md), [ADR-012](012-producteurs-et-consommateurs.md) (D04 API des consommateurs), [ADR-013](013-raccord-de-remplissage-et-abreuvoirs.md), [ADR-005](005-filtre-a-l-arrivee-d-eau.md) (D03 familles de liquides) |
 | Références | `IsoObject.getPipedFuelAmount` / `setPipedFuelAmount` (Java 42.22, `IsoObject.java:2461, 2534`) ; `LWT_Flow` (familles « water », « fuel », « other », état `wrong_fluid`) ; `IsoFeedingTrough.createFluidContainer` (liste blanche eau et eau souillée) |
 | Origine | demande de l'utilisateur du 2026-11-19 : « il faudrait que l'on puisse brancher une pompe à eau sur une station service pour alimenter un circuit, mais il est évident que le circuit sera rempli d'essence, donc les consommateurs (connecteur maison et arroseur et mangeoire) ne peuvent pas accepter ce type de liquide. Ce qui veut dire que l'API devra demander aux consommateurs ce qu'ils acceptent comme liquide » ; choix : « un seul liquide par réseau » |
 

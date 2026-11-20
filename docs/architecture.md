@@ -2,7 +2,7 @@
 
 Décisions de référence : [ADR-001](ADR/termines/001-reseau-eau-ouvert.md) ; débit des sorties d'arrosage :
 [ADR-006](ADR/termines/006-vision-debit.md) ; pompe à eau, producteurs et consommateurs, raccord de remplissage :
-[ADR-010](ADR/010-pompe-a-eau-et-vanne-immediate.md) à [ADR-014](ADR/014-essence-dans-les-tuyaux.md). Ce document décrit l'état réel du code ; il suit
+[ADR-010](ADR/termines/010-pompe-a-eau-et-vanne-immediate.md) à [ADR-014](ADR/termines/014-essence-dans-les-tuyaux.md). Ce document décrit l'état réel du code ; il suit
 le [plan 001](ADR-plans/termines/plan-001-reseau-eau-ouvert.md) étape par étape.
 
 ## Vue d'ensemble

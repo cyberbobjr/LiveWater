@@ -5,10 +5,10 @@
 | Identifiant | `ADR-013-RACCORD-DE-REMPLISSAGE-ET-ABREUVOIRS` |
 | Date de création et de mise à jour | 2026-11-19 |
 | Statut | Accepté (2026-11-19) |
-| Avancement | En cours ; voir le [plan 013](../ADR-plans/plan-013-raccord-de-remplissage-et-abreuvoirs.md) |
+| Avancement | Terminé le 2026-11-20 ; voir le [plan 013](../../ADR-plans/termines/plan-013-raccord-de-remplissage-et-abreuvoirs.md) |
 | Décideur | l'utilisateur |
 | Portée | `batman_LiveWater` : nom affiché et infobulle du raccord, remplissage des mangeoires vanilla (adaptateur des récipients, état du raccord), traductions, tests, scénario en jeu, documentation |
-| Documents liés | [ADR-012](012-producteurs-et-consommateurs.md) (le raccord ne fait plus que remplir), [ADR-005](termines/005-filtre-a-l-arrivee-d-eau.md) (D07 : l'eau entre souillée dans un récipient) |
+| Documents liés | [ADR-012](012-producteurs-et-consommateurs.md) (le raccord ne fait plus que remplir), [ADR-005](005-filtre-a-l-arrivee-d-eau.md) (D07 : l'eau entre souillée dans un récipient) |
 | Références | `IsoFeedingTrough` (Java 42.22 : `createFluidContainer` l. 495, réservoir d'eau propre ou souillée qui attrape la pluie ; `onFoodAdded` retire le réservoir, `onRemoveFood` le remet ; `checkOverlayFull` l. 261) ; `FeedingTroughDefinitions.lua` (50 à 150 L) ; `AnimalData` l. 910-913 (la bête boit `removeWater` sans regarder la qualité de l'eau) |
 | Origine | demande de l'utilisateur du 2026-11-19 : « le raccord de baril sur l'abreuvoir, mais il faut changer son nom dans ce cas, et mettre dans les tooltips qu'il alimente les barils, les récupérateurs d'eau et les abreuvoirs » ; puis « remplace "abreuvoir" par "mangeoire" pour respecter le terme français » |
 

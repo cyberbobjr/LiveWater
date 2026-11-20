@@ -8,7 +8,7 @@
 | Avancement | Terminé le 2026-11-20 ; voir le [plan 022](../../ADR-plans/termines/plan-022-reservoir-a-la-mesure-du-point-d-eau.md) |
 | Décideur | l'utilisateur (« ok pour A », 2026-11-20) |
 | Portée | `batman_LiveWater` : taille des réservoirs relais (`LWT_Relays`, `LWT_GamePlumbing`), registre des fournisseurs de besoin et API (révision suivante), fournisseur pour Take a Bath and Shower, option de partie du plafond, traductions, tests, wiki, CHANGELOG |
-| Documents liés | [ADR-001](001-reseau-eau-ouvert.md) (D18, D21 réservoirs relais), [ADR-012](../012-producteurs-et-consommateurs.md) (API ouverte), [ADR-018](../018-eau-des-le-raccordement.md) |
+| Documents liés | [ADR-001](001-reseau-eau-ouvert.md) (D18, D21 réservoirs relais), [ADR-012](012-producteurs-et-consommateurs.md) (API ouverte), [ADR-018](018-eau-des-le-raccordement.md) |
 | Références | `LWT_Relays.lua:42` (`CAPACITY` = `WaterObjects.RELAY_LITRES` = 25) ; LiveWire `LW_PumpTransfer.lua:130-137` (`resizeRelay` : `setCapacity` puis `sync`) ; Java 42.22 `ClothingWasherLogic.java:40, 74-88` (cycle de 90 min, 1 L par minute, arrêt à sec) ; Take a Bath and Shower 42.20 (Workshop 3592172476, lecture seule) : `TABAS_TakeShower.lua:236-290, 580` (douche puisée peu à peu jusqu'à `SandboxVars.TakeABathAndShower.ShowerConsumeWater`, 80 L par défaut, arrêtée si le robinet se vide), `TABAS_TubFluidContainerBase.lua:291` (`getCapacity` de la cuve) |
 | Origine | demande de l'utilisateur du 2026-11-20 : le réservoir invisible de 25 L ne suffit pas à la douche (80 L) ni à la baignoire du mod Take a Bath and Shower ; LiveWire a une option de taille ; choix de la solution « demander le besoin au mod qui le connaît » |
 

@@ -1,19 +1,19 @@
 # Plan 017 — Pompe à eau reliée par fil à un onduleur LiveWire
 
-ADR : [ADR-017](../ADR/017-pompe-reliee-a-un-onduleur-livewire.md) (Accepté le 2026-11-20). Dépend du plan 004 de
+ADR : [ADR-017](../../ADR/termines/017-pompe-reliee-a-un-onduleur-livewire.md) (Accepté le 2026-11-20). Dépend du plan 004 de
 LiveWire (API révision 9).
 
 | # | Étape | Statut | Dépend de | Décisions ADR | Taille | Parallélisable avec |
 |---|---|---|---|---|---|---|
-| E01 | Inscription partagée, champ `link`, règle de courant de la pompe (relié / case), tests | À valider (passage en jeu E03) | plan 004 de LiveWire, L4 | D01, D02, D03 | M | — |
+| E01 | Inscription partagée, champ `link`, règle de courant de la pompe (relié / case), tests | Terminée (2026-11-20) | plan 004 de LiveWire, L4 | D01, D02, D03 | M | — |
 | E02 | Wiki EN/FR, descriptions Steam, CHANGELOG | Terminée (2026-11-20) | E01 | D04 | S | — |
-| E03 | Passage en jeu par l'utilisateur : pompe à l'étang reliée par fil, pompe non reliée sur générateur, sans LiveWire | À faire | E01 | D01, D02 | S | — |
+| E03 | Passage en jeu par l'utilisateur : pompe à l'étang reliée par fil, pompe non reliée sur générateur, sans LiveWire | Terminée (2026-11-20) | E01 | D01, D02 | S | — |
 
 ## Fiches
 
 ### E01 — Code
 
-Statut : À valider (passage en jeu E03). Fait le 2026-11-20, non commité.
+Statut : Terminée (2026-11-20). Preuve : code présent, mod publié (1.0.0-beta6) et fonctionnel, validé par l'utilisateur le 2026-11-20.
 
 - Champ de pièce `link = { level = 0..10 }` (révision 24 de l'API LiveWater, refus `invalid_link`,
   `Parts:linkOf`) : `shared/LiveWater/LWT_Parts.lua`, `LWT_API.lua` ; la pompe porte `link = { level = 2 }`

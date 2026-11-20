@@ -5,10 +5,10 @@
 | Identifiant | `ADR-010-POMPE-A-EAU-ET-VANNE-IMMEDIATE` |
 | Date de création et de mise à jour | 2026-11-19 |
 | Statut | Accepté (2026-11-19) |
-| Avancement | En cours ; voir le [plan 010](../ADR-plans/plan-010-pompe-a-eau-et-vanne-immediate.md) |
+| Avancement | Terminé le 2026-11-20 ; voir le [plan 010](../../ADR-plans/termines/plan-010-pompe-a-eau-et-vanne-immediate.md) |
 | Décideur | l'utilisateur |
 | Portée | `batman_LiveWater` : nom affiché de la pompe (traductions, documentation) ; manœuvre d'une vanne (horloge, relais de l'arrivée d'eau, composition serveur, tests) |
-| Documents liés | [ADR-001](termines/001-reseau-eau-ouvert.md) (D02 vanne, D09 pas de dix minutes, D18 relais), [ADR-008](008-lisibilite-du-reseau.md) (D10 bruit de vanne, D11 courant immédiat) |
+| Documents liés | [ADR-001](001-reseau-eau-ouvert.md) (D02 vanne, D09 pas de dix minutes, D18 relais), [ADR-008](008-lisibilite-du-reseau.md) (D10 bruit de vanne, D11 courant immédiat) |
 | Références | `LWT_Clock` (`tick`, `settle`, `powerChanged`), `LWT_CmdSwitchValve`, `Network:reach`, `Network:behindClosed`, `LWT_Relays` |
 | Origine | demandes de l'utilisateur du 2026-11-19 : « renommer pompe à étang en "pompe à eau" » ; « l'ouverture/fermeture d'une vanne doit être immédiate avec effet immédiat (coupure / flow de l'eau) » ; « ne pas attendre 10 minutes, effet immédiat (vanne d'arroseur ou vanne générale) » |
 
