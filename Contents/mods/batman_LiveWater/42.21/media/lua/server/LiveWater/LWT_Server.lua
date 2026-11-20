@@ -21,6 +21,9 @@ if isClient() then return end
 --                                                stops showing water)
 --   LiveWater.Events valveChanged                 -> LWT_ValveSounds, LWT_Clock:switched (the water
 --                                                follows at once), LWT_Outlets:cut (ADR-010)
+--   ISPlumbItem.complete (vanilla, wrapped once at OnInitGlobalModData)
+--                                             -> LWT_PlumbWatch (a fixture plumbed gets its water
+--                                                at once, ADR-018)
 -- No per-frame event (D08). Events before the first OnInitGlobalModData are ignored.
 -- LiveWater.Server holds the services of the current game (nil before), for later adapters.
 
@@ -58,6 +61,7 @@ local GameContainers = require "LiveWater/LWT_GameContainers"
 local Removal = require "LiveWater/LWT_Removal"
 local Checks = require "LiveWater/Commands/LWT_CmdChecks"
 local Reasons = require "LiveWater/LWT_Reasons"
+local PlumbWatch = require "LiveWater/LWT_PlumbWatch"
 
 -- Command name -> handler file under LiveWater/Commands.
 local COMMANDS = {
@@ -170,13 +174,27 @@ local function build()
             random = randomShare, hours = gameHours, sources = LiveWater.Sources, chores = { removal, relays, diagnostics, washerFix, fittings, edgeWatch },
             need = function(part) return outlets:need(part) end }),
     }
+    server.plumbWatch = PlumbWatch.new({ relays = relays, clock = server.clock })
     local count = topology:rebuild()
     log("LiveWater: " .. count .. " part(s) loaded")
     return server
 end
 
+-- The fixture of a vanilla plumbing action, when plumbed (probe of LWT_PlumbWatch).
+local function plumbedFixture(action)
+    return GamePlumbing.plumbedFixture(action and action.itemToPipe)
+end
+
+-- A fixture was plumbed with the wrench: its water comes at once (ADR-018 D01).
+local function onPlumbed(x, y, z)
+    local server = LiveWater.Server
+    if server then server.plumbWatch:plumbed(x, y, z) end
+end
+
 local function onInit()
     LiveWater.Server = build()
+    -- vanilla timed action, shared file: complete() runs here, on the authority (LWT_PlumbWatch)
+    if PlumbWatch.wrap(ISPlumbItem, plumbedFixture, onPlumbed) then log("LiveWater: plumbing watched") end
 end
 
 -- Sprite name and square of a game object, or nil.

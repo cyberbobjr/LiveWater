@@ -26,6 +26,7 @@ if isClient() then return end
 --                              activated, plain (IsoClothingWasher), marked (LiveWaterWasher) }
 --   sendWasherState(x, y, z)   sendObjectChange(WASHER_STATE) of the washer (E28)
 --   markWasher(x, y, z)        ModData LiveWaterWasher = { plumbed = true }, sent to the clients
+--   GamePlumbing.plumbedFixture(obj)  x, y, z of a plumbed water fixture, else nil (ADR-018)
 -- Never touches an object marked by another mod (Live Wire relays and barrels, D21).
 
 local WaterObjects = require "LiveWater/LWT_WaterObjects"
@@ -40,6 +41,15 @@ GamePlumbing.WASHER_KEY = WaterObjects.WASHER_KEY
 
 function GamePlumbing.new()
     return setmetatable({}, GamePlumbing)
+end
+
+-- Square of `obj` when it is a water fixture that uses an outside water source (plumbed), else nil
+-- (probe of LWT_PlumbWatch, ADR-018 D01).
+function GamePlumbing.plumbedFixture(obj)
+    if not obj or not WaterObjects.isFixture(obj) or not obj:getUsesExternalWaterSource() then return nil end
+    local sq = obj:getSquare()
+    if not sq then return nil end
+    return sq:getX(), sq:getY(), sq:getZ()
 end
 
 local function squareAt(x, y, z)

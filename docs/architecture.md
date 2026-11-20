@@ -18,7 +18,7 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
 ## Modules Lua
 
 `shared/LiveWater/` :
-- `LWT_API.lua` : façade publique `LiveWater.API` (révision 23, historique dans le fichier) et racine de composition :
+- `LWT_API.lua` : façade publique `LiveWater.API` (révision 24, historique dans le fichier) et racine de composition :
   crée le registre des capacités (y inscrit les capacités de départ listées en données), le registre des pièces, le
   registre des types de sortie (`registerOutlet`, consommateurs d'autres mods), le bus `LiveWater.Events`, et scelle
   les registres à `OnInitGlobalModData`. `LiveWater.Parts` et `LiveWater.Capabilities` sont internes.
@@ -34,6 +34,9 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
   `LWT_Containers.lua` (pur) : registre des conteneurs d'un raccord de remplissage et d'une pompe contre un baril (forme, par sprite ou entité ; tout
   conteneur reçoit l'eau croupie comme un baril, ADR-005 D07 ; conteneurs admis : 20 L ou plus, inscrits, ou listés dans l'option `FillContainers`). `LWT_Tiles.lua` : noms des sprites du
   tileset et `variants` d'une pièce dessinée par état et orientation.
+- `LWT_LiveWireConsumers.lua` (pur) : définition de base d'un consommateur Live Wire, commune à l'autorité et au client
+  (sprites, catégorie, circuit, et `link` du type de pièce avec Live Wire révision 9, `Parts:linkOf`, ADR-017 D01, D03),
+  et inscription de chaque type qui a le crochet `power` ; chaque côté complète la définition.
 - `LWT_InletArea.lua` (pur) : cases servies par une arrivée d'eau (bâtiment de la carte touché, cercle de portée,
   jusqu'à 3 étages au-dessus, sous-sols jusqu'à 2 niveaux sous l'emprise du rez-de-chaussée ; hors bâtiment de la carte,
   base du joueur : cercle de portée), lues par une sonde injectée ; `LWT_RelayPlan.lua` (pur) : relais voulus au-dessus des
@@ -147,9 +150,14 @@ commandes du filtre) ; un refus est dit au joueur par clé de traduction.
   sans pompe dans son réseau, une arrivée d'eau n'a pas de pression, ADR-009 D03).
 - `LWT_WasherFix.lua` : tâche de l'horloge, serveur seulement : état des lave-linge servis par nos relais renvoyé aux
   clients (arrêt à sec, raccord), option `WasherFix`.
+- `LWT_PlumbWatch.lua` : enveloppe unique de l'action vanilla `ISPlumbItem.complete` (sur l'autorité) ; un point d'eau
+  raccordé à la clé fait relever les relais autour et avancer tout de suite d'un pas le réseau des arrivées d'eau qui le
+  couvrent (`Clock:hasten` → `Clock:bringForward`, le même pas immédiat qu'une vanne, ADR-018).
 - `LWT_Power.lua` : seul adaptateur du courant. À `OnInitWorld`, si `LiveWire.API.revision >= 6`, inscrit chaque type
   qui a besoin de courant comme consommateur de Live Wire (`powerConsumption`, `display`, `summary` lus dans l'état
-  recopié sur l'objet) ; `powered(part)` : `consumerPowered` de Live Wire, sinon la règle vanilla de la case.
+  recopié sur l'objet) par `LWT_LiveWireConsumers` ; `powered(part)` : `consumerPowered` de Live Wire (il suit le fil
+  d'une pompe reliée), sinon la règle vanilla de la case ; hors chargement, `consumerLinkPowered` pour un type reliable
+  relié (ADR-017 D02), sinon `gridAt` et les règles de l'absence.
 - `LWT_Publisher.lua` : après un pas ou une action, sprite selon l'état (`Sprites:show`), état recopié sur l'objet
   seulement quand il change (rien pour une pièce sans état), boucle sonore annoncée aux joueurs quand elle change et
   répétée après chaque pas, bruit pour les zombies après chaque pas (port `sounds`, crochet `sound`).
@@ -168,7 +176,9 @@ commandes du filtre) ; un refus est dit au joueur par clé de traduction.
 `complete`, donc jamais confiée au serveur), `LWT_PartMenu.lua` (menu générique : les actions que les capacités d'une pièce proposent, crochet
 `actions`, lues dans l'état recopié sur l'objet ; une action qui demande un objet n'apparaît que si le joueur le
 porte) `LWT_PumpSounds.lua` (boucle sonore jouée localement sur un émetteur libre, à l'ordre du serveur, aucun abonnement
-par image) et `LWT_NoticeClient.lua` (affiche les notes `notice` du serveur), `LWT_FixtureMenu.lua` (ligne « Pas d'eau : raison » d'un point d'eau sans eau), `LWT_CityWaterMenu.lua`
+par image), `LWT_PowerClient.lua` (client multijoueur seulement, à `OnInitWorld` : inscrit les mêmes consommateurs
+Live Wire que l'autorité, sans état ni consommation, pour que les menus de Live Wire reconnaissent la pompe, ADR-017
+D03) et `LWT_NoticeClient.lua` (affiche les notes `notice` du serveur), `LWT_FixtureMenu.lua` (ligne « Pas d'eau : raison » d'un point d'eau sans eau), `LWT_CityWaterMenu.lua`
 (« Raccorder au réseau public »), `LWT_WasherClient.lua` (état « raccordé » d'un lave-linge marqué par le serveur,
 appliqué à son menu et à son interrupteur), `LWT_SprinklerJet.lua` (jet animé des arroseurs, **seul abonnement par image
 du mod**, D08a : `OnTick` seulement tant qu'un arroseur en marche est chargé, 6 images par seconde au plus, un tour

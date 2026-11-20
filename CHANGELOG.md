@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0-beta4 — 2026-11-20
+
+- **Water pump:** it now draws 150 W while running instead of 250 W, less than a freezer.
+- **LiveWire:** with LiveWire 2.x, the water pump can be connected to an inverter with electric wire (Electrical 2, a screwdriver, up to the cable range, 12 tiles by default), even outside the inverter's powered area; it then runs on that inverter. Not connected, or without LiveWire, it still uses the power of its square.
+- **House water inlet:** water reaches a sink, bathtub, shower, toilet or washing machine as soon as you plumb it with a pipe wrench, no more waiting for the next 10 minutes.
+
 ## 1.0.0-beta3 — 2026-11-19
 
 - **Compatibility:** LiveWater is now marked incompatible with Plysken Irrigation Pipes, which lays its own irrigation network; LiveWater's pipes, sprinklers and drip lines cover it.

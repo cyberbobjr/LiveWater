@@ -23,6 +23,9 @@
 --                 part placed with that facing may connect by, in place of `sides` (an inline part
 --                 keeps the two sides of the axis it shows: a meter, a valve); the facing is the one of
 --                 the sprite it was set down with, recorded on the part (`part.facing`). Parts:sidesOf
+--   link          optional (API revision 24, ADR-017 D01): { level = 0..10 } the part may be wired
+--                 by electric wire to a Live Wire inverter (Electrical level of the link); read by
+--                 the Live Wire consumer registration (LWT_LiveWireConsumers). Parts:linkOf
 --   capabilities  required: { kind = params or true }, every kind registered, params checked
 --                 by the kind's define hook
 -- Placed parts carry their type in `part.type`; this registry is also the catalog the domain
@@ -101,6 +104,13 @@ local function copySidesByFacing(src)
     return out
 end
 
+-- Copy of a link ({ level = integer 0..10 }), false when absent, nil when invalid.
+local function copyLink(src)
+    if src == nil then return false end
+    if type(src) ~= "table" or not Check.isInteger(src.level, 0, 10) then return nil end
+    return { level = src.level }
+end
+
 -- Bit of each relative side 0..3 (front, +1, behind, +3) in a relative mask (field `branches`).
 local RELATIVE_BITS = { 1, 2, 4, 8 }
 
@@ -174,7 +184,7 @@ end
 
 -- Returns true, or false, a reason and sometimes a detail: "registration_closed",
 -- "invalid_id", "duplicate_part", "invalid_definition", "invalid_sprites", "invalid_variants",
--- "duplicate_sprite", "invalid_facings", "invalid_branches", "invalid_sides", "invalid_sides_by_facing", "invalid_capabilities", "unknown_capability", "invalid_field".
+-- "duplicate_sprite", "invalid_facings", "invalid_branches", "invalid_sides", "invalid_sides_by_facing", "invalid_link", "invalid_capabilities", "unknown_capability", "invalid_field".
 function Parts:register(id, def)
     if self.sealed then return false, "registration_closed" end
     if not Check.isNamespaced(id) then return false, "invalid_id" end
@@ -202,10 +212,12 @@ function Parts:register(id, def)
     if not Check.isInteger(sides, 0, Grid.ALL) then return false, "invalid_sides" end
     local sidesByFacing = copySidesByFacing(def.sidesByFacing)
     if not sidesByFacing then return false, "invalid_sides_by_facing" end
+    local link = copyLink(def.link)
+    if link == nil then return false, "invalid_link" end
     local caps, reason, detail = self:copyCapabilities(def.capabilities)
     if not caps then return false, reason, detail end
     self.defs[id] = { sprites = sprites, variants = variants, crossings = crossings, facings = facings,
-        branches = branches, branchSides = branchSides, sides = sides, sidesByFacing = sidesByFacing, caps = caps }
+        branches = branches, branchSides = branchSides, sides = sides, sidesByFacing = sidesByFacing, link = link or nil, caps = caps }
     for i = 1, #names do
         self.bySprite[names[i][1]] = id
         if names[i][2] then self.facing[names[i][1]] = names[i][2] end
@@ -323,6 +335,13 @@ function Parts:spritesOf(id)
     end
     table.sort(list)
     return list
+end
+
+-- Link of the type to a Live Wire inverter (field `link`): a copy { level }, or nil.
+function Parts:linkOf(id)
+    local def = self.defs[id]
+    local link = def and def.link
+    return link and { level = link.level } or nil
 end
 
 -- Does one capability of the type have this hook?
@@ -490,7 +509,7 @@ function Parts:describe(id)
     for i = 1, #def.caps do caps[def.caps[i].kind] = deepCopy(def.caps[i].params) end
     return { sprites = deepCopy(def.sprites), variants = deepCopy(def.variants),
         facings = deepCopy(def.facings), branches = deepCopy(def.branches), sides = def.sides,
-        sidesByFacing = deepCopy(def.sidesByFacing), capabilities = caps }
+        sidesByFacing = deepCopy(def.sidesByFacing), link = deepCopy(def.link), capabilities = caps }
 end
 
 return Parts

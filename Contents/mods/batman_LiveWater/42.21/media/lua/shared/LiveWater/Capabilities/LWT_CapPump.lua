@@ -3,7 +3,7 @@
 --   pressure         pressure budget given to the network (default 6)
 --   flow             litres per ten-minute step at full efficiency (default 50: 5 L per game
 --                    minute), times the sandbox option PumpFlowMultiplier
---   watts            power drawn while running (default 250; 0 = needs no current)
+--   watts            power drawn while running (default 150; 0 = needs no current)
 --   wear             efficiency points lost per running minute (default 0.01: about a week of
 --                    running from 100 to 0), times the sandbox option PumpWearMultiplier (P04)
 --   breakdownBelow   efficiency under which it may break down (default 20)
@@ -37,7 +37,7 @@ local SPEC = {
     ports = Check.integer(1, 4, 4),
     pressure = Check.number(0, 1000, 6),
     flow = Check.number(0, 100000, 50),
-    watts = Check.number(0, 100000, 250),
+    watts = Check.number(0, 100000, 150),
     wear = Check.number(0, 100, 0.01),
     breakdownBelow = Check.number(0, 100, 20),
     breakdownChance = Check.number(0, 1, 0.02),

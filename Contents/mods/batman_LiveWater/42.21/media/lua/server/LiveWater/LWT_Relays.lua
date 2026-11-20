@@ -5,6 +5,7 @@ if isClient() then return end
 --                          relays of every inlet on a loaded square up to date
 --   touched(x, y)          a fixture or a water tank was set down or taken on that square
 --   chunkLoaded(x, y, size) the squares x..x+size-1, y..y+size-1 were loaded
+--   covering(x, y, z)      inlets on a loaded square whose area covers that square (ADR-018)
 -- Survey on events only (D10): the fixtures of an inlet are scanned again at the next step only
 -- when it is new or loaded again, when something touched or loaded near it (within the larger of
 -- its two ranges), or when the city water stopped or came back; never on a timer.
@@ -275,6 +276,16 @@ end
 
 function Relays:touched(x, y)
     self:touchRect(x, y, x, y)
+end
+
+-- Inlets on a loaded square whose area covers the square (x, y, z) (ADR-018 D01).
+function Relays:covering(x, y, z)
+    local inlets, out = self:inlets(), {}
+    for i = 1, #inlets do
+        local area = self:areaOf(inlets[i])
+        if area and area:contains(x, y, z) then out[#out + 1] = inlets[i] end
+    end
+    return out
 end
 
 function Relays:chunkLoaded(x, y, size)

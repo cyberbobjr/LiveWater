@@ -75,7 +75,7 @@ O servidor verifica cada ação; redes, válvulas e equipamentos são guardados 
 [h2]Opções e compatibilidade[/h2]
 [list]
 [*]Opções sandbox: caudal e desgaste da bomba, duração do filtro, alcance das entradas de água, alcance, caudal e limites do temporizador dos aspersores, caudal da linha de gota-a-gota, recipientes a encher.
-[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] é opcional: a bomba passa então a funcionar com o inversor dele (250 W) e aparece no respetivo software.
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] é opcional: ligue a bomba a um inversor por fio, mesmo fora da zona dele (150 W, visível no respetivo software).
 [*]Enquanto a água da cidade estiver a correr, pode ligar-se a ela um lava-loiça, uma banheira ou uma sanita que tenha colocado num edifício do mapa.
 [*]Não compatível com LG Extended Plumbing, LG Connect To Water Supply nem Plysken Irrigation Pipes (o LiveWater cobre o que eles fazem).
 [*]Aberto a outros mods através de uma API pública.

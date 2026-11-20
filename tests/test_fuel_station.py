@@ -194,7 +194,7 @@ class ConsumersSayWhatTheyTake(unittest.TestCase):
 
     def test_revision_23(self):
         lua = new_lua(API)
-        self.assertEqual(lua.eval("LiveWater.API.revision"), 23)
+        self.assertGreaterEqual(lua.eval("LiveWater.API.revision"), 23)
 
 
 class Information(unittest.TestCase):

@@ -1,5 +1,5 @@
 """E08: pond pump and power (ADR-001 D16, D20): sprites drawn by state and facing (variants), placement next to
-natural water only, 50 L per step, 250 W while running, Live Wire consumer (revision 6 or later) or the vanilla
+natural water only, 50 L per step, 150 W while running, Live Wire consumer (revision 6 or later) or the vanilla
 power rule, no work without power, the sprite follows the real state, the state is mirrored on the object."""
 import json
 import os
@@ -65,7 +65,7 @@ class PondPumpPart(unittest.TestCase):
         d = lua.eval('LiveWater.API.part("LiveWater:PondPump")')
         for key, base in (("off", 24), ("on", 28)):
             self.assertEqual([d.variants[key][i] for i in range(1, 5)], [TILE + str(base + k) for k in range(4)], key)
-        self.assertEqual((d.capabilities.pump.flow, d.capabilities.pump.watts), (50, 250))
+        self.assertEqual((d.capabilities.pump.flow, d.capabilities.pump.watts), (50, 150))
         self.assertIsNotNone(d.capabilities.intake)
 
 
@@ -241,7 +241,7 @@ class LiveWirePower(unittest.TestCase):
         self.assertEqual(len(names), 8)
         self.assertIn(TILE + "29", names)
 
-    def test_250_w_running_and_0_stopped(self):
+    def test_150_w_running_and_0_stopped(self):
         lua = self.lw()
         lua.execute("newPower(fakeLiveWire(6)) DEF = REGISTERED.LiveWater_LiveWater_PondPump")
         lua.execute("""
@@ -250,7 +250,7 @@ class LiveWirePower(unittest.TestCase):
         """)
         self.assertEqual(lua.eval("DEF.powerConsumption(OBJ)"), 0)
         lua.execute('NEED["1,0"] = 10 CLOCK:tick()')
-        self.assertEqual(lua.eval("DEF.powerConsumption(OBJ)"), 250)
+        self.assertEqual(lua.eval("DEF.powerConsumption(OBJ)"), 150)
 
     def test_display_and_summary_follow_the_live_wire_format(self):
         lua = self.lw()

@@ -3,29 +3,37 @@ if isClient() then return end
 --   register(liveWireApi)  at OnInitWorld (every mod's Lua is loaded, Live Wire not sealed yet):
 --                          when Live Wire's API has revision 6 or later, every part type that
 --                          needs current (`power` hook true for a new part: pump, sprinkler
---                          timer) becomes a Live Wire consumer: billed
---                          `watts` while running, 0 when stopped, `display` (its information
+--                          timer) becomes a Live Wire consumer (LWT_LiveWireConsumers, the base
+--                          definition a multiplayer client registers too, ADR-017 D03): with
+--                          revision 9 or later, a type whose definition carries `link` (the pump,
+--                          Electrical 2) may be wired to an inverter (ADR-017 D01). This side adds:
+--                          billed `watts` while running, 0 when stopped, `display` (its information
 --                          lines, at most 4) and `summary` (pumps running, water pumped), in the
 --                          format of Live Wire ADR-002. Returns how many types were registered.
 --   powered(part)          current this step. On a loaded square: Live Wire's consumerPowered for a
---                          registered type (circuits and breakers included), else the vanilla rule
+--                          registered type (it follows the wire of a linked part, else the power
+--                          of the square; circuits and breakers included), else the vanilla rule
 --                          of the square (a generator in range or the public grid); what was read
 --                          is recorded in the part state (STATE_KEY) for the absence. On a square
---                          not loaded (ADR-006 D07): with Live Wire's gridAt (authority, reads its
---                          registry only), the inverter of the grid that covers the square is on
---                          and the last loaded consumerPowered allowed it (circuit, breaker); when
---                          no Live Wire grid covers it: the public grid if it still runs in the
---                          world (global state) and the square had it when last loaded, or a
---                          generator in range at the last loaded step (the generator itself is
---                          neither read nor touched).
+--                          not loaded (ADR-006 D07): a part of a linkable type wired to an inverter
+--                          (Live Wire's consumerLinkPowered answers a boolean, registry only)
+--                          has current when that inverter supplies it and the last loaded
+--                          consumerPowered allowed it (ADR-017 D02); else, with Live Wire's gridAt
+--                          (authority, reads its registry only), the inverter of the grid that
+--                          covers the square is on and the last loaded consumerPowered allowed it
+--                          (circuit, breaker); when no Live Wire grid covers it: the public grid if
+--                          it still runs in the world (global state) and the square had it when
+--                          last loaded, or a generator in range at the last loaded step (the
+--                          generator itself is neither read nor touched).
 -- Live Wire is never required (no require=) and never modified (D21). Dependencies: { catalog,
 -- world (port: isLoaded, object, powerAt -> generator, grid (nil when not loaded), gridRuns,
 -- stateOfObject) }.
 
+local Consumers = require "LiveWater/LWT_LiveWireConsumers"
+
 local Power = {}
 Power.__index = Power
 
-Power.MIN_REVISION = 6
 Power.MAX_DISPLAY_LINES = 4
 -- Key of the record of the last loaded reading in the part state: not a capability kind (a kind
 -- starts with a letter, LWT_Check.isName), kept by the registry with the rest of the state.
@@ -33,11 +41,6 @@ Power.STATE_KEY = "_power"
 
 function Power.new(deps)
     return setmetatable({ catalog = deps.catalog, world = deps.world, api = nil, registered = {} }, Power)
-end
-
--- Live Wire consumer id of a part type ("LiveWater:PondPump" -> "LiveWater_LiveWater_PondPump").
-function Power.consumerId(typeId)
-    return "LiveWater_" .. string.gsub(typeId, ":", "_")
 end
 
 -- The part a game object stands for, from its mirrored state: { type, data }, or nil.
@@ -82,37 +85,17 @@ function Power:summary(objects)
     } }
 end
 
-function Power:definition(typeId)
-    return {
-        sprites = self.catalog:spritesOf(typeId),
-        powerConsumption = function(o) return self:watts(o) end,
-        category = "other",
-        circuit = "equipment",
-        display = function(o) return self:display(o) end,
-        summary = function(objects) return self:summary(objects) end,
-    }
+-- What the authority adds to the shared consumer definition: draw, information, summary.
+function Power:complete(def)
+    def.powerConsumption = function(o) return self:watts(o) end
+    def.display = function(o) return self:display(o) end
+    def.summary = function(objects) return self:summary(objects) end
 end
 
 function Power:register(api)
     self.api, self.registered = nil, {}
-    if type(api) ~= "table" or type(api.revision) ~= "number" or api.revision < Power.MIN_REVISION
-        or type(api.registerConsumer) ~= "function" then
-        return 0
-    end
-    self.api = api
-    local count, ids = 0, self.catalog:ids()
-    for i = 1, #ids do
-        local id = ids[i]
-        if self.catalog:first({ type = id }, "power") then
-            local ok, reason = api.registerConsumer(Power.consumerId(id), self:definition(id))
-            if ok or reason == "duplicate_consumer" then
-                self.registered[id] = true
-                count = count + 1
-            else
-                print("LiveWater: Live Wire consumer " .. id .. " not registered: " .. tostring(reason))
-            end
-        end
-    end
+    local count, registered = Consumers.register(api, self.catalog, function(_, def) self:complete(def) end)
+    if Consumers.usable(api) then self.api, self.registered = api, registered end
     return count
 end
 
@@ -145,9 +128,21 @@ function Power:liveGrid(part)
     return snapshot
 end
 
--- Current of a part whose square is not loaded (ADR-006 D07).
+-- Is the linkable registered part wired to a supplied inverter? true, false, or nil when it is not
+-- wired (or Live Wire cannot tell: no consumerLinkPowered before revision 9).
+function Power:linkSupplied(part)
+    local def = self.registered[part.type]
+    if not def or not def.link or type(self.api.consumerLinkPowered) ~= "function" then return nil end
+    local supplied = self.api.consumerLinkPowered(part.x, part.y, part.z)
+    if type(supplied) ~= "boolean" then return nil end
+    return supplied
+end
+
+-- Current of a part whose square is not loaded (ADR-006 D07, ADR-017 D02).
 function Power:readAway(part)
     local record = recordOf(part) or {}
+    local linked = self:linkSupplied(part)
+    if linked ~= nil then return linked and record.live ~= false end
     local snapshot = self:liveGrid(part)
     if snapshot then return snapshot.inverter.powered == true and record.live ~= false end
     if record.generator then return true end

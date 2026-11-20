@@ -75,7 +75,7 @@
 [h2]Настройки и совместимость[/h2]
 [list]
 [*]Настройки песочницы: насос, фильтры, радиусы вводов, дождеватели, шланги, ёмкости.
-[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] необязателен: тогда насос работает от его инвертора (250 Вт).
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] необязателен: насос подключают проводом к инвертору, даже вне зоны (150 Вт).
 [*]Пока идёт городская вода, раковину или унитаз в здании карты можно подключить к ней.
 [*]Несовместим с LG Extended Plumbing, LG Connect To Water Supply и Plysken Irrigation Pipes.
 [*]Открыт для модов: публичный API.
@@ -88,7 +88,7 @@
 
 [h2]Поддержать проект[/h2]
 
-Нравится мод? Угостите автора кофе.
+Нравится мод? Угостите кофе.
 [url=https://ko-fi.com/Z8Z8QJV31][img]https://storage.ko-fi.com/cdn/kofi6.png?v=6[/img][/url]
 
 [h2]Авторство[/h2]

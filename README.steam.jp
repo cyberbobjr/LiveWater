@@ -75,7 +75,7 @@
 [h2]オプションと互換性[/h2]
 [list]
 [*]サンドボックス設定：ポンプ、フィルター、給水口、スプリンクラー、点滴チューブ、補充するコンテナ。
-[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url]は任意です。導入するとポンプはインバーター（250 W）で動き、そのソフトウェアに表示されます。
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url]は任意です。ポンプは電線でインバーターに接続でき、範囲外でも動きます（150 W）。
 [*]市の水道が出ている間、マップ建物に置いた流し台やトイレを接続できます。
 [*]LG Extended Plumbing、LG Connect To Water Supply、Plysken Irrigation Pipesとは非互換です。
 [*]他のMODに開かれた公開APIがあります。

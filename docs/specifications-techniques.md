@@ -14,7 +14,7 @@ Contrats précis du mod (objets, commandes réseau, ModData, options sandbox, tr
 | Table Lua globale | `LiveWater` |
 | Préfixes | fichiers `LWT_*.lua`, recettes `LWT`, traductions `*_LWT_*`, ids de pièces `"<Mod>:<Nom>"` |
 
-## API publique (`LiveWater.API`, révision 23)
+## API publique (`LiveWater.API`, révision 24)
 
 Inscription depuis un fichier `shared`, pendant le chargement, avant `OnInitGlobalModData` (ensuite :
 `registration_closed`). Tout refus rend `false` et une raison, et écrit un avertissement en anglais dans la console.
@@ -46,7 +46,7 @@ de capacité, joints par `_` (filtre `filter` + sortie `filtered` → `filter_fi
 | `conduit` | `ports` facultatif 1-4 (révision 5 : pièce en ligne, 2 pour un compteur) |
 | `meter` | aucun (révision 5) ; état `{ litres, quality }` du dernier pas |
 | `intake` | `quality` : `"tainted"` (défaut) ou `"clean"` ; ne se pose qu'à côté d'une source (`attach`, refus `no_source`), dont la sorte est relevée dans son état (`source`) ; révision 21 : `orVessel` (faux) : se pose aussi contre un récipient (capacité `vessel`) sans source, son état porte alors `vessel = true` |
-| `pump` | `ports` 1-4 (4), `pressure` (6), `flow` litres par pas de dix minutes à plein rendement (50, × rendement, × option `PumpFlowMultiplier`), `watts` en marche (250 ; 0 = sans courant) ; révision 4 : `wear` points de rendement perdus par minute de marche (0,01, × option `PumpWearMultiplier`), `breakdownBelow` (20), `breakdownChance` par pas de marche (0,02), `repairItem` (`Base.ScrapMetal`), `repairCount` (2), `repairTool` étiquette facultative, `sound` boucle en marche (`GeneratorLoop`), `noiseRadius` et `noiseVolume` (20, 20) |
+| `pump` | `ports` 1-4 (4), `pressure` (6), `flow` litres par pas de dix minutes à plein rendement (50, × rendement, × option `PumpFlowMultiplier`), `watts` en marche (150 ; 0 = sans courant) ; révision 4 : `wear` points de rendement perdus par minute de marche (0,01, × option `PumpWearMultiplier`), `breakdownBelow` (20), `breakdownChance` par pas de marche (0,02), `repairItem` (`Base.ScrapMetal`), `repairCount` (2), `repairTool` étiquette facultative, `sound` boucle en marche (`GeneratorLoop`), `noiseRadius` et `noiseVolume` (20, 20) |
 | `vessel` | révision 21 (ADR-011) : `rate` litres par pas (50) ; la pièce tire l'eau du récipient posé contre elle, sur l'un de ses quatre côtés, avant sa propre source (hook `draw` : `min(litres, part du récipient)`) ; eau propre ou souillée ; révision 23 (ADR-014 D01) : aussi l'essence d'une pompe de station-service (`GameSite:hasVessel`), jamais une autre famille ; `container` = « draw » ; état `{ found, shape, fluid, amount, free, share, cx, cy, cz, offline }` ; ligne `IGUI_LWT_Vessel_Content` (« Baril : N L »), `sense` |
 | `valve` | `open` à la pose (`true`) ; état `{ open }` ; révision 8 : `opened`, `open`, actions « Ouvrir la vanne » / « Fermer la vanne », ligne `IGUI_LWT_Valve_Open`/`_Closed` ; révision 13 : `look` (`false`) : pièce dessinée par l'état de la vanne, variantes `open` / `closed` ; crochet `status` : `closed` pour la vue du réseau |
 | `spray` | révision 8 : `radius` cases de chaque côté sur chaque axe (2, × option `SprinklerRadiusMultiplier`, arrondi, 10 au plus ; zone carrée, distance de Tchebychev, ADR-003 D01 : rayon 2 → 5 × 5 cases), `dose` litres (0,2), `jetSheet`, `jetFirst`, `jetFrames` (6) : image f, orientation k = `jetSheet .. (jetFirst + 4 f + k)` ; révision 13 : `sound` facultatif (boucle des joueurs pendant l'arrosage ; arroseurs de LiveWater : `WaterCrops`) ; révision 15 : `loss` part de l'eau prélevée perdue en l'air, 0 à 1 (0,25 : sur 10 L, 7,5 L peuvent aller aux plantes, ADR-004 D03, ADR-006 D02 ; révision 16 : part de l'eau prélevée, plus « (1 + `loss`) fois l'eau donnée »), révision 16 : `flow` facultatif, litres prélevés par pas tant que la pièce est ouverte, 0 à 1000 (absent : option `SprinklerFlow`, 10 L ; ADR-006 D01), `noiseRadius` et `noiseVolume` 0 à 100 (10, 10 : bruit entendu par les zombies à chaque pas où elle arrose avec un son, crochet `sound`, ADR-004 D06) ; état `{ on }` (a arrosé au dernier pas) ; `look` `on`/`off` |
@@ -87,7 +87,7 @@ sorte qui n'est plus inscrite donne le réglage `quality` de la capacité.
 | `LiveWater:SprinklerAuto` | `variants` : `off` 56-59, `on` 60-63 (S, E, N, O) ; jet 128-159 | comme `LiveWater:Sprinkler`, `controller` `timer` (6 h, 5 W) |
 | `LiveWater:BarrelFitting` (« Raccord de remplissage ») | `variants` : `fill` 64-67, `fill_low` 68-71 (S, E, N, O ; raccordements 184-236 ; tuiles 72-75 de l'ancien mode Pomper inutilisées) | `fitting` (50 L, remplissage seul) |
 | `LiveWater:DripLine` | `batman_livewater_01_<160 + masque>`, masques 0 à 15 (tuiles 160-175, brun clair, plus fines que le tuyau) ; pas de manchon de clôture | `conduit`, `outlet` (`drip`), `drip` (0,2 L) ; meuble `Base.Mov_LiveWater_DripLine`, posé au curseur comme un tuyau, une par case, ramassé à la main (ADR-004 D01) |
-| `LiveWater:PondPump` (« Pompe à eau ») | `variants` : `off` 24-27, `on` 28-31 (S, E, N, O) ; 32-39 inutilisées depuis l'ADR-005 D02 | `intake` (`orVessel`), `pump` (4 ports, pression 6, 50 L, 250 W, réparation 2 `Base.ScrapMetal` + `base:wrench`, boucle `GeneratorLoop`), `vessel` (`rate` 50, ADR-011) |
+| `LiveWater:PondPump` (« Pompe à eau ») | `variants` : `off` 24-27, `on` 28-31 (S, E, N, O) ; 32-39 inutilisées depuis l'ADR-005 D02 | `intake` (`orVessel`), `pump` (4 ports, pression 6, 50 L, 150 W, réparation 2 `Base.ScrapMetal` + `base:wrench`, boucle `GeneratorLoop`), `vessel` (`rate` 50, ADR-011) |
 
 ## Objets et recettes
 
@@ -151,9 +151,15 @@ Traductions `Sandbox_LWT_<Option>` et `_tooltip` dans `Sandbox.json`, onglet `Sa
 - Avec Live Wire (`LiveWire.API.revision >= 6`), à `OnInitWorld`, sur l'autorité : un consommateur par type de pièce
   qui a le crochet `power`, id `LiveWater_` suivi de l'id du type où `:` devient `_` (`LiveWater_LiveWater_PondPump`),
   `sprites` = tous les sprites du type, catégorie `other`, circuit `equipment`. `powerConsumption(o)` : watts de
-  l'état recopié (250 en marche, 0 arrêtée). `display(o)` : `{ lines }`, les 4 premières lignes d'information (sans
+  l'état recopié (150 en marche, 0 arrêtée). `display(o)` : `{ lines }`, les 4 premières lignes d'information (sans
   `name`). `summary(objets)` : `{ "IGUI_LWT_LW_Pumps", en marche, total }` (pompes seulement : les pièces qui mettent sous pression), `{ "IGUI_LWT_LW_Flow", litres }`.
-  Courant : `LiveWire.API.consumerPowered(objet)`.
+  Courant : `LiveWire.API.consumerPowered(objet)`. Définition de base commune (`LWT_LiveWireConsumers`) : un client
+  multijoueur inscrit les mêmes types à `OnInitWorld` (`LWT_PowerClient`), `powerConsumption` 0, sans `display` ni
+  `summary` ; en solo, l'autorité seule (ADR-017 D03).
+- Révision 9 de Live Wire et plus (ADR-017 D01, D02) : un type de pièce dont la définition porte `link = { level }`
+  (champ de pièce, révision 24 de LiveWater, `Parts:linkOf`) s'inscrit avec ce `link` : la pompe à eau
+  (`link = { level = 2 }`) se relie par fil à un onduleur jusqu'à la portée du câble ; l'arroseur automatique n'en a
+  pas. Reliée, `consumerPowered` suit son onduleur ; non reliée, révision 6 à 8, ou sans Live Wire : courant de sa case.
 - Sans Live Wire : courant si `square:haveElectricity()` (générateur) ou `square:hasGridPower()` (réseau public).
 - Sans courant, une pompe ne donne ni pression ni eau ; elle ne marche que si une sortie a pris de l'eau au pas.
 
@@ -285,7 +291,9 @@ lave-linge, raccords de remplissage, `edgeWatch` (murs et clôtures).
 - Courant hors chargement (`LWT_Power:powered`) : sur une case chargée, la lecture normale (Live Wire
   `consumerPowered`, sinon générateur ou réseau de la case) est notée dans l'état de la pièce sous la clé `_power`
   (`{ generator, grid, live }` ; une sorte de capacité commence par une lettre : aucune collision). Hors chargement :
-  avec Live Wire (`LiveWire.API.gridAt(x, y, z)`, autorité, lit seulement le registre de Live Wire, copie de
+  pièce d'un type reliable reliée à un onduleur (`LiveWire.API.consumerLinkPowered(x, y, z)` rend un booléen, registre
+  seulement, révision 9) : courant si cet onduleur l'alimente et si le dernier `consumerPowered` chargé ne l'a pas
+  refusé (ADR-017 D02) ; sinon avec Live Wire (`LiveWire.API.gridAt(x, y, z)`, autorité, lit seulement le registre de Live Wire, copie de
   l'instantané, `LW_API.lua`), courant si `inverter.powered` et si le dernier `consumerPowered` chargé ne l'a pas
   refusé (circuit, disjoncteur) ; sans réseau Live Wire (`nil`) : générateur à portée au dernier pas chargé, sinon
   réseau de la ville s'il passait sur la case au dernier pas chargé et s'il marche encore dans le monde
@@ -306,7 +314,30 @@ lave-linge, raccords de remplissage, `edgeWatch` (murs et clôtures).
   sous l'emprise du rez-de-chaussée). Lave-linge compris (tuiles `waterPiped` en 42.22). Un point d'eau dont la source n'est pas un relais de LiveWater est laissé tel quel ; un relais de
   Live Wire (`LiveWireRelay`) n'est jamais posé, rempli ni retiré.
 - Besoin de l'arrivée d'eau = place libre de ses relais qui servent un point d'eau raccordé ; l'eau livrée les remplit
-  (eau propre). Points d'eau relevés sur événement seulement (D10) : à la pose ou au rechargement de l'arrivée d'eau, à la pose ou au retrait d'un point d'eau ou d'un réservoir à portée (`OnObjectAdded`, `OnObjectAboutToBeRemoved`), au chargement d'un chunk à portée (`LoadChunk`) et à la coupure de l'eau de la ville, au plus un relevé par pas ; en mode base, jamais les points d'eau d'un bâtiment de la carte ; relais retirés avec l'arrivée d'eau.
+  (eau propre). Points d'eau relevés sur événement seulement (D10) : à la pose ou au rechargement de l'arrivée d'eau, à la pose ou au retrait d'un point d'eau ou d'un réservoir à portée (`OnObjectAdded`, `OnObjectAboutToBeRemoved`), au chargement d'un chunk à portée (`LoadChunk`), au raccordement d'un point d'eau à la clé (`LWT_PlumbWatch`, ADR-018) et à la coupure de l'eau de la ville, au plus un relevé par pas ; en mode base, jamais les points d'eau d'un bâtiment de la carte ; relais retirés avec l'arrivée d'eau.
+
+## Pas immédiat : vanne et raccordement (`LWT_Clock:bringForward`, `LWT_PlumbWatch`, ADR-010, ADR-018)
+
+- `Clock:bringForward(id)` est le seul pas immédiat (ADR-018 D02) : le réseau `id`, s'il a un départ d'eau et moins de
+  `Clock.MAX_AHEAD` (6, une heure) pas d'avance sur l'horloge, fait son pas tout de suite ; l'horloge saute ensuite un
+  de ses pas (`ahead`). Rend `true` s'il a avancé. `Clock:switched` (vanne) l'appelle ; au-delà du plafond, les pièces
+  derrière une vanne fermée reçoivent seulement le résultat vide. `Clock:hasten(parts)` avance une fois chaque réseau
+  distinct des pièces données et rend la liste des réseaux avancés.
+- Raccordement à la clé (`LWT_PlumbWatch`, serveur, sans API du jeu) : l'action vanilla `ISPlumbItem` n'ajoute aucun
+  objet (aucun `OnObjectAdded`) ; `PlumbWatch.wrap(ISPlumbItem, sonde, réaction)` enveloppe `complete` une seule fois
+  (à `OnInitGlobalModData` ; le champ `LiveWaterPlumbWatch` de la classe garde l'enveloppe, un second appel ne fait
+  rien tant qu'elle est en place). L'original est appelé d'abord avec les mêmes arguments et ses résultats sont rendus
+  tels quels ; la réaction n'a lieu que si l'objet n'utilisait pas de source extérieure avant et en utilise une après
+  (sonde `GamePlumbing.plumbedFixture` : sprite `waterPiped` et `getUsesExternalWaterSource`). `PlumbWatch:plumbed(x, y, z)` :
+  `Relays:touched` (relevé des relais autour), puis `Clock:hasten(Relays:covering(x, y, z))` (arrivées d'eau sur une
+  case chargée dont la zone `LWT_InletArea` couvre la case). Le relais du point d'eau est donc posé et rempli dans le
+  même appel.
+- Où tourne `complete` (Java 42.22) : en solo, `LuaTimedActionNew.complete()` l'appelle hors client
+  (`LuaTimedActionNew.java:161-167`) ; en multijoueur, le serveur reconstruit l'action (`NetTimedAction.parse`,
+  `NetTimedAction.java:145-169`) et l'appelle (`NetTimedAction.perform`, `NetTimedAction.java:134-136`), jamais le
+  client. `ISPlumbItem.lua` est dans `media/lua/shared/TimedActions` (chargé aussi sur un serveur dédié) ; la fonction
+  est lue sur la classe à l'appel (`KahluaTableImpl.rawget` remonte à la métatable) : l'enveloppe posée sur la classe
+  est celle appelée.
 
 ## Barils, raccord de remplissage et maison (ADR-009 D03, ADR-011 à 013)
 

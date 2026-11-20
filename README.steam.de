@@ -75,7 +75,7 @@ Der Server prüft jede Aktion; Netze, Ventile und Anschlüsse werden gespeichert
 [h2]Optionen & Kompatibilität[/h2]
 [list]
 [*]Sandbox-Optionen: Pumpenfluss und Verschleiß, Filterlebensdauer, Reichweite der Einlässe, Reichweite und Timer der Sprinkler, Durchfluss des Tropfschlauchs, zu befüllende Behälter.
-[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] ist optional: Die Pumpe läuft dann über den Wechselrichter (250 W) und erscheint in dessen Software.
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] ist optional: Verkabele die Pumpe mit einem Wechselrichter, auch außerhalb seines Bereichs (150 W, in seiner Software sichtbar).
 [*]Solange das Stadtwasser läuft, kann eine Spüle oder Toilette, die du in einem Kartengebäude aufgestellt hast, daran angeschlossen werden.
 [*]Nicht kompatibel mit LG Extended Plumbing, LG Connect To Water Supply und Plysken Irrigation Pipes (LiveWater deckt ab, was sie tun).
 [*]Offen für andere Mods: öffentliche API für Erzeuger und Verbraucher.

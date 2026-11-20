@@ -10,13 +10,13 @@ behaviour is a capability.
   registration is refused with `registration_closed`.
 - Every refusal returns `false` and a reason, and writes an English warning in the console. Nothing throws.
 - Ids are namespaced: `"<YourMod>:<Name>"`.
-- Check `LiveWater.API.revision` before using a function or field added after revision 1. The current revision is **22**.
+- Check `LiveWater.API.revision` before using a function or field added after revision 1. The current revision is **24**.
 
 ## Functions
 
 | Function | Role |
 |---|---|
-| `LiveWater.API.registerPart(id, definition)` | a new part type: `sprites` (`{ [mask] = sprite }`, masks 0-15, redrawn by the connections) or `variants` (sprites chosen by state, 4 facings S, E, N, W), `crossings` (revision 14: `{ [mask] = { [edges] = sprite } }`, edges 1 = N, 8 = W, 9 = both, within the mask: the shape drawn with a sleeve where it crosses a fence carried by its own N or W edge; refused as `invalid_crossings`), `sides` (connectable sides mask, 15 by default), `capabilities` (`{ kind = settings or true }`) |
+| `LiveWater.API.registerPart(id, definition)` | a new part type: `sprites` (`{ [mask] = sprite }`, masks 0-15, redrawn by the connections) or `variants` (sprites chosen by state, 4 facings S, E, N, W), `crossings` (revision 14: `{ [mask] = { [edges] = sprite } }`, edges 1 = N, 8 = W, 9 = both, within the mask: the shape drawn with a sleeve where it crosses a fence carried by its own N or W edge; refused as `invalid_crossings`), `sides` (connectable sides mask, 15 by default), `link` (revision 24: `{ level = 0..10 }`, the part can be wired to a LiveWire inverter with electric wire at that Electrical level, LiveWire API revision 9; refused as `invalid_link`), `capabilities` (`{ kind = settings or true }`) |
 | `LiveWater.API.registerCapability(kind, implementation)` | a new capability; `implementation.define(params)` is required, every hook is optional |
 | `LiveWater.API.part(id)` | a checked copy of a part definition, or `nil` |
 | `LiveWater.API.registerSource(kind, definition)` | revision 6: a kind of water a producer can draw from (a source next to the pump) `{ quality = "clean" or "tainted", flag = IsoFlagType of a nearby square, sprites = { nearby object sprites } }` |
@@ -138,6 +138,7 @@ A part whose mod is removed stays inert in the save and comes back with its type
 | 21 | capability `vessel` (`rate`; hooks `sense`, `draw`, `lines`); intake field `orVessel`; `GameSite:hasVessel()` |
 | 22 | `registerOutlet` and outlet types `"<YourMod>:<Name>"`; the fill fitting only fills (hook `container` replaces `fittingMode`); no gravity flow: only a producer puts water into a network (fitting and outlet settings `gravity` and `byGravity` removed) |
 | 23 | outlet field `takes` (fluid a consumer accepts; fourth result of the `outlet` hook); capability `vessel` also draws fuel; `outcome.otherFluid` of `stepped`; `info.takes` of `sense`; one fluid per network zone and step (ADR-014) |
+| 24 | part field `link` (`{ level = 0..10 }`: a part that needs current can be wired to a LiveWire inverter, LiveWire API revision 9; refusal `invalid_link`, ADR-017) |
 
 Changes are additive only: a function or field never changes meaning in a later revision. Two exceptions before the
 first release: revision 16 made the spray `loss` a share of the water drawn (ADR-006), and revision 22 removed the

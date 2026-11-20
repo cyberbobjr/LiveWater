@@ -107,7 +107,9 @@ LiveWater.Events = EventBus.new(EventBus.NAMES)
 -- consumer takes, fourth result of the `outlet` hook); capability "vessel" also draws fuel (a pump
 -- against a gas station fuel pump, GameSite:hasVessel); one fluid family per network zone and step,
 -- set by the first pump in placement order (outcome.otherFluid of the pumps that gave nothing).
-local API = { revision = 23 }
+-- Revision 24 (ADR-017): part definition field `link` ({ level = 0..10 }: the part may be wired by
+-- electric wire to a Live Wire inverter, Live Wire API revision 9; Parts:linkOf).
+local API = { revision = 24 }
 LiveWater.API = API
 
 local function answer(call, id, ok, reason, detail)

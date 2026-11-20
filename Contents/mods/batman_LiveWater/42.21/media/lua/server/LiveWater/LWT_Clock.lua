@@ -164,20 +164,41 @@ function Clock:behindClosed(id)
     return out
 end
 
+-- The one immediate step (ADR-010 D02, ADR-018 D02): network `id`, awake and fewer than MAX_AHEAD
+-- steps ahead of the clock, makes its step now and the clock skips one of its steps later. Returns
+-- true when the network stepped.
+function Clock:bringForward(id)
+    local n = self.ahead[id] or 0
+    if n >= Clock.MAX_AHEAD or not self:isAwake(id) then return false end
+    self.ctx.hours = self.hours and self.hours() or nil
+    self:step(id)
+    self.ahead[id] = n + 1
+    return true
+end
+
+-- The networks of `parts` each bring one step forward, once per network (ADR-018 D01: a fixture
+-- plumbed in the area of house inlets). Returns the list of the network ids stepped.
+function Clock:hasten(parts)
+    local seen, stepped = {}, {}
+    for i = 1, #parts do
+        local p = parts[i]
+        local id = self.network:networkAt(p.x, p.y, p.z)
+        if id and not seen[id] then
+            seen[id] = true
+            if self:bringForward(id) then stepped[#stepped + 1] = id end
+        end
+    end
+    return stepped
+end
+
 -- A player opened or closed the valve of `part` (ADR-010 D02-D03): the network of the valve acts at
--- once. Up to MAX_AHEAD steps ahead of the clock, the network makes its step now (the clock then
--- skips it once); past that, the parts a closed valve keeps from the water only hear the empty
--- outcome (no water, no wear). Returns, when `open` is false, the parts now kept from the water
--- (an outlet handler may cut them, LWT_Outlets:cut), else an empty list.
+-- once (bringForward); past MAX_AHEAD steps ahead, the parts a closed valve keeps from the water
+-- only hear the empty outcome (no water, no wear). Returns, when `open` is false, the parts now kept
+-- from the water (an outlet handler may cut them, LWT_Outlets:cut), else an empty list.
 function Clock:switched(part, open)
     local id = self.network:networkAt(part.x, part.y, part.z)
     if not id then return {} end
-    local n = self.ahead[id] or 0
-    if n < Clock.MAX_AHEAD and self:isAwake(id) then
-        self.ctx.hours = self.hours and self.hours() or nil
-        self:step(id)
-        self.ahead[id] = n + 1
-    else
+    if not self:bringForward(id) then
         local cut, at = self:behindClosed(id), {}
         for i = 1, #cut do
             local p = cut[i]
