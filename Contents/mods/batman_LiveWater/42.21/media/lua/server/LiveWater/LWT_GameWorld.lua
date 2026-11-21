@@ -67,10 +67,11 @@ local function hasAny(props, names)
     return false
 end
 
--- "wall", "fence" or nil for one object on the N (north) or W edge.
+-- "wall", "fence" or nil for one object on the N (north) or W edge. The south-east corner post of a
+-- building (WallSE) carries cutW and is no wall: the engine skips it (IsoGridSquare.java:3882).
 local function edgeKindOf(obj, north)
     local props = obj:getProperties()
-    if not props then return nil end
+    if not props or props:has(IsoFlagType.WallSE) then return nil end
     local flags = EDGE_FLAGS[north]
     if hasAny(props, flags.fence) then return "fence" end
     if hasAny(props, flags.wall) then return "wall" end

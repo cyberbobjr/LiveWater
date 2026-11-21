@@ -3,6 +3,7 @@
     "IGUI_LWT_TooFar": "太远了。",
     "IGUI_LWT_Occupied": "这里已经接了东西。",
     "IGUI_LWT_PortsFull": "该部件上已没有空闲接口。",
+    "IGUI_LWT_WallBetween": "该部件与相邻部件之间隔着一堵墙：它们没有连接。",
     "IGUI_LWT_NeedTool": "你需要一把管钳。",
     "IGUI_LWT_NothingHere": "这里没有可拆除的东西。",
     "IGUI_LWT_Refused": "无法这样做。",

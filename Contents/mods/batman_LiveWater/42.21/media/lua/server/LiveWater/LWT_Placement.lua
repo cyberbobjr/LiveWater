@@ -34,6 +34,8 @@ function Placement:added(spriteName, x, y, z)
         if self.notify then self.notify(x, y, z, reason) end
         return false, reason
     end
+    -- joined, but a wall keeps it from the part next door: the players near are told
+    if self.notify and self.topology:walledOff(x, y, z) then self.notify(x, y, z, "wall_between") end
     return true
 end
 

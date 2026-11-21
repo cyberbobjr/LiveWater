@@ -138,7 +138,7 @@ end
 function instanceof() return false end
 IsoFlagType = { waterPiped = "waterPiped" }
 for _, f in ipairs({ "cutN", "cutW", "WallN", "WallW", "WallNW", "WallNTrans", "WallWTrans", "HoppableN", "HoppableW",
-    "TallHoppableN", "TallHoppableW" }) do IsoFlagType[f] = f end
+    "TallHoppableN", "TallHoppableW", "WallSE" }) do IsoFlagType[f] = f end
 -- A water fixture: its sprite carries the waterPiped flag.
 function addFixture(x, y, z)
     local o = addObject("fixtures_sinks_01_0", x, y, z)
@@ -250,6 +250,20 @@ class Wiring(unittest.TestCase):
         """)
         self.assertEqual(lua.eval("A.sprite"), "batman_livewater_01_2")
         self.assertEqual(lua.eval("LiveWater.Server.world:edge(1, 0, 0, false)"), "fence")
+
+    def test_the_corner_post_of_a_building_does_not_cut_the_pipes(self):
+        # the south-east corner post (WallSE) carries cutW in the engine and is no wall (IsoWorld.java:983,
+        # IsoGridSquare.hasNonHoppableWall skips it)
+        lua = self.server()
+        lua.execute("""
+        fire("OnInitGlobalModData", true)
+        P = addObject("walls_exterior_house_01_3", 1, 0, 0) P.flags = { WallSE = true, cutW = true }
+        A = addObject("batman_livewater_01_0", 0, 0, 0) fire("OnObjectAdded", A)
+        B = addObject("batman_livewater_01_0", 1, 0, 0) fire("OnObjectAdded", B)
+        """)
+        self.assertIsNone(lua.eval("LiveWater.Server.world:edge(1, 0, 0, false)"))
+        self.assertEqual(lua.eval("A.sprite"), "batman_livewater_01_2")
+        self.assertEqual(lua.eval("B.sprite"), "batman_livewater_01_8")
 
     def test_events_before_init_are_ignored(self):
         lua = self.server()

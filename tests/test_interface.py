@@ -70,6 +70,27 @@ class PlacementRefusal(unittest.TestCase):
         self.assertEqual((lua.eval("OK"), lua.eval("WHY")), (False, "ports_full"))
         self.assertEqual(list(lua.eval("NOTES[1]").values()), [0, 1, "ports_full"])
 
+    def test_a_pipe_set_down_behind_a_wall_tells_the_players_near(self):
+        lua = services(new_lua)
+        lua.execute(r"""
+        NOTES = {}
+        PLACEMENT = require("LiveWater/LWT_Placement").new(TOPO, LiveWater.Parts, function() end, WORLD,
+            function(x, y, z, reason) table.insert(NOTES, { x, y, reason }) end)
+        function put(x, y)
+            WORLD:createPart(x, y, 0, "t_pipe_0")
+            return PLACEMENT:added("t_pipe_0", x, y, 0)
+        end
+        WORLD:setEdge(0, 1, 0, true, "wall")
+        put(0, 0)            -- alone: nothing to say
+        put(5, 5) put(6, 5)  -- joined: nothing to say
+        N_BEFORE = #NOTES
+        OK = put(0, 1)       -- a pipe next door, a wall between
+        """)
+        self.assertEqual(lua.eval("N_BEFORE"), 0)
+        self.assertTrue(lua.eval("OK"))
+        self.assertEqual(list(lua.eval("NOTES[1]").values()), [0, 1, "wall_between"])
+        self.assertEqual(lua.eval('require("LiveWater/LWT_Reasons").key("wall_between")'), "IGUI_LWT_WallBetween")
+
 
 SHOW = r"""
 REPLIES = {}

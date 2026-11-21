@@ -3,6 +3,7 @@
     "IGUI_LWT_TooFar": "Trop loin.",
     "IGUI_LWT_Occupied": "Quelque chose est déjà raccordé ici.",
     "IGUI_LWT_PortsFull": "Plus aucun raccord libre sur cette pièce.",
+    "IGUI_LWT_WallBetween": "Un mur sépare cette pièce de sa voisine : elles ne sont pas raccordées.",
     "IGUI_LWT_NeedTool": "Il vous faut une clé anglaise.",
     "IGUI_LWT_NothingHere": "Rien à démonter ici.",
     "IGUI_LWT_Refused": "Impossible.",

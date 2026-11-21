@@ -3,6 +3,7 @@
     "IGUI_LWT_TooFar": "遠すぎます。",
     "IGUI_LWT_Occupied": "ここには既に何かが接続されています。",
     "IGUI_LWT_PortsFull": "その部品には空いている接続口がもうありません。",
+    "IGUI_LWT_WallBetween": "この部品と隣の部品の間に壁があります。接続されていません。",
     "IGUI_LWT_NeedTool": "パイプレンチが必要です。",
     "IGUI_LWT_NothingHere": "ここには解体するものがありません。",
     "IGUI_LWT_Refused": "それはできません。",

@@ -3,6 +3,7 @@
     "IGUI_LWT_TooFar": "Muito longe.",
     "IGUI_LWT_Occupied": "Já existe algo conectado aqui.",
     "IGUI_LWT_PortsFull": "Não há conexão livre nessa peça.",
+    "IGUI_LWT_WallBetween": "Há uma parede entre esta peça e a próxima: elas não estão conectadas.",
     "IGUI_LWT_NeedTool": "Você precisa de uma chave de cano.",
     "IGUI_LWT_NothingHere": "Não há nada para desmontar aqui.",
     "IGUI_LWT_Refused": "Isso não pode ser feito.",

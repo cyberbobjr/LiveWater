@@ -110,6 +110,21 @@ function Topology:add(partType, x, y, z, data, facing)
     return true, entry
 end
 
+-- Does a solid wall keep the part of a square from a neighbour part it would otherwise join?
+function Topology:walledOff(x, y, z)
+    local part = self.network:part(x, y, z)
+    if not part or not part.cuts then return false end
+    local sides = self.catalog:sidesOf(part)
+    for i = 1, #Grid.SIDES do
+        local side = Grid.SIDES[i]
+        if Grid.has(sides, side.bit) and Grid.has(part.cuts, side.bit) then
+            local other = self.network:part(x + side.dx, y + side.dy, z)
+            if other and Grid.has(self.catalog:sidesOf(other), side.opposite) then return true end
+        end
+    end
+    return false
+end
+
 -- Parts of the network of the part on a square (the view of the network, E13), or an empty list.
 function Topology:networkOf(x, y, z)
     local id = self.network:networkAt(x, y, z)

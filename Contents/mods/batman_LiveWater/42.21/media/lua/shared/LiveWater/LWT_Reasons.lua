@@ -7,6 +7,7 @@ local Reasons = {
         too_far = "IGUI_LWT_TooFar",
         occupied = "IGUI_LWT_Occupied",
         ports_full = "IGUI_LWT_PortsFull",
+        wall_between = "IGUI_LWT_WallBetween",
         need_tool = "IGUI_LWT_NeedTool",
         nothing_here = "IGUI_LWT_NothingHere",
         no_source = "IGUI_LWT_NoSource",

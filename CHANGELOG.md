@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0-beta7 — 2026-11-21
+
+- **Pipes around a building corner:** a pipe laid around the south-east corner of a building now joins the pipe before it. The corner post was wrongly read as a wall. Pipes already laid there join on their own within 10 minutes of game time.
+- **Wall in the way:** when you set a part down next to another one and a wall separates them, a note above your character now says they are not connected.
+
 ## 1.0.0-beta6 — 2026-11-20
 
 - **Showers and bathtubs of other mods:** the invisible tank above a plumbed fixture now holds what the fixture needs at once. With Take a Bath and Shower, a shower gets 80 L (its own option) and a bathtub the size of its tub, so a shower no longer stops after 25 L. Sinks, toilets and washing machines keep 25 L. New sandbox option **Relay tank size limit** (300 L by default). Tanks already in place take their new size the next time the house is checked.

@@ -3,6 +3,7 @@
     "IGUI_LWT_TooFar": "Çok uzak.",
     "IGUI_LWT_Occupied": "Burada zaten bağlı bir şey var.",
     "IGUI_LWT_PortsFull": "Bu parçada boş bağlantı kalmadı.",
+    "IGUI_LWT_WallBetween": "Bu parça ile yanındaki arasında bir duvar var: bağlı değiller.",
     "IGUI_LWT_NeedTool": "Bir boru anahtarı gerekli.",
     "IGUI_LWT_NothingHere": "Burada sökülecek bir şey yok.",
     "IGUI_LWT_Refused": "Bu yapılamaz.",

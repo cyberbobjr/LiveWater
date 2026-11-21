@@ -190,7 +190,7 @@ Tout argument est recontrôlé sur l'autorité. Portée : 3 cases (Tchebychev) s
 | serveur → client | `notice` | `key` (clé de traduction) | — | note au-dessus du joueur (en solo, affichée directement) |
 
 Clés des refus (`IG_UI.json`, table partagée `LWT_Reasons`) : `IGUI_LWT_NoSource` (`no_source`), `IGUI_LWT_NoFilter` (`no_cartridge`), `IGUI_LWT_NoFilterFitted` (`no_filter`), `IGUI_LWT_NoFilterSlot` (`no_filter_slot`), `IGUI_LWT_StillRunning` (`running`), `IGUI_LWT_NotNeeded` (`not_needed`), `IGUI_LWT_NeedWrench` (`need_wrench`), `IGUI_LWT_NoScrap` (`no_parts`), `IGUI_LWT_Invalid`, `IGUI_LWT_TooFar` (`too_far`),
-`IGUI_LWT_Occupied`, `IGUI_LWT_PortsFull`, `IGUI_LWT_NeedTool`,
+`IGUI_LWT_Occupied`, `IGUI_LWT_PortsFull`, `IGUI_LWT_WallBetween` (`wall_between` : pièce posée et inscrite, mais un mur plein la sépare d'une pièce voisine ; note seule, pas un refus), `IGUI_LWT_NeedTool`,
 `IGUI_LWT_NothingHere`, `IGUI_LWT_NotFixture` (`not_fixture`), `IGUI_LWT_NotMapBuilding` (`not_map_building`), `IGUI_LWT_NoCityWater` (`no_city_water`), autre raison `IGUI_LWT_Refused`. Menu des pièces : `ContextMenu_LWT_FitFilter`, `ContextMenu_LWT_ReplaceFilter`, `ContextMenu_LWT_RemoveFilter`, `ContextMenu_LWT_TurnOn`, `ContextMenu_LWT_TurnOff`, `ContextMenu_LWT_Repair`, `ContextMenu_LWT_Info` (infobulle : lignes d'information traduites, `IGUI_LWT_Pump_*`, `IGUI_LWT_Filter_*`, `IGUI_LWT_Source_<sorte>`).
 
 ## Registre persistant (ModData globale `LiveWater`, `LWT_Registry`)

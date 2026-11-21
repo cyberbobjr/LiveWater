@@ -3,6 +3,7 @@
     "IGUI_LWT_TooFar": "너무 멀리 있습니다.",
     "IGUI_LWT_Occupied": "여기에는 이미 연결된 것이 있습니다.",
     "IGUI_LWT_PortsFull": "그 부품에는 남은 연결구가 없습니다.",
+    "IGUI_LWT_WallBetween": "이 부품과 옆 부품 사이에 벽이 있습니다. 연결되지 않았습니다.",
     "IGUI_LWT_NeedTool": "파이프 렌치가 필요합니다.",
     "IGUI_LWT_NothingHere": "여기에는 해체할 것이 없습니다.",
     "IGUI_LWT_Refused": "그것은 할 수 없습니다.",

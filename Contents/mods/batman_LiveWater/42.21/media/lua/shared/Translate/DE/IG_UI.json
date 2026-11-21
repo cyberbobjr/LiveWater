@@ -3,6 +3,7 @@
     "IGUI_LWT_TooFar": "Zu weit weg.",
     "IGUI_LWT_Occupied": "Hier ist bereits etwas angeschlossen.",
     "IGUI_LWT_PortsFull": "An diesem Teil ist kein Anschluss mehr frei.",
+    "IGUI_LWT_WallBetween": "Eine Wand steht zwischen diesem Teil und dem nächsten: Sie sind nicht verbunden.",
     "IGUI_LWT_NeedTool": "Du brauchst eine Rohrzange.",
     "IGUI_LWT_NothingHere": "Hier gibt es nichts zum Auseinandernehmen.",
     "IGUI_LWT_Refused": "Das geht nicht.",

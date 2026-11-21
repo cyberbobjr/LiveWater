@@ -3,6 +3,7 @@
     "IGUI_LWT_TooFar": "Слишком далеко.",
     "IGUI_LWT_Occupied": "Здесь уже что-то подключено.",
     "IGUI_LWT_PortsFull": "На этой детали не осталось свободных выходов.",
+    "IGUI_LWT_WallBetween": "Между этой деталью и соседней стоит стена: они не соединены.",
     "IGUI_LWT_NeedTool": "Нужен трубный ключ.",
     "IGUI_LWT_NothingHere": "Здесь нечего разобрать.",
     "IGUI_LWT_Refused": "Так сделать нельзя.",
