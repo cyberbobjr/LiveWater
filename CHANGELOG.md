@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.0.0-beta8 — 2026-11-22
 
 - **Tall buildings:** a house water inlet now serves every floor above it, not only the first three. A five-storey building or a tower you built gets water up to its last floor.
 - **Sink on the roof:** a sink, shower, bathtub, toilet or washing machine set down on a roof (in the open, right above a room) can now be plumbed with a pipe wrench and gets water from the house water inlet. The game only offered Plumb inside a room.
