@@ -129,6 +129,8 @@ A fixture already fed by something else (a LiveWire pump) is left alone.
 on a roof (in the open, right above a room) once an inlet reaches it. The inlet of a map building also serves the
 storeys you built on top of it. A fixture in the garden, with no room under it, cannot be plumbed.
 
+![A summer kitchen on a flat roof: counters, a plumbed sink, barbecues, a table](../../images/screenshots/rooftop-kitchen.jpg)
+
 **Unplumb:** right-click a plumbed fixture with a pipe wrench in your bag and choose **Unplumb**. The fixture stops
 giving water and can be plumbed again. Picking a fixture up or dismantling it also takes its plumbing away: plumb it
 again where you set it down.

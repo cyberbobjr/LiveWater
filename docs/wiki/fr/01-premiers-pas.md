@@ -135,6 +135,8 @@ d'eau posé sur un toit (en plein air, juste au-dessus d'une pièce) dès qu'une
 d'un bâtiment de la carte sert aussi les étages que vous avez construits par-dessus. Un point d'eau dans le jardin,
 sans pièce en dessous, ne peut pas être raccordé.
 
+![Une cuisine d'été sur un toit en terrasse : plans de travail, évier raccordé, barbecues, table](../../images/screenshots/rooftop-kitchen.jpg)
+
 **Supprimer le raccord :** clic droit sur un point d'eau raccordé, une clé anglaise dans le sac, puis **Supprimer le
 raccord**. Le point d'eau ne donne plus d'eau et peut être raccordé de nouveau. Ramasser ou démonter un point d'eau
 supprime aussi son raccord : raccordez-le de nouveau là où vous le reposez.
