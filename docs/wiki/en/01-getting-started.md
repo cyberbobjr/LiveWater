@@ -249,6 +249,8 @@ litres of the last 10 minutes, and the fluid (clean water or unfiltered water).
 The same water pump set down next to a **well** draws **clean water**: the house gets it without a filter. Its
 Information says *Source: well (clean water)*.
 
+Two things of the game count as a well: the **stone well** and the **metal hand pump**.
+
 > Screenshot to do: a water pump next to a well.
 
 ## 13. Dismantle a part

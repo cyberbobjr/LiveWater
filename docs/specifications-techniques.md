@@ -70,8 +70,8 @@ ou non, part restante 0-1), `fit(p, d, part, ctx)`, `unfit(p, d)`, `actions(p, d
 key, item }`, `item` = objet à porter). Révision 4 : `switchable` (position de l'interrupteur, ou `nil`), `switch(p, d, oui)`, `repairable` (matériau, nombre, outil, raison du refus `running` ou `not_needed` ou `nil`), `repair`, `sound` (nom de la boucle, rayon et volume du bruit tant que la pièce en fait). Révision 21-22 : `draw(p, d)` (eau que la pièce tire d'un récipient voisin, capacité `vessel`), `container(p, d)` (« fill » ou « draw » : ce que fait `LWT_Fittings` du récipient), `sense`, `lines`. Révision 22 : `fittingMode`, `setFittingMode`, `gravity` et `byGravity` supprimés.
 
 Sortes de source d'eau (`LiveWater.Sources`, publiques par `registerSource` en révision 6) : `water` (eau
-naturelle : drapeau `water` d'une des 8 cases voisines, eau croupie), `well` (puits vanilla : objet `camping_01_16`
-sur une des 8 cases voisines, eau propre). Une sorte est une donnée `{ quality, flag?, sprites? }` ; les sortes
+naturelle : drapeau `water` d'une des 8 cases voisines, eau croupie), `well` (puits vanilla : objet `camping_01_16`,
+ou pompe à bras en métal `camping_01_64` à `camping_01_67` (ADR-025), sur une des 8 cases voisines, eau propre). Une sorte est une donnée `{ quality, flag?, sprites? }` ; les sortes
 propres sont essayées d'abord. La prise (`intake`) relève la sorte à la pose (`source`) et donne sa qualité ; une
 sorte qui n'est plus inscrite donne le réglage `quality` de la capacité.
 

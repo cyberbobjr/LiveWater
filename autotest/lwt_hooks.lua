@@ -1995,6 +1995,47 @@ local function buildSteps(ctx)
         return true
     end, 40)
 
+    -- ADR-025: the game's metal hand pump (camping_01_64, a map tile; set here as a fixture) away from any water
+    -- is a well: the pump's placement passes next to it and records the clean source "well". Then the pump is
+    -- taken up and the hand pump removed.
+    addStep("hand pump: a pump set down next to the game's hand pump (ADR-025)", function()
+        local a = fittingArea(S.L)
+        if not a then
+            rec(false, "free area away from water for the hand pump")
+            return true
+        end
+        local s = sq(a.x, a.y, 0)
+        local hand = IsoObject.new(getCell(), s, "camping_01_64")
+        s:transmitAddObjectToSquare(hand, -1)
+        S.HP = { a = a, hand = hand, pump = { x = a.x, y = a.y + 1 } }
+        local props = hand:getSprite() and hand:getSprite():getProperties()
+        rec(hand:getSpriteName() == "camping_01_64" and props ~= nil and props:has("waterAmount")
+            and not props:has(IsoFlagType.taintedWater),
+            "hand pump: the game's tile holds water that is not tainted (fixture)", key(a.x, a.y))
+        goNear(S.HP.pump)
+        local ok, why = placeMoveable(player(), PUMP_SPRITE, S.HP.pump)
+        local e = entryAt(S.HP.pump)
+        local source = e and e.data and e.data.intake and e.data.intake.source
+        rec(ok and source == "well" and LiveWater.Sources:quality(source) == "clean",
+            "hand pump: the pump set down next to it draws from a well, clean water (vanilla placement)",
+            tostring(why or "") .. " source " .. tostring(source))
+        return true
+    end)
+
+    addStep("hand pump: pump taken up, hand pump removed", function()
+        local H = S.HP
+        if not H then return true end
+        if entryAt(H.pump) then
+            goNear(H.pump)
+            local ok, why = pickUpMoveable(player(), H.pump)
+            if not ok then info("pickup " .. key(H.pump.x, H.pump.y) .. ": " .. tostring(why)) end
+            return false
+        end
+        local s = sq(H.a.x, H.a.y, 0)
+        if s and H.hand:getSquare() then s:transmitRemoveItemFromSquare(H.hand) end
+        return true
+    end, 40)
+
     -- ADR-014: a third pump against a vanilla gas station fuel pump (sprite with fuelAmount, its piped fuel set
     -- to 200 units: fixture) away from any water feeds a small network of its own: two pipes, a fill fitting
     -- against an EMPTY vanilla rain collector and a manual sprinkler opened by hand. The pump's placement passes

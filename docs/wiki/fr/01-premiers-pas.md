@@ -262,6 +262,8 @@ le repose ; il n'y a pas de remise à zéro.
 La même pompe à eau posée contre un **puits** tire de l'**eau propre** : la maison la reçoit sans filtre. Ses
 informations disent *Source : puits (eau propre)*.
 
+Deux objets du jeu comptent comme un puits : le **puits en pierre** et la **pompe à bras en métal**.
+
 > Capture à faire : une pompe à eau contre un puits.
 
 ## 13. Démonter une pièce

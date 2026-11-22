@@ -5,6 +5,7 @@
 - **Tall buildings:** a house water inlet now serves every floor above it, not only the first three. A five-storey building or a tower you built gets water up to its last floor.
 - **Sink on the roof:** a sink, shower, bathtub, toilet or washing machine set down on a roof (in the open, right above a room) can now be plumbed with a pipe wrench and gets water from the house water inlet. The game only offered Plumb inside a room.
 - **Storeys you built on a map building:** the house water inlet of that building now serves them too.
+- **Hand pump:** the water pump can now stand next to the game's metal hand pump. It counts as a well: clean water, no filter needed.
 - **Unplumb:** right-click a plumbed fixture with a pipe wrench to take its plumbing away. It stops giving water and can be plumbed again.
 
 ## 1.0.0-beta7 — 2026-11-21

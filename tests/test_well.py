@@ -51,6 +51,17 @@ class Well(unittest.TestCase):
         lua.execute('WORLD.near["0,0,0"] = { camping_01_16 = true } place("LiveWater:PondPump", 0, 0)')
         self.assertEqual(lua.eval("REG:at(0, 0, 0).data.intake.source"), "well")
 
+    def test_a_pump_next_to_a_hand_pump_draws_clean_water(self):
+        # ADR-025: the game's metal hand pump (camping_01_64 to 67, one sprite per facing) is a well
+        for sprite in ("camping_01_64", "camping_01_65", "camping_01_66", "camping_01_67"):
+            lua = bench()
+            lua.execute('WORLD.dry["0,0,0"] = true WORLD.near["0,0,0"] = { %s = true }' % sprite)
+            lua.execute('place("LiveWater:PondPump", 0, 0) place("Test:Inlet", 1, 0)')
+            self.assertEqual(lua.eval("REG:at(0, 0, 0).data.intake.source"), "well", sprite)
+            lua.execute('NEED["1,0"] = 20 EMITTED = {} CLOCK:tick()')
+            d = lua.eval('emitted("waterDelivered")')
+            self.assertEqual((d[1][3], d[1][4]), (20, "clean"), sprite)
+
     def test_pond_water_stays_tainted(self):
         lua = bench()
         lua.execute('place("LiveWater:PondPump", 0, 0) place("Test:Inlet", 1, 0) NEED["1,0"] = 20 EMITTED = {} CLOCK:tick()')
