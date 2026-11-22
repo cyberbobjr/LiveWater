@@ -13,7 +13,7 @@ local Grid = require "LiveWater/LWT_Grid"
 local RelayPlan = {}
 
 -- Highest level of the map (a relay goes one level above its fixture).
-RelayPlan.TOP = 31
+RelayPlan.TOP = Grid.TOP
 
 local function sharedAbove(wanted, f)
     for dx = -1, 1 do

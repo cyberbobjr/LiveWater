@@ -24,3 +24,5 @@
 | [020](020-tuyaux-enterres.md) | Tuyaux enterrés : une tuile de terre tout juste visible | Proposé | [plan-020](../ADR-plans/plan-020-tuyaux-enterres.md) | aucune étape commencée |
 | [021](021-plein-des-groupes-electrogenes.md) | Le raccord de remplissage fait le plein d'un groupe électrogène | Proposé | [plan-021](../ADR-plans/plan-021-plein-des-groupes-electrogenes.md) | aucune étape commencée |
 | [022](termines/022-reservoir-a-la-mesure-du-point-d-eau.md) | Réservoir relais à la mesure du point d'eau | Accepté (2026-11-20) | [plan-022](../ADR-plans/termines/plan-022-reservoir-a-la-mesure-du-point-d-eau.md) | Terminé le 2026-11-20 |
+| [023](termines/023-arrivee-d-eau-sans-limite-d-etages.md) | L'arrivée d'eau sert tous les étages au-dessus d'elle | Accepté (2026-11-22) | [plan-023](../ADR-plans/termines/plan-023-arrivee-d-eau-sans-limite-d-etages.md) | Terminé le 2026-11-22 |
+| [024](termines/024-point-d-eau-sur-un-toit-et-retrait-du-raccord.md) | Point d'eau sur un toit ; « Supprimer le raccord » | Accepté (2026-11-22) | [plan-024](../ADR-plans/termines/plan-024-point-d-eau-sur-un-toit-et-retrait-du-raccord.md) | Terminé le 2026-11-22 |

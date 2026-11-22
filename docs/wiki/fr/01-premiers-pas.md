@@ -119,7 +119,7 @@ anglaise (gardée).
 
 Posez-la **contre le mur extérieur** d'un bâtiment de la carte, et amenez-y un tuyau depuis la pompe. Elle alimente les
 **éviers, baignoires, douches, toilettes et lave-linge** de ce bâtiment que vous avez raccordés à la clé anglaise
-(l'action « Raccorder » du jeu), dans un rayon de **20 cases** (option sandbox), jusqu'à **3 étages au-dessus** et
+(l'action « Raccorder » du jeu), dans un rayon de **20 cases** (option sandbox), à **tous les étages au-dessus** et
 **2 niveaux de sous-sol** en dessous.
 
 Son voyant dit ce qu'elle fait :
@@ -129,6 +129,15 @@ Son voyant dit ce qu'elle fait :
   remplacez une cartouche usée, ou pompez dans un puits).
 
 Un point d'eau déjà alimenté par autre chose (une pompe de LiveWire) est laissé tel quel.
+
+**Sur un toit :** le jeu ne propose **Raccorder** que dans une pièce. LiveWater propose la même option pour un point
+d'eau posé sur un toit (en plein air, juste au-dessus d'une pièce) dès qu'une arrivée d'eau l'atteint. L'arrivée d'eau
+d'un bâtiment de la carte sert aussi les étages que vous avez construits par-dessus. Un point d'eau dans le jardin,
+sans pièce en dessous, ne peut pas être raccordé.
+
+**Supprimer le raccord :** clic droit sur un point d'eau raccordé, une clé anglaise dans le sac, puis **Supprimer le
+raccord**. Le point d'eau ne donne plus d'eau et peut être raccordé de nouveau. Ramasser ou démonter un point d'eau
+supprime aussi son raccord : raccordez-le de nouveau là où vous le reposez.
 
 Un évier, une douche, une baignoire, des toilettes ou un lave-linge alimenté par l'arrivée d'eau affiche dans son menu
 clic droit l'eau qu'il contient, par exemple une ligne grisée **Eau : 18 L / 25 L**.

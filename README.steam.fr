@@ -26,7 +26,7 @@ Chaque pièce se pose comme un meuble : clic droit dans l'inventaire, « Placer 
 
 [h2]L'eau courante dans la maison[/h2]
 
-Posez l'[b]arrivée d'eau de la maison[/b] contre le mur extérieur d'un bâtiment de la carte et amenez-y un tuyau. Chaque évier, baignoire, douche, toilette et machine à laver que vous avez raccordé à la clé à molette (l'action du jeu « Raccorder la plomberie ») reçoit l'eau, jusqu'à 3 étages au-dessus et 2 niveaux de sous-sol.
+Posez l'[b]arrivée d'eau de la maison[/b] contre le mur extérieur d'un bâtiment de la carte et amenez-y un tuyau. Chaque évier, baignoire, douche, toilette et machine à laver que vous avez raccordé à la clé à molette (l'action du jeu « Raccorder la plomberie ») reçoit l'eau, à tous les étages au-dessus et jusqu'à 2 niveaux de sous-sol.
 L'eau d'étang et de rivière est sale : montez une [b]cartouche filtrante[/b] (charbon de bois et tissu, environ 500 L) dans l'arrivée. Voyant vert : l'eau propre passe. Voyant ambre : eau non filtrée, la maison ne reçoit rien. Une pompe sur un puits donne de l'eau propre, sans filtre. Une cartouche usée se recharge avec du charbon de bois et du tissu.
 
 [h2]Arroser le potager[/h2]

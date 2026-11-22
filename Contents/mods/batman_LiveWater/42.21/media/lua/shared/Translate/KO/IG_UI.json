@@ -49,6 +49,7 @@
     "IGUI_LWT_NotFixture": "상수도에 연결할 수 있는 것은 놓기만 하고 배관하지 않은 설비뿐입니다.",
     "IGUI_LWT_NotMapBuilding": "지도의 건물 방 안에서만 가능합니다.",
     "IGUI_LWT_NoCityWater": "여기에는 더 이상 상수도가 들어오지 않습니다.",
+    "IGUI_LWT_NoPlumbing": "이 설비는 배관되어 있지 않습니다.",
     "IGUI_LWT_Valve_Open": "밸브: 열림",
     "IGUI_LWT_Valve_Closed": "밸브: 잠김",
     "IGUI_LWT_Sprinkler_served": "주변 식물에 물을 주는 중",

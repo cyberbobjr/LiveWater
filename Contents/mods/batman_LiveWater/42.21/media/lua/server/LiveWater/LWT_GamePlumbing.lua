@@ -11,7 +11,9 @@ if isClient() then return end
 --                              shut-off; { x, y, z, source, mapBuilding, plumbed, need } (source:
 --                              see LWT_RelayPlan; mapBuilding: its square is in a map building;
 --                              plumbed: getUsesExternalWaterSource; need: litres the providers
---                              of LWT_FixtureNeeds ask for it, or nil, ADR-022)
+--                              of LWT_FixtureNeeds ask for it, or nil, ADR-022); the levels
+--                              above the highest one of the area's chunks are not walked
+--                              (ADR-023 D03)
 --   relay(x, y, z)             our relay on the square: { owner, amount, free, capacity, feeds, why },
 --                              or nil (feeds: a plumbed fixture below draws from it)
 --   placeRelay(x, y, z, owner, litres)   invisible tank (IsoThumpable + FluidContainer)
@@ -25,6 +27,10 @@ if isClient() then return end
 --   cityFixture(x, y, z)       LWT_WaterObjects.cityInfo of the fixture on the square, or nil
 --   connectCity(x, y, z)       the fixture takes the state of an original one (M01): its ModData
 --                              canBeWaterPiped goes, no outside source; sent to the clients
+--   plumbInfo(x, y, z)         LWT_WaterObjects.plumbInfo of the fixture on the square, or nil
+--   unplumb(x, y, z)           the fixture goes back to "set down, to plumb" (ADR-024 D04): ModData
+--                              canBeWaterPiped = true, no outside source, our washer mark gone;
+--                              sent to the clients as the game does when it plumbs
 --   washers(x, y, z)           washing machines fed by our relay on the square: { x, y, z,
 --                              activated, plain (IsoClothingWasher), marked (LiveWaterWasher) }
 --   sendWasherState(x, y, z)   sendObjectChange(WASHER_STATE) of the washer (E28)
@@ -114,14 +120,31 @@ local function fixtureOn(sq)
     return nil
 end
 
+-- Highest level that exists in the chunks under the area (IsoChunk.getMaxLevel, Java 42.22), at
+-- most the area's own top: nothing stands above it, the survey stops there (ADR-023 D03).
+local CHUNK = 8
+local function topLevel(area)
+    local cell, top = getCell(), area.minZ
+    if not cell then return top end
+    local x1, y1 = area.minX - area.minX % CHUNK, area.minY - area.minY % CHUNK
+    for x = x1, area.maxX, CHUNK do
+        for y = y1, area.maxY, CHUNK do
+            local chunk = cell:getChunkForGridSquare(x, y, 0)
+            if chunk and chunk:getMaxLevel() > top then top = chunk:getMaxLevel() end
+        end
+    end
+    return math.min(top, area.maxZ)
+end
+
 function GamePlumbing:fixtures(area)
     local out = {}
-    for z = area.minZ, area.maxZ do
+    for z = area.minZ, topLevel(area) do
         for x = area.minX, area.maxX do
             for y = area.minY, area.maxY do
-                local sq = area:contains(x, y, z) and squareAt(x, y, z)
+                -- the fixture first: few squares hold one, and the area asks the building (ADR-024 D03)
+                local sq = squareAt(x, y, z)
                 local obj = sq and fixtureOn(sq)
-                if obj then
+                if obj and area:contains(x, y, z) then
                     out[#out + 1] = { x = x, y = y, z = z, source = sourceOf(sq), mapBuilding = inMapBuilding(sq),
                         plumbed = obj:getUsesExternalWaterSource(), need = self.needs and self.needs:need(obj) or nil }
                 end
@@ -306,6 +329,23 @@ function GamePlumbing:connectCity(x, y, z)
     obj:getModData().canBeWaterPiped = nil
     obj:setUsesExternalWaterSource(false)
     if isServer() then obj:transmitModData() end
+    return true
+end
+
+function GamePlumbing:plumbInfo(x, y, z)
+    local obj = fixtureObject(x, y, z)
+    return obj and WaterObjects.plumbInfo(obj) or nil
+end
+
+function GamePlumbing:unplumb(x, y, z)
+    local obj = fixtureObject(x, y, z)
+    if not obj then return false end
+    local md = obj:getModData()
+    md.canBeWaterPiped = true
+    md[GamePlumbing.WASHER_KEY] = nil
+    obj:setUsesExternalWaterSource(false)
+    obj:transmitModData()
+    obj:sendObjectChange(IsoObjectChange.USES_EXTERNAL_WATER_SOURCE, { value = false })
     return true
 end
 

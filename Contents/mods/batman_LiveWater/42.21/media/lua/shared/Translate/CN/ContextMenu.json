@@ -8,6 +8,7 @@
     "ContextMenu_LWT_Info": "信息",
     "ContextMenu_LWT_NoWater": "没有水：%1",
     "ContextMenu_LWT_CityWater": "接入城市供水",
+    "ContextMenu_LWT_Unplumb": "拆除%1的接管",
     "ContextMenu_LWT_OpenValve": "打开阀门",
     "ContextMenu_LWT_CloseValve": "关闭阀门",
     "ContextMenu_LWT_SetTimer": "浇水定时器",

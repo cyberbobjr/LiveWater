@@ -1,6 +1,6 @@
 """E09: house water inlet (ADR-001 D17, D18, D21; ADR-005 D01, D04): part LiveWater:HouseInlet drawn filtered or
 unfiltered, with or without the filter cartridge it carries; the area it
-serves (the map building it touches, a range, up to 3 floors above); invisible 25 L relay tanks one level above the
+serves (the map building it touches, a range, every floor above, ADR-023); invisible 25 L relay tanks one level above the
 plumbed fixtures (ModData LiveWaterRelay), shared by neighbouring fixtures; a fixture fed by something else (a Live Wire
 relay, a vanilla barrel) is left alone; the inlet's need is the litres missing in its relays, delivered water fills
 them; unfiltered water fills nothing; the relays leave with the inlet."""
@@ -229,14 +229,29 @@ class Area(unittest.TestCase):
         lua.execute("A = require('LiveWater/LWT_InletArea').of(PLUMB, %d, %d, %d, { building = SETTINGS.InletRange or 20,"
                     " base = 12 })" % (x, y, z))
 
-    def test_the_building_touched_up_to_three_floors_above(self):
+    def test_the_building_touched_on_every_floor_above(self):
+        # ADR-023 D01: no limit upwards (rooms on levels 0..4 here); above them, its roof (ADR-024 D03).
         lua = bench()
         self.area(lua, 5, 9)
         self.assertEqual(lua.eval("A.mode"), "building")
         self.assertTrue(lua.eval("A:contains(5, 12, 0)"))
         self.assertTrue(lua.eval("A:contains(2, 18, 3)"))
-        self.assertFalse(lua.eval("A:contains(2, 18, 4)"))
+        self.assertTrue(lua.eval("A:contains(2, 18, 4)"))
+        self.assertTrue(lua.eval("A:contains(2, 18, 5)"))
+        self.assertFalse(lua.eval("A:contains(12, 18, 4)"))
         self.assertFalse(lua.eval("A:contains(5, 8, 0)"))
+
+    def test_a_tower_is_served_up_to_its_last_floor(self):
+        lua = bench()
+        lua.execute("PLUMB:addBuilding({ x1 = 100, y1 = 100, x2 = 110, y2 = 110, minLevel = 0, maxLevel = 30 })")
+        self.area(lua, 99, 105)
+        self.assertTrue(lua.eval("A:contains(105, 105, 30)"))
+        self.assertEqual(lua.eval("A.maxZ"), lua.eval("require('LiveWater/LWT_Grid').TOP"))
+
+    def test_the_last_level_of_the_map_has_one_owner(self):
+        lua = bench()
+        self.assertEqual(lua.eval("require('LiveWater/LWT_Grid').TOP"), 31)
+        self.assertEqual(lua.eval("require('LiveWater/LWT_RelayPlan').TOP"), 31)
 
     def test_the_range_limits_a_large_building(self):
         lua = bench()
@@ -294,6 +309,13 @@ class Relays(unittest.TestCase):
         self.assertIsNone(lua.eval("relayAt(30, 30, 1)"))
         lua.execute("TOPO:remove(5, 9, 0)")
         self.assertIsNone(lua.eval("next(PLUMB.relays)"))
+
+    def test_a_fixture_more_than_three_floors_above_the_inlet_gets_its_relay(self):
+        # ADR-023 D01
+        lua = bench()
+        lua.execute("PLUMB:addFixture(4, 15, 4)")
+        lua.execute('place("LiveWater:HouseInlet", 5, 9, "%s42") CLOCK:tick()' % TILE)
+        self.assertEqual(lua.eval("relayAt(4, 15, 5).owner"), "5,9,0")
 
     def test_a_live_wire_relay_is_never_touched(self):
         lua = bench()

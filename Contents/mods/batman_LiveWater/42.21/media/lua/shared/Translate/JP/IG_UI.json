@@ -49,6 +49,7 @@
     "IGUI_LWT_NotFixture": "市の水道に接続できるのは、置いただけで配管していない設備だけです。",
     "IGUI_LWT_NotMapBuilding": "マップ上の建物の部屋の中でだけ可能です。",
     "IGUI_LWT_NoCityWater": "ここではもう市の水道が通っていません。",
+    "IGUI_LWT_NoPlumbing": "この設備は配管されていません。",
     "IGUI_LWT_Valve_Open": "バルブ: 開",
     "IGUI_LWT_Valve_Closed": "バルブ: 閉",
     "IGUI_LWT_Sprinkler_served": "植物に水をやっています",

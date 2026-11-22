@@ -18,6 +18,7 @@
 --                           a fixture, or a water tank that is not one of LiveWater's relays
 --   cityWaterRuns()         the city water still runs (rule of IsoObject.isWaterInfinite, 42.22)
 --   cityInfo(obj)           what LWT_CityWater asks of a fixture
+--   plumbInfo(obj)          what LWT_Plumbing asks of a fixture (ADR-024)
 
 local WaterObjects = {}
 
@@ -89,6 +90,13 @@ function WaterObjects.cityInfo(obj)
     return { placed = obj:hasModData() and obj:getModData().canBeWaterPiped == true,
         plumbed = obj:getUsesExternalWaterSource(), room = sq ~= nil and sq:getRoom() ~= nil,
         noWater = sq ~= nil and sq:isNoWater() }
+end
+
+function WaterObjects.plumbInfo(obj)
+    local sq = obj:getSquare()
+    local below = sq and getCell():getGridSquare(sq:getX(), sq:getY(), sq:getZ() - 1)
+    return { plumbed = obj:getUsesExternalWaterSource(), source = obj:FindExternalWaterSource() ~= nil,
+        room = sq ~= nil and sq:isInARoom(), roomBelow = below ~= nil and below:isInARoom() }
 end
 
 return WaterObjects

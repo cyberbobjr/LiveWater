@@ -49,6 +49,7 @@
     "IGUI_LWT_NotFixture": "只有你放置且未接管的水龙头才能接入城市供水。",
     "IGUI_LWT_NotMapBuilding": "只能在地图建筑的房间内使用。",
     "IGUI_LWT_NoCityWater": "这里已经没有城市供水了。",
+    "IGUI_LWT_NoPlumbing": "这个水龙头尚未接管。",
     "IGUI_LWT_Valve_Open": "阀门：开启",
     "IGUI_LWT_Valve_Closed": "阀门：关闭",
     "IGUI_LWT_Sprinkler_served": "正在浇灌植物",

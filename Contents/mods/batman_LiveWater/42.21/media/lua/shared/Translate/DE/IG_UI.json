@@ -49,6 +49,7 @@
     "IGUI_LWT_NotFixture": "Nur eine Armatur, die du aufgestellt und nicht verrohrt hast, kann ans Stadtwasser angeschlossen werden.",
     "IGUI_LWT_NotMapBuilding": "Nur in einem Raum eines Gebäudes der Karte.",
     "IGUI_LWT_NoCityWater": "Das Stadtwasser fließt hier nicht mehr.",
+    "IGUI_LWT_NoPlumbing": "Diese Armatur ist nicht angeschlossen.",
     "IGUI_LWT_Valve_Open": "Ventil: offen",
     "IGUI_LWT_Valve_Closed": "Ventil: geschlossen",
     "IGUI_LWT_Sprinkler_served": "Bewässert die Pflanzen",

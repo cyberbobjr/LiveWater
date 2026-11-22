@@ -1,5 +1,5 @@
 """E26: player base, diagnostic (ADR-001 L09, L11; ADR-009 D03): outside a map building the inlet serves the plumbed
-fixtures within a range (12 by default, sandbox) up to 3 floors above; a fixture without water says why in one
+fixtures within a range (12 by default, sandbox) on its level and every floor above (ADR-023); a fixture without water says why in one
 translated line; an inlet without pump says it has no pressure."""
 import json
 import os
@@ -41,7 +41,10 @@ class BaseMode(unittest.TestCase):
         self.assertTrue(lua.eval("A:contains(110, 105, 0)"))
         self.assertFalse(lua.eval("A:contains(110, 110, 0)"))
         self.assertTrue(lua.eval("A:contains(101, 101, 3)"))
-        self.assertFalse(lua.eval("A:contains(101, 101, 4)"))
+        self.assertTrue(lua.eval("A:contains(101, 101, 4)"))
+        self.assertTrue(lua.eval("A:contains(101, 101, 31)"))
+        self.assertFalse(lua.eval("A:contains(101, 101, 32)"))
+        self.assertFalse(lua.eval("A:contains(101, 101, -1)"))
 
     def test_the_range_is_a_sandbox_option(self):
         lua = bench()
@@ -55,6 +58,13 @@ class BaseMode(unittest.TestCase):
                     ' place("LiveWater:HouseInlet", 100, 100, "%s40") CLOCK:tick()' % TILE)
         self.assertIsNotNone(lua.eval("relayAt(105, 105, 1)"))
         self.assertIsNone(lua.eval("relayAt(130, 100, 1)"))
+
+    def test_a_tall_base_gets_water_on_every_floor(self):
+        # ADR-023 D01
+        lua = bench()
+        lua.execute('PLUMB:addFixture(103, 103, 6)'
+                    ' place("LiveWater:HouseInlet", 100, 100, "%s40") CLOCK:tick()' % TILE)
+        self.assertIsNotNone(lua.eval("relayAt(103, 103, 7)"))
 
     def test_the_original_fixtures_of_a_map_house_in_range_are_left_alone(self):
         # A map house east of the base, its own fixtures in range: only the fixture the players set down in the base

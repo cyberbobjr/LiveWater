@@ -6,6 +6,9 @@ local Grid = {}
 Grid.N, Grid.E, Grid.S, Grid.W = 1, 2, 4, 8
 Grid.ALL = 15
 
+-- Highest level of the map (levels 0..31, IsoCell.maxHeight = 32, Java 42.22).
+Grid.TOP = 31
+
 -- Side each facing 1..4 (S, E, N, W: the order of the variant lists, LWT_Parts) turns to.
 Grid.FACINGS = { 4, 2, 1, 8 }
 

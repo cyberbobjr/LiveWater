@@ -180,6 +180,7 @@ Tout argument est recontrôlé sur l'autorité. Portée : 3 cases (Tchebychev) s
 | client → serveur | `switchPump` | `x`, `y`, `z` entiers | arguments, pièce, interrupteur (`not_switchable`), portée | interrupteur basculé ; éteinte, la pompe s'arrête aussitôt |
 | client → serveur | `repairPump` | `x`, `y`, `z` entiers | arguments, pièce, réparable (`not_repairable`), à l'arrêt (`running`), usée ou en panne (`not_needed`), portée, outil (`need_wrench`), matériau (`no_parts`) | matériau consommé, rendement 100 %, panne effacée |
 | client → serveur | `cityWater` | `x`, `y`, `z` entiers | arguments, point d'eau posé par un joueur et pas raccordé (`not_fixture`), portée, pièce d'un bâtiment de la carte (`not_map_building`), eau de la ville qui coule et case sans `isNoWater` (`no_city_water`) | ModData `canBeWaterPiped` effacée, `setUsesExternalWaterSource(false)`, `transmitModData` : point d'eau d'origine (M01) |
+| client → serveur | `unplumb` | `x`, `y`, `z` entiers | arguments, point d'eau raccordé sur la case (`not_plumbed`, `LWT_Plumbing`), portée, clé à tuyau (`need_tool`) | ModData `canBeWaterPiped = true`, marque `LiveWaterWasher` effacée, `setUsesExternalWaterSource(false)`, `transmitModData`, `sendObjectChange(USES_EXTERNAL_WATER_SOURCE, false)` (ADR-024 D04) |
 | client → serveur | `switchValve` | `x`, `y`, `z` entiers | arguments, pièce, vanne (`not_valve`), portée | vanne ouverte ou fermée, `valveChanged` |
 | client → serveur | `setTimer` | `x`, `y`, `z`, `hours` entiers | arguments (`invalid`), pièce, minuterie (`not_timer`), bornes sandbox (`out_of_bounds`), portée | intervalle de la minuterie |
 | client → serveur | `showNetwork` | `x`, `y`, `z` entiers | arguments, pièce (`nothing_here`), portée | réponse `network` au seul joueur |
@@ -311,7 +312,7 @@ lave-linge, raccords de remplissage, `edgeWatch` (murs et clôtures).
   posé un niveau au-dessus d'un point d'eau (le moteur y cherche la source : case au-dessus puis les 8 autour).
 - Points d'eau servis : sprite `waterPiped`, raccordés (`getUsesExternalWaterSource`) ou raccordables (ModData
   `canBeWaterPiped`, ou d'origine après la coupure de l'eau de la ville), dans la zone de l'arrivée d'eau
-  (`LWT_InletArea` : bâtiment de la carte touché, cercle de portée, jusqu'à 3 étages au-dessus, et 2 niveaux de sous-sol
+  (`LWT_InletArea` : bâtiment de la carte touché, cercle de portée, tous les étages au-dessus et les cases au-dessus d'une pièce du bâtiment (toit, étages construits par les joueurs, ADR-024 D03) (ADR-023 ; le relevé s'arrête au plus haut niveau des chunks de la zone, `IsoChunk:getMaxLevel`), et 2 niveaux de sous-sol
   sous l'emprise du rez-de-chaussée). Lave-linge compris (tuiles `waterPiped` en 42.22). Un point d'eau dont la source n'est pas un relais de LiveWater est laissé tel quel ; un relais de
   Live Wire (`LiveWireRelay`) n'est jamais posé, rempli ni retiré.
 - Besoin de l'arrivée d'eau = place libre de ses relais qui servent un point d'eau raccordé ; l'eau livrée les remplit

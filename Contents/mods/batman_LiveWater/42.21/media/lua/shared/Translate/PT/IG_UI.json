@@ -49,6 +49,7 @@
     "IGUI_LWT_NotFixture": "Só uma peça que colocou no chão e não canalizou pode ligar-se à rede da cidade.",
     "IGUI_LWT_NotMapBuilding": "Só dentro de uma divisão de um edifício do mapa.",
     "IGUI_LWT_NoCityWater": "A água da cidade já não chega aqui.",
+    "IGUI_LWT_NoPlumbing": "Este ponto de água não está ligado.",
     "IGUI_LWT_Valve_Open": "Válvula: aberta",
     "IGUI_LWT_Valve_Closed": "Válvula: fechada",
     "IGUI_LWT_Sprinkler_served": "A regar as plantas",

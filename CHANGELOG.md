@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- **Tall buildings:** a house water inlet now serves every floor above it, not only the first three. A five-storey building or a tower you built gets water up to its last floor.
+- **Sink on the roof:** a sink, shower, bathtub, toilet or washing machine set down on a roof (in the open, right above a room) can now be plumbed with a pipe wrench and gets water from the house water inlet. The game only offered Plumb inside a room.
+- **Storeys you built on a map building:** the house water inlet of that building now serves them too.
+- **Unplumb:** right-click a plumbed fixture with a pipe wrench to take its plumbing away. It stops giving water and can be plumbed again.
+
 ## 1.0.0-beta7 — 2026-11-21
 
 - **Pipes around a building corner:** a pipe laid around the south-east corner of a building now joins the pipe before it. The corner post was wrongly read as a wall. Pipes already laid there join on their own within 10 minutes of game time.

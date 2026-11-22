@@ -8,6 +8,7 @@
     "ContextMenu_LWT_Info": "Information",
     "ContextMenu_LWT_NoWater": "No water: %1",
     "ContextMenu_LWT_CityWater": "Connect to the City Water",
+    "ContextMenu_LWT_Unplumb": "Unplumb %1",
     "ContextMenu_LWT_OpenValve": "Open the Valve",
     "ContextMenu_LWT_CloseValve": "Close the Valve",
     "ContextMenu_LWT_SetTimer": "Watering Timer",

@@ -2,7 +2,7 @@
 -- sendServerCommand (module and command names). Arguments are always re-checked on the server.
 --   client -> server  FIT_FILTER { x, y, z }  REMOVE_FILTER { x, y, z }
 --                     SWITCH_PUMP { x, y, z } REPAIR_PUMP { x, y, z }
---                     CITY_WATER { x, y, z }
+--                     CITY_WATER { x, y, z }  UNPLUMB { x, y, z }
 --                     SWITCH_VALVE { x, y, z }  SET_TIMER { x, y, z, hours }
 --                     SHOW_NETWORK { x, y, z }
 --                     REMOVE_ALL {} (admin: remove LiveWater from the world)
@@ -21,6 +21,7 @@ local Protocol = {
     SWITCH_PUMP = "switchPump",
     REPAIR_PUMP = "repairPump",
     CITY_WATER = "cityWater",
+    UNPLUMB = "unplumb",
     SWITCH_VALVE = "switchValve",
     SET_TIMER = "setTimer",
     SHOW_NETWORK = "showNetwork",

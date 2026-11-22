@@ -8,6 +8,7 @@
     "ContextMenu_LWT_Info": "Информация",
     "ContextMenu_LWT_NoWater": "Нет воды: %1",
     "ContextMenu_LWT_CityWater": "Подключить к городской воде",
+    "ContextMenu_LWT_Unplumb": "Отключить от трубопровода: %1",
     "ContextMenu_LWT_OpenValve": "Открыть вентиль",
     "ContextMenu_LWT_CloseValve": "Закрыть вентиль",
     "ContextMenu_LWT_SetTimer": "Таймер полива",

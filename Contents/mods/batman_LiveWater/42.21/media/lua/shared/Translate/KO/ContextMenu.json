@@ -8,6 +8,7 @@
     "ContextMenu_LWT_Info": "정보",
     "ContextMenu_LWT_NoWater": "물 없음: %1",
     "ContextMenu_LWT_CityWater": "상수도에 연결하기",
+    "ContextMenu_LWT_Unplumb": "%1 배관 해제",
     "ContextMenu_LWT_OpenValve": "밸브 열기",
     "ContextMenu_LWT_CloseValve": "밸브 잠그기",
     "ContextMenu_LWT_SetTimer": "물주기 타이머",

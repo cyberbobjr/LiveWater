@@ -34,7 +34,9 @@ water to a fill fitting against a vanilla feeding trough (the trough fills, ADR-
 a small network of its own, then everything is taken up (ADR-011), a third pump set down against a vanilla gas
 station fuel pump (fixture: 200 units of piped fuel) sends its gasoline to a fill fitting against an empty rain
 collector (the collector holds petrol, the station is lower) while a manual sprinkler on the same network takes
-none (state wrong_fluid), then everything is taken up (ADR-014), no Lua error. An open sprinkler draws its flow
+none (state wrong_fluid), then everything is taken up (ADR-014), a sink set down on the roof of the house (outside
+any room, right above a room) gets a relay tank, is offered the game's Plumb once in the real world menu, gives water
+once plumbed, is unplumbed by the real command and loses its tank when picked up (ADR-024), no Lua error. An open sprinkler draws its flow
 at every step, thirsty crop or not (ADR-006 D01): it is "served" at every step its valve is open, never "idle".
 A phase is judged on every ten-minute step it ran (the pump stops when no outlet needs water).
 Parameters (ctx.params, text): centers, radius (scan radius, default 40), stepSec (deadline of one ten-minute
@@ -2305,6 +2307,158 @@ local function buildSteps(ctx)
         return true
     end, 60)
 
+    -- ADR-024: a sink on the roof of the house (outside any room, right above a room). Fixtures: a floor on
+    -- the roof square and the one beside it (the player stands there), a sink with the sprite of the house's
+    -- own fixture added as the map does (no event in solo: the survey is asked for as OnObjectAdded would).
+    -- The menu is the real world menu (ISWorldObjectContextMenu.createMenu), the plumbing the real vanilla
+    -- action's complete (ISPlumbItem, watched by LWT_PlumbWatch), the unplumbing the real command, the pickup
+    -- the real moveable pickup.
+    local function roofMenu(text)
+        local r = S.roof
+        local pn = player():getPlayerNum()
+        local menu = ISWorldObjectContextMenu.createMenu(pn, { r.obj }, isoToScreenX(pn, r.x + 0.5, r.y + 0.5, r.z),
+            isoToScreenY(pn, r.x + 0.5, r.y + 0.5, r.z))
+        local n, greyed = 0, false
+        for i = 1, #(menu and menu.options or {}) do
+            if menu.options[i].name == text then
+                n = n + 1
+                greyed = menu.options[i].notAvailable == true
+            end
+        end
+        if menu then
+            menu:hideToolTip()
+            menu:closeAll()
+        end
+        return n, greyed
+    end
+
+    local function roofRelay()
+        local r = S.roof
+        return server().relays.plumbing:relay(r.x, r.y, r.z + 1)
+    end
+
+    local function roofName()
+        return require("LiveWater/LWT_WrenchMenu").nameOf(S.roof.obj)
+    end
+
+    addStep("roof: a sink set down on the roof of the house", function()
+        local L = S.L
+        goNear(L.inlet)
+        -- back from far away, the upper levels of the house arrive after its ground floor: a square made
+        -- now on a level still loading would be replaced by the loaded one
+        S.roofFrom = S.roofFrom or nowMs()
+        if nowMs() - S.roofFrom < 6000 then return false end
+        local def = mapBuilding(sq(L.fixture.x, L.fixture.y, 0))
+        local top = def and def:getMaxLevel()
+        local best, bestD
+        for x = def and def:getX() or 0, def and def:getX2() - 1 or -1 do
+            for y = def:getY(), def:getY2() - 1 do
+                local s = sq(x, y, top)
+                local dx, dy = x - L.inlet.x, y - L.inlet.y
+                local d = dx * dx + dy * dy
+                if s and s:getRoom() and d <= 324 and (not bestD or d < bestD) then best, bestD = { x = x, y = y }, d end
+            end
+        end
+        if not best then
+            rec(false, "roof: a room under the roof within reach of the inlet", def and ("building " .. def:getX() .. ","
+                .. def:getY() .. " to " .. def:getX2() .. "," .. def:getY2() .. " top " .. tostring(top) .. " inlet "
+                .. key(L.inlet.x, L.inlet.y) .. " fixture " .. key(L.fixture.x, L.fixture.y)) or "no building")
+            return true
+        end
+        local cell, z = getCell(), top + 1
+        local s = cell:getGridSquare(best.x, best.y, z) or cell:createNewGridSquare(best.x, best.y, z, true)
+        local side = cell:getGridSquare(best.x + 1, best.y, z) or cell:createNewGridSquare(best.x + 1, best.y, z, true)
+        s:addFloor("carpentry_02_58")
+        side:addFloor("carpentry_02_58")
+        -- the house was unloaded during the trip away: its fixture is read again, not the object kept before
+        local model = fixtureOf(sq(L.fixture.x, L.fixture.y, 0))
+        local sink = IsoObject.new(cell, s, model:getSpriteName())
+        s:AddTileObject(sink)
+        sink:getModData().canBeWaterPiped = true
+        server().relays:touched(best.x, best.y, z)
+        S.roof = { x = best.x, y = best.y, z = z, obj = sink }
+        player():teleportTo(best.x + 1.5, best.y + 0.5, z)
+        rec(not s:isInARoom() and sq(best.x, best.y, z - 1):isInARoom(),
+            "roof: the sink stands outside any room, right above a room", key(best.x, best.y) .. " level " .. z)
+        return true
+    end, 30)
+
+    addStep("roof: one ten-minute step with the sink set down", function()
+        if not S.roof then return true end
+        return waitSteps(1)()
+    end, stepSec * 4)
+
+    addStep("roof: a tank above the sink, Plumb offered once by LiveWater", function()
+        local r = S.roof
+        if not r then return true end
+        local relay = roofRelay()
+        rec(relay ~= nil and relay.owner == key(S.L.inlet.x, S.L.inlet.y) .. ",0", "roof: a relay tank above the sink",
+            relay and ("owner " .. tostring(relay.owner)) or "none")
+        local n, greyed = roofMenu(getText("ContextMenu_PlumbItem", roofName()))
+        rec(n == 1 and not greyed, "roof: the game's Plumb option is offered once, with the wrench in the bag",
+            "options " .. n .. " greyed " .. tostring(greyed))
+        local pl = player()
+        local wrench = pl:getInventory():getFirstTypeRecurse("Base.PipeWrench")
+        ISPlumbItem:new(pl, r.obj, wrench):complete()
+        rec(r.obj:getUsesExternalWaterSource(), "roof: the sink is plumbed by the vanilla action")
+        return true
+    end)
+
+    addStep("roof: two ten-minute steps with the sink plumbed", function()
+        if not S.roof then return true end
+        return waitSteps(2)()
+    end, stepSec * 8)
+
+    addStep("roof: the sink gives water, Unplumb offered", function()
+        local r = S.roof
+        if not r then return true end
+        if not r.sent then
+            local relay = roofRelay()
+            rec(r.obj:getFluidAmount() > 0 and r.obj:hasWater(), "roof: the plumbed sink gives water",
+                "sink litres " .. tostring(r.obj:getFluidAmount()) .. ", tank " .. tostring(relay and relay.amount))
+            rec(roofMenu(getText("ContextMenu_PlumbItem", roofName())) == 0, "roof: Plumb is gone once plumbed")
+            local n, greyed = roofMenu(getText("ContextMenu_LWT_Unplumb", roofName()))
+            rec(n == 1 and not greyed, "roof: Unplumb is offered", "options " .. n .. " greyed " .. tostring(greyed))
+            r.sent = true
+            send("unplumb", { x = r.x, y = r.y, z = r.z })
+            return false
+        end
+        if r.obj:getUsesExternalWaterSource() then return false end
+        rec(r.obj:getModData().canBeWaterPiped == true and r.obj:getFluidAmount() <= 0,
+            "roof: the unplumbed sink is to plumb again and gives no water",
+            "litres " .. tostring(r.obj:getFluidAmount()))
+        rec(roofRelay() ~= nil, "roof: the tank stays above the unplumbed sink")
+        rec(roofMenu(getText("ContextMenu_PlumbItem", roofName())) == 1, "roof: Plumb is offered again")
+        return true
+    end, 20)
+
+    addStep("roof: the sink picked up (vanilla pickup)", function()
+        local r = S.roof
+        if not r then return true end
+        local s = sq(r.x, r.y, r.z)
+        local props = ISMoveableSpriteProps.new(r.obj:getSprite())
+        if props:canPickUpMoveable(player(), s, r.obj) then
+            props:pickUpMoveable(player(), s, true)
+        else
+            info("roof: vanilla pickup refused, the sink is removed as a sledgehammer does")
+            s:transmitRemoveItemFromSquare(r.obj)
+        end
+        rec(fixtureOf(s) == nil, "roof: the sink is gone")
+        return true
+    end)
+
+    addStep("roof: one ten-minute step without the sink", function()
+        if not S.roof then return true end
+        return waitSteps(1)()
+    end, stepSec * 4)
+
+    addStep("roof: the tank left with the sink", function()
+        if not S.roof then return true end
+        rec(roofRelay() == nil, "roof: the relay tank above the sink is removed")
+        goNear(S.L.pump)
+        return true
+    end)
+
     addStep("no Lua error recorded", function()
         local n = getLuaDebuggerErrorCount and getLuaDebuggerErrorCount() or 0
         rec(n == 0, "no Lua error recorded", "errors=" .. tostring(n))
@@ -2517,6 +2671,94 @@ local function serverSteps(ctx)
         local clean, tainted = relayFluids(L)
         rec(obj:getFluidAmount() > 0 and clean > 0 and tainted <= 0.001, "the plumbed fixture gives clean water (server)",
             "fixture litres " .. tostring(obj:getFluidAmount()) .. ", tank clean " .. clean .. " tainted " .. tainted)
+        return true
+    end)
+
+    -- ADR-024 on the server: a sink on the roof of the house, sent to the clients; plumbed by the vanilla action's
+    -- complete (what the server runs for a client's ISPlumbItem), unplumbed by client 1 through the real command,
+    -- then removed as a pickup does.
+    addStep("roof: a sink set down on the roof of the house (server)", function()
+        local L = S.L
+        local model = fixtureOf(sq(L.fixture.x, L.fixture.y, 0))
+        local def = mapBuilding(sq(L.fixture.x, L.fixture.y, 0))
+        local top = def:getMaxLevel()
+        local best, bestD
+        for x = def:getX(), def:getX2() - 1 do
+            for y = def:getY(), def:getY2() - 1 do
+                local s = sq(x, y, top)
+                local dx, dy = x - L.inlet.x, y - L.inlet.y
+                local d = dx * dx + dy * dy
+                if s and s:getRoom() and d <= 324 and (not bestD or d < bestD) then best, bestD = { x = x, y = y }, d end
+            end
+        end
+        if not best then
+            rec(false, "roof: a room under the roof within reach of the inlet (server)")
+            return true
+        end
+        local cell, z = getCell(), top + 1
+        local s = cell:getGridSquare(best.x, best.y, z) or cell:createNewGridSquare(best.x, best.y, z, true)
+        local side = cell:getGridSquare(best.x + 1, best.y, z) or cell:createNewGridSquare(best.x + 1, best.y, z, true)
+        s:addFloor("carpentry_02_58")
+        side:addFloor("carpentry_02_58")
+        local sink = IsoObject.new(cell, s, model:getSpriteName())
+        sink:getModData().canBeWaterPiped = true
+        s:transmitAddObjectToSquare(sink, -1)
+        server().relays:touched(best.x, best.y, z)
+        giveItems(mpPlayer(), { { "Base.PipeWrench", 1 } })
+        M.roof = { x = best.x, y = best.y, z = z, obj = sink }
+        rec(not s:isInARoom() and sq(best.x, best.y, z - 1):isInARoom(),
+            "roof: the sink stands outside any room, right above a room (server)", key(best.x, best.y) .. " level " .. z)
+        return true
+    end)
+
+    addStep("roof: one ten-minute step with the sink set down (server)", function()
+        if not M.roof then return true end
+        return serverWait(1)()
+    end, stepSec * 4)
+
+    addStep("roof: a tank above the sink, plumbed by the vanilla action (server)", function()
+        local r = M.roof
+        if not r then return true end
+        local relay = server().relays.plumbing:relay(r.x, r.y, r.z + 1)
+        rec(relay ~= nil, "roof: a relay tank above the sink (server)", relay and ("owner " .. tostring(relay.owner)) or "none")
+        local wrench = mpPlayer():getInventory():getFirstTypeRecurse("Base.PipeWrench")
+        ISPlumbItem:new(mpPlayer(), r.obj, wrench):complete()
+        rec(r.obj:getUsesExternalWaterSource(), "roof: the sink is plumbed by the vanilla action (server)")
+        return true
+    end)
+
+    addStep("roof: two ten-minute steps with the sink plumbed (server)", function()
+        if not M.roof then return true end
+        return serverWait(2)()
+    end, stepSec * 8)
+
+    addStep("roof: the sink gives water, client 1 unplumbs it", function()
+        local r = M.roof
+        if not r then return true end
+        if not r.told then
+            rec(r.obj:getFluidAmount() > 0, "roof: the plumbed sink gives water (server)",
+                "sink litres " .. tostring(r.obj:getFluidAmount()))
+            r.told = true
+            tell("roof", { x = r.x, y = r.y, z = r.z })
+            return false
+        end
+        if r.obj:getUsesExternalWaterSource() then return false end
+        rec(r.obj:getModData().canBeWaterPiped == true and r.obj:getFluidAmount() <= 0,
+            "roof: unplumbed by client 1, the sink is to plumb again and gives no water (server)")
+        sq(r.x, r.y, r.z):transmitRemoveItemFromSquare(r.obj)
+        return true
+    end, 120)
+
+    addStep("roof: one ten-minute step without the sink (server)", function()
+        if not M.roof then return true end
+        return serverWait(1)()
+    end, stepSec * 4)
+
+    addStep("roof: the tank left with the sink (server)", function()
+        local r = M.roof
+        if r then
+            rec(server().relays.plumbing:relay(r.x, r.y, r.z + 1) == nil, "roof: the relay tank above the sink is removed (server)")
+        end
         tell("inline")
         return true
     end)
@@ -2733,6 +2975,48 @@ local function clientDone(ctx)
         local p = C.L.inlet
         C.action = function()
             return actNear(p, function() sendClientCommand(cplayer(), MODULE, "fitFilter", { x = p.x, y = p.y, z = 0 }) end)
+        end
+    elseif msg.command == "roof" then
+        -- ADR-024: client 1 goes on the roof, sees the sink plumbed with water and the Unplumb option in its real
+        -- world menu, sends the real command, then goes back down
+        local from = nowMs()
+        C.action = function()
+            local pl = cplayer()
+            if nowMs() - from > 60000 then
+                rec(false, "client 1 reached the roof sink", "position " .. pl:getX() .. "," .. pl:getY() .. "," .. pl:getZ())
+                return true
+            end
+            if not (cnear(a, 2) and math.floor(pl:getZ()) == a.z) then
+                if not C.tpAt or nowMs() - C.tpAt > 5000 then
+                    SendCommandToServer("/teleportto " .. (a.x + 1) .. "," .. a.y .. "," .. a.z)
+                    C.tpAt = nowMs()
+                end
+                C.nearAt = nil
+                return false
+            end
+            C.nearAt = C.nearAt or nowMs()
+            if nowMs() - C.nearAt < 3000 then return false end
+            local s = sq(a.x, a.y, a.z)
+            local sink = s and fixtureOf(s)
+            if not sink then return false end
+            rec(sink:getUsesExternalWaterSource() and sink:getFluidAmount() > 0,
+                "client 1 sees the roof sink plumbed with water", "litres " .. tostring(sink:getFluidAmount()))
+            local pn = pl:getPlayerNum()
+            local menu = ISWorldObjectContextMenu.createMenu(pn, { sink }, isoToScreenX(pn, a.x + 0.5, a.y + 0.5, a.z),
+                isoToScreenY(pn, a.x + 0.5, a.y + 0.5, a.z))
+            local text = getText("ContextMenu_LWT_Unplumb", require("LiveWater/LWT_WrenchMenu").nameOf(sink))
+            local n = 0
+            for i = 1, #(menu and menu.options or {}) do
+                if menu.options[i].name == text then n = n + 1 end
+            end
+            if menu then
+                menu:hideToolTip()
+                menu:closeAll()
+            end
+            rec(n == 1, "client 1 is offered Unplumb on the roof sink", "options " .. n)
+            sendClientCommand(pl, MODULE, "unplumb", { x = a.x, y = a.y, z = a.z })
+            C.tpAt, C.nearAt = nil, nil
+            return true
         end
     elseif msg.command == "end" then
         clientChecks()

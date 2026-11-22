@@ -7,7 +7,7 @@ Page **LiveWater** des options sandbox (noms `LiveWater.<Option>` dans les `Sand
 | Débit des pompes (`PumpFlowMultiplier`) | 1,0 | 0,1 à 10 | multiplie les litres qu'une pompe donne toutes les 10 minutes (50 L à 1,0) |
 | Durée des cartouches filtrantes (`FilterCapacityMultiplier`) | 1,0 | 0,1 à 10 | multiplie les litres qu'une cartouche nettoie (500 L à 1,0) |
 | Usure des pompes (`PumpWearMultiplier`) | 1,0 | 0 à 10 | multiplie le rendement perdu en marche (environ une semaine de 100 % à 0 % à 1,0 ; 0 = sans usure) |
-| Portée de l'arrivée d'eau (`InletRange`) | 20 | 1 à 100 | cases autour d'une arrivée d'eau sur un bâtiment de la carte, jusqu'à 3 étages au-dessus |
+| Portée de l'arrivée d'eau (`InletRange`) | 20 | 1 à 100 | cases autour d'une arrivée d'eau sur un bâtiment de la carte, à tous les étages au-dessus |
 | Portée de l'arrivée d'eau d'une base (`BaseRange`) | 12 | 1 à 50 | cases autour d'une arrivée d'eau hors bâtiment de la carte (base du joueur) |
 | Taille maximale des réservoirs relais (`RelayMaxLitres`) | 300 | 25 à 1000 | plus grand réservoir invisible au-dessus d'un point d'eau, en litres : 25 L, ou ce que le point d'eau demande d'un coup quand un mod l'indique (Take a Bath and Shower : douche 80 L, baignoire la contenance de sa cuve) |
 | Corriger les lave-linge raccordés (`WasherFix`) | activé | oui/non | multijoueur : les lave-linge alimentés par une arrivée d'eau apparaissent raccordés et s'arrêtent à sec |

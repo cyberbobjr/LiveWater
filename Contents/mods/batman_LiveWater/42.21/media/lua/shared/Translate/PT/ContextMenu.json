@@ -8,6 +8,7 @@
     "ContextMenu_LWT_Info": "Informação",
     "ContextMenu_LWT_NoWater": "Sem água: %1",
     "ContextMenu_LWT_CityWater": "Ligar à rede de água da cidade",
+    "ContextMenu_LWT_Unplumb": "Remover a ligação de %1",
     "ContextMenu_LWT_OpenValve": "Abrir a válvula",
     "ContextMenu_LWT_CloseValve": "Fechar a válvula",
     "ContextMenu_LWT_SetTimer": "Temporizador de rega",

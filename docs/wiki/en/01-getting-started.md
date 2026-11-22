@@ -114,7 +114,7 @@ Recipe **Build House Water Inlet**: 2 water pipes, 1 small metal sheet, 4 screws
 
 Set it down **against the outside wall** of a building of the map, and run a pipe to it from the pump. It feeds the
 **sinks, bathtubs, showers, toilets and washing machines** of that building that you plumbed with a pipe wrench (the
-game's own Plumb action), within **20 squares** (sandbox option), up to **3 floors above** it and **2 basement levels**
+game's own Plumb action), within **20 squares** (sandbox option), on **every floor above** it and **2 basement levels**
 below.
 
 Its light tells you what it does:
@@ -124,6 +124,14 @@ Its light tells you what it does:
   or use a well).
 
 A fixture already fed by something else (a LiveWire pump) is left alone.
+
+**On a roof:** the game only offers **Plumb** inside a room. LiveWater offers the same option for a fixture set down
+on a roof (in the open, right above a room) once an inlet reaches it. The inlet of a map building also serves the
+storeys you built on top of it. A fixture in the garden, with no room under it, cannot be plumbed.
+
+**Unplumb:** right-click a plumbed fixture with a pipe wrench in your bag and choose **Unplumb**. The fixture stops
+giving water and can be plumbed again. Picking a fixture up or dismantling it also takes its plumbing away: plumb it
+again where you set it down.
 
 A sink, shower, bathtub, toilet or washing machine that this inlet feeds shows the water it holds in its right-click
 menu, for example a greyed line **Water: 18 L / 25 L**.

@@ -8,6 +8,7 @@
     "ContextMenu_LWT_Info": "情報",
     "ContextMenu_LWT_NoWater": "水なし: %1",
     "ContextMenu_LWT_CityWater": "市の水道につなぐ",
+    "ContextMenu_LWT_Unplumb": "%1の配管を外す",
     "ContextMenu_LWT_OpenValve": "バルブを開く",
     "ContextMenu_LWT_CloseValve": "バルブを閉じる",
     "ContextMenu_LWT_SetTimer": "散水タイマー",

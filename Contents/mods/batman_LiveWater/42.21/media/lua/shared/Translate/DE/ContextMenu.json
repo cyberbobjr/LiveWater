@@ -8,6 +8,7 @@
     "ContextMenu_LWT_Info": "Info",
     "ContextMenu_LWT_NoWater": "Kein Wasser: %1",
     "ContextMenu_LWT_CityWater": "An die Stadtwasserleitung anschließen",
+    "ContextMenu_LWT_Unplumb": "Anschluss von %1 entfernen",
     "ContextMenu_LWT_OpenValve": "Ventil öffnen",
     "ContextMenu_LWT_CloseValve": "Ventil schließen",
     "ContextMenu_LWT_SetTimer": "Bewässerungs-Zeitschaltuhr",

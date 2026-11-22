@@ -49,6 +49,7 @@
     "IGUI_LWT_NotFixture": "Só um ponto de água que você colocou e não encanou pode se conectar à rede da cidade.",
     "IGUI_LWT_NotMapBuilding": "Só dentro de um cômodo de um prédio do mapa.",
     "IGUI_LWT_NoCityWater": "A água da cidade não chega mais aqui.",
+    "IGUI_LWT_NoPlumbing": "Este ponto de água não está conectado.",
     "IGUI_LWT_Valve_Open": "Válvula: aberta",
     "IGUI_LWT_Valve_Closed": "Válvula: fechada",
     "IGUI_LWT_Sprinkler_served": "Regando as plantas",

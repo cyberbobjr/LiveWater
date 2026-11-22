@@ -26,7 +26,7 @@ Cada peça é colocada como um móvel: clique direito no inventário, "Colocar".
 
 [h2]Água encanada em casa[/h2]
 
-Coloque a [b]Entrada de Água da Casa[/b] contra a parede externa de um prédio do mapa e leve um cano até ela. Cada pia, banheira, chuveiro, vaso sanitário e máquina de lavar que você encanou com a Chave de Cano (a ação "Encanar" do jogo) recebe água, até 3 andares acima e 2 níveis de porão abaixo.
+Coloque a [b]Entrada de Água da Casa[/b] contra a parede externa de um prédio do mapa e leve um cano até ela. Cada pia, banheira, chuveiro, vaso sanitário e máquina de lavar que você encanou com a Chave de Cano (a ação "Encanar" do jogo) recebe água, em todos os andares acima e 2 níveis de porão abaixo.
 A água de lagoa e de rio é suja: instale um [b]Cartucho Filtrante de Água[/b] (carvão e tecido, uns 500 L) na entrada. Luz verde: passa água limpa. Luz âmbar: sem filtro, a casa não recebe nada. Uma bomba em um poço dá água limpa, sem filtro. Um cartucho gasto é recarregado com carvão e tecido.
 
 [h2]Regar a horta[/h2]

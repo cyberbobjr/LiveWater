@@ -70,6 +70,7 @@ local COMMANDS = {
     [Protocol.SWITCH_PUMP] = "LWT_CmdSwitchPump",
     [Protocol.REPAIR_PUMP] = "LWT_CmdRepairPump",
     [Protocol.CITY_WATER] = "LWT_CmdCityWater",
+    [Protocol.UNPLUMB] = "LWT_CmdUnplumb",
     [Protocol.SWITCH_VALVE] = "LWT_CmdSwitchValve",
     [Protocol.SET_TIMER] = "LWT_CmdSetTimer",
     [Protocol.SHOW_NETWORK] = "LWT_CmdShowNetwork",

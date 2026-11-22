@@ -4,7 +4,7 @@ Une arrivée d'eau n'a pas besoin d'un bâtiment de la carte. Posée **hors d'un
 vous avez construite), elle dessert les points d'eau raccordés à la clé anglaise **autour d'elle** :
 
 - dans un rayon de **12 cases** (option sandbox *Portée de l'arrivée d'eau d'une base*) ;
-- à son niveau et jusqu'à **3 étages au-dessus**.
+- à son niveau et à **tous les étages au-dessus**.
 
 Le reste fonctionne comme dans une maison : reliez-la à une pompe par un tuyau. Un baril n'atteint le réseau que lorsqu'une
 [pompe à eau](01-premiers-pas.md#2-fabriquer-la-pompe-à-eau) est posée contre lui ; un

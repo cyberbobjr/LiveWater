@@ -26,7 +26,7 @@ Cada pieza se coloca como un mueble: clic derecho en el inventario, «Colocar».
 
 [h2]Agua corriente en casa[/h2]
 
-Coloca la [b]entrada de agua de la casa[/b] contra la pared exterior de un edificio del mapa y tiende una tubería hasta ella. Cada fregadero, bañera, ducha, inodoro y lavadora que hayas conectado con la llave para tubos (la acción «Instalar» del juego) recibe agua, hasta 3 pisos arriba y 2 niveles de sótano abajo.
+Coloca la [b]entrada de agua de la casa[/b] contra la pared exterior de un edificio del mapa y tiende una tubería hasta ella. Cada fregadero, bañera, ducha, inodoro y lavadora que hayas conectado con la llave para tubos (la acción «Instalar» del juego) recibe agua, en todos los pisos de arriba y 2 niveles de sótano abajo.
 El agua de estanque y de río está sucia: instala un [b]cartucho filtrante[/b] (carbón vegetal y tela, unos 500 L) en la entrada. Luz verde: pasa agua limpia. Luz ámbar: sin filtrar, la casa no recibe nada. Una bomba en un pozo da agua limpia sin filtro. Un cartucho gastado se recarga con carbón vegetal y tela.
 
 [h2]Regar el huerto[/h2]

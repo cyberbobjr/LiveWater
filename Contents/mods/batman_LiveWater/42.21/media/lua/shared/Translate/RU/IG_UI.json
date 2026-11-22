@@ -49,6 +49,7 @@
     "IGUI_LWT_NotFixture": "Только точка, которую вы установили и не подвели к трубам, может подключиться к городской воде.",
     "IGUI_LWT_NotMapBuilding": "Только внутри комнаты здания на карте.",
     "IGUI_LWT_NoCityWater": "Городская вода здесь больше не течёт.",
+    "IGUI_LWT_NoPlumbing": "Эта точка воды не подключена.",
     "IGUI_LWT_Valve_Open": "Вентиль: открыт",
     "IGUI_LWT_Valve_Closed": "Вентиль: закрыт",
     "IGUI_LWT_Sprinkler_served": "Поливает растения",

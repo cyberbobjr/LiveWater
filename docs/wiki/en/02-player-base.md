@@ -4,7 +4,7 @@ A house water inlet does not need a building of the map. Set down **away from a 
 yourself), it serves the fixtures plumbed with a pipe wrench **around it**:
 
 - within **12 squares** (sandbox option *Base inlet range*);
-- on its own level and up to **3 floors above** it.
+- on its own level and on **every floor above** it.
 
 Everything else works as in a house: pipe it to a pump. A barrel reaches the network only when a
 [water pump](01-getting-started.md#2-build-the-water-pump) stands against it, and a

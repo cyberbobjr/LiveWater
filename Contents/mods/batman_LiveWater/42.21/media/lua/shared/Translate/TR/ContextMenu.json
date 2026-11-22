@@ -8,6 +8,7 @@
     "ContextMenu_LWT_Info": "Bilgi",
     "ContextMenu_LWT_NoWater": "Su yok: %1",
     "ContextMenu_LWT_CityWater": "Şehir suyuna bağla",
+    "ContextMenu_LWT_Unplumb": "%1 tesisatını sök",
     "ContextMenu_LWT_OpenValve": "Vanayı aç",
     "ContextMenu_LWT_CloseValve": "Vanayı kapat",
     "ContextMenu_LWT_SetTimer": "Sulama zamanlayıcısı",

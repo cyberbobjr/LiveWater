@@ -49,6 +49,7 @@
     "IGUI_LWT_NotFixture": "Yalnızca yerleştirdiğiniz ve tesisatını yapmadığınız bir tesisat şehir suyuna bağlanabilir.",
     "IGUI_LWT_NotMapBuilding": "Yalnızca haritadaki bir binanın odası içinde.",
     "IGUI_LWT_NoCityWater": "Şehir suyu artık burada akmıyor.",
+    "IGUI_LWT_NoPlumbing": "Bu tesisat bağlı değil.",
     "IGUI_LWT_Valve_Open": "Vana: açık",
     "IGUI_LWT_Valve_Closed": "Vana: kapalı",
     "IGUI_LWT_Sprinkler_served": "Bitkiler sulanıyor",
