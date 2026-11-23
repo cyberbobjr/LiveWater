@@ -11,7 +11,7 @@ utilise. Une nouvelle pièce est un fichier de données ; un nouveau comportemen
 - Tout refus rend `false` et une raison, et écrit un avertissement en anglais dans la console. Rien ne lève d'erreur.
 - Les identifiants portent un espace de noms : `"<VotreMod>:<Nom>"`.
 - Vérifiez `LiveWater.API.revision` avant d'utiliser une fonction ou un champ ajouté après la révision 1. La révision
-  actuelle est **24**.
+  actuelle est **25**.
 
 ## Fonctions
 
@@ -142,6 +142,7 @@ Une pièce dont le mod est retiré reste inerte dans la sauvegarde et revient av
 | 22 | `registerOutlet` et types de sortie `"<VotreMod>:<Nom>"` ; le raccord de remplissage ne fait que remplir (crochet `container` remplace `fittingMode`) ; plus d'écoulement par gravité : seul un producteur met l'eau dans un réseau (réglages `gravity` et `byGravity` retirés) |
 | 23 | champ `takes` de `outlet` (fluide accepté, quatrième résultat du crochet `outlet`) ; la capacité `vessel` tire aussi l'essence ; `outcome.otherFluid` de `stepped` ; `info.takes` de `sense` ; un seul fluide par réseau, par zone et par pas (ADR-014) |
 | 24 | champ `link` de la pièce (`{ level = 0..10 }` : une pièce qui a besoin de courant se raccorde par fil à un onduleur LiveWire, révision 9 de l'API de LiveWire ; refus `invalid_link`, ADR-017) |
+| 25 | `registerFixtureNeed(id, fn)` : litres qu'un point d'eau d'un autre mod doit trouver d'un coup dans son réservoir relais (ADR-022) |
 
 Les changements sont seulement additifs : une fonction ou un champ ne change jamais de sens dans une révision suivante.
 Deux exceptions avant la première publication : la révision 16 a fait de `loss` de `spray` une part de l'eau prélevée

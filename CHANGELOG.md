@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0 — 2026-11-23
+
+- First stable release (includes all changes from 1.0.0-beta through 1.0.0-beta8).
+
 ## 1.0.0-beta8 — 2026-11-22
 
 - **Tall buildings:** a house water inlet now serves every floor above it, not only the first three. A five-storey building or a tower you built gets water up to its last floor.

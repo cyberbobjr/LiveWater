@@ -1,6 +1,6 @@
 # Multiplayer
 
-> LiveWater has not been tested on a multiplayer server yet. Report what you see.
+> LiveWater's multiplayer has been checked by automated in-game runs (dedicated server and client), not yet on a live public server. Report what you see.
 
 - The **server decides everything**: it moves the water every 10 minutes, saves the networks and checks every action
   (distance, items, tools, admin rights). Players only send requests from their right-click menus.

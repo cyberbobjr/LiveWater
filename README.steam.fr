@@ -1,9 +1,6 @@
 [h1]LiveWater - Eau courante et irrigation[/h1]
 
-[h1]BÊTA[/h1]
-[b]LiveWater est en bêta : la plupart des fonctions marchent, mais il reste des bugs. Ne l'exploitez pas encore à fond sur un serveur de production ni sur une sauvegarde à laquelle vous tenez. Essayez-le d'abord sur un monde de test.[/b]
-
-[b]Build 42.22 · Solo et multijoueur (multijoueur pas encore testé)[/b]
+[b]Build 42.22 · Solo et multijoueur[/b]
 
 Un jour, l'eau ne coule plus au robinet. Ramenez-la vous-même : une pompe au bord de la rivière, des tuyaux à travers la cour, l'eau courante de retour dans la maison, et des arroseurs qui arrosent le potager pendant que vous êtes en expédition. LiveWater est le petit frère plombier de [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] : même esprit, mêmes menus au clic droit.
 

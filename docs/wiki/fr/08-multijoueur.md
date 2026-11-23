@@ -1,6 +1,6 @@
 # Multijoueur
 
-> LiveWater n'a pas encore été testé sur un serveur multijoueur. Signalez ce que vous constatez.
+> Le multijoueur de LiveWater a été vérifié par passages automatiques en jeu (serveur dédié et client), pas encore sur un serveur public en conditions réelles. Signalez ce que vous constatez.
 
 - Le **serveur décide de tout** : il fait avancer l'eau toutes les 10 minutes, sauvegarde les réseaux et vérifie
   chaque action (distance, objets, outils, droits d'administration). Les joueurs envoient seulement des demandes depuis

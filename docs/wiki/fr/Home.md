@@ -13,7 +13,7 @@ arroseurs et lignes de goutte-à-goutte qui arrosent le potager tout seuls.
 ![Réseau d'exemple : étang, pompe, tuyaux, maison et potager](../../images/art/planche-reseau-exemple.png)
 
 LiveWire est facultatif : avec LiveWire, la pompe devient l'un de ses consommateurs. Solo et multijoueur (multijoueur
-pas encore testé).
+vérifié par passages automatiques en jeu seulement).
 
 Première fois ? Commencez par [Premiers pas](01-premiers-pas.md).
 

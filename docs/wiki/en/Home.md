@@ -12,7 +12,7 @@ fitting that fills barrels, rain collectors and feeding troughs, and sprinklers 
 ![Example network: pond, pump, pipes, house and garden](../../images/art/planche-reseau-exemple.png)
 
 LiveWire is optional: with LiveWire the pump becomes one of its consumers. Singleplayer and multiplayer (multiplayer
-not tested yet).
+checked by automated in-game runs only).
 
 New here? Start with [Getting started](01-getting-started.md).
 

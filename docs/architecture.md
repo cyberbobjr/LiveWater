@@ -13,12 +13,12 @@ jeu, testé hors jeu ; des adaptateurs PZ autour (pose, horloge, réservoirs, pl
 ## Arborescence du mod
 
 `Contents/mods/batman_LiveWater/` : `common/` (vide) et `42.21/` (`mod.info`, `media/`). `mod.info` : `id=batman_LiveWater`,
-sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\LGMainsWater` (Q09).
+sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\LGMainsWater,\PIP` (Q09).
 
 ## Modules Lua
 
 `shared/LiveWater/` :
-- `LWT_API.lua` : façade publique `LiveWater.API` (révision 24, historique dans le fichier) et racine de composition :
+- `LWT_API.lua` : façade publique `LiveWater.API` (révision 25, historique dans le fichier) et racine de composition :
   crée le registre des capacités (y inscrit les capacités de départ listées en données), le registre des pièces, le
   registre des types de sortie (`registerOutlet`, consommateurs d'autres mods), le bus `LiveWater.Events`, et scelle
   les registres à `OnInitGlobalModData`. `LiveWater.Parts` et `LiveWater.Capabilities` sont internes.
