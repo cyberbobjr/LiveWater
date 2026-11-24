@@ -314,7 +314,8 @@ lave-linge, raccords de remplissage, `edgeWatch` (murs et clôtures).
 - Points d'eau servis : sprite `waterPiped`, raccordés (`getUsesExternalWaterSource`) ou raccordables (ModData
   `canBeWaterPiped`, ou d'origine après la coupure de l'eau de la ville), dans la zone de l'arrivée d'eau
   (`LWT_InletArea` : bâtiment de la carte touché, cercle de portée, tous les étages au-dessus et les cases au-dessus d'une pièce du bâtiment (toit, étages construits par les joueurs, ADR-024 D03) (ADR-023 ; le relevé s'arrête au plus haut niveau des chunks de la zone, `IsoChunk:getMaxLevel`), et 2 niveaux de sous-sol
-  sous l'emprise du rez-de-chaussée). Lave-linge compris (tuiles `waterPiped` en 42.22). Un point d'eau dont la source n'est pas un relais de LiveWater est laissé tel quel ; un relais de
+  sous l'emprise du rez-de-chaussée ; en base construite, le même cercle descend à 2 niveaux de sous-sol, ADR-026, et le relevé
+  commence au plus bas niveau des chunks de la zone, `IsoChunk:getMinLevel`). Lave-linge compris (tuiles `waterPiped` en 42.22). Un point d'eau dont la source n'est pas un relais de LiveWater est laissé tel quel ; un relais de
   Live Wire (`LiveWireRelay`) n'est jamais posé, rempli ni retiré.
 - Besoin de l'arrivée d'eau = place libre de ses relais qui servent un point d'eau raccordé ; l'eau livrée les remplit
   (eau propre). Points d'eau relevés sur événement seulement (D10) : à la pose ou au rechargement de l'arrivée d'eau, à la pose ou au retrait d'un point d'eau ou d'un réservoir à portée (`OnObjectAdded`, `OnObjectAboutToBeRemoved`), au chargement d'un chunk à portée (`LoadChunk`), au raccordement d'un point d'eau à la clé (`LWT_PlumbWatch`, ADR-018) et à la coupure de l'eau de la ville, au plus un relevé par pas ; en mode base, jamais les points d'eau d'un bâtiment de la carte ; relais retirés avec l'arrivée d'eau.

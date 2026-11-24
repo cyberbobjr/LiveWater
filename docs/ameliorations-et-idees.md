@@ -22,6 +22,7 @@ Aucune pour l'instant.
 | I10 | Reprise de la pompe aux barils de Live Wire | Un seul mod de l'eau | ADR distinct (D21) | L |
 | I11 | Point d'eau en plein air : menu « Raccorder » de LiveWater (toit seul : [ADR-024](ADR/termines/024-point-d-eau-sur-un-toit-et-retrait-du-raccord.md) ; le jardin reste une idée) | Évier sur le toit ou dehors | voir l'analyse ci-dessous, piste A | S à M |
 | I12 | Colonne montante : un tuyau qui relie deux niveaux | Réseau de tuyaux à l'étage (robinet, arroseur, raccord de remplissage sur un toit) | voir l'analyse ci-dessous, piste C | L |
+| I13 | Sous-sol plus profond ou creusé hors de l'emprise d'une maison de la carte | Sous-sols des bases étendues | [ADR-026](ADR/termines/026-sous-sol-d-une-base-construite.md) D02 (profondeur) et limites connues (colonne sous toute case servie, option B écartée) | S à M |
 
 ## Analyse — évier sur un toit en terrasse (2026-11-22)
 

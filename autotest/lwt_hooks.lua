@@ -36,7 +36,11 @@ station fuel pump (fixture: 200 units of piped fuel) sends its gasoline to a fil
 collector (the collector holds petrol, the station is lower) while a manual sprinkler on the same network takes
 none (state wrong_fluid), then everything is taken up (ADR-014), a sink set down on the roof of the house (outside
 any room, right above a room) gets a relay tank, is offered the game's Plumb once in the real world menu, gives water
-once plumbed, is unplumbed by the real command and loses its tank when picked up (ADR-024), no Lua error. An open sprinkler draws its flow
+once plumbed, is unplumbed by the real command and loses its tank when picked up (ADR-024), a second inlet set down in
+a base outside every map building, beside a pipe of the live network, a filter cartridge fitted in it by the real command
+(the pump draws dirty pond water), over a plumbed sink on a square made at level -1
+(ADR-026: the survey reaches it down there, the relay stands on the ground floor above it, the engine finds it from
+the sink, the sink gets water), then both are taken away, no Lua error. An open sprinkler draws its flow
 at every step, thirsty crop or not (ADR-006 D01): it is "served" at every step its valve is open, never "idle".
 A phase is judged on every ten-minute step it ran (the pump stops when no outlet needs water).
 Parameters (ctx.params, text): centers, radius (scan radius, default 40), stepSec (deadline of one ten-minute
@@ -2529,6 +2533,182 @@ local function buildSteps(ctx)
     addStep("roof: the tank left with the sink", function()
         if not S.roof then return true end
         rec(roofRelay() == nil, "roof: the relay tank above the sink is removed")
+        goNear(S.L.pump)
+        return true
+    end)
+
+    -- ADR-026: a base you built serves its two basement levels. A second inlet, outside every map building and
+    -- beside a pipe of the live network (base mode), over a square made at level -1 for the test: the survey
+    -- reaches the sink down there, the relay goes on the ground floor above it, the engine finds it from the
+    -- sink, the sink gets water. Nothing here needs a room: the game's Plumb line is out of reach of this
+    -- scenario (played by hand with the Basement Building mod; see plan 026, P4).
+    local function baseSpot()
+        local L = S.L
+        for i = 2, #L.pipes - 1 do
+            local p = L.pipes[i]
+            for j = 1, 4 do
+                local x, y = p.x + SIDES[j][1], p.y + SIDES[j][2]
+                local links, blocked = 0, false
+                for _, d in ipairs(SIDES) do
+                    local nx, ny = x + d[1], y + d[2]
+                    if entryAt({ x = nx, y = ny }) then links = links + 1 end
+                    if mapBuilding(sq(nx, ny, 0)) then blocked = true end
+                end
+                -- the square of the inlet itself is free: outside any building, so the inlet is in base mode
+                if free(sq(x, y, 0)) and not blocked and links == 1 then return { x = x, y = y } end
+            end
+        end
+        return nil
+    end
+
+    addStep("base: a second inlet set down outside every building, beside a pipe", function()
+        local b = S.basement
+        if not b then
+            local spot = baseSpot()
+            if not spot then
+                rec(false, "base: a free square beside a pipe, outside every map building")
+                return true
+            end
+            giveItems(player(), { { "Base.Mov_LiveWater_HouseInlet", 1 } })
+            S.basement = { x = spot.x, y = spot.y }
+            b = S.basement
+        end
+        goNear(b)
+        local ok, why = placeMoveable(player(), SHEET .. "40", b, INLET_SPRITE)
+        local e = entryAt(b)
+        rec(ok and e ~= nil and e.type == "LiveWater:HouseInlet",
+            "base: a second house inlet set down outside every map building", tostring(why or "") .. " "
+            .. tostring(e and e.type))
+        return true
+    end)
+
+    addStep("base: a plumbed sink on a square made at level -1, beside the inlet", function()
+        local b = S.basement
+        if not (b and entryAt(b)) then return true end
+        -- the basement is dug beside the inlet, not under it: the relay must not share the inlet's square
+        local sx, sy
+        for _, d in ipairs(SIDES) do
+            local nx, ny = b.x + d[1], b.y + d[2]
+            if not sx and not entryAt({ x = nx, y = ny }) then sx, sy = nx, ny end
+        end
+        if not sx then
+            rec(false, "base: a square beside the inlet for the basement")
+            S.basement = nil
+            return true
+        end
+        local cell = getCell()
+        local chunk = cell:getChunkForGridSquare(sx, sy, 0)
+        if chunk and chunk:getMinLevel() > -1 then chunk:setMinMaxLevel(-1, chunk:getMaxLevel()) end
+        local s = cell:getGridSquare(sx, sy, -1) or cell:createNewGridSquare(sx, sy, -1, true)
+        if not s then
+            rec(false, "base: a square at level -1 beside the inlet", "createNewGridSquare refused")
+            S.basement = nil
+            return true
+        end
+        local model = fixtureOf(sq(S.L.fixture.x, S.L.fixture.y, 0))
+        if not model then
+            rec(false, "base: a water fixture of the house to copy the sink from")
+            S.basement = nil
+            return true
+        end
+        local sink = IsoObject.new(cell, s, model:getSpriteName())
+        s:AddTileObject(sink)
+        sink:getModData().canBeWaterPiped = true
+        sink:setUsesExternalWaterSource(true)
+        b.sx, b.sy, b.sz, b.obj = sx, sy, -1, sink
+        rec(true, "base: a plumbed sink on a square at level -1 beside the inlet",
+            key(sx, sy) .. " chunk min level " .. tostring(chunk and chunk:getMinLevel()))
+        return true
+    end)
+
+    addStep("base: one ten-minute step with the basement sink", function()
+        local b = S.basement
+        if not (b and b.obj) then return true end
+        return waitSteps(1)()
+    end, stepSec * 4)
+
+    addStep("base: the survey reaches level -1, a relay stands above the sink", function()
+        local b, e = S.basement, S.basement and entryAt(S.basement)
+        if not (b and b.obj and e) then return true end
+        local relays = server().relays
+        local found = relays.plumbing:fixtures(relays:areaOf(e))
+        local seen
+        for i = 1, #found do
+            if found[i].x == b.sx and found[i].y == b.sy and found[i].z == -1 then seen = found[i] end
+        end
+        rec(seen ~= nil, "base: the survey finds the sink at level -1 (the chunks are walked downwards)",
+            "fixtures " .. #found .. " at " .. key(b.sx, b.sy))
+        local relay = relays.plumbing:relay(b.sx, b.sy, 0)
+        rec(relay ~= nil and relay.owner == (e.x .. "," .. e.y .. "," .. e.z),
+            "base: a relay tank on the ground floor above the basement sink",
+            relay and ("owner " .. tostring(relay.owner)) or "none")
+        local src = IsoObject.FindExternalWaterSource(sq(b.sx, b.sy, -1))
+        rec(src ~= nil and src:getSquare() ~= nil and src:getSquare():getZ() == 0,
+            "base: the engine finds the tank above a sink at level -1",
+            src and key(src:getSquare():getX(), src:getSquare():getY()) or "none")
+        return true
+    end)
+
+    addStep("base: a filter cartridge fitted in the second inlet (fitFilter)", function()
+        local b = S.basement
+        if not (b and entryAt(b)) then return true end
+        if not b.filterSent then
+            b.filterSent = true
+            giveItems(player(), { { "LiveWater.WaterFilter", 1 } })
+            goNear(b)
+            send("fitFilter", { x = b.x, y = b.y, z = 0 })
+            return false
+        end
+        local e = entryAt(b)
+        local f = e and e.data and e.data.filter
+        if not (f and f.fitted == true) then return false end
+        rec(true, "base: a filter cartridge fitted in the second inlet (fitFilter)",
+            "capacity " .. tostring(f.capacity) .. " L")
+        return true
+    end, 20)
+
+    addStep("base: two ten-minute steps with the basement sink plumbed", function()
+        local b = S.basement
+        if not (b and b.obj) then return true end
+        return waitSteps(2)()
+    end, stepSec * 8)
+
+    addStep("base: the basement sink gives water", function()
+        local b = S.basement
+        if not (b and b.obj) then return true end
+        local relays, e = server().relays, entryAt(b)
+        local relay = relays.plumbing:relay(b.sx, b.sy, 0)
+        info("base: network inlet " .. tostring(server().network:networkAt(b.x, b.y, 0)) .. " pump "
+            .. tostring(server().network:networkAt(S.L.pump.x, S.L.pump.y, 0)) .. " need " .. tostring(relays:need(e))
+            .. " feeds " .. tostring(relay and relay.feeds) .. " free " .. tostring(relay and relay.free)
+            .. " why " .. tostring(relay and relay.why))
+        rec(b.obj:getFluidAmount() > 0 and b.obj:hasWater(), "base: the plumbed sink in the basement gives water",
+            "sink litres " .. tostring(b.obj:getFluidAmount()) .. ", tank " .. tostring(relay and relay.amount))
+        return true
+    end)
+
+    addStep("base: the sink and the second inlet taken away", function()
+        local b = S.basement
+        if not (b and b.obj) then return true end
+        local s = sq(b.sx, b.sy, -1)
+        if s then s:transmitRemoveItemFromSquare(b.obj) end
+        b.obj = nil
+        pickUpMoveable(player(), b)
+        rec(entryAt(b) == nil, "base: the second inlet is picked up with the wrench")
+        return true
+    end)
+
+    addStep("base: one ten-minute step after the second inlet", function()
+        local b = S.basement
+        if not b then return true end
+        return waitSteps(1)()
+    end, stepSec * 4)
+
+    addStep("base: the relay of the picked-up inlet is gone", function()
+        local b = S.basement
+        if not b then return true end
+        rec(server().relays.plumbing:relay(b.sx, b.sy, 0) == nil, "base: the relay of the second inlet is removed")
+        S.basement = nil
         goNear(S.L.pump)
         return true
     end)

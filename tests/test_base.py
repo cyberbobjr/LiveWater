@@ -44,7 +44,10 @@ class BaseMode(unittest.TestCase):
         self.assertTrue(lua.eval("A:contains(101, 101, 4)"))
         self.assertTrue(lua.eval("A:contains(101, 101, 31)"))
         self.assertFalse(lua.eval("A:contains(101, 101, 32)"))
-        self.assertFalse(lua.eval("A:contains(101, 101, -1)"))
+        # ADR-026 D01: two basement levels below, no more
+        self.assertTrue(lua.eval("A:contains(101, 101, -1)"))
+        self.assertTrue(lua.eval("A:contains(101, 101, -2)"))
+        self.assertFalse(lua.eval("A:contains(101, 101, -3)"))
 
     def test_the_range_is_a_sandbox_option(self):
         lua = bench()
@@ -65,6 +68,27 @@ class BaseMode(unittest.TestCase):
         lua.execute('PLUMB:addFixture(103, 103, 6)'
                     ' place("LiveWater:HouseInlet", 100, 100, "%s40") CLOCK:tick()' % TILE)
         self.assertIsNotNone(lua.eval("relayAt(103, 103, 7)"))
+
+    def test_a_basement_under_the_base_gets_a_relay_above_it(self):
+        # ADR-026 D01: the relay goes one level above the fixture, on the ground floor
+        lua = bench()
+        lua.execute('PLUMB:addFixture(103, 103, -1)'
+                    ' place("LiveWater:HouseInlet", 100, 100, "%s40") CLOCK:tick()' % TILE)
+        self.assertIsNotNone(lua.eval("relayAt(103, 103, 0)"))
+
+    def test_a_second_basement_level_gets_its_own_relay(self):
+        # ADR-026 D01
+        lua = bench()
+        lua.execute('PLUMB:addFixture(103, 103, -2)'
+                    ' place("LiveWater:HouseInlet", 100, 100, "%s40") CLOCK:tick()' % TILE)
+        self.assertIsNotNone(lua.eval("relayAt(103, 103, -1)"))
+
+    def test_a_third_basement_level_is_out_of_the_area(self):
+        # ADR-026 D02: one constant for the depth
+        lua = bench()
+        lua.execute('PLUMB:addFixture(103, 103, -3)'
+                    ' place("LiveWater:HouseInlet", 100, 100, "%s40") CLOCK:tick()' % TILE)
+        self.assertIsNone(lua.eval("relayAt(103, 103, -2)"))
 
     def test_the_original_fixtures_of_a_map_house_in_range_are_left_alone(self):
         # A map house east of the base, its own fixtures in range: only the fixture the players set down in the base

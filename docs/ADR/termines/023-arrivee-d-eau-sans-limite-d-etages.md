@@ -3,7 +3,7 @@
 | Champ | Valeur |
 |---|---|
 | Identifiant | `ADR-023-ARRIVEE-D-EAU-SANS-LIMITE-D-ETAGES` |
-| Date de création et de mise à jour | 2026-11-22 |
+| Date de création et de mise à jour | 2026-11-22 (renvoi du 2026-11-24) |
 | Statut | Accepté (2026-11-22) |
 | Avancement | Terminé le 2026-11-22 ; voir le [plan 023](../../ADR-plans/termines/plan-023-arrivee-d-eau-sans-limite-d-etages.md) |
 | Décideur | l'utilisateur (« ne plus limiter la hauteur des bâtiments, à faire », 2026-11-22) |
@@ -23,6 +23,8 @@ joueurs restait en partie sans eau, sans que rien ne l'explique au joueur.
 - **D01 — Plus de limite vers le haut.** Une arrivée d'eau sert les points d'eau de sa zone depuis son niveau (base
   du joueur) ou depuis le niveau le plus bas du bâtiment (bâtiment de la carte) jusqu'au dernier niveau de la carte.
   Cette décision remplace « jusqu'à 3 étages au-dessus » d'ADR-001 D18 et L11 ; ADR-001 garde sa rédaction d'origine.
+  (Renvoi du 2026-11-24 : en base construite, la zone descend aussi à 2 niveaux de sous-sol, voir
+  [ADR-026](026-sous-sol-d-une-base-construite.md) D01.)
 - **D02 — Le reste de la zone ne change pas.** Portée horizontale (options de partie), pièces du bâtiment de la carte
   seulement, 2 niveaux de sous-sol, points d'eau d'origine d'une maison voisine laissés en mode base : inchangés.
 - **D03 — Le relevé ne parcourt pas les niveaux vides.** L'adaptateur du jeu arrête son parcours au plus haut niveau

@@ -10,7 +10,8 @@
 -- or not); above ground, also every square above a room of the building: its roof and the storeys
 -- the players built on top (ADR-024 D03).
 -- Base mode (L11), when the inlet touches no map building (a base the players built): every square
--- within `ranges.base` squares, from the inlet's level up to the last level of the map.
+-- within `ranges.base` squares, from BASEMENT_LEVELS levels below ground (ADR-026 D01) up to the last
+-- level of the map.
 -- In base mode, a fixture of a map building (its original sinks, flagged mapBuilding by the probe)
 -- is never taken: after the city water shut-off the circle would otherwise put relays over a
 -- neighbour's house; one already fed by a relay of this inlet keeps it.
@@ -69,7 +70,7 @@ end
 function InletArea.base(x, y, z, range)
     local area = new({ mode = "base", x = x, y = y, z = z, range = range,
         minX = x - range, maxX = x + range, minY = y - range, maxY = y + range,
-        minZ = z, maxZ = Grid.TOP })
+        minZ = math.min(z, -InletArea.BASEMENT_LEVELS), maxZ = Grid.TOP })
     function area:holds()
         return true
     end

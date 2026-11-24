@@ -39,7 +39,7 @@ sans `require=` (Live Wire facultatif, D20), `incompatible=\LGExtendedPlumbing,\
   et inscription de chaque type qui a le crochet `power` ; chaque côté complète la définition.
 - `LWT_InletArea.lua` (pur) : cases servies par une arrivée d'eau (bâtiment de la carte touché, cercle de portée,
   tous les étages au-dessus (ADR-023), cases au-dessus d'une pièce du bâtiment (ADR-024), sous-sols jusqu'à 2 niveaux sous l'emprise du rez-de-chaussée ; hors bâtiment de la carte,
-  base du joueur : cercle de portée), lues par une sonde injectée ; `LWT_RelayPlan.lua` (pur) : relais voulus au-dessus des
+  base du joueur : cercle de portée, à son niveau, aux étages au-dessus et à 2 niveaux de sous-sol, ADR-026), lues par une sonde injectée ; `LWT_RelayPlan.lua` (pur) : relais voulus au-dessus des
   points d'eau (partage 3 × 3, sources d'autrui laissées).
 - `LWT_Sources.lua` (pur) : registre des sortes de source d'eau (données : qualité, drapeau d'une case voisine ou
   sprites d'un objet voisin) ; `Sources/LWT_Source<Nom>.lua` : une sorte par fichier (`water` : eau naturelle,

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.2 — 2026-11-24
+
+- **Basement under your own base:** a house water inlet in a base you built now serves the fixtures of the **two
+  basement levels** below it, not only its own floor and the floors above. LiveWater sets the fixture's hidden tank on
+  the floor above it: a basement sink in a room (as basement mods register it), plumbed with the pipe wrench, gets
+  water.
+
 ## 1.0.1 — 2026-11-24
 
 - **Why a tap cannot be plumbed:** a fixture waiting to be plumbed now says **You have no pipe wrench in your inventory.** or **The pipe wrench is broken.** when that is what stops you; the game's own Plumb line only says *Pipe Wrench required.*, a broken pipe wrench included.

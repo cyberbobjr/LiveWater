@@ -11,9 +11,9 @@ if isClient() then return end
 --                              shut-off; { x, y, z, source, mapBuilding, plumbed, need } (source:
 --                              see LWT_RelayPlan; mapBuilding: its square is in a map building;
 --                              plumbed: getUsesExternalWaterSource; need: litres the providers
---                              of LWT_FixtureNeeds ask for it, or nil, ADR-022); the levels
---                              above the highest one of the area's chunks are not walked
---                              (ADR-023 D03)
+--                              of LWT_FixtureNeeds ask for it, or nil, ADR-022); the levels above
+--                              the highest and below the lowest one of the area's chunks are not
+--                              walked (ADR-023 D03, ADR-026 D03)
 --   relay(x, y, z)             our relay on the square: { owner, amount, free, capacity, feeds, why },
 --                              or nil (feeds: a plumbed fixture below draws from it)
 --   placeRelay(x, y, z, owner, litres)   invisible tank (IsoThumpable + FluidContainer)
@@ -120,25 +120,30 @@ local function fixtureOn(sq)
     return nil
 end
 
--- Highest level that exists in the chunks under the area (IsoChunk.getMaxLevel, Java 42.22), at
--- most the area's own top: nothing stands above it, the survey stops there (ADR-023 D03).
+-- Levels that exist in the chunks under the area (IsoChunk.getMinLevel and getMaxLevel, Java 42.22),
+-- kept inside the area's own bounds: a surface base costs the one level it stands on, a dug basement
+-- what it occupies (ADR-023 D03 upwards, ADR-026 D03 downwards).
 local CHUNK = 8
-local function topLevel(area)
-    local cell, top = getCell(), area.minZ
-    if not cell then return top end
+local function levels(area)
+    local cell, bottom, top = getCell(), area.maxZ, area.minZ
+    if not cell then return area.minZ, area.minZ end
     local x1, y1 = area.minX - area.minX % CHUNK, area.minY - area.minY % CHUNK
     for x = x1, area.maxX, CHUNK do
         for y = y1, area.maxY, CHUNK do
             local chunk = cell:getChunkForGridSquare(x, y, 0)
-            if chunk and chunk:getMaxLevel() > top then top = chunk:getMaxLevel() end
+            if chunk then
+                bottom = math.min(bottom, chunk:getMinLevel())
+                top = math.max(top, chunk:getMaxLevel())
+            end
         end
     end
-    return math.min(top, area.maxZ)
+    if bottom > top then return area.minZ, area.minZ end
+    return math.max(bottom, area.minZ), math.min(top, area.maxZ)
 end
 
 function GamePlumbing:fixtures(area)
-    local out = {}
-    for z = area.minZ, topLevel(area) do
+    local out, bottom, top = {}, levels(area)
+    for z = bottom, top do
         for x = area.minX, area.maxX do
             for y = area.minY, area.maxY do
                 -- the fixture first: few squares hold one, and the area asks the building (ADR-024 D03)
