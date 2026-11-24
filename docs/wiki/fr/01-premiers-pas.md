@@ -122,6 +122,9 @@ Posez-la **contre le mur extérieur** d'un bâtiment de la carte, et amenez-y un
 (l'action « Raccorder » du jeu), dans un rayon de **20 cases** (option sandbox), à **tous les étages au-dessus** et
 **2 niveaux de sous-sol** en dessous.
 
+La **clé anglaise** peut rester dans le sac : le jeu l'équipe lui-même. Elle doit être **en état** — une clé cassée ne
+compte plus, et une simple clé à molette ne convient pas.
+
 Son voyant dit ce qu'elle fait :
 
 - **vert** : eau propre, la maison la reçoit (une cartouche en état dans l'arrivée d'eau, ou de l'eau de puits) ;

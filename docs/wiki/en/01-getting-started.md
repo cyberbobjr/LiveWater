@@ -117,6 +117,9 @@ Set it down **against the outside wall** of a building of the map, and run a pip
 game's own Plumb action), within **20 squares** (sandbox option), on **every floor above** it and **2 basement levels**
 below.
 
+The **pipe wrench** works from your bag: the game equips it for you. It has to be **unbroken** — a broken one no longer
+counts, and a plain wrench does not do.
+
 Its light tells you what it does:
 
 - **green**: clean water, the house gets it (a working filter in the inlet, or water from a well);

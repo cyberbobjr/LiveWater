@@ -1,13 +1,17 @@
 -- LiveWater: what the pipe wrench options of a water fixture share (ADR-024), client. Same wrench
 -- rule, name, icon and tooltip as the game's own "Plumb" option (ISWorldObjectContextMenuLogic
--- .doWaterPipeMenu, Java 42.22; ISWorldObjectContextMenu.onPlumbItem).
+-- .doWaterPipeMenu, Java 42.22; ISWorldObjectContextMenu.onPlumbItem), through the shared rule of
+-- LWT_Wrench: the authority's command asks the same module.
 --   fixtureOn(sq, wanted)   first water fixture of the square that wanted(obj) accepts, or nil
 --   nameOf(obj)             display name of the fixture ("" when it has none)
 --   wrenchOf(player)        a pipe wrench that is not broken in the inventory (bags included), or nil
---   dress(option, text, wrench)  the wrench icon; without a wrench the option is greyed and says
---                                which tool is needed
+--   needText(player)        the tooltip line of an option the player may not use: the game's own
+--                           "%1 required.", or the broken pipe wrench he carries (the game hides it)
+--   dress(option, text, wrench, player)  the wrench icon; without a wrench the option is greyed and
+--                                says which tool is needed, or that the pipe wrench is broken
 
 local WaterObjects = require "LiveWater/LWT_WaterObjects"
+local Wrench = require "LiveWater/LWT_Wrench"
 
 local WrenchMenu = {}
 
@@ -34,22 +38,22 @@ function WrenchMenu.nameOf(obj)
     return Translator.getMoveableDisplayName(name)
 end
 
-local function notBroken(item)
-    return not item:isBroken()
-end
-
 function WrenchMenu.wrenchOf(player)
-    local inv = player:getInventory()
-    return inv:getFirstTypeEvalRecurse("PipeWrench", notBroken) or inv:getFirstTagEvalRecurse(ItemTag.PIPE_WRENCH, notBroken)
+    return Wrench.of(player)
 end
 
-function WrenchMenu.dress(option, text, wrench)
+function WrenchMenu.needText(player)
+    if Wrench.problem(player) == "wrench_broken" then return getText("IGUI_LWT_WrenchBroken") end
+    return getText(WrenchMenu.NEED_KEY, getItemName("Base.PipeWrench"))
+end
+
+function WrenchMenu.dress(option, text, wrench, player)
     option.iconTexture = getTexture("Item_PipeWrench")
     if wrench then return end
     option.notAvailable = true
     local tip = ISWorldObjectContextMenu.addToolTip()
     tip:setName(text)
-    tip.description = getText(WrenchMenu.NEED_KEY, getItemName("Base.PipeWrench"))
+    tip.description = WrenchMenu.needText(player)
     option.toolTip = tip
 end
 

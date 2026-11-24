@@ -38,6 +38,8 @@
     "IGUI_LWT_Outlet_unfiltered": "Agua: sin filtrar, la casa no recibe (instala un filtro)",
     "IGUI_LWT_Outlet_no_pressure": "Agua: presión insuficiente",
     "IGUI_LWT_Outlet_closed": "Agua: cortada",
+    "IGUI_LWT_NoWrench": "No tienes ninguna llave para tubos en el inventario.",
+    "IGUI_LWT_WrenchBroken": "La llave para tubos está rota.",
     "IGUI_LWT_Why_NotPlumbed": "todavía sin conectar: usa una llave para tubos en ella",
     "IGUI_LWT_Why_NoInlet": "ninguna entrada de agua de casa la atiende (demasiado lejos, planta equivocada o ninguna)",
     "IGUI_LWT_Why_Other": "su depósito pertenece a otra cosa, y está vacío",

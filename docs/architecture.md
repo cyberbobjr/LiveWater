@@ -181,7 +181,8 @@ Live Wire que l'autorité, sans état ni consommation, pour que les menus de Liv
 D03) et `LWT_NoticeClient.lua` (affiche les notes `notice` du serveur), `LWT_FixtureMenu.lua` (ligne « Pas d'eau : raison » d'un point d'eau sans eau), `LWT_CityWaterMenu.lua`
 (« Raccorder au réseau public »), `LWT_RoofPlumbMenu.lua` (le « Raccorder » du jeu sur un toit), `LWT_UnplumbMenu.lua` et
 `LWT_UnplumbAction.lua` (« Supprimer le raccord » : action à la clé à tuyau, puis commande `unplumb`), `LWT_WrenchMenu.lua`
-(nom, clé et infobulle communs à ces deux options ; règles pures dans `shared/LiveWater/LWT_Plumbing.lua`, ADR-024), `LWT_WasherClient.lua` (état « raccordé » d'un lave-linge marqué par le serveur,
+(nom, clé et infobulle communs à ces deux options ; règles pures dans `shared/LiveWater/LWT_Plumbing.lua`, règle de la
+clé à tuyau partagée avec l'autorité dans `shared/LiveWater/LWT_Wrench.lua`, ADR-024), `LWT_WasherClient.lua` (état « raccordé » d'un lave-linge marqué par le serveur,
 appliqué à son menu et à son interrupteur), `LWT_SprinklerJet.lua` (jet animé des arroseurs, **seul abonnement par image
 du mod**, D08a : `OnTick` seulement tant qu'un arroseur en marche est chargé, 6 images par seconde au plus, un tour
 complet en 8 images (ADR-003 D03), option de mod pour un jet fixe ; jamais sur un serveur dédié), `LWT_AreaView.lua`

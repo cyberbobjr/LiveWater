@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1 — 2026-11-24
+
+- **Why a tap cannot be plumbed:** a fixture waiting to be plumbed now says **You have no pipe wrench in your inventory.** or **The pipe wrench is broken.** when that is what stops you. The game's own Plumb line only says *Pipe Wrench required.*, a broken pipe wrench included (player report).
+- **One pipe wrench rule:** the Plumb and Unplumb options of LiveWater and the authority's check now ask the same rule as the game itself (a pipe wrench by type or by tag, in the bag, not broken); a pipe wrench of another mod is no longer refused after the option is offered.
+
 ## 1.0.0 — 2026-11-23
 
 - First stable release (includes all changes from 1.0.0-beta through 1.0.0-beta8).

@@ -38,6 +38,8 @@
     "IGUI_LWT_Outlet_unfiltered": "供水：未过滤，房屋收不到水（请安装滤芯）",
     "IGUI_LWT_Outlet_no_pressure": "供水：水压不足",
     "IGUI_LWT_Outlet_closed": "供水：已关闭",
+    "IGUI_LWT_NoWrench": "你的物品栏里没有管钳。",
+    "IGUI_LWT_WrenchBroken": "管钳已经损坏。",
     "IGUI_LWT_Why_NotPlumbed": "尚未接管：请先用管钳对它操作",
     "IGUI_LWT_Why_NoInlet": "没有房屋进水口供应它（距离太远、楼层不对，或者没有）",
     "IGUI_LWT_Why_Other": "它的水箱属于别的东西，而且是空的",

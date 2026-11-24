@@ -371,7 +371,29 @@ function getText(key, a, b)
     return s
 end
 function instanceof() return false end
-function getSpecificPlayer() return nil end
+ItemTag = { PIPE_WRENCH = "PipeWrenchTag" }
+PLAYER = nil
+function getSpecificPlayer() return PLAYER end
+function item(type, broken)
+    return { getType = function() return type end, isBroken = function() return broken == true end,
+        hasTag = function() return false end }
+end
+function inventory(list)
+    local inv = { list = list or {} }
+    function inv:getFirstTypeEvalRecurse(type, fn)
+        for i = 1, #self.list do
+            local it = self.list[i]
+            if it:getType() == type and fn(it) then return it end
+        end
+        return nil
+    end
+    function inv:getFirstTagEvalRecurse(tag, fn) return nil end
+    return inv
+end
+function wrenchPlayer(list)
+    local inv = inventory(list)
+    PLAYER = { getInventory = function() return inv end }
+end
 IsoFlagType = { waterPiped = "waterPiped" }
 function getGameTime() return { getWorldAgeDaysSinceBegin = function() return 100 end } end
 function getSandboxOptions() return { getWaterShutModifier = function() return 0 end } end
@@ -384,6 +406,7 @@ function relay(litres, mark)
 end
 FIX = { amount = 0, plumbed = true }
 function FIX:getSprite() return { getProperties = function() return { has = function() return true end } end } end
+function FIX:getSpriteName() return nil end
 function FIX:getFluidAmount() return self.amount end
 function FIX:getUsesExternalWaterSource() return self.plumbed end
 function FIX:hasModData() return true end
@@ -422,6 +445,39 @@ class FixtureWater(unittest.TestCase):
         lua = self.menu()
         lua.execute('SRC = relay(25, "LiveWireRelay") FIX.amount = 10 menu()')
         self.assertEqual(lua.eval("#OPTIONS"), 0)
+
+
+class FixtureWrenchHint(unittest.TestCase):
+    """A fixture left to plumb says when the local player carries no pipe wrench, or only a broken
+    one: the game's own "Pipe Wrench required." hides it (player report of 2026-11-24)."""
+
+    def menu(self):
+        lua = new_lua(API, "client/LiveWater/LWT_FixtureMenu.lua")
+        lua.execute(FIXTURE)
+        return lua
+
+    def line(self, wrenches):
+        lua = self.menu()
+        lua.execute('FIX.plumbed = false SRC = relay(25) FIX.amount = 0 wrenchPlayer(%s) menu()' % wrenches)
+        return lua, lua.eval("OPTIONS[1].text")
+
+    def test_no_pipe_wrench_is_named(self):
+        lua, text = self.line('{ item("Wrench") }')
+        self.assertEqual(text, "ContextMenu_LWT_NoWater|IGUI_LWT_Why_NotPlumbed. IGUI_LWT_NoWrench")
+        self.assertTrue(lua.eval("OPTIONS[1].notAvailable"))
+
+    def test_a_broken_pipe_wrench_is_named(self):
+        lua, text = self.line('{ item("PipeWrench", true) }')
+        self.assertEqual(text, "ContextMenu_LWT_NoWater|IGUI_LWT_Why_NotPlumbed. IGUI_LWT_WrenchBroken")
+
+    def test_a_usable_pipe_wrench_adds_nothing(self):
+        lua, text = self.line('{ item("PipeWrench") }')
+        self.assertEqual(text, "ContextMenu_LWT_NoWater|IGUI_LWT_Why_NotPlumbed")
+
+    def test_a_plumbed_fixture_keeps_its_own_reason(self):
+        lua = self.menu()
+        lua.execute('FIX.plumbed = true SRC = relay(25) FIX.amount = 0 wrenchPlayer({ item("Wrench") }) menu()')
+        self.assertEqual(lua.eval("OPTIONS[1].text"), "ContextMenu_LWT_NoWater|IGUI_LWT_Why_Waiting")
 
 
 class FixtureStates(unittest.TestCase):

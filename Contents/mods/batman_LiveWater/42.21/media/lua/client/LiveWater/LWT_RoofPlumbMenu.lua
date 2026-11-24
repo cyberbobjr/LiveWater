@@ -24,7 +24,7 @@ function RoofPlumbMenu.fill(playerNum, context, worldobjects, test)
     if test then return ISWorldObjectContextMenu.setTest() end
     local text = getText(WrenchMenu.PLUMB_KEY, WrenchMenu.nameOf(fixture))
     local option = context:addGetUpOption(text, worldobjects, ISWorldObjectContextMenu.onPlumbItem, playerNum, fixture)
-    WrenchMenu.dress(option, text, WrenchMenu.wrenchOf(player))
+    WrenchMenu.dress(option, text, WrenchMenu.wrenchOf(player), player)
 end
 
 Events.OnFillWorldObjectContextMenu.Add(RoofPlumbMenu.fill)

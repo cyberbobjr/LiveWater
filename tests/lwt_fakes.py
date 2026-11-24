@@ -142,6 +142,8 @@ function FakePlayers:give(p, fullType, fraction)
     return true
 end
 function FakePlayers:hasTool(p, tag) return p.tools[tag] == true end
+-- The wrench rule of the plumbing actions (LWT_GamePlayers:hasWrench): the fake bench says so.
+function FakePlayers:hasWrench(p) return p.tools["base:pipewrench"] == true end
 function FakePlayers:tell(p, key) table.insert(p.told, key) end
 
 function newPlayer(x, y, z, items, tools)

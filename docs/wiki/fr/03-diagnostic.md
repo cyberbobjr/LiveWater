@@ -51,7 +51,7 @@ Clic droit sur un évier, une baignoire, une douche, des toilettes ou un lave-li
 
 | Raison affichée | Que faire |
 |---|---|
-| pas encore raccordé | utilisez une clé anglaise dessus (action « Raccorder » du jeu) |
+| pas encore raccordé | utilisez une clé anglaise dessus (action « Raccorder » du jeu) ; elle doit être en état, pas cassée |
 | aucune arrivée d'eau ne le dessert | posez une arrivée d'eau sur ce bâtiment, ou rapprochez-la (portée, étages) |
 | son réservoir appartient à autre chose, et il est vide | un autre système (pompe de LiveWire) l'alimente |
 | l'eau arrive | attendez jusqu'à 10 minutes |
@@ -62,6 +62,10 @@ Clic droit sur un évier, une baignoire, une douche, des toilettes ou un lave-li
 | un liquide autre que l'eau est dans les tuyaux | la première pompe posée sur ce réseau impose son liquide : séparez les réseaux, ou fermez une vanne entre les pompes |
 | une vanne est fermée | ouvrez-la |
 | pression insuffisante dans les tuyaux (arrivée d'eau sans pompe) | reliez une pompe à l'arrivée d'eau |
+
+Un point d'eau qui attend d'être raccordé ajoute **Vous n'avez pas de clé anglaise dans l'inventaire.** ou **La clé
+anglaise est cassée.** quand c'est ce qui vous bloque : la ligne « Raccorder » du jeu dit seulement *Clé anglaise
+requise*, clé cassée comprise.
 
 > Capture à faire : le menu au clic droit d'un évier sec, avec sa ligne « Pas d'eau ».
 

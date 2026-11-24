@@ -2359,18 +2359,24 @@ local function buildSteps(ctx)
         local pn = player():getPlayerNum()
         local menu = ISWorldObjectContextMenu.createMenu(pn, { r.obj }, isoToScreenX(pn, r.x + 0.5, r.y + 0.5, r.z),
             isoToScreenY(pn, r.x + 0.5, r.y + 0.5, r.z))
-        local n, greyed = 0, false
+        local n, greyed, tip, line = 0, false, nil, nil
+        local broken = getText("IGUI_LWT_WrenchBroken")
         for i = 1, #(menu and menu.options or {}) do
-            if menu.options[i].name == text then
+            local option = menu.options[i]
+            if option.name == text then
                 n = n + 1
-                greyed = menu.options[i].notAvailable == true
+                greyed = option.notAvailable == true
+                tip = option.toolTip and option.toolTip.description or nil
+            end
+            if type(option.name) == "string" and string.find(option.name, broken, 1, true) then
+                line = option.name
             end
         end
         if menu then
             menu:hideToolTip()
             menu:closeAll()
         end
-        return n, greyed
+        return n, greyed, tip, line
     end
 
     local function roofRelay()
@@ -2428,6 +2434,33 @@ local function buildSteps(ctx)
         if not S.roof then return true end
         return waitSteps(1)()
     end, stepSec * 4)
+
+    -- 1.0.1, player report: the game's Plumb option only says "Pipe Wrench required." for a broken pipe
+    -- wrench; LiveWater's own line names it (LWT_Wrench, LWT_WrenchMenu, LWT_FixtureMenu).
+    addStep("roof: a broken pipe wrench is named, a sound one opens Plumb", function()
+        local r = S.roof
+        if not r then return true end
+        local inv = player():getInventory()
+        local wrench = inv:getFirstTypeRecurse("Base.PipeWrench")
+        if not wrench then
+            inv:AddItem("Base.PipeWrench")
+            wrench = inv:getFirstTypeRecurse("Base.PipeWrench")
+        end
+        local max = wrench:getConditionMax()
+        wrench:setConditionNoSound(0)
+        local text = getText("ContextMenu_PlumbItem", roofName())
+        local n, greyed, tip, line = roofMenu(text)
+        rec(n == 1 and greyed, "roof: a broken pipe wrench greys the Plumb option",
+            "options " .. n .. " greyed " .. tostring(greyed))
+        rec(tip == getText("IGUI_LWT_WrenchBroken"), "roof: the option says the pipe wrench is broken",
+            tostring(tip))
+        rec(line ~= nil, "roof: the fixture line says the pipe wrench is broken", tostring(line))
+        wrench:setConditionNoSound(max)
+        n, greyed = roofMenu(text)
+        rec(n == 1 and not greyed, "roof: a sound pipe wrench opens Plumb again",
+            "options " .. n .. " greyed " .. tostring(greyed))
+        return true
+    end)
 
     addStep("roof: a tank above the sink, Plumb offered once by LiveWater", function()
         local r = S.roof

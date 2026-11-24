@@ -31,7 +31,7 @@ function UnplumbMenu.fill(playerNum, context, worldobjects, test)
     local wrench = WrenchMenu.wrenchOf(player)
     local text = getText("ContextMenu_LWT_Unplumb", WrenchMenu.nameOf(fixture))
     local option = context:addOption(text, player, UnplumbMenu.start, fixture:getSquare(), wrench)
-    WrenchMenu.dress(option, text, wrench)
+    WrenchMenu.dress(option, text, wrench, player)
 end
 
 Events.OnFillWorldObjectContextMenu.Add(UnplumbMenu.fill)

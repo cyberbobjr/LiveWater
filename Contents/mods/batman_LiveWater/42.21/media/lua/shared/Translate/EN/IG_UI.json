@@ -38,6 +38,8 @@
     "IGUI_LWT_Outlet_unfiltered": "Water: unfiltered, the house gets none (fit a filter)",
     "IGUI_LWT_Outlet_no_pressure": "Water: not enough pressure",
     "IGUI_LWT_Outlet_closed": "Water: shut off",
+    "IGUI_LWT_NoWrench": "You have no pipe wrench in your inventory.",
+    "IGUI_LWT_WrenchBroken": "The pipe wrench is broken.",
     "IGUI_LWT_Why_NotPlumbed": "not plumbed yet: use a pipe wrench on it",
     "IGUI_LWT_Why_NoInlet": "no house water inlet serves it (too far, wrong floor, or none)",
     "IGUI_LWT_Why_Other": "its tank belongs to something else, and it is empty",

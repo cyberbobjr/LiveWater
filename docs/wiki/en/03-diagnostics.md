@@ -49,7 +49,7 @@ Right-click a sink, bathtub, shower, toilet or washing machine that has no water
 
 | Reason shown | What to do |
 |---|---|
-| not plumbed yet | use a pipe wrench on it (the game's Plumb action) |
+| not plumbed yet | use a pipe wrench on it (the game's Plumb action); it must be unbroken |
 | no house water inlet serves it | set an inlet on this building, or move closer (range, floors) |
 | its tank belongs to something else, and it is empty | another system (a LiveWire pump) feeds it |
 | the water is on its way | wait up to 10 minutes |
@@ -60,6 +60,9 @@ Right-click a sink, bathtub, shower, toilet or washing machine that has no water
 | a liquid other than water is in the pipes | the first pump placed on this network sets its liquid: separate the networks, or close a valve between the pumps |
 | a valve is closed | open it |
 | not enough pressure in the pipes (house inlet without a pump) | pipe a pump to the inlet |
+
+A fixture waiting to be plumbed adds **You have no pipe wrench in your inventory.** or **The pipe wrench is broken.**
+when that is what stops you: the game's own Plumb line only says *Pipe Wrench required.*, broken wrench included.
 
 ![The right-click menu of a dry sink: "No water: a valve is closed"](../../images/screenshots/sink-dry-en.jpg)
 

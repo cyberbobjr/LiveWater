@@ -38,6 +38,8 @@
     "IGUI_LWT_Outlet_unfiltered": "물: 정화 안 됨, 집에 공급되지 않음 (필터를 다세요)",
     "IGUI_LWT_Outlet_no_pressure": "물: 수압이 부족함",
     "IGUI_LWT_Outlet_closed": "물: 잠김",
+    "IGUI_LWT_NoWrench": "인벤토리에 파이프 렌치가 없습니다.",
+    "IGUI_LWT_WrenchBroken": "파이프 렌치가 부러졌습니다.",
     "IGUI_LWT_Why_NotPlumbed": "아직 배관되지 않음: 여기에 파이프 렌치를 쓰세요",
     "IGUI_LWT_Why_NoInlet": "이것에 물을 공급하는 집 급수구가 없음 (너무 멀거나, 층이 다르거나, 없음)",
     "IGUI_LWT_Why_Other": "그 배럴의 물탱크는 다른 것에 속해 있고 비어 있음",

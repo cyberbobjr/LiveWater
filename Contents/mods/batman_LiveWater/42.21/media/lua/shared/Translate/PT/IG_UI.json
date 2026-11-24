@@ -38,6 +38,8 @@
     "IGUI_LWT_Outlet_unfiltered": "Água: sem filtrar, a casa não recebe (instale um filtro)",
     "IGUI_LWT_Outlet_no_pressure": "Água: pressão insuficiente",
     "IGUI_LWT_Outlet_closed": "Água: cortada",
+    "IGUI_LWT_NoWrench": "Não tem nenhuma chave de tubos no inventário.",
+    "IGUI_LWT_WrenchBroken": "A chave de tubos está partida.",
     "IGUI_LWT_Why_NotPlumbed": "ainda sem canalização: use uma chave de tubos nele",
     "IGUI_LWT_Why_NoInlet": "nenhuma entrada de água da casa a serve (longe demais, andar errado ou nenhuma)",
     "IGUI_LWT_Why_Other": "o depósito deste barril pertence a outra coisa e está vazio",

@@ -38,6 +38,8 @@
     "IGUI_LWT_Outlet_unfiltered": "水: 未浄化のため家に届きません（フィルターを取り付けてください）",
     "IGUI_LWT_Outlet_no_pressure": "水: 水圧が足りません",
     "IGUI_LWT_Outlet_closed": "水: 止水中",
+    "IGUI_LWT_NoWrench": "インベントリにパイプレンチがありません。",
+    "IGUI_LWT_WrenchBroken": "パイプレンチが壊れています。",
     "IGUI_LWT_Why_NotPlumbed": "まだ配管されていません: パイプレンチで配管してください",
     "IGUI_LWT_Why_NoInlet": "これに水を送る家の給水口がありません（遠すぎる、階が違う、または無い）",
     "IGUI_LWT_Why_Other": "その樽のタンクは別のものに属しており、空です",

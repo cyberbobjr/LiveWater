@@ -8,7 +8,9 @@ if isClient() then return end
 --                             1 for an item without condition), or false
 --   give(player, fullType, share)  add one (dropped at the feet when too heavy); `share`
 --                             (optional, 0..1) sets its condition
---   hasTool(player, tag)      item with that tag ("base:pipewrench") in the inventory
+--   hasTool(player, tag)      item with that tag ("base:wrench") in the inventory
+--   hasWrench(player)         a pipe wrench he may plumb with, the rule the client menu asks
+--                             (LWT_Wrench: type or tag, not broken, bags included)
 --   tell(player, key)         show a translated note: sent to the client on a server, shown
 --                             directly in solo (sendServerCommand does nothing in solo)
 --   isAdmin(player)           may remove LiveWater from the world: admin role in multiplayer, debug
@@ -19,6 +21,7 @@ if isClient() then return end
 local Notice = require "LiveWater/LWT_Notice"
 local Protocol = require "LiveWater/LWT_Protocol"
 local RemovalRight = require "LiveWater/LWT_RemovalRight"
+local Wrench = require "LiveWater/LWT_Wrench"
 
 local GamePlayers = {}
 GamePlayers.__index = GamePlayers
@@ -67,6 +70,10 @@ end
 function GamePlayers:hasTool(player, tag)
     local itemTag = ItemTag.get(ResourceLocation.of(tag))
     return itemTag ~= nil and player:getInventory():containsTagRecurse(itemTag)
+end
+
+function GamePlayers:hasWrench(player)
+    return Wrench.of(player) ~= nil
 end
 
 function GamePlayers:isAdmin(player)

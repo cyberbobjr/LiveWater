@@ -27,6 +27,7 @@ description=
 description=[h2]Running water in the house[/h2]
 description=
 description=Set the [b]house water inlet[/b] against the outside wall of a map building and run a pipe to it. Every sink, bathtub, shower, toilet and washing machine you plumbed with a pipe wrench (the game's own Plumb action) gets water, on every floor above and 2 basement levels down. It works on a flat roof too: set a sink down up there and build your rooftop summer kitchen, barbecue included.
+description=The pipe wrench can stay in your bag (the game equips it); it has to be unbroken — a broken one no longer counts, and the line of a fixture waiting to be plumbed now says so.
 description=Pond and river water is dirty: fit a [b]water filter cartridge[/b] (charcoal and cloth, about 500 L) in the inlet. Green light: clean water flows. Amber light: unfiltered, the house gets nothing. A pump on a well gives clean water, no filter needed. A spent cartridge is recharged with charcoal and cloth.
 description=
 description=[h2]Watering the garden[/h2]

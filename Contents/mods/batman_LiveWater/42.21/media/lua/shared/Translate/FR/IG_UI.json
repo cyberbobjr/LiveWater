@@ -38,6 +38,8 @@
     "IGUI_LWT_Outlet_unfiltered": "Eau : non filtrée, la maison n'en reçoit pas (montez un filtre)",
     "IGUI_LWT_Outlet_no_pressure": "Eau : pression insuffisante",
     "IGUI_LWT_Outlet_closed": "Eau : coupée",
+    "IGUI_LWT_NoWrench": "Vous n'avez pas de clé anglaise dans l'inventaire.",
+    "IGUI_LWT_WrenchBroken": "La clé anglaise est cassée.",
     "IGUI_LWT_Why_NotPlumbed": "pas encore raccordé : utilisez une clé anglaise dessus",
     "IGUI_LWT_Why_NoInlet": "aucune arrivée d'eau ne le dessert (trop loin, mauvais étage, ou aucune)",
     "IGUI_LWT_Why_Other": "son réservoir appartient à autre chose, et il est vide",

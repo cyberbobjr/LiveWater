@@ -38,6 +38,8 @@
     "IGUI_LWT_Outlet_unfiltered": "Su: filtresiz, eve su gelmez (filtre takın)",
     "IGUI_LWT_Outlet_no_pressure": "Su: basınç yetersiz",
     "IGUI_LWT_Outlet_closed": "Su: kapalı",
+    "IGUI_LWT_NoWrench": "Envanterinizde boru anahtarı yok.",
+    "IGUI_LWT_WrenchBroken": "Boru anahtarı kırık.",
     "IGUI_LWT_Why_NotPlumbed": "henüz tesisatı yapılmadı: üzerinde bir boru anahtarı kullanın",
     "IGUI_LWT_Why_NoInlet": "buna hizmet eden bir ev su girişi yok (uzak, yanlış kat veya hiç yok)",
     "IGUI_LWT_Why_Other": "tankı başka bir şeye ait ve boş",

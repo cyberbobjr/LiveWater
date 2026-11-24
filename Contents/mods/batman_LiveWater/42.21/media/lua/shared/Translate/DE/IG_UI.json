@@ -38,6 +38,8 @@
     "IGUI_LWT_Outlet_unfiltered": "Wasser: ungefiltert, das Haus bekommt keins (Filter einsetzen)",
     "IGUI_LWT_Outlet_no_pressure": "Wasser: zu wenig Druck",
     "IGUI_LWT_Outlet_closed": "Wasser: abgesperrt",
+    "IGUI_LWT_NoWrench": "Du hast keine Rohrzange im Inventar.",
+    "IGUI_LWT_WrenchBroken": "Die Rohrzange ist kaputt.",
     "IGUI_LWT_Why_NotPlumbed": "noch nicht verrohrt: nimm eine Rohrzange dafür",
     "IGUI_LWT_Why_NoInlet": "kein Hauswassereinlass versorgt es (zu weit weg, falsches Stockwerk oder keiner)",
     "IGUI_LWT_Why_Other": "sein Tank gehört zu etwas anderem, und er ist leer",
