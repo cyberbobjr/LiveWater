@@ -3,7 +3,7 @@
 | Champ | Valeur |
 |---|---|
 | Identifiant | `ADR-001-RESEAU-EAU-OUVERT` |
-| Date de création et de mise à jour | 2026-11-13, 2026-11-17, 2026-11-18 (Q01 ; D17 : emplacement du filtre remplacé par ADR-005) |
+| Date de création et de mise à jour | 2026-11-13, 2026-11-17, 2026-11-18 (Q01 ; D17 : emplacement du filtre remplacé par ADR-005), 2026-11-24 (D19 : cible d'arrosage remplacée par ADR-027) |
 | Statut | Accepté (2026-11-17) |
 | Avancement | Terminé le 2026-11-18 (E18 et E24 annulées) ; voir le [plan 001](../../ADR-plans/termines/plan-001-reseau-eau-ouvert.md) |
 | Décideur | l'utilisateur |
@@ -150,6 +150,10 @@ Faits établis :
   (2 par défaut) le transforme en **arroseur automatique** : même pièce, `controller` `timer` qui l'ouvre toutes les
   X heures (réglable sur l'arroseur, bornes sandbox) le temps de servir les plantes. La minuterie est un consommateur
   électrique (D20) : sans courant, elle ne déclenche rien ; l'ouverture manuelle reste possible.
+  **Mise à jour du 2026-11-24** (rapport d'un joueur : les arroseurs s'arrêtent entre 70 et 79 sur 100) : la cible
+  d'arrosage n'est plus le besoin du stade mais la capacité de la plante (100, ou son `waterNeededMax`), voir
+  [ADR-027](027-arrosage-jusqu-a-la-capacite.md). Le reste de D19 (vanne ouverte ou fermée, doses de 200 ml
+  prélevées au réseau, arroseur automatique) ne change pas.
 
 ### Électricité et Live Wire
 

@@ -158,9 +158,11 @@ take the network's water as it is and never wear the cartridge.
 **Manual sprinkler.** Recipe **Build Sprinkler**: 2 water pipes, 1 scrap metal, 1 plank, with a pipe wrench (kept).
 Set it down like furniture and feed it with a pipe. Right-click: **Open the Valve**. Its lever shows the state at a
 glance: along the pipe when open, across it when closed. While its valve is open it sprays
-**10 L every 10 minutes**, whether the plants are thirsty or not. The living plants that need water in the
-**5 × 5 square** around it (2 squares on each side; the sandbox option changes that reach) take 200 ml doses of it,
-nearest first; the rest is lost. Any water does, clean or not. Close it once the garden is watered: left open, it
+**10 L every 10 minutes**, whether the plants are thirsty or not. The living plants in the
+**5 × 5 square** around it (2 squares on each side; the sandbox option changes that reach) that are not yet at 100/100
+are filled by 200 ml doses of it, nearest first; the rest is lost. A plant fills up to **100/100**, as with the
+watering can (or to its own maximum when the crop sets one): at 70/100 it keeps filling instead of stopping. Any water
+does, clean or not. Close it once the garden is watered: left open, it
 keeps emptying your barrel or running your pump.
 
 To see which squares are watered, right-click a sprinkler or a drip line: **Show All Watered Areas** lights up in blue

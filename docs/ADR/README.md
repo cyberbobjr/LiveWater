@@ -28,3 +28,4 @@
 | [024](termines/024-point-d-eau-sur-un-toit-et-retrait-du-raccord.md) | Point d'eau sur un toit ; « Supprimer le raccord » | Accepté (2026-11-22) | [plan-024](../ADR-plans/termines/plan-024-point-d-eau-sur-un-toit-et-retrait-du-raccord.md) | Terminé le 2026-11-22 |
 | [025](termines/025-pompe-a-bras-source-d-eau-propre.md) | La pompe à bras du jeu est une source d'eau propre | Accepté (2026-11-22) | [plan-025](../ADR-plans/termines/plan-025-pompe-a-bras-source-d-eau-propre.md) | Terminé le 2026-11-22 |
 | [026](termines/026-sous-sol-d-une-base-construite.md) | Une base construite sert aussi son sous-sol | Accepté (2026-11-24) | [plan-026](../ADR-plans/termines/plan-026-sous-sol-d-une-base-construite.md) | Terminé le 2026-11-24 |
+| [027](termines/027-arrosage-jusqu-a-la-capacite.md) | Arrosage : remplir la plante jusqu'à sa capacité | Accepté (2026-11-24) | [plan-027](../ADR-plans/termines/plan-027-arrosage-jusqu-a-la-capacite.md) | Terminé le 2026-11-24 |

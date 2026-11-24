@@ -30,7 +30,7 @@ El agua de estanque y de río está sucia: instala un [b]cartucho filtrante[/b] 
 [h2]Regar el huerto[/h2]
 
 [list]
-[*][b]Aspersor[/b]: abre su válvula y rocía 10 L cada 10 minutos sobre el cuadrado de 5x5 de alrededor, con un chorro que da la vuelta completa. Una cuarta parte se pierde en el aire, y los zombis lo oyen. Ciérralo cuando el huerto esté regado.
+[*][b]Aspersor[/b]: abre su válvula y rocía 10 L cada 10 minutos sobre el cuadrado de 5x5 de alrededor, con un chorro que da la vuelta completa. Una cuarta parte se pierde en el aire, y los zombis lo oyen. Las plantas se llenan hasta 100/100, como con la regadera. Ciérralo cuando el huerto esté regado.
 [*][b]Aspersor automático[/b] (Electrónica 2): un temporizador lo abre 30 minutos cada 6 horas (de 1 a 24 h). Necesita 5 W.
 [*][b]Línea de goteo[/b]: tiéndela en el camino entre dos hileras. Silenciosa, 0,5 L por casilla, nada se pierde y sirve cualquier agua.
 [/list]

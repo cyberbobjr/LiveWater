@@ -369,17 +369,19 @@ lave-linge, raccords de remplissage, `edgeWatch` (murs et clôtures).
   lave-linge simple → ModData `LiveWaterWasher = { plumbed = true }` (`transmitModData`), une fois.
 - Client : un `IsoClothingWasher` marqué prend `setUsesExternalWaterSource(true)` à son menu et à son interrupteur.
 
-## Arrosage des plantes (`LWT_Plants`, `LWT_SprayArea`, `LWT_DripArea`, ADR-003, ADR-004)
+## Arrosage des plantes (`LWT_Plants`, `LWT_SprayArea`, `LWT_DripArea`, ADR-003, ADR-004, ADR-006, ADR-027)
 
 - Serveur (autorité) : à chaque pas de dix minutes, une sortie d'arrosage ouverte prélève son débit, que les plantes
   aient soif ou non (ADR-006 D01) : besoin = `flow` de la stratégie de zone (arroseur : option `SprinklerFlow`, 10 L ;
   ligne de goutte-à-goutte : option `DripFlow`, 0,5 L par case). Le réseau lui donne ce débit ou ce qui reste
   (`LWT_Flow`). `LWT_Plants:deliver` retire la part perdue en l'air (`loss`, 0,25 pour l'arroseur : 7,5 L sur 10 ; 0
-  pour la ligne) et donne aux plantes vivantes qui ont besoin d'eau des doses entières de 200 ml, cases les plus
-  proches d'abord ; le reste est perdu. Deux sorties sur une même plante prélèvent chacune leur débit, la plante ne
-  reçoit que son besoin. Zone par stratégie : `spray` → `LWT_SprayArea.reach` (carré de `radius` cases sur chaque axe,
-  rayon mis à l'échelle de l'option sandbox), `drip` → `LWT_DripArea.reach` (cases voisines non raccordées, masque des
-  liens lu dans le graphe du réseau) ; chaque stratégie rend cases, dose, perte et débit.
+  pour la ligne) et remplit les plantes vivantes sous leur capacité par doses entières de 200 ml, cases les plus
+  proches d'abord ; le reste est perdu. La capacité est `waterNeededMax` quand la culture en déclare un, ramené entre
+  `waterNeeded` et 100, sinon 100 (ADR-027 D01) ; le port `farming` rend `{ alive, level, needed, max }`. Deux sorties
+  sur une même plante prélèvent chacune leur débit ; la première la remplit, la seconde ne lui donne plus rien. Zone par
+  stratégie : `spray` → `LWT_SprayArea.reach` (carré de `radius` cases sur chaque axe, rayon mis à l'échelle de l'option
+  sandbox), `drip` → `LWT_DripArea.reach` (cases voisines non raccordées, masque des liens lu dans le graphe du réseau) ;
+  chaque stratégie rend cases, dose, perte et débit.
 - Arroseur automatique : la minuterie (`controller`, `duration` 3) le tient ouvert 3 pas de dix minutes à chaque
   nouvelle tranche de `every` heures, avec du courant ; une ligne de goutte-à-goutte coule dès que le réseau la sert
   (ADR-006 D03), et reste à sec après une sortie à court de pression (ADR-006 D04, ADR-001 D14).

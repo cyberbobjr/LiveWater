@@ -191,7 +191,10 @@ class Watering(unittest.TestCase):
 
     def test_a_pumped_barrel_waters_the_squares_beside_the_line_without_loss(self):
         lua = self.bench("clean")
-        self.assertEqual(dict(lua.eval("FARM.watered").items()), {"2,1": 2, "4,0": 1})
+        # ADR-027 D01: the plants are filled towards 100, so each watered square takes the two whole doses its
+        # 0.5 L draws (the line's flow, ADR-006 D01, was already the limit; the old target of the stage need
+        # left one dose unused on the plant at 10).
+        self.assertEqual(dict(lua.eval("FARM.watered").items()), {"2,1": 2, "4,0": 2})
         # ADR-006 D01: three line squares draw 0.5 L each (DripFlow), 1.5 L whatever the plants need (was 0.6 L)
         self.assertAlmostEqual(lua.eval('CONT["0,-1"].amount'), 28.5)
         self.assertEqual(lua.eval("REG:at(2, 0, 0).data.outlet.state"), "served")
@@ -212,7 +215,7 @@ class Watering(unittest.TestCase):
 
     def test_tainted_barrel_water_waters_the_crops_too(self):
         lua = self.bench("tainted")
-        self.assertEqual(dict(lua.eval("FARM.watered").items()), {"2,1": 2, "4,0": 1})
+        self.assertEqual(dict(lua.eval("FARM.watered").items()), {"2,1": 2, "4,0": 2})
         self.assertEqual(lua.eval("REG:at(2, 0, 0).data.outlet.state"), "served")
 
 

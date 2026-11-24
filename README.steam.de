@@ -30,7 +30,7 @@ Teich- und Flusswasser ist schmutzig: Setze eine [b]Filterkartusche[/b] (Holzkoh
 [h2]Garten bewässern[/h2]
 
 [list]
-[*][b]Sprinkler[/b]: Öffne sein Ventil, und er sprüht alle 10 Minuten 10 L über die 5x5 Felder um sich herum; der Strahl dreht sich einmal ganz im Kreis. Ein Viertel geht in der Luft verloren, und Zombies hören ihn. Schließe ihn, wenn der Garten gegossen ist.
+[*][b]Sprinkler[/b]: Öffne sein Ventil, und er sprüht alle 10 Minuten 10 L über die 5x5 Felder um sich herum; der Strahl dreht sich einmal ganz im Kreis. Ein Viertel geht in der Luft verloren, und Zombies hören ihn. Die Pflanzen füllen sich bis 100/100, wie mit der Gießkanne. Schließe ihn, wenn der Garten gegossen ist.
 [*][b]Automatischer Sprinkler[/b] (Elektrotechnik 2): eine Zeitschaltuhr bewässert 30 Minuten alle 6 Stunden (1 bis 24 h). Braucht 5 W.
 [*][b]Tropfschlauch[/b]: lege ihn im Weg zwischen zwei Reihen aus. Lautlos, 0,5 L pro Feld, nichts geht verloren, jedes Wasser ist recht.
 [/list]

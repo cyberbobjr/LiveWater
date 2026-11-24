@@ -166,8 +166,10 @@ quelle et n'usent jamais la cartouche.
 anglaise (gardée). Posez-le comme un meuble et alimentez-le par un tuyau. Clic droit : **Ouvrir la vanne**. Sa manette se lit d'un coup d'œil : le long du tuyau quand
 elle est ouverte, en travers quand elle est fermée. Tant que
 sa vanne est ouverte, il arrose **10 L toutes les 10 minutes**, que les plantes aient soif ou non. Les plantes vivantes
-qui ont besoin d'eau dans le **carré de 5 × 5 cases** autour de lui (2 cases de chaque côté ; l'option sandbox change
-cette portée) en prennent des doses de 200 ml, les plus proches d'abord ; le reste est perdu. Toute eau convient,
+du **carré de 5 × 5 cases** autour de lui (2 cases de chaque côté ; l'option sandbox change
+cette portée) qui ne sont pas encore à 100/100 sont remplies par doses de 200 ml, les plus proches d'abord ; le reste est
+perdu. Une plante se remplit jusqu'à **100/100**, comme à l'arrosoir (ou jusqu'à son maximum quand la culture en impose
+un) : à 70/100, elle continue de se remplir au lieu de s'arrêter. Toute eau convient,
 propre ou non. Fermez-le une fois le potager arrosé : resté ouvert, il vide votre baril ou fait tourner votre pompe.
 
 Pour voir les cases arrosées, faites un clic droit sur un arroseur ou une ligne de goutte-à-goutte : **Afficher toutes

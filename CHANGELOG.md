@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3 — 2026-11-24
+
+- **Sprinklers fill your crops:** an open sprinkler or drip line now fills a plant up to **100/100**, as the watering can does, instead of stopping at the level its growth stage needs (70/100 for most crops). A garden no longer sits at 70-79/100 and looks dry: it fills up, and you close the valve once it is. This costs no more water: an open sprinkler draws its flow every 10 minutes anyway, and the water now reaches the plants instead of being lost. Crops from other mods that declare their own maximum are filled up to it. Player report: "my sprinklers don't water my plants above a certain level".
+
 ## 1.0.2 — 2026-11-24
 
 - **Basement under your own base:** a house water inlet in a base you built now serves the sinks, showers, bathtubs, toilets and washing machines of the **two basement levels** below it, not only its own floor and the floors above. LiveWater sets the fixture's hidden tank on the floor above it: a basement sink in a room (as basement mods register it), plumbed with the pipe wrench, gets water.

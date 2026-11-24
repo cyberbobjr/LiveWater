@@ -30,7 +30,7 @@ L'eau d'étang et de rivière est sale : montez une [b]cartouche filtrante[/b] (
 [h2]Arroser le potager[/h2]
 
 [list]
-[*][b]Arroseur[/b] : ouvrez sa vanne et il arrose 10 L toutes les 10 minutes sur les 5x5 cases autour de lui, jet qui tourne sur lui-même. Un quart se perd dans l'air, et les zombies l'entendent. Fermez-le quand le potager est arrosé.
+[*][b]Arroseur[/b] : ouvrez sa vanne et il arrose 10 L toutes les 10 minutes sur les 5x5 cases autour de lui, jet qui tourne sur lui-même. Un quart se perd dans l'air, et les zombies l'entendent. Les plantes se remplissent jusqu'à 100/100, comme à l'arrosoir. Fermez-le quand le potager est arrosé.
 [*][b]Arroseur automatique[/b] (Électricité 2) : une minuterie arrose 30 minutes toutes les 6 heures (de 1 à 24 h). Il lui faut 5 W.
 [*][b]Ligne de goutte-à-goutte[/b] : posez-la dans l'allée entre deux rangs. Silencieuse, 0,5 L par case, rien de perdu, n'importe quelle eau convient.
 [/list]

@@ -49,7 +49,7 @@ class BeyondThePumpPressure(unittest.TestCase):
 class SprinklerAndDripLineOnTheSamePlant(unittest.TestCase):
     """ADR-006 D01: each open outlet draws its own flow; the plant they share gets at most what it needs."""
 
-    def test_each_outlet_draws_its_flow_and_the_plant_gets_its_need(self):
+    def test_each_outlet_draws_its_flow_and_the_plant_is_filled_by_the_first(self):
         lua = services(new_lua, POND, SPRINKLER, DRIP)
         lua.execute(SPRINKLER_BENCH)
         lua.execute("""
@@ -60,7 +60,9 @@ class SprinklerAndDripLineOnTheSamePlant(unittest.TestCase):
         plant(2, 1, 0, 30)
         """)
         drawn = sum(e[3] for e in lua.eval("(function() EMITTED = {} CLOCK:tick() return emitted('waterDelivered') end)()").values())
-        self.assertEqual(lua.eval("FARM.watered['2,1']"), 3)
+        # ADR-027 D01: the sprinkler fills the plant to 100 (10 doses); the drip line then finds nothing to
+        # water but still draws its flow. Both outlets draw, only the first delivers a dose.
+        self.assertEqual(lua.eval("FARM.watered['2,1']"), 10)
         # sprinkler 10 L (SprinklerFlow) + one drip square 0.5 L (DripFlow), thirst or not
         self.assertAlmostEqual(drawn, 10.5)
         self.assertEqual((lua.eval("SPR.data.outlet.state"), lua.eval("REG:at(1, 1, 0).data.outlet.state")),
@@ -75,7 +77,8 @@ class SprinklerAndDripLineOnTheSamePlant(unittest.TestCase):
         plant(2, 1, 0, 30)
         """)
         drawn = sum(e[3] for e in lua.eval("(function() EMITTED = {} CLOCK:tick() return emitted('waterDelivered') end)()").values())
-        self.assertEqual(lua.eval("FARM.watered['2,1']"), 3)
+        # ADR-027 D01: the first sprinkler fills the plant to 100 (10 doses), the second has nothing left.
+        self.assertEqual(lua.eval("FARM.watered['2,1']"), 10)
         self.assertAlmostEqual(drawn, 20)
 
 

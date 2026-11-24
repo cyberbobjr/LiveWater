@@ -30,7 +30,7 @@ Pond and river water is dirty: fit a [b]water filter cartridge[/b] (charcoal and
 [h2]Watering the garden[/h2]
 
 [list]
-[*][b]Sprinkler[/b]: open its valve and it sprays 10 L every 10 minutes over the 5x5 squares around it, jet turning all the way round. A quarter is lost in the air, and zombies hear it. Close it when the garden is watered.
+[*][b]Sprinkler[/b]: open its valve and it sprays 10 L every 10 minutes over the 5x5 squares around it, jet turning all the way round. A quarter is lost in the air, and zombies hear it. The plants fill up to 100/100, as with the watering can. Close it when the garden is watered.
 [*][b]Automatic sprinkler[/b] (Electrical 2): a timer waters 30 minutes every 6 hours (1 to 24 h). Needs 5 W.
 [*][b]Drip line[/b]: lay it in the path between two rows. Silent, 0.5 L per square, nothing wasted, any water will do.
 [/list]

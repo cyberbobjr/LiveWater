@@ -20,8 +20,9 @@ Solo (client hooks: authority and client in one process):
      switchValve, fitFilter), queued in solo and handled by the authority's dispatcher;
   6. time runs in fast forward and the real EveryTenMinutes steps are counted (no direct clock call).
 Checks: network built (one network), pipe sprites by side mask, pump powered and running, sprinkler served
-and the plant's water level up, house inlet refused without filter (state unfiltered, amber sprite, relays
-empty), then with the filter cartridge fitted in the house inlet (ADR-005) served (green sprite with the
+and the plant's water level up, a crop set to 69 under a stage need of 70 filled to 100 (ADR-027 D01), house inlet
+refused without filter (state unfiltered, amber sprite, relays empty), then with the filter cartridge fitted in the
+house inlet (ADR-005) served (green sprite with the
 canister, 176-179, relay filled, the fixture gives clean water), the
 inline valve closed stops the house downstream while the sprinkler upstream still waters (relays emptied and
 crop dried first: fixture), the sprinkler valve closed stops the branch (state closed, plant level unchanged),
@@ -1651,6 +1652,29 @@ local function buildSteps(ctx)
         -- ADR-006 D01: open, it draws its flow at every step, thirsty crop or not
         rec(seen.sprinkler.served and not seen.sprinkler.idle, "open sprinkler served at every step (never idle)",
             seenText())
+        return true
+    end)
+
+    -- ADR-027 D01: a crop under its stage need is filled up to 100, not up to the need (70).
+    addStep("crop set to 69 under a stage need of 70 (ADR-027 fixture)", function()
+        local pl = plantAt(S.L.crop)
+        if not pl then return rec(false, "crop set to 69 (ADR-027)", "no crop") end
+        pl.waterLvl = 69
+        pl.waterNeeded = 70
+        pl.waterNeededMax = nil
+        pl:saveData()
+        rec(pl.waterLvl == 69, "crop set to 69 under a stage need of 70 (ADR-027)",
+            "level " .. tostring(pl.waterLvl))
+        return true
+    end)
+
+    addStep("one ten-minute step with the crop at 69 (ADR-027)", waitSteps(1), stepSec * 4)
+
+    addStep("checks ADR-027: the crop is filled to 100", function()
+        local pl = plantAt(S.L.crop)
+        local level = pl and pl.waterLvl or -1
+        rec(level == 100, "a crop at 69 under a stage need of 70 is filled to 100 (ADR-027 D01)",
+            "level " .. tostring(level))
         return true
     end)
 

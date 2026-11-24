@@ -94,8 +94,8 @@ function FARM:water(x, y, z, doses)
     self.watered[x .. "," .. y] = (self.watered[x .. "," .. y] or 0) + doses
     return true
 end
-function plant(x, y, level, needed, alive)
-    FARM.plants[x .. "," .. y] = { alive = alive ~= false, level = level, needed = needed }
+function plant(x, y, level, needed, alive, max)
+    FARM.plants[x .. "," .. y] = { alive = alive ~= false, level = level, needed = needed, max = max }
 end
 SCALE = {}
 PLANTS = require("LiveWater/LWT_Plants").new({ farming = FARM,
@@ -158,25 +158,40 @@ class Watering(unittest.TestCase):
         self.assertEqual(lua.eval("FARM.plants['3,0'].level"), 0)
         self.assertEqual(lua.eval("SPR.data.outlet.state"), "closed")
 
-    def test_open_it_waters_the_plants_that_need_it_by_200_ml_doses(self):
+    def test_open_it_fills_the_plants_under_their_capacity_by_200_ml_doses(self):
         lua = bench()
         lua.execute('LiveWater.Parts:call(SPR, "open", true)')
-        lua.execute("plant(3, 0, 45, 70) plant(2, 1, 80, 70) plant(1, 1, 0, 70, false)")
+        lua.execute("plant(3, 0, 45, 70) plant(2, 1, 100, 70) plant(1, 1, 0, 70, false)")
         litres = lua.eval("delivered()")
-        # ADR-006 D01: it draws its flow (10 L), 7.5 L reach the area, the plant takes its 3 doses, the rest is lost
+        # ADR-006 D01: it draws its flow (10 L), 7.5 L reach the area, the rest is lost. ADR-027 D01: the plant
+        # at 45 is filled up to 100 (55 points missing, 6 doses), not up to its stage need (70) with 3 doses.
         self.assertAlmostEqual(litres, 10)
-        self.assertEqual(lua.eval("FARM.watered['3,0']"), 3)
+        self.assertEqual(lua.eval("FARM.watered['3,0']"), 6)
         self.assertIsNone(lua.eval("FARM.watered['2,1']"))
         self.assertIsNone(lua.eval("FARM.watered['1,1']"))
-        self.assertEqual(lua.eval("FARM.plants['3,0'].level"), 75)
+        self.assertEqual(lua.eval("FARM.plants['3,0'].level"), 100)
         self.assertTrue(lua.eval("SPR.data.spray.on"))
         self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "55")   # on, turned W to its pipe
 
-    def test_only_the_plants_in_the_square_of_the_radius(self):
-        # ADR-003 D01: radius 2 around the sprinkler at (2, 0) is the 5 x 5 square, corners included
+    def test_a_plant_is_filled_up_to_its_capacity(self):
+        # ADR-027 D01: 95 -> 100 in one dose, and a declared waterNeededMax is the target (80 with 85 -> 90,
+        # the vanilla dose overshooting the target by less than 10 points).
         lua = bench()
-        lua.execute('LiveWater.Parts:call(SPR, "open", true) plant(5, 0, 0, 10) plant(4, 1, 0, 10) plant(4, 0, 0, 10)'
-                    ' plant(4, 2, 0, 10) plant(2, 3, 0, 10)')
+        lua.execute('LiveWater.Parts:call(SPR, "open", true) plant(3, 0, 95, 70) plant(4, 0, 80, 70, true, 85)'
+                    ' plant(1, 0, 85, 70, true, 85)')
+        lua.execute("delivered()")
+        self.assertEqual(lua.eval("FARM.watered['3,0']"), 1)
+        self.assertEqual(lua.eval("FARM.plants['3,0'].level"), 100)
+        self.assertEqual(lua.eval("FARM.watered['4,0']"), 1)
+        self.assertEqual(lua.eval("FARM.plants['4,0'].level"), 90)
+        self.assertIsNone(lua.eval("FARM.watered['1,0']"))
+
+    def test_only_the_plants_in_the_square_of_the_radius(self):
+        # ADR-003 D01: radius 2 around the sprinkler at (2, 0) is the 5 x 5 square, corners included.
+        # ADR-027 D01: the plants start just under their capacity, so one dose each and the test is about the area.
+        lua = bench()
+        lua.execute('LiveWater.Parts:call(SPR, "open", true) plant(5, 0, 95, 70) plant(4, 1, 95, 70)'
+                    ' plant(4, 0, 95, 70) plant(4, 2, 95, 70) plant(2, 3, 95, 70)')
         lua.execute("delivered()")
         self.assertIsNone(lua.eval("FARM.watered['5,0']"))
         self.assertIsNone(lua.eval("FARM.watered['2,3']"))

@@ -134,9 +134,9 @@ commandes du filtre) ; un refus est dit au joueur par clé de traduction.
   du jeu (bâtiment, points d'eau, objets relais).
 - `LWT_Plants.lua` : plantes d'un arroseur ou d'une ligne de goutte-à-goutte (gestionnaires `sprinkler` et `drip`, une
   instance par type avec sa stratégie de zone injectée : besoin = débit de la sortie, que les plantes aient soif ou non,
-  ADR-006 D01 ; l'eau reçue moins la part perdue en l'air donne des doses entières aux plantes qui ont besoin d'eau, les
-  plus proches d'abord, le reste est perdu) ; `LWT_GameFarming.lua` : adaptateur de l'agriculture vanilla
-  (`SFarmingSystem.instance:getLuaObjectAt`, `SPlantGlobalObject:water`).
+  ADR-006 D01 ; l'eau reçue moins la part perdue en l'air remplit les plantes sous leur capacité par doses entières, les
+  plus proches d'abord, le reste est perdu, ADR-027 D01) ; `LWT_GameFarming.lua` : adaptateur de l'agriculture vanilla
+  (`SFarmingSystem.instance:getLuaObjectAt`, `SPlantGlobalObject:water`, capacité `waterNeededMax`).
 - `LWT_Fittings.lua` : conteneurs posés contre une pièce (tâche de l'horloge : conteneur relevé et présenté ; gestionnaire
   `barrelFill` du raccord de remplissage, qui ne fait que remplir ; `container` = `fill` ou `draw` selon la pièce ;
   litres puisés retirés sur `waterDrawn` pour une pompe, conteneurs relevés à nouveau ; deux pièces d'un même baril se

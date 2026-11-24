@@ -69,7 +69,8 @@ class Timer(unittest.TestCase):
         lua = bench()
         lua.execute("plant(3, 0, 40, 70)")
         self.assertAlmostEqual(lua.eval("delivered()"), 10)
-        self.assertEqual(lua.eval("FARM.watered['3,0']"), 3)
+        # ADR-027 D01: 40 -> 100 misses 60 points, 6 doses in the first step; the next two find it full.
+        self.assertEqual(lua.eval("FARM.watered['3,0']"), 6)
         self.assertEqual(lua.eval("WORLD:sprite(2, 0, 0)"), TILE + "63")   # on, turned W to its pipe
         self.assertTrue(lua.eval("SPR.data.controller.watering"))
         self.assertAlmostEqual(lua.eval("delivered()"), 10)
