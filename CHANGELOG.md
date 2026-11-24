@@ -2,10 +2,7 @@
 
 ## 1.0.2 — 2026-11-24
 
-- **Basement under your own base:** a house water inlet in a base you built now serves the fixtures of the **two
-  basement levels** below it, not only its own floor and the floors above. LiveWater sets the fixture's hidden tank on
-  the floor above it: a basement sink in a room (as basement mods register it), plumbed with the pipe wrench, gets
-  water.
+- **Basement under your own base:** a house water inlet in a base you built now serves the sinks, showers, bathtubs, toilets and washing machines of the **two basement levels** below it, not only its own floor and the floors above. LiveWater sets the fixture's hidden tank on the floor above it: a basement sink in a room (as basement mods register it), plumbed with the pipe wrench, gets water.
 
 ## 1.0.1 — 2026-11-24
 
