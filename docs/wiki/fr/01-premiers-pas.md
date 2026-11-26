@@ -252,6 +252,10 @@ Tant que l'eau de la ville coule, clic droit sur un évier, une baignoire, une d
 **que vous avez posé** dans une pièce d'un bâtiment de la carte : **Raccorder au réseau public**. Il se comporte alors
 comme un point d'eau d'origine : eau illimitée jusqu'à la coupure de l'eau de la ville.
 
+L'option **Raccorder la plomberie** du jeu fait autre chose : le point d'eau puise alors dans un réservoir à l'étage
+au-dessus, pas dans l'eau de la ville. Si vous l'avez raccordé par erreur et qu'il reste à sec, **Raccorder au réseau
+public** reste proposé.
+
 ## 11. Compteur d'eau
 
 Recette **Fabriquer un compteur d'eau** : 1 tuyau d'eau, 1 petite plaque en métal, 2 vis, avec un tournevis

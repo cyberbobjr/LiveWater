@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.4 — 2026-11-26
+
+- **City water after a wrong Plumb:** a sink, bathtub, shower, toilet or washing machine you set down in a map building and plumbed with the game's own **Plumb** option stayed dry while the taps next to it still ran, and **Connect to the City Water** was gone. That option now stays on a plumbed fixture that has no tank above it: one click and it gets the city water. Player report: "I plumbed it and it says No Water".
+
 ## 1.0.3 — 2026-11-24
 
 - **Sprinklers fill your crops:** an open sprinkler or drip line now fills a plant up to **100/100**, as the watering can does, instead of stopping at the level its growth stage needs (70/100 for most crops). A garden no longer sits at 70-79/100 and looks dry: it fills up, and you close the valve once it is. This costs no more water: an open sprinkler draws its flow every 10 minutes anyway, and the water now reaches the plants instead of being lost. Crops from other mods that declare their own maximum are filled up to it. Player report: "my sprinklers don't water my plants above a certain level".

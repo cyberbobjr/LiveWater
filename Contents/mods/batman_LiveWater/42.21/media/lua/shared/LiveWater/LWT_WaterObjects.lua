@@ -88,7 +88,8 @@ end
 function WaterObjects.cityInfo(obj)
     local sq = obj:getSquare()
     return { placed = obj:hasModData() and obj:getModData().canBeWaterPiped == true,
-        plumbed = obj:getUsesExternalWaterSource(), room = sq ~= nil and sq:getRoom() ~= nil,
+        plumbed = obj:getUsesExternalWaterSource(), source = obj:FindExternalWaterSource() ~= nil,
+        room = sq ~= nil and sq:getRoom() ~= nil,
         noWater = sq ~= nil and sq:isNoWater() }
 end
 

@@ -44,10 +44,17 @@ class CityWater(unittest.TestCase):
         self.assertEqual(call(lua, "cmd(2, 2)"), (True, None))
         self.assertEqual(lua.eval("CITY.connected[1]"), "2,2,0")
 
+    def test_a_fixture_plumbed_with_no_tank_above_joins_the_city_water(self):
+        # The game's own "Plumb" is offered without a tank above before the shut-off; the fixture then stays dry.
+        lua = bench()
+        lua.execute('CITY.fixtures["2,2,0"] = { placed = false, plumbed = true, source = false, room = true }')
+        self.assertEqual(call(lua, "cmd(2, 2)"), (True, None))
+        self.assertEqual(lua.eval("CITY.connected[1]"), "2,2,0")
+
     def test_every_condition_is_checked_on_the_server(self):
         lua = bench()
         self.assertEqual(call(lua, "cmd(9, 9)"), (False, "not_fixture"))
-        lua.execute('CITY.fixtures["2,2,0"].plumbed = true')
+        lua.execute('CITY.fixtures["2,2,0"].plumbed = true CITY.fixtures["2,2,0"].source = true')
         self.assertEqual(call(lua, "cmd(2, 2)"), (False, "not_fixture"))
         lua.execute('CITY.fixtures["2,2,0"].plumbed = false CITY.fixtures["2,2,0"].placed = false')
         self.assertEqual(call(lua, "cmd(2, 2)"), (False, "not_fixture"))

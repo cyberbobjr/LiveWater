@@ -26,7 +26,8 @@ if isClient() then return end
 --   cityWaterRuns()            the city water still runs
 --   cityFixture(x, y, z)       LWT_WaterObjects.cityInfo of the fixture on the square, or nil
 --   connectCity(x, y, z)       the fixture takes the state of an original one (M01): its ModData
---                              canBeWaterPiped goes, no outside source; sent to the clients
+--                              canBeWaterPiped goes, no outside source, our washer mark gone;
+--                              sent to the clients
 --   plumbInfo(x, y, z)         LWT_WaterObjects.plumbInfo of the fixture on the square, or nil
 --   unplumb(x, y, z)           the fixture goes back to "set down, to plumb" (ADR-024 D04): ModData
 --                              canBeWaterPiped = true, no outside source, our washer mark gone;
@@ -331,9 +332,14 @@ end
 function GamePlumbing:connectCity(x, y, z)
     local obj = fixtureObject(x, y, z)
     if not obj then return false end
-    obj:getModData().canBeWaterPiped = nil
+    local md = obj:getModData()
+    local plumbed = obj:getUsesExternalWaterSource()
+    md.canBeWaterPiped = nil
+    md[GamePlumbing.WASHER_KEY] = nil
     obj:setUsesExternalWaterSource(false)
     if isServer() then obj:transmitModData() end
+    -- a fixture that was plumbed: the clients drop its outside source as the game sets it
+    if plumbed then obj:sendObjectChange(IsoObjectChange.USES_EXTERNAL_WATER_SOURCE, { value = false }) end
     return true
 end
 

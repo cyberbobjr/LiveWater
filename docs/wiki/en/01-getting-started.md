@@ -241,6 +241,9 @@ While the city water still runs, right-click a sink, bathtub, shower, toilet or 
 inside a room of a building of the map: **Connect to the City Water**. It then works like the original fixtures:
 unlimited water until the city water is cut off.
 
+The game's own **Plumb** option does something else: the fixture then draws from a tank on the floor above, not from
+the city water. If you plumbed it by mistake and it stays dry, **Connect to the City Water** is still there.
+
 ## 11. Water meter
 
 Recipe **Build Water Meter**: 1 water pipe, 1 small metal sheet, 2 screws, with a screwdriver (kept). Set it down
