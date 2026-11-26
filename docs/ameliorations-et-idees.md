@@ -22,7 +22,31 @@ Aucune pour l'instant.
 | I10 | Reprise de la pompe aux barils de Live Wire | Un seul mod de l'eau | ADR distinct (D21) | L |
 | I11 | Point d'eau en plein air : menu « Raccorder » de LiveWater (toit seul : [ADR-024](ADR/termines/024-point-d-eau-sur-un-toit-et-retrait-du-raccord.md) ; le jardin reste une idée) | Évier sur le toit ou dehors | voir l'analyse ci-dessous, piste A | S à M |
 | I12 | Colonne montante : un tuyau qui relie deux niveaux | Réseau de tuyaux à l'étage (robinet, arroseur, raccord de remplissage sur un toit) | voir l'analyse ci-dessous, piste C | L |
+| I14 | Tuyau qui continue après un arroseur, manuel ou automatique (demande d'un joueur, retenue par l'utilisateur 2026-11-26) | Enchaîner les carrés de culture sur une seule ligne | l'arroseur devient une pièce traversante du graphe ; à analyser | S à M |
+| I15 | Plusieurs pompes sur un seul baril ou un seul point d'eau (demande d'un joueur, retenue par l'utilisateur 2026-11-26) | Débit plus fort depuis une même source | règle de pose et partage de la source entre pompes (F35) ; à analyser | S à M |
+| I16 | Réseau public dans une base construite (demande de joueurs, 2026-11-26) | Eau de la ville dans sa propre base avant la coupure | voir l'analyse ci-dessous | M |
 | I13 | Sous-sol plus profond ou creusé hors de l'emprise d'une maison de la carte | Sous-sols des bases étendues | [ADR-026](ADR/termines/026-sous-sol-d-une-base-construite.md) D02 (profondeur) et limites connues (colonne sous toute case servie, option B écartée) | S à M |
+
+Écartée par l'utilisateur (2026-11-26) : l'écoulement par gravité depuis un étage ; la pompe fait ce travail.
+
+## Analyse — réseau public dans une base construite (2026-11-26)
+
+Constat, confirmé statiquement (Java 42.22, rien en jeu) :
+
+- **Le moteur ne donne l'eau de la ville qu'aux pièces de la carte.** `IsoObject.isWaterInfinite` (privée) exige
+  `square.getRoom() != null` ; `getRoom()` renvoie `null` quand `roomId == -1` (`IsoGridSquare.java:7789`), cas de toute
+  case d'une pièce construite par le joueur. Les autres conditions : drapeau `waterPiped`, aucune source extérieure, case
+  non `isNoWater`, jour de coupure non atteint, `canBeWaterPiped` absent ou faux.
+- **Une pièce de joueur n'est reconnue que par la région** : `IsoGridSquare.isInARoom` (`:8533`) ajoute
+  `IsoWorldRegion.isPlayerRoom()`, mais `isWaterInfinite` ne l'appelle pas. Aucun réglage ni API Lua ne change cette
+  règle ; la méthode est Java et privée.
+- LiveWater suit la même règle : `LWT_CityWater.refusal` renvoie `not_map_building` hors pièce de la carte.
+
+Piste (hypothèse, à décider par ADR) : ne pas toucher à l'eau infinie du moteur, mais faire de la ville une **source**
+de LiveWater, par exemple une pièce « robinet de ville » à poser dans une base, qui donne de l'eau propre au réseau tant
+que l'eau de la ville coule (`getWaterShutModifier`) et que la case n'est pas `isNoWater`. L'arrivée d'eau de la base
+remplit alors ses points d'eau par les réservoirs invisibles, comme avec une pompe. Questions ouvertes : où le robinet
+peut se poser (près d'une route, d'un bâtiment de la carte, partout), débit, et ce qu'il devient le jour de la coupure.
 
 ## Analyse — évier sur un toit en terrasse (2026-11-22)
 
