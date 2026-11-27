@@ -74,7 +74,7 @@
 [list]
 [*]Настройки песочницы: насос, фильтры, радиусы вводов, дождеватели, шланги, ёмкости.
 [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] необязателен: насос подключают проводом к инвертору, даже вне зоны (150 Вт).
-[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3809306528]Viewpoint[/url] : мод «LiveWater - Viewpoint 3D models» и его пакет показывают все детали в 3D.
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3809306528]Viewpoint[/url] : мод «LiveWater - Viewpoint 3D models» показывает все детали в 3D.
 [*]Пока идёт городская вода, раковину или унитаз в здании карты можно подключить к ней.
 [*]Несовместим с LG Extended Plumbing, LG Connect To Water Supply и Plysken Irrigation Pipes.
 [*]Открыт для модов: публичный API.

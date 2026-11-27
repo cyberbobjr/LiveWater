@@ -1,0 +1,21 @@
+// Viewpoint 0.1.7 + ZombieBuddy (installed in the game): are the LiveWater models loaded and drawn?
+//   python PZDevKit/pzdev.py sp LiveWater/autotest/scenarios/viewpoint.json --wait-idle 3600
+{
+ "name": "LiveWater-Viewpoint",
+ "gameVersion": "42.22",
+ "mods": [
+  {"workshop": "3619862853", "id": "ZombieBuddy"},
+  {"workshop": "3809306528", "id": "Viewpoint"},
+  {"path": "../../Contents/mods/batman_LiveWater"},
+  {"path": "../../Contents/mods/batman_LiveWaterViewpoint"}
+ ],
+ "hooks": "../lwt_viewpoint_visual_hooks.lua",
+ "runsDir": "../../runs",
+ "sp": {
+  "save": "2026-10-17_17-50-04",
+  "gameMode": "Sandbox",
+  "saveMods": "replace",
+  "timeoutSec": 600,
+  "startDelaySec": 5
+ }
+}

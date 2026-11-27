@@ -63,12 +63,27 @@ def signed_volume(verts, faces):
 
 
 class SubMod(unittest.TestCase):
-    def test_the_sub_mod_requires_livewater_and_carries_no_lua(self):
+    def test_the_sub_mod_requires_livewater(self):
         info = properties(os.path.join(SUB_MOD, "42.21", "mod.info"))
         self.assertEqual(info["id"], "batman_LiveWaterViewpoint")
         self.assertEqual(info["require"], "\\batman_LiveWater")
-        lua = [n for _, _, files in os.walk(SUB_MOD) for n in files if n.endswith(".lua")]
-        self.assertEqual(lua, [])
+
+
+class LuaRegistration(unittest.TestCase):
+    def test_registers_the_manifest_of_the_pack_with_literal_arguments(self):
+        """ADR-019, update of 2026-11-27. Viewpoint only discovers pack.properties in the mods enabled when the
+        game starts and leaves the pack off; the Lua call loads the models whenever the sub-mod is enabled.
+        Viewpoint reads the call with a pattern (viewpoint.addons.LegacyPacks): both arguments are literals."""
+        path = os.path.join(SUB_MOD, "common", "media", "lua", "client", "LiveWaterViewpoint.lua")
+        with open(path, encoding="ascii") as f:
+            calls = re.findall(r"ModelPacks\s*[.:]\s*register\s*\(([^,()]*),([^()]*)\)", f.read())
+        self.assertEqual(len(calls), 1)
+        mod, manifest = (a.strip() for a in calls[0])
+        self.assertEqual(mod, '"batman_LiveWaterViewpoint"')
+        self.assertRegex(manifest, r'^"[^"]+"$')
+        descriptor = properties(os.path.join(PACK, "pack.properties"))
+        self.assertEqual(os.path.normpath(os.path.join(SUB_MOD, "common", *manifest.strip('"').split("/"))),
+                         os.path.normpath(os.path.join(PACK, *descriptor["models"].split("/"))))
 
 
 class Descriptor(unittest.TestCase):

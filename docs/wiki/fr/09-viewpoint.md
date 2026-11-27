@@ -11,8 +11,8 @@ LiveWater contient un second mod, facultatif, qui donne à chaque pièce un mod�
 1. S'abonner à Viewpoint et suivre ses propres instructions (il demande ZombieBuddy).
 2. Dans la liste des mods, activer **LiveWater** et **LiveWater - Viewpoint 3D models**. Sur un serveur, l'admin ajoute
    `batman_LiveWaterViewpoint` à la liste des mods du serveur.
-3. Relancer le jeu, ouvrir les réglages de Viewpoint et activer le paquet **LiveWater** dans sa liste de paquets de
-   ressources. Les paquets de modèles 3D de Viewpoint doivent être activés, et sa portée des modèles au-dessus de 0
+3. Charger la partie : les modèles s'affichent d'eux-mêmes, sans rien activer dans la liste des paquets de ressources
+   de Viewpoint. Les paquets de modèles 3D de Viewpoint doivent être activés, et sa portée des modèles au-dessus de 0
    (son préréglage Bas la met à 0).
 
 ## Ce qu'on voit

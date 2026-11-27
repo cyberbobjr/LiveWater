@@ -253,4 +253,5 @@ de LiveWater, 20 tuyaux, une clé à tuyau ; solo : ajout à l'inventaire, serve
 - Modèles 3D pour Viewpoint (ADR-019) : `source/tiles/build_viewpoint_models.py` (Blender, sans interface, sans rendu)
   réutilise les constructeurs de `build_livewater_tiles.py` et écrit le paquet de ressources du sous-mod
   `batman_LiveWaterViewpoint` (`common/media/viewpoint/resourcepacks/batman-livewater/`), vérifié par
-  `tests/test_viewpoint_pack.py`.
+  `tests/test_viewpoint_pack.py`. Le sous-mod inscrit lui-même ce manifeste auprès de Viewpoint
+  (`common/media/lua/client/LiveWaterViewpoint.lua`, ADR-019, mise à jour du 2026-11-27).

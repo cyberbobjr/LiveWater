@@ -67,6 +67,19 @@ LiveWater). Désormais **un OBJ par groupe de tuiles** (son orientation S), que 
 l'orientation S de 90 degrés dans l'autre sens à chaque orientation. Paquet : 91 modèles, 4,4 Mo. Le MTL et la texture
 palette sont rangés avec les OBJ (`models/`), pour que `mtllib` et `map_Kd` n'aient jamais de `..`.
 
+## Mise à jour du 2026-11-27
+
+D01 et D02, « aucun fichier Lua » et « pas d'inscription Lua », remplacés après les retours des joueurs (modèles
+invisibles). Constat en jeu : Viewpoint 0.1.7 ne cherche les `pack.properties` qu'une fois, au lancement du jeu, dans
+les mods actifs au menu principal (`AddonHooks.modsLoading`, `Discovery.begin`) ; un mod activé par une sauvegarde ou
+un serveur n'est jamais trouvé (« 0 resource packs »), et un paquet trouvé reste éteint tant que le joueur ne l'allume
+pas (`Choices.isOn`). `common/media/lua/client/LiveWaterViewpoint.lua` inscrit donc le manifeste du paquet
+(`Viewpoint.ModelPacks.register`, deux arguments littéraux, à `OnGameBoot`, `OnGameStart` et au chargement du
+fichier) : les modèles se chargent et s'affichent sans geste du joueur. Le paquet au nouveau format reste en place.
+Conséquence acceptée : quand le mod est actif au menu principal, Viewpoint liste deux entrées (le paquet
+`batman-livewater`, éteint, et `legacy.batman_LiveWaterViewpoint`, allumé). Test :
+`tests/test_viewpoint_pack.py` (`LuaRegistration`). Passage en jeu : `autotest/scenarios/viewpoint.json`.
+
 ## Limites
 
 Le rendu réel dans Viewpoint (GPU, éclairage, orientation vue en jeu) n'est vérifiable qu'en jeu, par l'utilisateur.

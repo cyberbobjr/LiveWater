@@ -74,7 +74,7 @@
 [list]
 [*]サンドボックス設定：ポンプ、フィルター、給水口、スプリンクラー、点滴チューブ、補充するコンテナ。
 [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url]は任意です。ポンプは電線でインバーターに接続でき、範囲外でも動きます（150 W）。
-[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3809306528]Viewpoint[/url]（一人称視点）：「LiveWater - Viewpoint 3D models」MODとそのパックで各部品を3D表示。
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3809306528]Viewpoint[/url]（一人称視点）：「LiveWater - Viewpoint 3D models」MODで各部品を3D表示。
 [*]市の水道が出ている間、マップ建物に置いた流し台やトイレを接続できます。
 [*]LG Extended Plumbing、LG Connect To Water Supply、Plysken Irrigation Pipesとは非互換です。
 [*]他のMODに開かれた公開APIがあります。

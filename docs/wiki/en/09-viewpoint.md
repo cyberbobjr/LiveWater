@@ -11,7 +11,7 @@ mod that gives every part a 3D model in Viewpoint:
 1. Subscribe to Viewpoint and follow its own instructions (it needs ZombieBuddy).
 2. In the mod list, enable **LiveWater** and **LiveWater - Viewpoint 3D models**. On a server, the admin adds
    `batman_LiveWaterViewpoint` to the server's mod list.
-3. Restart the game, open Viewpoint's settings and switch the **LiveWater** pack on in its list of resource packs.
+3. Load your game: the models show by themselves, with nothing to switch on in Viewpoint's list of resource packs.
    Viewpoint's 3D model packs must be on, and its model range above 0 (its Low preset sets it to 0).
 
 ## What you see

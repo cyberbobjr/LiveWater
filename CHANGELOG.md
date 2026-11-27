@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.5 — 2026-11-27
+
+- **Viewpoint 3D models:** the 3D models of the pump, pipes, valves, inlets and sprinklers now show in Project Viewpoint without any setup. Until now they stayed flat pictures unless the mod was enabled from the main menu and the **LiveWater** pack switched on by hand in Viewpoint; with the mod enabled only in a save or on a server, the pack was not even listed.
+
 ## 1.0.4 — 2026-11-26
 
 - **City water after a wrong Plumb:** a sink, bathtub, shower, toilet or washing machine you set down in a map building and plumbed with the game's own **Plumb** option stayed dry while the taps next to it still ran, and **Connect to the City Water** was gone. That option now stays on a plumbed fixture that has no tank above it: one click and it gets the city water. Player report: "I plumbed it and it says No Water".

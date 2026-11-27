@@ -74,7 +74,7 @@ El servidor verifica cada acción; redes, válvulas y accesorios se guardan y se
 [list]
 [*]Opciones de sandbox: caudal y desgaste de las bombas, duración de los filtros, alcances de entrada, alcance, temporizador y caudal de los aspersores, caudal de las líneas de goteo, recipientes a llenar.
 [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3821807453]LiveWire[/url] es opcional: conecta la bomba a un inversor con cable, incluso fuera de su zona (150 W, visible en su programa).
-[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3809306528]Viewpoint[/url] (vista en primera persona): activa el mod «LiveWater - Viewpoint 3D models» y luego su paquete en Viewpoint para ver cada pieza en 3D.
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3809306528]Viewpoint[/url] (vista en primera persona): activa el mod «LiveWater - Viewpoint 3D models» para ver cada pieza en 3D.
 [*]Mientras corre el agua de la ciudad, un fregadero o inodoro que coloques en un edificio del mapa puede conectarse a ella.
 [*]No compatible con LG Extended Plumbing, LG Connect To Water Supply ni Plysken Irrigation Pipes (LiveWater cubre lo que hacen).
 [*]Abierto a otros mods: API pública para productores y consumidores.
